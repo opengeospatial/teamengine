@@ -1,0 +1,255 @@
+<project name="team" default="all">
+  <description>TEAM Engine main build file</description>
+
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="setup/ant-contrib/ant-contrib.jar" />
+    </classpath>
+  </taskdef>
+
+  <property file="build.properties"/>
+
+
+  <target name="jar.engine">
+    <ant dir="apps/engine"/>
+  </target>
+
+  <target name="jar.manager">
+    <ant dir="apps/manager"/>
+  </target>
+
+  <target name="jar.realm">
+    <ant dir="setup/UserFilesRealm"/>
+  </target>
+
+  <target name="jar.component">
+    <ant dir="${component}"/>
+  </target>
+
+  <target name="jar.components">
+    <foreach param="component" target="jar.component">
+      <path>
+        <dirset dir="components" includes="*"/>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="jars" depends="jar.engine,jar.manager,jar.realm,jar.components"/>
+
+
+  <target name="webapp.manager" depends="jar.manager">
+    <mkdir dir="webapps"/>
+    <mkdir dir="webapps/teamengine"/>
+    <mkdir dir="webapps/teamengine/WEB-INF"/>
+    <mkdir dir="webapps/teamengine/WEB-INF/classes"/>
+    <mkdir dir="webapps/teamengine/WEB-INF/lib"/>
+    <copy todir="webapps/teamengine">
+      <fileset dir="apps/manager/web"/>
+    </copy>
+    <copy todir="webapps/teamengine/WEB-INF/classes">
+      <fileset dir="apps/engine/resources"/>
+      <fileset dir="apps/manager/resources"/>
+    </copy>
+    <copy todir="webapps/teamengine/WEB-INF/lib">
+      <fileset dir="apps/engine/lib"/>
+      <fileset dir="apps/manager/lib"/>
+    </copy>
+  </target>
+
+  <target name="webapp.component">
+    <if>
+      <available file="${component}/resources"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/classes">
+          <fileset dir="${component}/resources" includes="**"/>
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${component}/lib"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/lib" overwrite="yes">
+          <fileset dir="${component}/lib" includes="**"/>
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${component}/web"/>
+      <then>
+        <copy todir="webapps/teamengine">
+          <fileset dir="${component}/web" includes="**"/>
+        </copy>
+      </then>
+    </if>
+  </target>
+
+  <target name="webapp.components" depends="jar.components">
+    <mkdir dir="webapps"/>
+    <mkdir dir="webapps/teamengine"/>
+    <mkdir dir="webapps/teamengine/WEB-INF"/>
+    <mkdir dir="webapps/teamengine/WEB-INF/classes"/>
+    <mkdir dir="webapps/teamengine/WEB-INF/lib"/>
+    <foreach param="component" target="webapp.component">
+      <path>
+        <dirset dir="components" includes="*"/>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="webapp.script">
+    <if>
+      <available file="${script}/resources"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/classes">
+          <fileset dir="${script}/resources" includes="**"/>
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${script}/web"/>
+      <then>
+        <copy todir="webapps/teamengine">
+          <fileset dir="${script}/web" includes="**"/>
+        </copy>
+      </then>
+    </if>
+  </target>
+
+  <target name="webapp.scripts">
+    <mkdir dir="webapps"/>
+    <mkdir dir="webapps/teamengine"/>
+    <mkdir dir="webapps/teamengine/WEB-INF"/>
+    <mkdir dir="webapps/teamengine/WEB-INF/classes"/>
+    <foreach param="script" target="webapp.script">
+      <path>
+        <dirset dir="scripts" includes="*"/>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="webapps" depends="webapp.manager,webapp.components,webapp.scripts"/>
+
+  <target name="delete.webapps">
+    <delete dir="webapps"/>
+  </target>
+
+
+  <target name="war.manager" depends="webapp.manager">
+    <jar destfile="setup/teamengine.war">
+      <fileset dir="webapps">
+        <include name="teamengine/**"/>
+        <exclude name="teamengine/WEB-INF/classes/com/occamlab/te/web/config.xml"/>
+      </fileset>
+    </jar>
+  </target>
+
+
+  <target name="zip.engine.bin" depends="jar.engine">
+    <delete dir="build"/>
+    <mkdir dir="build"/>
+    <mkdir dir="build/teamengine${version.stamp}"/>
+    <copy todir="build/teamengine${version.stamp}">
+      <fileset dir=".">
+        <include name="apps/engine/lib/**"/>
+        <include name="apps/engine/resources/**"/>
+        <include name="bin/setenv.*.example"/>
+        <exclude name="bin/test.*"/>
+        <exclude name="bin/viewlog.*"/>
+        <exclude name="bin/listsuites.*"/>
+        <include name="docs/teamengine.html"/>
+        <include name="LICENSE.txt"/>
+      </fileset>
+    </copy>
+    <mkdir dir="zips"/>
+    <zip destfile="zips/teamengine${version.stamp}-bin.zip" basedir="build"/>
+  </target>
+
+  <target name="zip.engine.src">
+    <delete dir="build"/>
+    <mkdir dir="build"/>
+    <mkdir dir="build/teamengine${version.stamp}"/>
+    <copy todir="build/teamengine${version.stamp}">
+      <fileset dir=".">
+        <include name="apps/engine/src/**"/>
+        <include name="apps/engine/test/**"/>
+        <include name="apps/engine/build.properties.example"/>
+        <include name="apps/engine/build.xml"/>
+        <include name="setup/ant-contrib/**"/>
+        <include name="build.properties.example"/>
+        <include name="build.xml"/>
+      </fileset>
+    </copy>
+    <mkdir dir="zips"/>
+    <zip destfile="zips/teamengine${version.stamp}-src.zip" basedir="build"/>
+  </target>
+
+  <target name="zip.manager.bin" depends="delete.webapps,war.manager,jar.realm">
+    <delete dir="build"/>
+    <mkdir dir="build"/>
+    <mkdir dir="build/teamengine${version.stamp}"/>
+    <copy todir="build/teamengine${version.stamp}">
+      <fileset dir=".">
+        <include name="setup/teamengine.war"/>
+        <include name="setup/UserFilesRealm/UserFilesRealm.jar"/>
+      </fileset>
+    </copy>
+    <mkdir dir="zips"/>
+    <zip destfile="zips/teamengine-manager${version.stamp}-bin.zip" basedir="build"/>
+  </target>
+
+  <target name="zip.manager.src">
+    <delete dir="build"/>
+    <mkdir dir="build"/>
+    <mkdir dir="build/teamengine${version.stamp}"/>
+    <copy todir="build/teamengine${version.stamp}">
+      <fileset dir=".">
+        <include name="apps/manager/lib/**"/>
+        <exclude name="apps/manager/lib/te-manager.jar"/>
+        <include name="apps/manager/resources/**"/>
+        <include name="apps/manager/src/**"/>
+        <include name="apps/manager/test/**"/>
+        <include name="apps/manager/web/**"/>
+        <include name="apps/manager/build.properties.example"/>
+        <include name="apps/manager/build.xml"/>
+        <include name="setup/UserFilesRealm/src/**"/>
+        <include name="setup/UserFilesRealm/build.xml"/>
+      </fileset>
+    </copy>
+    <mkdir dir="zips"/>
+    <zip destfile="zips/teamengine-manager${version.stamp}-src.zip" basedir="build"/>
+  </target>
+
+  <target name="zip.component">
+    <ant dir="${component}" target="zip"/>
+  </target>
+
+  <target name="zip.components" depends="jar.components">
+    <foreach param="component" target="zip.component">
+      <path>
+        <dirset dir="components" includes="*"/>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="zip.script">
+    <ant dir="${script}" target="zip"/>
+  </target>
+
+  <target name="zip.scripts">
+    <foreach param="script" target="zip.script">
+      <path>
+        <dirset dir="scripts" includes="*"/>
+      </path>
+    </foreach>
+  </target>
+
+  <target name="zips" depends="delete.zips,zip.engine.bin,zip.engine.src,zip.manager.bin,zip.manager.src,zip.components,zip.scripts"/>
+
+  <target name="delete.zips">
+    <delete dir="zips"/>
+  </target>
+
+
+  <target name="all" depends="zips,webapps"/>
+</project>
+
