@@ -15,11 +15,21 @@
   </target>
 
   <target name="jar.manager">
-    <ant dir="apps/manager"/>
+    <if>
+      <available file="apps/manager"/>
+      <then>
+        <ant dir="apps/manager"/>
+      </then>
+    </if>
   </target>
 
   <target name="jar.realm">
-    <ant dir="setup/UserFilesRealm"/>
+    <if>
+      <available file="setup/UserFilesRealm"/>
+      <then>
+        <ant dir="setup/UserFilesRealm"/>
+      </then>
+    </if>
   </target>
 
   <target name="jar.component">
@@ -43,17 +53,22 @@
     <mkdir dir="webapps/teamengine/WEB-INF"/>
     <mkdir dir="webapps/teamengine/WEB-INF/classes"/>
     <mkdir dir="webapps/teamengine/WEB-INF/lib"/>
-    <copy todir="webapps/teamengine">
-      <fileset dir="apps/manager/web"/>
-    </copy>
-    <copy todir="webapps/teamengine/WEB-INF/classes">
-      <fileset dir="apps/engine/resources"/>
-      <fileset dir="apps/manager/resources"/>
-    </copy>
-    <copy todir="webapps/teamengine/WEB-INF/lib">
-      <fileset dir="apps/engine/lib"/>
-      <fileset dir="apps/manager/lib"/>
-    </copy>
+    <if>
+      <available file="apps/manager"/>
+      <then>
+        <copy todir="webapps/teamengine">
+          <fileset dir="apps/manager/web"/>
+        </copy>
+        <copy todir="webapps/teamengine/WEB-INF/classes">
+          <fileset dir="apps/engine/resources"/>
+          <fileset dir="apps/manager/resources"/>
+        </copy>
+        <copy todir="webapps/teamengine/WEB-INF/lib">
+          <fileset dir="apps/engine/lib"/>
+          <fileset dir="apps/manager/lib"/>
+        </copy>
+      </then>
+    </if>
   </target>
 
   <target name="webapp.component">
