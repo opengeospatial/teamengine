@@ -172,6 +172,7 @@
         <exclude name="bin/viewlog.*"/>
         <exclude name="bin/listsuites.*"/>
         <include name="docs/teamengine.html"/>
+        <include name="docs/ctl.doc"/>
         <include name="LICENSE.txt"/>
       </fileset>
     </copy>
