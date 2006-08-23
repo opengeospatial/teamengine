@@ -42,7 +42,7 @@ public class XMLValidatingParser {
   SchemaFactory SF;
   ArrayList Schemas = new ArrayList();
 	
-	void load_schemas(Element schema_links, ArrayList schemas) throws Exception {
+	void load_schemas(Node schema_links, ArrayList schemas) throws Exception {
     Document d = schema_links.getOwnerDocument();
 		NodeList nodes = d.getElementsByTagNameNS("http://www.occamlab.com/te/parsers", "schema");
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -75,7 +75,7 @@ public class XMLValidatingParser {
 	  }
 	}
 
-	public XMLValidatingParser(Element schema_links) throws Exception {
+	public XMLValidatingParser(Document schema_links) throws Exception {
 		this();
 	  load_schemas(schema_links, Schemas);
 	}
