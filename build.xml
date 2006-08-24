@@ -167,10 +167,11 @@
       <fileset dir=".">
         <include name="apps/engine/lib/**"/>
         <include name="apps/engine/resources/**"/>
+        <exclude name="apps/engine/resources/com/occamlab/te/scripts/*.txsl"/>
         <include name="bin/setenv.*.example"/>
-        <exclude name="bin/test.*"/>
-        <exclude name="bin/viewlog.*"/>
-        <exclude name="bin/listsuites.*"/>
+        <include name="bin/test.*"/>
+        <include name="bin/viewlog.*"/>
+        <include name="bin/listsuites.*"/>
         <include name="docs/teamengine.html"/>
         <include name="docs/ctl.doc"/>
         <include name="LICENSE.txt"/>
