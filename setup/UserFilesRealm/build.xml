@@ -1,0 +1,26 @@
+<project name="team" default="jar">
+  <description>Tomcat Realm for checking credentials from xml user files.</description>
+
+  <property file="../../build.properties"/>
+  <property file="build.properties"/>
+
+  <path id="classpath">
+    <fileset dir="${tomcat.dir}/server/lib" includes="catalina.jar"/>
+  </path>
+
+  <target name="compile">
+    <mkdir dir="build"/>
+    <javac srcdir="src/java" destdir="build" classpathref="classpath" debug="true"/>
+    <copy file="src/conf/com/occamlab/te/realm/mbean-descriptor.xml" todir="build/com/occamlab/te/realm"/>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar destfile="UserFilesRealm.jar">
+      <fileset dir="build" excludes=".*"/>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+</project>

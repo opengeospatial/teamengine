@@ -50,12 +50,14 @@
   <target name="webapp.manager" depends="jar.manager">
     <mkdir dir="webapps"/>
     <mkdir dir="webapps/teamengine"/>
+    <mkdir dir="webapps/teamengine/META-INF"/>
     <mkdir dir="webapps/teamengine/WEB-INF"/>
     <mkdir dir="webapps/teamengine/WEB-INF/classes"/>
     <mkdir dir="webapps/teamengine/WEB-INF/lib"/>
     <if>
       <available file="apps/manager"/>
       <then>
+        <copy todir="webapps/teamengine/META-INF" file="apps/manager/src/conf/context.xml"/>
         <copy todir="webapps/teamengine">
           <fileset dir="apps/manager/web"/>
         </copy>
@@ -150,12 +152,12 @@
 
 
   <target name="war.manager" depends="webapp.manager">
-    <jar destfile="setup/teamengine.war">
-      <fileset dir="webapps">
-        <include name="teamengine/**"/>
-        <exclude name="teamengine/WEB-INF/classes/com/occamlab/te/web/config.xml"/>
+    <zip destfile="setup/teamengine.war">
+      <fileset dir="webapps/teamengine">
+        <include name="**"/>
+        <exclude name="WEB-INF/classes/com/occamlab/te/web/config.xml"/>
       </fileset>
-    </jar>
+    </zip>
   </target>
 
 
@@ -206,6 +208,7 @@
     <mkdir dir="build/teamengine${version.stamp}"/>
     <copy todir="build/teamengine${version.stamp}">
       <fileset dir=".">
+        <include name="docs/manager.txt"/>
         <include name="setup/teamengine.war"/>
         <include name="setup/UserFilesRealm/UserFilesRealm.jar"/>
       </fileset>

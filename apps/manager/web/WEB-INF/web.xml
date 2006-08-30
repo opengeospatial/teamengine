@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app>
+	<servlet>
+		<servlet-name>test</servlet-name>
+		<servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
+<!--		<load-on-startup>1</load-on-startup> -->
+	</servlet>
+	<servlet>
+		<servlet-name>registrationHandler</servlet-name>
+		<servlet-class>com.occamlab.te.web.RegistrationHandlerServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>logout</servlet-name>
+		<servlet-class>com.occamlab.te.web.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>deleteSession</servlet-name>
+		<servlet-class>com.occamlab.te.web.DeleteSessionServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>test</servlet-name>
+		<url-pattern>/test</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>registrationHandler</servlet-name>
+		<url-pattern>/registrationHandler</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>logout</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>deleteSession</servlet-name>
+		<url-pattern>/deleteSession</url-pattern>
+	</servlet-mapping>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>user-specific</web-resource-name>
+			<url-pattern>/deleteSession</url-pattern>
+			<url-pattern>/logout</url-pattern>
+			<url-pattern>/test</url-pattern>
+			<url-pattern>/createSession.jsp</url-pattern>
+			<url-pattern>/sessionDeleted.jsp</url-pattern>
+			<url-pattern>/test.jsp</url-pattern>
+			<url-pattern>/viewSessionLog.jsp</url-pattern>
+			<url-pattern>/viewSessions.jsp</url-pattern>
+			<url-pattern>/viewTest.jsp</url-pattern>
+			<url-pattern>/viewTestLog.jsp</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>user</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login.jsp</form-login-page>
+			<form-error-page>/login.jsp?error=true</form-error-page>
+		</form-login-config>
+	</login-config>
+	<security-role>
+		<role-name>user</role-name>
+	</security-role>
+</web-app>

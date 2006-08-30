@@ -1,0 +1,30 @@
+Installing the TEAM Engine Manager web application.
+
+1) Install JDK 1.5.0 or greater
+
+2) Install Tomcat 5.x or greater
+
+3) Copy the UserFilesRealm.jar file from the setup directory in the teamengine-manager 
+binary archive into the Tomcat server/lib directory
+
+4) Copy teamengine.war from the setup directory in the teamengine-manager binary 
+archive into the Tomcat webapps directory.  Tomcat should expand the archive and create 
+a teamengine directory.
+
+5) Create a directory to store user files.  For example, you might create a directory called 
+users in the webapps/teamengine/WEB-INF directory.
+
+6) Update the webapps/teamengine/META-INF/context.xml file.  Change the root 
+attribute on the Realm element to the fully qualified path name of the directory created in 
+step 5.
+
+7) Create a configuration file called config.xml in the webapps/teamengine/WEB-INF 
+/classes/com/occamlab/te/web directory, using config.xml.example as a template.  Set the 
+home element to the home URL for the application.  Set the usersdir element to the 
+directory you created in step 5.  Create a sources element for each set of source scripts 
+you have.  Give it a unique id attribute and enclose source element(s) for each script file 
+and/or directory in the collection.
+
+8) Restart Tomcat.  The TEAM Engine Manager web application should now be running 
+at http://localhost:8080/teamengine
+

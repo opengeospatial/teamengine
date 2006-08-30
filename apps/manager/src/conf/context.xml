@@ -1,0 +1,6 @@
+<Context>
+  <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener"
+            descriptors="/com/occamlab/te/realm/mbean-descriptor.xml" />
+  <Realm className="com.occamlab.te.realm.UserFilesRealm"
+         root="C:\Program Files\Apache Software Foundation\Tomcat 5.5\webapps\teamengine\WEB-INF\users"/>
+</Context>
