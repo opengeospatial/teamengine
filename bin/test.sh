@@ -11,8 +11,8 @@ do
 done
 for x in $base/../components/*
 do
-  cp=$cp:$base/components/$x/resources
-  for y in $base/components/$x/lib/*.jar
+  cp=$cp:$x/resources
+  for y in $x/lib/*.jar
   do
     cp=$cp:$y
   done
