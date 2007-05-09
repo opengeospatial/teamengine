@@ -14,9 +14,10 @@ a teamengine directory.
 5) Create a directory to store user files.  For example, you might create a directory called 
 users in the webapps/teamengine/WEB-INF directory.
 
-6) Update the webapps/teamengine/META-INF/context.xml file.  Change the root 
-attribute on the Realm element to the fully qualified path name of the directory created in 
-step 5.
+6) Update the teamengine context file.  When Tomcat expanded the war file, it should have
+created a teamengine.xml context file in the conf/catalina/localhost directory.
+Edit this file and change the root attribute on the Realm element to the fully qualified path
+name of the directory created in step 5.
 
 7) Create a configuration file called config.xml in the webapps/teamengine/WEB-INF 
 /classes/com/occamlab/te/web directory, using config.xml.example as a template.  Set the 

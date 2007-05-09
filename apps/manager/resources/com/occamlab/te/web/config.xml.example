@@ -1,15 +1,12 @@
 <config>
-	<home></home>
-	<usersdir>C:\java_projects\te\WEB-INF\users</usersdir>
-	<sources id="wms">
-		<source>C:\java_projects\te\wms</source>
+	<home>http://localhost/teamengine</home>
+	<usersdir>webapps/teamengine/WEB-INF/users</usersdir>
+	<sources id="wms-1.3.0">
+		<source>webapps/teamengine/WEB-INF/scripts/wms-1.3.0</source>
 	</sources>
 <!--
-	<sources id="wfs">
-		<source>C:\java_projects\te\wfs</source>
-	</sources>
-	<sources id="wcs">
-		<source>C:\java_projects\te\wcs</source>
+	<sources id="wfs-1.1.0">
+		<source>webapps/teamengine/WEB-INF/scripts/wfs-1.1.0</source>
 	</sources>
 -->
 </config>

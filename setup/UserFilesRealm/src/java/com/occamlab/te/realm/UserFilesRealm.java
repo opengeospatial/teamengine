@@ -29,11 +29,18 @@ public class UserFilesRealm extends RealmBase {
   private GenericPrincipal readPrincipal(String username) {
     String password = null;
     List roles = new ArrayList();
+    File usersdir = new File(Root);
+    if (!usersdir.isDirectory()) {
+      usersdir = new File(System.getProperty("catalina.base"), Root);
+    }
+    File userfile = new File(new File(usersdir, username), "user.xml");
+    if (!userfile.canRead()) {
+      return null;
+    }
     try {
       if (DB == null) {
         DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       }
-      File userfile = new File(new File(Root, username), "user.xml");
       Document doc = DB.parse(userfile);
       Element userElement = (Element)(doc.getElementsByTagName("user").item(0));
       Element passwordElement = (Element)(userElement.getElementsByTagName("password").item(0));
@@ -44,10 +51,11 @@ public class UserFilesRealm extends RealmBase {
         String name = ((Element)roleElements.item(i)).getTextContent();
         roles.add(name);
       }
+      return new GenericPrincipal(this, username, password, roles);
     } catch (Exception e) {
       e.printStackTrace();
+      return null;
     }
-    return new GenericPrincipal(this, username, password, roles);
   }
 
   protected String getPassword(String username) {
@@ -61,13 +69,28 @@ public class UserFilesRealm extends RealmBase {
 
   protected Principal getPrincipal(String username) {
     Principal principal;
+
+    // Reread principal from file system if there is an asterisk (*) before the username
+    // This allows you to reset passwords without restarting Tomcat
+    // Just reset the password in the user.xml file, and attempt to login using *username
+    if (username.startsWith("*")) {
+      principal = readPrincipal(username.substring(1));
+      if (principal != null) {
+        synchronized(Principals) {
+          Principals.put(username.substring(1), principal);
+        }
+      }
+    }
+
     synchronized(Principals) {
       principal = (Principal)Principals.get(username);
     }
     if (principal == null) {
       principal = readPrincipal(username);
-      synchronized(Principals) {
-        Principals.put(username, principal);
+      if (principal != null) {
+        synchronized(Principals) {
+          Principals.put(username, principal);
+        }
       }
     }
     return principal;

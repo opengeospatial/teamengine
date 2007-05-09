@@ -1,0 +1,29 @@
+Running the team engine (command line).
+==============================
+
+1) Install Java JRE 1.5.0 or greater (or use the JRE included with the JDK).
+
+2) Check out the scripts from the CITE repository at <https://svn.opengeospatial.org:8443/ogc-projects/cite/trunk/ets>
+    Let CITE_ETS denote the root diretory of the local copy.
+
+3) Check out the ows4 branch of the teamengine from sourceforge at <https://svn.sourceforge.net/svnroot/teamengine/branches/ows4>
+
+4) Include the java JRE location and the ets base directory in a build.properties file 
+   (either in the ows4 root directory or in your local home directory).
+   See the build.properties.example for more information.
+
+e.g.
+java.dir C:/Program Files/java/jre1.5.0_07  
+ets.base.dir C:/eclipse/workspace/OGC-CITE/wfs/1.1.0/ets
+
+5) Run the "test" target in /apps/engine/build.xml, specifying the main.ctl script 
+    to run in the ets.args system property (either on the classpath or full path).
+
+e.g.
+>ant test -Dets.args="-mode=test -source=ctl/main.ctl -logdir=logs"
+
+6) Optionally, view the logs after a test is run, using the "viewlog" target in /apps/engine/build.xml, specifying
+    the log directory and the session number.
+
+e.g.
+>ant viewlog -Dets.args="-logdir=logs -session=s0001"

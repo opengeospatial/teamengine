@@ -54,7 +54,7 @@ public void jspInit() {
 		<p>
 			The Test, Evaluation, And Measurement (TEAM) Engine is a test script interpreter.
 			It executes test scripts written in
-			<a href="ctl.html">Compliance Test Language (CTL)</a>
+			<a href="http://portal.opengeospatial.org/files/?artifact_id=16860">Compliance Test Language (CTL)</a>
 			to verify that an implementation of a specification complies with the specification.
 		</p>
 		<p>
@@ -80,6 +80,10 @@ while (it1.hasNext()) {
 		if (desc != null) {
 			out.println(desc);
 		}
+        out.println("<br />");
+        if (null != suite.getDataLink()) {
+			out.print("<a href=\"" + suite.getDataLink() + "\">" + "Test data</a>");
+		}
 	}
 }
 
@@ -87,7 +91,11 @@ Url = new URL(request.getScheme(), request.getServerName(), request.getServerPor
 %>
 			</ul>
 		</p>
-		<a href="<%=Url.toString()%>/viewSessions.jsp"/>Start Testing</a>
+        <p>
+        <img alt="WARNING!" src="images/warning.gif" align="bottom" hspace="4" />
+        It may be necessary to load test data before running a test suite!
+        </p>
+		<a href="viewSessions.jsp"/>Start Testing</a>
 		<%@ include file="footer.jsp" %>
 	</body>
 </html>

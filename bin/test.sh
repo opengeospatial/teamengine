@@ -17,6 +17,10 @@ do
     cp=$cp:$y
   done
 done
+for x in $base/../scripts/*
+do
+  cp=$cp:$x/resources
+done
 java=$JAVA_HOME/bin/java
 if [ ! -x $java ]
 then

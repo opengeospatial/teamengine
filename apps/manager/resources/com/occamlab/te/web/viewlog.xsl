@@ -26,7 +26,7 @@
  xmlns:encoder="java:java.net.URLEncoder"
  exclude-result-prefixes="encoder te"
  version="2.0">
-	<xsl:output method="xml" indent="yes"/>
+	<xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 	<xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
 
 	<xsl:param name="logdir"/>
@@ -74,6 +74,7 @@
 	</xsl:template>
 
 	<xsl:template name="literal">
+<!--		<xsl:value-of select="translate(saxon:serialize(., 'xml'), '&amp;', '&amp;amp;')" xmlns:saxon="http://saxon.sf.net/"/> -->
 		<xsl:value-of select="saxon:serialize(., 'xml')" xmlns:saxon="http://saxon.sf.net/"/>
 	</xsl:template>
 
@@ -91,7 +92,7 @@
 
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="test">
-			<img src="plus.png" name="image{$testnum}" onclick="javascript:toggle({$testnum})"/>
+			<img src="plus.png" name="image{$testnum}" onclick="javascript:toggle('{$testnum}')"/>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:if>
 		<img src="{$result}.png"/>
@@ -147,8 +148,16 @@
 			<xsl:value-of select="concat('Parameter ', @name, ':&#xa;')"/>
 			<xsl:value-of select="concat('   Label: ', @label, '&#xa;')"/>
 			<xsl:text>   Value: </xsl:text>
+<!--
 			<xsl:for-each select="value">
 				<xsl:copy-of select="node()|@*"/>
+			</xsl:for-each>
+-->
+			<xsl:for-each select="value">
+				<xsl:value-of select="text()|@*"/>
+				<xsl:for-each select="*">
+					<xsl:call-template name="literal"/>
+				</xsl:for-each>
 			</xsl:for-each>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:for-each>
@@ -160,9 +169,17 @@
 			<xsl:text>Context:&#xa;</xsl:text>
 			<xsl:value-of select="concat('   Label: ', @label, '&#xa;')"/>
 			<xsl:text>   Value: </xsl:text>
+<!--
 			<xsl:for-each select="value">
 				<xsl:value-of select="@*"/>
 				<xsl:copy-of select="node()"/>
+			</xsl:for-each>
+-->
+			<xsl:for-each select="value">
+				<xsl:value-of select="text()|@*"/>
+				<xsl:for-each select="*">
+					<xsl:call-template name="literal"/>
+				</xsl:for-each>
 			</xsl:for-each>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:for-each>
@@ -229,12 +246,19 @@
 		</xsl:for-each>
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="parser[not(.='')]">
-			<xsl:value-of select="concat('Messages from parser ', parser/@prefix, ':', parser/@local-name, ':&#xa;')"/>
+			<xsl:value-of select="concat('   Messages from parser ', parser/@prefix, ':', parser/@local-name, ':&#xa;')"/>
 			<xsl:text>        </xsl:text>
 			<xsl:value-of select="translate(parser, '&#xa;', '&#xa;      ')"/>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:if>
 		<xsl:text>&#xa;</xsl:text>
+	</xsl:template>
+
+	<xsl:template match="parse">
+		<xsl:text>Parse </xsl:text>
+		<xsl:value-of select="@id"/>
+		<xsl:text>:&#xa;</xsl:text>
+		<xsl:apply-templates select="response"/>
 	</xsl:template>
 
 	<xsl:template match="testcall">

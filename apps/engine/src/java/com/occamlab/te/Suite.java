@@ -13,6 +13,7 @@ public class Suite {
   private String startingTestNamespaceUri;
   private String startingTestLocalName;
   private String link;
+  private String dataLink;
   
   public Suite(Element suiteElement) {
     String name = suiteElement.getAttribute("name");
@@ -32,10 +33,14 @@ public class Suite {
     }
 
     NodeList linkElements = suiteElement.getElementsByTagNameNS(Test.CTL_NS, "link");
-    if (linkElements.getLength() > 0) {
-      link = ((Element)linkElements.item(0)).getTextContent();
-    } else {
-      link = null;
+    for (int i = 0; i < linkElements.getLength(); i++) {
+        Element linkElem = (Element) linkElements.item(i);
+        String linkText = linkElem.getTextContent();
+        if (linkText.startsWith("data")) {
+            this.dataLink = linkText;
+        } else {
+            this.link = linkText;
+        }
     }
 
     NodeList startingTestElements = suiteElement.getElementsByTagNameNS(Test.CTL_NS, "starting-test");
@@ -71,7 +76,11 @@ public class Suite {
   }
   
   public String getLink() {
-    return link;
+    return this.link;
+  }
+  
+  public String getDataLink() {
+    return this.dataLink;
   }
   
   public String getStartingTestPrefix() {

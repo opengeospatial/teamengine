@@ -21,6 +21,8 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import com.occamlab.te.Test;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -47,23 +49,26 @@ public class Config {
       Element home = (Element)(config.getElementsByTagName("home").item(0));
       Home = home.getTextContent();
       Element usersdir = (Element)(config.getElementsByTagName("usersdir").item(0));
-      UsersDir = new File(usersdir.getTextContent());
+      UsersDir = getFile(usersdir.getTextContent());
       if (!UsersDir.isDirectory()) {
-        System.out.println("Error: Directory " + UsersDir.getAbsolutePath() + " does not exist.");
+        System.out.println("Error: Directory " + usersdir.getTextContent() + " does not exist.");
       }
+
+      File script_dir = Test.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl").getParentFile();
 
       SourcesHash = new LinkedHashMap();
       NodeList sourcesList = config.getElementsByTagName("sources");
       for (int i = 0; i < sourcesList.getLength(); i++) {
         ArrayList list = new ArrayList();
+        list.add(script_dir);
         Element sources = (Element)sourcesList.item(i);
         String id = sources.getAttribute("id"); 
         NodeList sourceList = sources.getElementsByTagName("source");  
         for (int j = 0; j < sourceList.getLength(); j++) {
           Element source = (Element)sourceList.item(j);
-          File f = new File(source.getTextContent());
+          File f = getFile(source.getTextContent());
           if (!f.exists()) {
-            System.out.println("Error: Source " + f.getAbsolutePath() + " does not exist.");
+            System.out.println("Error: Source " + source.getTextContent() + " does not exist.");
           }
           list.add(f);
         }
@@ -84,5 +89,14 @@ public class Config {
   
   public LinkedHashMap getSources() {
     return SourcesHash;
+  }
+
+  private File getFile(String path) {
+    File f = new File(path);
+    if (f.exists()) {
+      return f;
+    } else {
+      return new File(System.getProperty("catalina.base"), path);
+    }
   }
 }

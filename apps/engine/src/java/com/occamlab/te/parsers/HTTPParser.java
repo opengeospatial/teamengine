@@ -212,7 +212,12 @@ public class HTTPParser {
     } else {
       Node parser = select_parser(0, uc.getContentType(), instruction);
       Document doc2 = core.parse(uc, null, parser);
+      Element parser_e = (Element)(doc2.getDocumentElement().getElementsByTagName("parser").item(0));
+      if (parser_e != null) {
+        logger.print(parser_e.getTextContent());
+      }
       Element content = (Element)(doc2.getDocumentElement().getElementsByTagName("content").item(0));
+//      String messages = ((Element)(doc2.getDocumentElement().getElementsByTagName("parser").item(0))).getTextContent();
 //t.transform(new DOMSource(content), new StreamResult(System.out));
        t.transform(new DOMSource(content), new DOMResult(root));
 //      root.appendChild(content);

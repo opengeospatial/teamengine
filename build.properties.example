@@ -1,3 +1,4 @@
 version.stamp -0.3
 tomcat.dir /Program Files/Apache Software Foundation/Tomcat 5.5
-
+java.dir C:/Program Files/java/jre1.5.0_07
+ets.base.dir C:/eclipse/workspace/OGC-CITE/wfs/1.1.0/ets

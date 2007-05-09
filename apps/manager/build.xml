@@ -1,6 +1,7 @@
-<project name="manager" default="jar">
+<project name="manager" basedir="." default="jar">
   <description>TEAM Engine web interface servlets</description>
 
+  <property file="${user.home}/${ant.project.name}.properties"/>
   <property file="../../build.properties"/>
   <property file="build.properties"/>
 
