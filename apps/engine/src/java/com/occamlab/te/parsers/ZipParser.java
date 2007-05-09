@@ -9,6 +9,7 @@ import java.net.URLConnection;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -94,7 +95,9 @@ public class ZipParser {
 		InputStream is = uc.getInputStream();
 		ZipInputStream zis = new ZipInputStream(is);
 		
-		String directory = "zipparser.temp";
+
+		String randomStr = randomString(16,new Random());
+		String directory = "zipparser.temp"+"/"+randomStr;
 		new File(System.getProperty("java.io.tmpdir") + directory).mkdir();
 		
 		// Unzip the file to a temporary location (java temp)
@@ -138,4 +141,31 @@ public class ZipParser {
 		// Return the <ctl:manifest> document
 		return doc;
 	}
+	
+	// Returns a random string of length len
+	public static String randomString(int len, Random random) {
+		if (len < 1) {
+			return "";
+		} 
+		
+		int start = ' ';
+		int end = 'z'+1;
+
+		StringBuffer buffer = new StringBuffer();
+		int gap = end - start;
+	
+		while (len-- != 0) {
+			char ch;
+			ch = (char) (random.nextInt(gap) + start);
+
+			if (Character.isLetterOrDigit(ch)) {
+				buffer.append(ch);
+			} else {
+				len++;
+			}
+		}
+		return buffer.toString();
+	}
+
+	
 }
