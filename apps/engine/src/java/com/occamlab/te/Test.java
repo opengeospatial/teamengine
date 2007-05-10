@@ -284,6 +284,10 @@ public class Test {
 		// Setup session (log) directory
 		File session_dir = null;
 
+		// Set the TECore session and logpath (to access later)
+		core.setSessionId(session);
+		core.setSessionDir(logdir.getAbsolutePath()+"/"+session);
+		
 		if (session != null) session_dir = new File(logdir, session);
 
 		if (logdir == null) {

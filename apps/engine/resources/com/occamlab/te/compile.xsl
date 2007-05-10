@@ -26,6 +26,7 @@
  xmlns:te="java:com.occamlab.te.TECore"
  xmlns:saxon="http://saxon.sf.net/"
  version="2.0">
+ 
 	<xsl:strip-space elements="*"/>
 	<xsl:output indent="yes"/>
 	<xsl:namespace-alias stylesheet-prefix="txsl" result-prefix="xsl"/>
@@ -34,6 +35,8 @@
 	<xsl:param name="txsl_filename" select="'memory:txsl'"/>
 
 	<xsl:variable name="apos">'</xsl:variable>
+
+	<xsl:include href="ext/session_info.xsl"/>
 
 	<xsl:template name="namespace-attribute">
 		<xsl:param name="prefix"/>

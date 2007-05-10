@@ -94,11 +94,15 @@ public class ZipParser {
 		// Open the connection to the zip file
 		InputStream is = uc.getInputStream();
 		ZipInputStream zis = new ZipInputStream(is);
-		
 
-		String randomStr = randomString(16,new Random());
-		String directory = "zipparser.temp"+"/"+randomStr;
-		new File(System.getProperty("java.io.tmpdir") + directory).mkdir();
+		// Create the full directory path to store the zip entities
+		Document d = instruction.getOwnerDocument();
+		NodeList nodes = d.getElementsByTagNameNS(CTL_NS, "SessionDir");
+		Element e = (Element)nodes.item(0);
+		String path = e.getTextContent();
+		String randomStr = randomString(16,new Random());		
+		path = path+"/work/"+randomStr;
+		new File(path).mkdirs();
 		
 		// Unzip the file to a temporary location (java temp)
 		ZipEntry entry = null;
@@ -112,8 +116,8 @@ public class ZipParser {
 		        String subdir = "";
 		        if (filename.lastIndexOf("/") != -1) subdir = filename.substring(0,filename.lastIndexOf("/"));
 		        else if (filename.lastIndexOf("\\") != -1) subdir = filename.substring(0,filename.lastIndexOf("\\"));
-		        new File(System.getProperty("java.io.tmpdir") + directory + "/" + subdir).mkdir();
-		        File outFile = new File(System.getProperty("java.io.tmpdir") + directory, filename);
+		        new File(path + "/" + subdir).mkdir();
+		        File outFile = new File(path, filename);
 		        if (outFile.isDirectory()) continue;
 		        OutputStream out = new FileOutputStream(outFile);
 

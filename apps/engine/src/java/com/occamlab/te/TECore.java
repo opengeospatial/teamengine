@@ -46,6 +46,8 @@ public class TECore {
 	Transformer FormTransformer;
 	PrintStream Out;
 	String FormHtml;
+	static String SessionId;
+	static String SessionDir;
 	Document FormResults;
 	boolean Web;
 	public HashMap ParserInstances = new HashMap();
@@ -72,9 +74,25 @@ public class TECore {
 		FormTransformer = TF.newTransformer(xsl_source);
 	}
 
+	public static String getSessionId() {
+		return SessionId;
+	}
+	
+	public static String getSessionDir() {
+		return SessionDir;
+	}
+	
+	public void setSessionId(String sessionId) {
+		SessionId = sessionId;		
+	}
+	
+	public void setSessionDir(String sessionDir) {
+		SessionDir = sessionDir;	
+	}
+	
 	public String getFormHtml() {
 		return FormHtml;
-	}
+	}	
 
 	public void setFormHtml(String html) {
 		FormHtml = html;
