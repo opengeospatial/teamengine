@@ -79,8 +79,12 @@ public void jspInit() {
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<br/>
 		<br/>
-		<table border="2" bgcolor="#0099FF" width="300">
-		<tr bgcolor="#99FFFF">
+		<table border="2" bgcolor="#55FFFF" width="300">
+		<tr>
+		<th colspan="2">Test Results Summary</th>
+		</tr>
+		<tr>		
+		<tr bgcolor="#00AADD">
 		<th>Status</th><th>Count</th>
 		</tr>
 		<tr>
