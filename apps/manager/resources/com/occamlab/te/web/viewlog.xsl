@@ -86,16 +86,17 @@
 				<xsl:when test="@failed='yes'">fail</xsl:when>
 				<xsl:when test="@complete='no'">incomplete</xsl:when>
 				<xsl:when test="descendant::test[@failed='yes']">fail</xsl:when>
+				<xsl:when test="@warning='yes'">warn</xsl:when>			
 				<xsl:otherwise>pass</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="test">
-			<img src="plus.png" name="image{$testnum}" onclick="javascript:toggle('{$testnum}')"/>
+			<img src="images/plus.png" name="image{$testnum}" onclick="javascript:toggle('{$testnum}')"/>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:if>
-		<img src="{$result}.png"/>
+		<img src="images/{$result}.png"/>
 		<xsl:text>&#xa;</xsl:text>
 		<a href="viewTest.jsp?file={encoder:encode(@file, 'UTF-8')}&amp;namespace={encoder:encode(@namespace-uri, 'UTF-8')}&amp;name={@local-name}">
 			<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
@@ -110,6 +111,7 @@
 			<xsl:when test="$result = 'fail' and @failed='yes'">Failed</xsl:when>
 			<xsl:when test="$result = 'incomplete'">Did not complete</xsl:when>
 			<xsl:when test="$result = 'fail'">Failed (Inherited Failure)</xsl:when>
+			<xsl:when test="$result = 'warn' and @warning='yes'">Warning</xsl:when>	
 			<xsl:otherwise>Passed</xsl:otherwise>
 		</xsl:choose>
 		<br/>
@@ -127,8 +129,9 @@
 	<xsl:template match="log">
 		<xsl:variable name="result">
 			<xsl:choose>
-				<xsl:when test="endtest/@result &gt; 1">Failed</xsl:when>
+				<xsl:when test="endtest/@result = 3">Failed</xsl:when>
 				<xsl:when test="$index//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
+				<xsl:when test="endtest/@result = 1">Warning</xsl:when>			
 				<xsl:when test="endtest">Passed</xsl:when>
 				<xsl:otherwise>Test execution did not complete</xsl:otherwise>
 			</xsl:choose>
@@ -269,6 +272,7 @@
 				<xsl:when test="$index//test[@path=$path and @failed='yes']">Failed</xsl:when>
 				<xsl:when test="$index//test[@path=$path and @complete='no']">Did not complete</xsl:when>
 				<xsl:when test="$index//test[@path=$path]//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
+				<xsl:when test="$index//test[@path=$path and @warning='yes']">Warning</xsl:when>				
 				<xsl:otherwise>Passed</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>

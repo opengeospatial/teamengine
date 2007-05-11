@@ -183,10 +183,14 @@
 						<txsl:choose>
 							<txsl:when test="boolean($te:test-results/te:fail[@code=2])">
 								<txsl:value-of select="{concat('te:message($te:core, $te:call-depth, ', $apos, 'Test ', @name, ' Failed', $apos, ')')}"/>
-								<txsl:text>2</txsl:text>
+								<txsl:text>3</txsl:text>
 							</txsl:when>
 							<txsl:when test="boolean($te:test-results/te:fail[@code=1])">
 								<txsl:value-of select="{concat('te:message($te:core, $te:call-depth, ', $apos, 'Test ', @name, ' Failed (Inherited Failure)', $apos, ')')}"/>
+								<txsl:text>2</txsl:text>
+							</txsl:when>						
+							<txsl:when test="boolean($te:test-results/te:warning)">
+								<txsl:value-of select="{concat('te:message($te:core, $te:call-depth, ', $apos, 'Test ', @name, ' Warning', $apos, ')')}"/>
 								<txsl:text>1</txsl:text>
 							</txsl:when>
 							<txsl:otherwise>
@@ -199,7 +203,6 @@
 			</txsl:variable>
 			<txsl:value-of select="te:log_xml($te:core, $te:end-test)"/>
 			<txsl:value-of select="te:close_log($te:core)"/>
-
 
 			<txsl:if test="boolean($te:test-results/te:fail)">
 				<te:fail code="1"/>
@@ -375,9 +378,13 @@
 		<txsl:choose>
 			<txsl:when test="boolean($te:new-log/log/endtest)">
 				<txsl:choose>
-					<txsl:when test="$te:new-log/log/endtest/@result != 0">
-						<te:fail code="1"/>
+					<txsl:when test="$te:new-log/log/endtest/@result = 3">
+						<te:fail code="2"/>
 						<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} Failed')"/>
+					</txsl:when>
+					<txsl:when test="$te:new-log/log/endtest/@result = 1">
+						<te:warning/>
+						<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} generated a Warning')"/>
 					</txsl:when>
 					<txsl:otherwise>
 						<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} Passed')"/>
@@ -439,6 +446,12 @@
 			</txsl:if>
 			<txsl:copy-of select="."/>
 		</txsl:for-each>
+		<txsl:for-each select="$te:variable//te:warning">
+			<txsl:if test="@message">
+				<txsl:value-of select="te:message($te:core, $te:call-depth + 1, @message)"/>
+			</txsl:if>
+			<txsl:copy-of select="."/>
+		</txsl:for-each>		
 	</xsl:template>
 
 	<xsl:template match="ctl:fail">
@@ -446,6 +459,13 @@
 			<xsl:call-template name="loc"/>
 			<xsl:copy-of select="@message"/>
 		</te:fail>
+	</xsl:template>
+
+	<xsl:template match="ctl:warning">
+		<te:warning>
+			<xsl:call-template name="loc"/>
+			<xsl:copy-of select="@message"/>
+		</te:warning>
 	</xsl:template>
 
 	<xsl:template match="ctl:suite">

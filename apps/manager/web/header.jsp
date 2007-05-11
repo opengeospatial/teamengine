@@ -1,7 +1,7 @@
 <div style="position: static">
 	<div style="position: static; background-color: black; width: 100%; height:100px; overflow:hidden" onclick="window.location = ''">
 		<!-- Image derived from "Dinky the Steam Engine - main drive wheel", Steve Karg, http://www.burningwell.org -->
-		<img style="position: absolute" src="banner.jpg" alt="TEAM Engine Banner"/>
+		<img style="position: absolute" src="images/banner.jpg" alt="TEAM Engine Banner"/>
 		<div style="position: absolute">
 			<span style="font-size: 30px">TEAM<br/>Engine<br/></span>
 			<span style="font-size: 12px">(Test, Evaluation, And Measurement Engine)</span>

@@ -56,9 +56,12 @@ public class ViewLog {
 					}
 				} else if (e.getNodeName().equals("endtest")) {
 					complete = true;
-					if (Integer.parseInt(e.getAttribute("result")) > 1) {
+					if (Integer.parseInt(e.getAttribute("result")) == 3) {
 						test.setAttribute("failed", "yes");
 					}
+					if (Integer.parseInt(e.getAttribute("result")) == 1) {
+						test.setAttribute("warning", "yes");
+					}					
 				} else if (e.getNodeName().equals("testcall")) {
 					test.appendChild(parse_log(db, owner, logdir, e.getAttribute("path")));
 				}

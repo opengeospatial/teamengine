@@ -112,6 +112,7 @@
 				<xsl:when test="@failed='yes'">Failed</xsl:when>
 				<xsl:when test="@complete='no'">Did not complete</xsl:when>
 				<xsl:when test="descendant::test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
+				<xsl:when test="@warning='yes'">Warning</xsl:when>
 				<xsl:otherwise>Passed</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
@@ -127,8 +128,9 @@
 		<xsl:apply-templates select="*"/>
 		<xsl:variable name="result">
 			<xsl:choose>
-				<xsl:when test="endtest/@result &gt; 1">Failed</xsl:when>
+				<xsl:when test="endtest/@result = 3">Failed</xsl:when>
 				<xsl:when test="$index//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
+				<xsl:when test="endtest/@result = 1">Warning</xsl:when>		
 				<xsl:when test="endtest">Passed</xsl:when>
 				<xsl:otherwise>Test execution did not complete</xsl:otherwise>
 			</xsl:choose>
@@ -255,6 +257,7 @@
 				<xsl:when test="$index//test[@path=$path and @failed='yes']">Failed</xsl:when>
 				<xsl:when test="$index//test[@path=$path and @complete='no']">Did not complete</xsl:when>
 				<xsl:when test="$index//test[@path=$path]//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
+				<xsl:when test="$index//test[@path=$path and @warning='yes']">Warning</xsl:when>		
 				<xsl:otherwise>Passed</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>

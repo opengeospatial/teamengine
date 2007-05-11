@@ -46,10 +46,10 @@ public void jspInit() {
 		<script>
 			function toggle(testnum) {
 			  if (document.images['image' + testnum].src.indexOf('minus') > 0) {
-			    document.images['image' + testnum].src = 'plus.png';
+			    document.images['image' + testnum].src = 'images/plus.png';
 			    document.getElementById('test' + testnum).style.display = "none";
 			  } else {
-			    document.images['image' + testnum].src = 'minus.png';
+			    document.images['image' + testnum].src = 'images/minus.png';
 			    document.getElementById('test' + testnum).style.display = "block";
 			  }
 			}
