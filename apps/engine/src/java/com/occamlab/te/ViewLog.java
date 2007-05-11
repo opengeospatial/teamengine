@@ -39,6 +39,11 @@ import org.w3c.dom.*;
 
 public class ViewLog {
 	
+	// Count how many errors and passes for output later
+	static public int passCount = 0;
+	static public int failCount = 0;
+	static public int warnCount = 0;
+	
 	static Element parse_log(DocumentBuilder db, Document owner, File logdir, String path) throws Exception {
 		File log = new File(new File(logdir, path), "log.xml");
 		Document logdoc = TECore.read_log(log.getParent(), ".");
@@ -57,10 +62,18 @@ public class ViewLog {
 				} else if (e.getNodeName().equals("endtest")) {
 					complete = true;
 					if (Integer.parseInt(e.getAttribute("result")) == 3) {
+						failCount++;
 						test.setAttribute("failed", "yes");
 					}
 					if (Integer.parseInt(e.getAttribute("result")) == 1) {
+						warnCount++;
 						test.setAttribute("warning", "yes");
+					}
+					if (Integer.parseInt(e.getAttribute("result")) == 2) {
+						failCount++;
+					}
+					if (Integer.parseInt(e.getAttribute("result")) == 0) {
+						passCount++;
 					}					
 				} else if (e.getNodeName().equals("testcall")) {
 					test.appendChild(parse_log(db, owner, logdir, e.getAttribute("path")));
@@ -72,6 +85,9 @@ public class ViewLog {
 	}
 
 	public static boolean view_log(DocumentBuilder db, File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
+		passCount = 0;
+		failCount = 0;
+		warnCount = 0;
 		Transformer t = templates.newTransformer();
 		t.setParameter("logdir", logdir.getAbsolutePath());
 

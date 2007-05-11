@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*"
 %><%!
 Config Conf;
 DocumentBuilder DB;
@@ -41,7 +41,7 @@ public void jspInit() {
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>			
 		<title>Test Session Results</title>
 		<script>
 			function toggle(testnum) {
@@ -59,16 +59,17 @@ public void jspInit() {
 					window.location = "deleteSession?session=<%=request.getParameter("session")%>"
 				}
 			}
-		</script>
+		</script>		
 	</head>
 	<body>
 		<%@ include file="header.jsp" %>
 		<h2>Results for session <%=request.getParameter("session")%></h2>
+				
 <%
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
-      ArrayList tests = new ArrayList();
-      boolean complete = ViewLog.view_log(DB, userlog, sessionId, tests, ViewLogTemplates, out);
+      ArrayList tests = new ArrayList();    
+      boolean complete = ViewLog.view_log(DB, userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
       if (!complete) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
@@ -78,7 +79,24 @@ public void jspInit() {
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<br/>
 		<br/>
+		<table border="2" bgcolor="#0099FF" width="300">
+		<tr bgcolor="#99FFFF">
+		<th>Status</th><th>Count</th>
+		</tr>
+		<tr>
+		<td>Passed</td><td align="center"><%=ViewLog.passCount%></td>
+		</tr>
+		<tr>
+		<td>Failed*</td><td align="center"><%=ViewLog.failCount%></td>
+		</tr>
+		<tr>
+		<td>Warning</td><td align="center"><%=ViewLog.warnCount%></td>
+		</tr>
+		</table>
+		<font size="-1">* - Failed status count includes both "Failed" and </br>"Failed (Inherited Failure)" tests.</font>
+		</br>
+		</br>		
 		<a href="viewSessions.jsp"/>Sessions list</a>
-		<%@ include file="footer.jsp" %>
+		<%@ include file="footer.jsp" %>				
 	</body>
 </html>
