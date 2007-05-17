@@ -79,26 +79,14 @@ public void jspInit() {
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<br/>
 		<br/>
-		<table border="2" bgcolor="#55FFFF" width="300">
+		<table border="2" bgcolor="#FFFFFF" width="410">
 		<tr>
-		<th colspan="2">Test Results Summary</th>
-		</tr>
-		<tr>		
-		<tr bgcolor="#00AADD">
-		<th>Status</th><th>Count</th>
-		</tr>
-		<tr>
-		<td>Passed</td><td align="center"><%=ViewLog.passCount%></td>
-		</tr>
-		<tr>
-		<td>Failed*</td><td align="center"><%=ViewLog.failCount%></td>
-		</tr>
-		<tr>
-		<td>Warning</td><td align="center"><%=ViewLog.warnCount%></td>
+		<th align="center" bgcolor="#EEEEEE"><font color="#000099">Summary</font></th>
+		<td align="center">Pass:</td><td align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
+		<td align="center">Warning:</td><td align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
+		<td align="center">Fail:</td><td align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
 		</tr>
 		</table>
-		<font size="-1">* - Failed status count includes both "Failed" and </br>"Failed (Inherited Failure)" tests.</font>
-		</br>
 		</br>		
 		<a href="viewSessions.jsp"/>Sessions list</a>
 		<%@ include file="footer.jsp" %>				
