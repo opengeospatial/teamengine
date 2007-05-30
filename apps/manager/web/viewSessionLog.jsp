@@ -79,12 +79,12 @@ public void jspInit() {
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<br/>
 		<br/>
-		<table border="2" bgcolor="#FFFFFF" width="410">
+		<table border="0" bgcolor="#EEEEEE" width="410">
 		<tr>
-		<th align="center" bgcolor="#EEEEEE"><font color="#000099">Summary</font></th>
-		<td align="center">Pass:</td><td align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
-		<td align="center">Warning:</td><td align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
-		<td align="center">Fail:</td><td align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
+		<th align="left"><font color="#000099">Summary</font></th>
+		<td align="right">Pass:</td><td align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
+		<td align="right">Warning:</td><td align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
+		<td align="right">Fail:</td><td align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
 		</tr>
 		</table>
 		</br>		
