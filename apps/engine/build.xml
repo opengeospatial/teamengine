@@ -13,15 +13,16 @@
 	<property name="lib.dir" value="${basedir}/lib"/>
     
 	<target name="compile">
-		<mkdir dir="build"/>
-		<javac srcdir="src/java" destdir="build" classpathref="classpath" debug="true"/>
+		<mkdir dir="build/classes"/>
+		<javac srcdir="src/java" destdir="build/classes" classpathref="classpath" debug="true"/>
 	</target>
-	
-	<target name="jar" depends="compile">
-		<jar destfile="${lib.dir}/${ant.project.name}.jar">
-			<fileset dir="build" excludes=".*"/>
-		</jar>
-	</target>
+    
+    <target name="jar" depends="compile" description="Creates the JAR file for distribution.">
+      <mkdir dir="${basedir}/dist"/>
+      <jar 
+        jarfile="${basedir}/dist/${ant.project.name}.jar"
+        basedir="build/classes"  />
+    </target>
 	
 	<target name="javadoc" description="Creates javadocs from the java source">
 		<mkdir dir="build"/>
@@ -32,7 +33,7 @@
 	
 	<target name="clean">
 		<delete dir="build"/>
-		<delete file="${lib.dir}/${ant.project.name}.jar"/>
+        <delete dir="dist"/>
 	</target>
 	
 </project>

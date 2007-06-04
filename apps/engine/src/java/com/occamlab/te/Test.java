@@ -21,7 +21,15 @@ Contributor(s): No additional contributors to date
 ****************************************************************************/
 package com.occamlab.te;
 
-import javax.xml.transform.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import javax.xml.parsers.*;
@@ -50,84 +58,82 @@ public class Test {
 	DocumentBuilder DB;
 	TransformerFactory TF;
 	Templates ScriptTemplates;
-	/*
-	static Document parameterizeDoc(Document doc) {
-	Node root = doc.getDocumentElement();
-	doc.removeChild(root);
-	Element param = doc.createElement("param");
-	param.appendChild(root);
-	doc.appendChild(param);
-	return doc;
-	}
+        private Logger appLogger;
 
-	static Document unParameterizeDoc(Document doc) {
-	Node root = doc.getDocumentElement();
-	doc.removeChild(root);
-	Node content = root.getFirstChild();
-	doc.appendChild(content);
-	return doc;
-	}
-	*/
-	
-	// Prepare/compile the test file
+    /**
+     * Initializes the main test driver.
+     *
+     * @param sources  a list of source CTL scripts
+     * @param validate  flag indicating whether CTL scripts should be validated
+     * @param mode operational mode
+     */
 	public Test(List sources, boolean validate, int mode) throws Exception {
-		
-		// Setup the DocumentBuilderFactory and DocumentBuilder
+		appLogger = Logger.getLogger(this.getClass().getPackage().getName());
+        appLogger.info("Initializing main test driver");
+        appLogger.entering(this.getClass().getName(), "init", 
+            new Object[]{sources, new Boolean(validate), new Integer(mode)});
+                
+		// configure parser to resolve XIncludes
 		System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration","org.apache.xerces.parsers.XIncludeParserConfiguration");
 		DBF = DocumentBuilderFactory.newInstance();
 		DBF.setNamespaceAware(true);
 		DBF.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);		
 		DB = DBF.newDocumentBuilder();
 
-		// Setup the transformer to convert from CTL to engine-runnable test script
-		TF = TransformerFactory.newInstance();
-		TF.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
-		TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
-		CL = Thread.currentThread().getContextClassLoader();
-
-		// Setup a CTL validator to check against the test file
+		// create validator to check against the test file
 		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Schema ctl_schema = sf.newSchema(getResourceAsFile("com/occamlab/te/schemas/ctl.xsd"));
 		Validator ctl_validator = ctl_schema.newValidator();
 		CtlErrorHandler validation_eh = new CtlErrorHandler();
 		ctl_validator.setErrorHandler(validation_eh);
 
-		Transformer copy_t = TF.newTransformer();
-		copy_t.setOutputProperty(OutputKeys.INDENT, "yes");
-		File compile_file;
+                // create transformer to generate executable script from CTL sources
+		TF = TransformerFactory.newInstance();
+		TF.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
+		TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
+		CL = Thread.currentThread().getContextClassLoader();
+		Transformer identityTransformer = TF.newTransformer();
+		identityTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		File generatorStylesheet;
 		String extension;
 		// Transform the test file into a document (dxsl) or for actually running (txsl)
 		if (mode == DOC_MODE) {
-			compile_file = getResourceAsFile("com/occamlab/te/generate_dxsl.xsl");
+			generatorStylesheet = getResourceAsFile("com/occamlab/te/generate_dxsl.xsl");
 			extension = "dxsl";
 		} else {
-			compile_file = getResourceAsFile("com/occamlab/te/compile.xsl");
+			generatorStylesheet = getResourceAsFile("com/occamlab/te/compile.xsl");
 			extension = "txsl";
 		}
 		// Prepare the XSLT transformers
-		Transformer compile_t = TF.newTransformer(new StreamSource(compile_file));
+		Transformer generator = TF.newTransformer(new StreamSource(generatorStylesheet));
 		InputStream main_is = CL.getResourceAsStream("com/occamlab/te/main.xsl");
-		Transformer main_t = TF.newTransformer(new StreamSource(main_is));
+		Transformer composer = TF.newTransformer(new StreamSource(main_is));
 
-		char[] script_chars = null;
-		Document script_doc = DB.newDocument();
-		Node script_element = script_doc.createElement("script");
-		script_doc.appendChild(script_element);
+		char[] script_chars = null; // what?
+		Document scriptDoc = DB.newDocument();
+		Element scriptElem = scriptDoc.createElement("script");
+		scriptDoc.appendChild(scriptElem);
+                
+                if (appLogger.isLoggable(Level.FINER)) {
+                  writeDocumentToLog(scriptDoc);
+                }
 
 		// Goes through each test source file and compiles it together to run later (txsl file)
 		Iterator it = sources.iterator();
 		while (it.hasNext()) {
 			File sourcefile = (File)it.next();
-			Document txsl = DB.newDocument();
+                        appLogger.fine("source file: " + sourcefile.getAbsolutePath());
+			Document generatedDoc = DB.newDocument();
 			DocumentBuilder inputDB = DBF.newDocumentBuilder();
-			Document inputDoc = null;
-			compile_t.clearParameters();
-			main_t.clearParameters();
+			Document inputCtl = null;
+			generator.clearParameters();
+			composer.clearParameters();
 			// Get all test source files in a directory
 			if (sourcefile.isDirectory()) {
-				Element transform = txsl.createElementNS(XSL_NS, "xsl:transform");
-				transform.setAttribute("version", "1.0");
-				txsl.appendChild(transform);
+                                appLogger.fine("Processing source directory...");
+				Element transformElem = generatedDoc.createElementNS(XSL_NS, "xsl:transform");
+				transformElem.setAttribute("version", "2.0");
+				generatedDoc.appendChild(transformElem);
 				String[] children = sourcefile.list();
 				for (int i = 0; i < children.length; i++) {
 					// Finds all .ctl and .xml files in the directory to use
@@ -137,8 +143,9 @@ public class Test {
 							File txsl_file = new File(sourcefile, children[i].substring(0, children[i].length() - 3) + extension);
 							boolean needs_compiling;
 							if (txsl_file.exists()) {
+                                // regenerate if existing output file is obsolete
 								needs_compiling = txsl_file.lastModified() < ctl_file.lastModified() ||
-								txsl_file.lastModified() < compile_file.lastModified();
+								txsl_file.lastModified() < generatorStylesheet.lastModified();
 							} else {
 								needs_compiling = true;
 							}
@@ -147,55 +154,64 @@ public class Test {
 									int old_count = validation_eh.getErrorCount();
 									if (validate) ctl_validator.validate(new StreamSource(ctl_file));
 									if (validation_eh.getErrorCount() == old_count) {
-										compile_t.setParameter("filename", ctl_file.getAbsolutePath());
-										compile_t.setParameter("txsl_filename", txsl_file.toURL().toString());
-										// OLD: compile_t.transform(new StreamSource(ctl_file), new StreamResult(txsl_file));
-										inputDoc = inputDB.parse(ctl_file);
-										compile_t.transform(new DOMSource(inputDoc), new StreamResult(txsl_file));
+										generator.setParameter("filename", ctl_file.getAbsolutePath());
+										generator.setParameter("txsl_filename", txsl_file.toURL().toString());
+										inputCtl = inputDB.parse(ctl_file);
+										generator.transform(new DOMSource(inputCtl), new StreamResult(txsl_file));
 									}
 								} catch (org.xml.sax.SAXException e) {
-									System.exit(1);
+									appLogger.severe(e.getMessage());
+			                        throw e;
 								} catch (TransformerException e) {
-									System.err.println(e.getMessageAndLocation());
-									System.exit(1);
-								}
+									appLogger.severe(e.getMessageAndLocation());
+			                        throw e;
+								} finally {
+                                    generator.reset();
+                                }
 							}
-							Element include = txsl.createElementNS(XSL_NS, "xsl:include");
+							Element include = generatedDoc.createElementNS(XSL_NS, "xsl:include");
 							include.setAttribute("href", txsl_file.toURL().toString());
-							transform.appendChild(include);
+							transformElem.appendChild(include);
 						}
 					}
 				}
 			} 
 			// Or get the one specific test file
 			else {
-				try {
+                try {
 					int old_count = validation_eh.getErrorCount();
-					if (validate)	ctl_validator.validate(new StreamSource(sourcefile));
+					if (validate) ctl_validator.validate(new StreamSource(sourcefile));
 					if (validation_eh.getErrorCount() == old_count) {
-						compile_t.setParameter("filename", sourcefile.getAbsolutePath());
-						// OLD: compile_t.transform(new StreamSource(sourcefile), new DOMResult(txsl));
-						inputDoc = inputDB.parse(sourcefile);
-						compile_t.transform(new DOMSource(inputDoc), new DOMResult(txsl));
+						generator.setParameter("filename", sourcefile.getAbsolutePath());
+						inputCtl = inputDB.parse(sourcefile);
+                        if (appLogger.isLoggable(Level.FINER)) {
+                          writeDocumentToLog(inputCtl);
+                        }
+						generator.transform(new DOMSource(inputCtl), new DOMResult(generatedDoc));
 					}
 				} catch (org.xml.sax.SAXException e) {
-					System.exit(1);
+					appLogger.severe(e.getMessage());
+			                throw e;
 				} catch (TransformerException e) {
-					System.err.println(e.getMessageAndLocation());
-					System.exit(1);
-				}
+                    appLogger.severe(e.getMessageAndLocation());
+			        throw e;
+				} finally {
+                    generator.reset();
+                }
 			}
+                        
 			if (script_chars != null) {
 				CharArrayReader car = new CharArrayReader(script_chars);
-				copy_t.transform(new StreamSource(car), new DOMResult(script_element));
-				main_t.setParameter("prev", script_element);
+				identityTransformer.transform(new StreamSource(car), new DOMResult(scriptElem));
+				composer.setParameter("prev", scriptElem);
 			}
 			CharArrayWriter caw = new CharArrayWriter();
-			main_t.transform(new DOMSource(txsl), new StreamResult(caw));
-			//main_t.transform(new DOMSource(txsl), new StreamResult(System.out));
+			composer.transform(new DOMSource(generatedDoc), new StreamResult(caw));
 			script_chars = caw.toCharArray();
+            appLogger.fine("Content of script_chars:\n" + new String(script_chars));
 		}
-
+                
+                
 		int error_count = validation_eh.getErrorCount();
 		if (error_count > 0) {
 			String msg = error_count + " validation error" + (error_count == 1 ? "" : "s");
@@ -204,11 +220,11 @@ public class Test {
 				msg += " and " + warning_count + " warning" + (warning_count == 1 ? "" : "s");
 			}
 			msg += " detected.";
-			System.err.println(msg);
-			System.exit(1);
+            appLogger.severe(msg);
+			throw new Exception(msg);
 		}
 
-		// Continues to compile the source test files together
+		// Create resusable templates
 		try {
 			TransformerFactory tf = TransformerFactory.newInstance();
 			tf.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
@@ -216,8 +232,8 @@ public class Test {
 			tf.setErrorListener(new TeErrorListener(script_chars));
 			ScriptTemplates = tf.newTemplates(new StreamSource(new CharArrayReader(script_chars)));
 		} catch (TransformerException e) {
-			System.err.println(e.getMessageAndLocation());
-			System.exit(1);
+            appLogger.severe(e.getMessageAndLocation());
+			throw new Exception("Unable to create final templates.");
 		}
 	}
 
@@ -402,11 +418,28 @@ public class Test {
 		return session;
 	}
 
+        
+	private void writeDocumentToLog(Document doc) {
+            Logger logger = Logger.getLogger(Test.class.getPackage().getName());
+            StringWriter strWriter = new StringWriter();
+            Transformer identity = null;
+            try {
+                identity = TF.newTransformer();
+                identity.transform(new DOMSource(doc), new StreamResult(strWriter));
+            } catch (TransformerConfigurationException ex) {
+                logger.fine(ex.toString());
+            } catch (TransformerException ex) {
+                logger.fine(ex.toString());
+            }
+                logger.fine(strWriter.toString());
+                return;
+	}
+        
 	public static void main(String[] args) throws Exception {
 		int mode = TEST_MODE;
 		boolean validate = true;
 		File logdir = null;
-		String session = null;
+		String sessionId = null;
 		String suite_name = null;
 		ArrayList sources = new ArrayList();
 		ArrayList tests = new ArrayList();
@@ -414,7 +447,7 @@ public class Test {
 
 		File f = getResourceAsFile("com/occamlab/te/compile.xsl");
 		sources.add(new File(f.getParentFile(), "scripts"));
-
+                
 		// Parse arguments from command-line
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].startsWith("-cmd=")) {
@@ -437,7 +470,7 @@ public class Test {
 			} else if (args[i].startsWith("-logdir=")) {
 				logdir = new File(args[i].substring(8));
 			} else if (args[i].startsWith("-session=")) {
-				session = args[i].substring(9);
+				sessionId = args[i].substring(9);
 			} else if (args[i].startsWith("-suite=")) {
 				suite_name = args[i].substring(7);
 			} else if (args[i].equals("-mode=test")) {
@@ -483,22 +516,20 @@ public class Test {
 			return;
 		}
 
-		if (session == null) {
+		if (sessionId == null) {
 			if (mode == TEST_MODE || mode == DOC_MODE) {
-				session = newSessionId(logdir);
+				sessionId = newSessionId(logdir);
 			} else if (mode == RESUME_MODE) {
-				System.out.println("Please provide a session parameter.");
+				System.out.println("Please provide a session Id parameter.");
 				return;
 			}
 		}
 
 		Thread.currentThread().setName("CTL Test Engine");
-		
-		// Setup/compile test object
 		Test t = new Test(sources, validate, mode);
 		if (mode == DOC_MODE) mode = TEST_MODE;
 		TECore core = new TECore(System.out, false);
 		// Run the compiled test object
-		t.test(mode, logdir, suite_name, session, tests, core);
+		t.test(mode, logdir, suite_name, sessionId, tests, core);
 	}
 }

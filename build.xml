@@ -40,18 +40,6 @@
     </tstamp>
   </target>
 
-<!--
-  <target name="xx">
-    <echo>${script}</echo>
-  </target>
-
-  <target name="x">
-    <foreach param="script" target="xx">
-      <path refid="scripts.path"/>
-    </foreach>
-  </target>
--->
-
   <target name="clean.component">
     <ant dir="${component}" target="clean"/>
   </target>
@@ -181,6 +169,7 @@
     </copy>
     <copy todir="webapps/teamengine/WEB-INF/lib">
       <fileset dir="apps/engine/lib"/>
+      <fileset dir="apps/engine/dist"/>
       <fileset dir="apps/manager/lib"/>
     </copy>
   </target>

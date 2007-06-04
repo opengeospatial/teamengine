@@ -28,13 +28,17 @@ import javax.xml.transform.stream.*;
 import java.net.*;
 
 import javax.xml.parsers.*;
+import net.sf.saxon.Configuration;
 
 import org.w3c.dom.*;
 
 import java.io.*;
 import java.lang.reflect.*;
 import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.dom.DocumentBuilderImpl;
 import java.util.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class TECore {
 	static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
@@ -400,7 +404,7 @@ public class TECore {
 							}
 							// XML
 							else {
-								content += DocumentToString(currentPart.getFirstChild());
+								content += documentToString(currentPart.getFirstChild());
 							}
 						}
 						
@@ -659,7 +663,14 @@ public class TECore {
 		return null;
 	}
 
-	// TODO: The transformer for the form has issues using Saxon higher than 8.6.1 (problem with configuration of factory/transformer?)
+	
+    /**
+     * Converts a CTL input form to generate a Swing-based or XHTML form?
+     *
+     * @param xhtml a DOM Document containing ?
+     * @throws java.lang.Exception 
+     * @return a DOM Document containing ?
+     */
 	public Document form(Document xhtml) throws Exception {
 		String name = Thread.currentThread().getName();
 		NamedNodeMap attrs = xhtml.getElementsByTagName("form").item(0).getAttributes();
@@ -677,9 +688,9 @@ public class TECore {
 		FormTransformer.setParameter("thread", Long.toString(Thread.currentThread().getId()));
 		FormTransformer.setParameter("method", method.toLowerCase().equals("post") ? "post" : "get");
 
-		//FormTransformer.transform(new DOMSource(xhtml), new StreamResult(System.out));
 		StringWriter sw = new StringWriter();
-		FormTransformer.transform(new DOMSource(xhtml), new StreamResult(sw));
+        Document xhtml2 = rebuildDocument(xhtml);
+		FormTransformer.transform(new DOMSource(xhtml2), new StreamResult(sw));
 		FormHtml = sw.toString();
 
 		if (!Web) {
@@ -709,7 +720,7 @@ public class TECore {
 	* @return String
 	*          a string representation of the DOM
 	*/
-	public static String DocumentToString(Node node) {
+	public static String documentToString(Node node) {
 		try {
 			DOMSource domSource = new DOMSource(node);
 			StringWriter writer = new StringWriter();
@@ -724,4 +735,26 @@ public class TECore {
 		}
 	}
 	
+    /**
+	 * Rebuilds an externally supplied DOM Document node using the same 
+     * configuration as the Saxon form transformer. This is done because it 
+     * is not possible for any query or transformation to manipulate multiple 
+     * documents unless they all belong to the same Configuration.
+	 *
+	 * @param a DOM Document
+	 *          the node to be rebuilt.
+	 * @return Document
+	 *          the new document with the same configuration as the transformer.
+	 */
+	private Document rebuildDocument(Document sourceDoc) {
+            Document newDoc = null;
+            DocumentBuilderImpl domBuilder = new DocumentBuilderImpl();                
+            domBuilder.setConfiguration((Configuration) this.TF.getAttribute(FeatureKeys.CONFIGURATION));
+            try {
+                newDoc = domBuilder.parse(new InputSource(new StringReader(documentToString(sourceDoc))));
+            } catch (SAXException ex) {
+                ex.printStackTrace();
+            }
+            return newDoc;
+	}
 }
