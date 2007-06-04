@@ -9,6 +9,7 @@
     <property file="${user.home}/${ant.project.name}.properties"/>
 	
 	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="dist.dir" value="${basedir}/dist"/>
 	<property name="engine.resource.dir" value="${basedir}/resources"/>
 	<property name="ets.resources.dir" value="${ets.base.dir}/resources"/>
 	
@@ -23,6 +24,9 @@
             <arg value="-source=${ets.base.dir}/ctl/main.xml"/> <!-- .ctl or .xml or just the directory ".../.../" -->
 			<classpath>
 				<fileset dir="${lib.dir}">
+					<include name="**/*.jar"/>
+				</fileset>
+				<fileset dir="${dist.dir}">
 					<include name="**/*.jar"/>
 				</fileset>
 				<pathelement path="${engine.resource.dir}"/>
@@ -44,6 +48,9 @@
 				<fileset dir="${lib.dir}">
 					<include name="**/*.jar"/>
 				</fileset>
+				<fileset dir="${dist.dir}">
+					<include name="**/*.jar"/>
+				</fileset>				
 				<pathelement path="${engine.resource.dir}"/>
 				<pathelement path="${ets.base.dir}"/>
 				<pathelement path="${ets.resources.dir}"/>
@@ -60,6 +67,9 @@
 				<fileset dir="${lib.dir}">
 					<include name="**/*.jar"/>
 				</fileset>
+				<fileset dir="${dist.dir}">
+					<include name="**/*.jar"/>
+				</fileset>				
 				<pathelement path="${engine.resource.dir}"/>
 				<pathelement path="${ets.base.dir}"/>				
 				<pathelement path="${java.class.path}"/>
@@ -79,6 +89,9 @@
 				<fileset dir="${lib.dir}">
 					<include name="**/*.jar"/>
 				</fileset>
+				<fileset dir="${dist.dir}">
+					<include name="**/*.jar"/>
+				</fileset>				
 				<pathelement path="${engine.resource.dir}"/>
 				<pathelement path="${java.class.path}"/>
 				<pathelement path="${basedir}"/>
