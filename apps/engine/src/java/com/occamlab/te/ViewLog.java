@@ -24,6 +24,7 @@ package com.occamlab.te;
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -35,6 +36,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 
+import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.dom.DocumentBuilderImpl;
+import net.sf.saxon.Configuration;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import org.w3c.dom.*;
 
 public class ViewLog {
@@ -43,6 +51,8 @@ public class ViewLog {
 	static public int passCount = 0;
 	static public int failCount = 0;
 	static public int warnCount = 0;
+	
+	public static TransformerFactory transformerFactory = TransformerFactory.newInstance();	
 	
 	static Element parse_log(DocumentBuilder db, Document owner, File logdir, String path) throws Exception {
 		File log = new File(new File(logdir, path), "log.xml");
@@ -103,7 +113,11 @@ public class ViewLog {
 					sessions_e.appendChild(session_e);
 				}
 			}
-			t.transform(new DOMSource(doc), new StreamResult(out));
+			DocumentBuilderImpl db2 = new DocumentBuilderImpl();              
+	            	db2.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));
+	            	Document doc2 = db2.newDocument();
+	            	doc2 = rebuildDocument(doc);
+			t.transform(new DOMSource(doc2), new StreamResult(out));
 			return true;
 		} else if (tests.size() == 0) {
 			File session_dir = new File(logdir, session);
@@ -113,7 +127,11 @@ public class ViewLog {
 			}
 			Document doc = db.newDocument();
 			doc.appendChild(parse_log(db, doc, logdir, session));
-			t.transform(new DOMSource(doc), new StreamResult(out));
+			DocumentBuilderImpl db2 = new DocumentBuilderImpl();              
+	            	db2.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));
+	            	Document doc2 = db2.newDocument();
+	            	doc2 = rebuildDocument(doc);			
+			t.transform(new DOMSource(doc2), new StreamResult(out));
 			Element testElement = (Element)(doc.getElementsByTagName("test").item(0));
 			return testElement.getAttribute("complete").equals("yes");
 		} else {
@@ -128,7 +146,11 @@ public class ViewLog {
 					t.setParameter("index", index);
 					//          t.transform(new StreamSource(f), new StreamResult(System.out));
 					Document log = TECore.read_log(logdir.getAbsolutePath(), test);
-					t.transform(new DOMSource(log), new StreamResult(out));
+					DocumentBuilderImpl db2 = new DocumentBuilderImpl();              
+			            	db2.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));
+			            	Document log2 = db2.newDocument();
+			            	log2 = rebuildDocument(log);					
+					t.transform(new DOMSource(log2), new StreamResult(out));
 					Element logElement = (Element)(log.getElementsByTagName("log").item(0));
 					NodeList endtestlist = logElement.getElementsByTagName("endtest");
 					ret = ret && (endtestlist.getLength() > 0);
@@ -181,11 +203,25 @@ public class ViewLog {
 				return;
 			}
 		}
-		Templates templates = TransformerFactory.newInstance().newTemplates(new StreamSource(stylesheet));
+		
+		Templates templates = transformerFactory.newTemplates(new StreamSource(stylesheet));
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
+		
 		Writer out = new OutputStreamWriter(System.out);
 		view_log(db, logdir, session, tests, templates, out);
 	}
+	
+	private static Document rebuildDocument(Document sourceDoc) {
+            Document newDoc = null;
+            DocumentBuilderImpl domBuilder = new DocumentBuilderImpl();                
+            domBuilder.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));
+            try {
+                newDoc = domBuilder.parse(new InputSource(new StringReader(TECore.documentToString(sourceDoc))));
+            } catch (SAXException ex) {
+                ex.printStackTrace();
+            }
+            return newDoc;
+	}	
 }
