@@ -21,6 +21,18 @@ Contributor(s): No additional contributors to date
 ****************************************************************************/
 package com.occamlab.te;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
+import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
@@ -33,7 +45,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import javax.xml.parsers.*;
-import java.io.*;
 import java.lang.ClassLoader;
 import java.net.URLDecoder;
 
@@ -58,20 +69,17 @@ public class Test {
 	DocumentBuilder DB;
 	TransformerFactory TF;
 	Templates ScriptTemplates;
-        private Logger appLogger;
+        private Logger teLogger;
 
     /**
      * Initializes the main test driver.
      *
-     * @param sources  a list of source CTL scripts
-     * @param validate  flag indicating whether CTL scripts should be validated
-     * @param mode operational mode
+     * @param sessionInfo  test session metadata.
      */
-	public Test(List sources, boolean validate, int mode) throws Exception {
-		appLogger = Logger.getLogger(this.getClass().getPackage().getName());
-        appLogger.info("Initializing main test driver");
-        appLogger.entering(this.getClass().getName(), "init", 
-            new Object[]{sources, new Boolean(validate), new Integer(mode)});
+	public Test(TestSessionInfo sessionInfo) throws Exception {
+                teLogger = Logger.getLogger(this.getClass().getPackage().getName());
+                teLogger.info("Initializing main test driver");
+                teLogger.entering(this.getClass().getName(), "init", new Object[]{sessionInfo});
                 
 		// configure parser to resolve XIncludes
 		System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration","org.apache.xerces.parsers.XIncludeParserConfiguration");
@@ -97,7 +105,7 @@ public class Test {
 		File generatorStylesheet;
 		String extension;
 		// Transform the test file into a document (dxsl) or for actually running (txsl)
-		if (mode == DOC_MODE) {
+		if (sessionInfo.getMode() == DOC_MODE) {
 			generatorStylesheet = getResourceAsFile("com/occamlab/te/generate_dxsl.xsl");
 			extension = "dxsl";
 		} else {
@@ -113,16 +121,12 @@ public class Test {
 		Document scriptDoc = DB.newDocument();
 		Element scriptElem = scriptDoc.createElement("script");
 		scriptDoc.appendChild(scriptElem);
-                
-                if (appLogger.isLoggable(Level.FINER)) {
-                  writeDocumentToLog(scriptDoc);
-                }
 
 		// Goes through each test source file and compiles it together to run later (txsl file)
-		Iterator it = sources.iterator();
+		Iterator it = sessionInfo.getSources().iterator();
 		while (it.hasNext()) {
 			File sourcefile = (File)it.next();
-                        appLogger.fine("source file: " + sourcefile.getAbsolutePath());
+                        teLogger.fine("Processing source file: " + sourcefile.getAbsolutePath());
 			Document generatedDoc = DB.newDocument();
 			DocumentBuilder inputDB = DBF.newDocumentBuilder();
 			Document inputCtl = null;
@@ -130,7 +134,6 @@ public class Test {
 			composer.clearParameters();
 			// Get all test source files in a directory
 			if (sourcefile.isDirectory()) {
-                                appLogger.fine("Processing source directory...");
 				Element transformElem = generatedDoc.createElementNS(XSL_NS, "xsl:transform");
 				transformElem.setAttribute("version", "2.0");
 				generatedDoc.appendChild(transformElem);
@@ -152,7 +155,7 @@ public class Test {
 							if (needs_compiling) {
 								try {
 									int old_count = validation_eh.getErrorCount();
-									if (validate) ctl_validator.validate(new StreamSource(ctl_file));
+									if (sessionInfo.hasValidationFlag()) ctl_validator.validate(new StreamSource(ctl_file));
 									if (validation_eh.getErrorCount() == old_count) {
 										generator.setParameter("filename", ctl_file.getAbsolutePath());
 										generator.setParameter("txsl_filename", txsl_file.toURL().toString());
@@ -160,10 +163,10 @@ public class Test {
 										generator.transform(new DOMSource(inputCtl), new StreamResult(txsl_file));
 									}
 								} catch (org.xml.sax.SAXException e) {
-									appLogger.severe(e.getMessage());
+									teLogger.severe(e.getMessage());
 			                        throw e;
 								} catch (TransformerException e) {
-									appLogger.severe(e.getMessageAndLocation());
+									teLogger.severe(e.getMessageAndLocation());
 			                        throw e;
 								} finally {
                                     generator.reset();
@@ -180,20 +183,17 @@ public class Test {
 			else {
                 try {
 					int old_count = validation_eh.getErrorCount();
-					if (validate) ctl_validator.validate(new StreamSource(sourcefile));
+					if (sessionInfo.hasValidationFlag()) ctl_validator.validate(new StreamSource(sourcefile));
 					if (validation_eh.getErrorCount() == old_count) {
 						generator.setParameter("filename", sourcefile.getAbsolutePath());
 						inputCtl = inputDB.parse(sourcefile);
-                        if (appLogger.isLoggable(Level.FINER)) {
-                          writeDocumentToLog(inputCtl);
-                        }
 						generator.transform(new DOMSource(inputCtl), new DOMResult(generatedDoc));
 					}
 				} catch (org.xml.sax.SAXException e) {
-					appLogger.severe(e.getMessage());
+					teLogger.severe(e.getMessage());
 			                throw e;
 				} catch (TransformerException e) {
-                    appLogger.severe(e.getMessageAndLocation());
+                    teLogger.severe(e.getMessageAndLocation());
 			        throw e;
 				} finally {
                     generator.reset();
@@ -208,7 +208,6 @@ public class Test {
 			CharArrayWriter caw = new CharArrayWriter();
 			composer.transform(new DOMSource(generatedDoc), new StreamResult(caw));
 			script_chars = caw.toCharArray();
-            appLogger.fine("Content of script_chars:\n" + new String(script_chars));
 		}
                 
                 
@@ -220,11 +219,15 @@ public class Test {
 				msg += " and " + warning_count + " warning" + (warning_count == 1 ? "" : "s");
 			}
 			msg += " detected.";
-            appLogger.severe(msg);
+            teLogger.severe(msg);
 			throw new Exception(msg);
 		}
 
-		// Create resusable templates
+                if (teLogger.isLoggable(Level.INFO)) {
+                    writeFinalStylesheetToFile(script_chars, sessionInfo.getLogDir());
+                }
+                
+                // Create resusable templates
 		try {
 			TransformerFactory tf = TransformerFactory.newInstance();
 			tf.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
@@ -232,12 +235,12 @@ public class Test {
 			tf.setErrorListener(new TeErrorListener(script_chars));
 			ScriptTemplates = tf.newTemplates(new StreamSource(new CharArrayReader(script_chars)));
 		} catch (TransformerException e) {
-            appLogger.severe(e.getMessageAndLocation());
+            teLogger.severe(e.getMessageAndLocation());
 			throw new Exception("Unable to create final templates.");
 		}
 	}
 
-	// Deletes a directory and all it's chilldren files
+	// Deletes a directory and its contents
 	public static void deleteDir(File dir) {
 		String[] children = dir.list();
 		for (int i = 0; i < children.length; i++) {
@@ -295,56 +298,64 @@ public class Test {
 		return doc;
 	}
 
+        
 	// Main test method
-	public void test(int mode, File logdir, String suitename, String session, List tests, TECore core) throws Exception {
-		// Setup session (log) directory
-		File session_dir = null;
+        public void test(TestSessionInfo sessionInfo, List tests, TECore core) throws Exception {
+	//public void test(int mode, File logdir, String suitename, String session, List tests, TECore core) throws Exception {
+		String sessionId = sessionInfo.getSessionId();
+                File logDir = sessionInfo.getLogDir();
+		File sessionDir = null;
 
 		// Set the TECore session and logpath (to access later)
-		core.setSessionId(session);
-		core.setSessionDir(logdir.getAbsolutePath()+"/"+session);
+		core.setSessionId(sessionId);
+		core.setSessionDir(logDir.getAbsolutePath() + "/" + sessionId);
 		
-		if (session != null) session_dir = new File(logdir, session);
+		if ((sessionId != null) && sessionId.length() > 0) {
+                    sessionDir = new File(logDir, sessionId);
+                }
 
-		if (logdir == null) {
-			if (mode != TEST_MODE) {
-				throw new Exception("logdir not specified.");
+		if (logDir == null) {
+			if (sessionInfo.getMode() != TEST_MODE) {
+                          this.teLogger.warning("Test log directory is not specified.");
+		          throw new Exception("Test log directory is not specified.");
 			}
 		} else {
-			if (!logdir.isDirectory()) {
-				logdir.mkdir();
+			if (!logDir.isDirectory()) {
+				logDir.mkdir();
 			}
-			if (logdir.isDirectory()) {
-				if (mode == TEST_MODE) {
-					if (session_dir.isDirectory()) {
-						File f = new File(session_dir, "log.xml");
+			if (logDir.isDirectory()) {
+				if (sessionInfo.getMode() == TEST_MODE) {
+					if (sessionDir.isDirectory()) {
+						File f = new File(sessionDir, "log.xml");
 						if (f.exists()) {
 							f.delete();
 						}
-						deleteSubDirs(session_dir);
+						deleteSubDirs(sessionDir);
 					}
 				}
 			} else {
-				new Exception("Couldn't create log directory " + logdir.toString());
+                            this.teLogger.warning("Unable to create test log directory " + logDir.toString());
+		            new Exception("Unable to create test log directory " + logDir.toString());
 			}
 		}
 
 		// Prepare suite
 		Map templates = new HashMap();
 		if (tests.isEmpty()) {
-			if (mode == RETEST_MODE) {
+			if (sessionInfo.getMode() == RETEST_MODE) {
 				// ToDo: Find failed tests
-			} else if (mode == TEST_MODE) {
+			} else if (sessionInfo.getMode() == TEST_MODE) {
 				Document doc = DB.newDocument();
 				String namespace = null;
 				String simple_name = "suite";
-				if (suitename != null) {
-					int i = suitename.lastIndexOf(",");
+                                String suiteName = sessionInfo.getSuiteName();
+				if (suiteName != null) {
+					int i = suiteName.lastIndexOf(",");
 					if (i > 0) {
-						namespace = suitename.substring(0, i);
-						simple_name = suitename.substring(i + 1);
+						namespace = suiteName.substring(0, i);
+						simple_name = suiteName.substring(i + 1);
 					} else {
-						simple_name = suitename.replaceFirst(":", "-");
+						simple_name = suiteName.replaceFirst(":", "-");
 					}
 				}
 				Element e;
@@ -354,22 +365,22 @@ public class Test {
 					e = doc.createElementNS(namespace, simple_name);
 				}
 				doc.appendChild(e);
-				templates.put(session, doc);
+				templates.put(sessionId, doc);
 				//        TF.newTransformer().transform(new DOMSource(doc), new StreamResult(System.out));
-			} else if (mode == RESUME_MODE) {
-				File log = new File(session_dir, "log.xml");
-				if (log.exists()) {
-					templates.put(session, getTemplateFromLog(logdir, session));
+			} else if (sessionInfo.getMode() == RESUME_MODE) {
+				File testLog = new File(sessionDir, "log.xml");
+				if (testLog.exists()) {
+					templates.put(sessionId, getTemplateFromLog(logDir, sessionId));
 				} else {
-					System.out.println("Error: Can't find " + log.getAbsolutePath());
-					return;
+                                    this.teLogger.warning("Unable to find test log " + testLog.getAbsolutePath());
+				    return;
 				}
 			}
 		} else {
 			Iterator it = tests.iterator();
 			while (it.hasNext()) {
 				String path = it.next().toString();
-				templates.put(path, getTemplateFromLog(logdir, path));
+				templates.put(path, getTemplateFromLog(logDir, path));
 			}
 		}
 
@@ -378,16 +389,16 @@ public class Test {
 		Iterator it = templates.keySet().iterator();
 		while (it.hasNext()) {
 			String path = (String)it.next();
-			if (mode == RETEST_MODE) {
-				File f = new File(logdir, path);
+			if (sessionInfo.getMode() == RETEST_MODE) {
+				File f = new File(logDir, path);
 				deleteSubDirs(f);
 			}
 			Document doc = (Document)templates.get(path);
 			t.clearParameters();
-			if (logdir != null) {
-				t.setParameter("{" + TE_NS + "}logdir", logdir.getCanonicalPath());
+			if (logDir != null) {
+				t.setParameter("{" + TE_NS + "}logdir", logDir.getCanonicalPath());
 			}
-			t.setParameter("{" + TE_NS + "}mode", Integer.toString(mode));
+			t.setParameter("{" + TE_NS + "}mode", Integer.toString(sessionInfo.getMode()));
 			t.setParameter("{" + TE_NS + "}starting-test-path", path);
 			t.setParameter("{" + TE_NS + "}core", core);
 			try {
@@ -402,7 +413,7 @@ public class Test {
 						core.close_log();
 					}
 				}
-				System.err.println(e.getMessageAndLocation());
+                                this.teLogger.warning(e.getMessageAndLocation());
 			}
 		}
 	}
@@ -435,12 +446,36 @@ public class Test {
                 return;
 	}
         
+    /**
+     * 
+     * @param chars 
+     * @param logDir 
+     */
+        private void writeFinalStylesheetToFile(char[] chars, File logDir) {     
+            File etsFile = new File(logDir, "ets.xsl");
+            Writer out = null;
+            try {
+                out = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(etsFile), "UTF-8"));
+                out.write(chars);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    if (null != out) out.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return;
+	}
+        
 	public static void main(String[] args) throws Exception {
 		int mode = TEST_MODE;
 		boolean validate = true;
-		File logdir = null;
+		File logDir = null;
 		String sessionId = null;
-		String suite_name = null;
+		String suiteName = null;
 		ArrayList sources = new ArrayList();
 		ArrayList tests = new ArrayList();
 		String cmd = "java com.occamlab.te.Test";
@@ -453,26 +488,23 @@ public class Test {
 			if (args[i].startsWith("-cmd=")) {
 				cmd = args[i].substring(5);
 			} else if (args[i].startsWith("-source=")) {
-				//OLD: sources.add(new File(args[i].substring(8)));
 				boolean exists = new File(args[i].substring(8)).exists();
 				File sourceFile = exists ? new File(args[i].substring(8)) : getResourceAsFile(args[i].substring(8));
 				sources.add(sourceFile);
 			} else if (args[i].startsWith("-package=")) {
-				//OLD: File packagefile = new File(args[i].substring(9));
 				boolean exists = new File(args[i].substring(9)).exists();
 				File packagefile = exists ? new File(args[i].substring(9)) : getResourceAsFile(args[i].substring(9));
 				sources.add(packagefile);
 			} else if (args[i].startsWith("-sourcedir=")) {
-				//OLD: File sourcedir = new File(args[i].substring(11));
 				boolean exists = new File(args[i].substring(11)).exists();
 				File sourcedir = exists ? new File(args[i].substring(11)) : getResourceAsFile(args[i].substring(11));
 				sources.add(sourcedir);
 			} else if (args[i].startsWith("-logdir=")) {
-				logdir = new File(args[i].substring(8));
+				logDir = new File(args[i].substring(8));
 			} else if (args[i].startsWith("-session=")) {
 				sessionId = args[i].substring(9);
 			} else if (args[i].startsWith("-suite=")) {
-				suite_name = args[i].substring(7);
+				suiteName = args[i].substring(7);
 			} else if (args[i].equals("-mode=test")) {
 				mode = TEST_MODE;
 			} else if (args[i].equals("-mode=retest")) {
@@ -488,7 +520,7 @@ public class Test {
 				validate = false;
 			} else if (!args[i].startsWith("-")) {
 				if (mode == TEST_MODE) {
-					suite_name = args[i];
+					suiteName = args[i];
 				} else if (mode == RETEST_MODE) {
 					tests.add(args[i]);
 				}
@@ -518,18 +550,19 @@ public class Test {
 
 		if (sessionId == null) {
 			if (mode == TEST_MODE || mode == DOC_MODE) {
-				sessionId = newSessionId(logdir);
+				sessionId = newSessionId(logDir);
 			} else if (mode == RESUME_MODE) {
 				System.out.println("Please provide a session Id parameter.");
 				return;
 			}
 		}
 
+                TestSessionInfo sessionInfo = new TestSessionInfo(suiteName, sessionId, sources, logDir, validate);
 		Thread.currentThread().setName("CTL Test Engine");
-		Test t = new Test(sources, validate, mode);
+                Test t = new Test(sessionInfo);
 		if (mode == DOC_MODE) mode = TEST_MODE;
 		TECore core = new TECore(System.out, false);
-		// Run the compiled test object
-		t.test(mode, logdir, suite_name, sessionId, tests, core);
+                t.test(sessionInfo, tests, core);
+		//t.test(mode, logDir, suiteName, sessionId, tests, core);
 	}
 }
