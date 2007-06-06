@@ -31,6 +31,7 @@ import java.net.URLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -325,6 +326,7 @@ public class ImageParser {
    *	the name of the image type/format, or null if not valid
    */
   public static String getImageType(String imageLoc) {
+  	
   	// Get the image as an InputStream
   	InputStream is = null;
   	try {
@@ -342,6 +344,7 @@ public class ImageParser {
 		
 		// Find all image readers that recognize the image format
 		Iterator iter = ImageIO.getImageReaders(iis);
+		
 		// No readers found
 		if (!iter.hasNext()) {
 			return null;
@@ -358,6 +361,21 @@ public class ImageParser {
 	
 	// The image could not be read
 	return null;
+  }
+
+  /** Gets the supported image types in the ImageIO class (gives a comma-seperated list) */
+  public static String getSupportedImageTypes() {
+	String[] readers = ImageIO.getReaderFormatNames();
+	ArrayList imageArray = new ArrayList();
+	String str = "";
+	for (int i = 0; i < readers.length; i++) {
+		String current = readers[i].toLowerCase();
+		if (!imageArray.contains(current)) {
+			imageArray.add(current);
+			str += current + ",";
+		}		
+	}
+	return str.substring(0,str.lastIndexOf(","));
   }
 
   public static Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
