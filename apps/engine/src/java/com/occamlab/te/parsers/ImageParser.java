@@ -22,7 +22,15 @@
 package com.occamlab.te.parsers;
 
 import java.io.PrintWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.Iterator;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -35,6 +43,9 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import javax.xml.parsers.*;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class ImageParser {
 
@@ -305,6 +316,50 @@ public class ImageParser {
     }
   }
 
+  /** 
+   * Determines the type of image, or null if not a valid image type
+   *
+   * @param imageLoc
+   *	the string location of the image (uri syntax expected)
+   * @return String
+   *	the name of the image type/format, or null if not valid
+   */
+  public static String getImageType(String imageLoc) {
+  	// Get the image as an InputStream
+  	InputStream is = null;
+  	try {
+  		URI imageUri = new URI(imageLoc);
+  		URL imageUrl = imageUri.toURL();
+  		is = imageUrl.openStream();
+	} catch (Exception e) {
+		return null;
+	}
+	
+	// Determine the image type and return it if valid
+	try {
+		// Create an image input stream on the image
+		ImageInputStream iis = ImageIO.createImageInputStream(is);
+		
+		// Find all image readers that recognize the image format
+		Iterator iter = ImageIO.getImageReaders(iis);
+		// No readers found
+		if (!iter.hasNext()) {
+			return null;
+		}
+		
+		// Use the first reader
+		ImageReader reader = (ImageReader)iter.next();
+		iis.close();
+	
+		// Return the format name
+		return reader.getFormatName();
+	} catch (IOException e) {
+	}
+	
+	// The image could not be read
+	return null;
+  }
+
   public static Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
     if (System.getProperty("java.awt.headless") == null) {
       System.setProperty("java.awt.headless", "true");
@@ -419,4 +474,3 @@ public class ImageParser {
     System.exit(0);
   }
 }
-
