@@ -76,6 +76,7 @@ public class Test {
 	TransformerFactory TF;
 	Templates ScriptTemplates;
         private Logger appLogger;
+        private TestDriverConfig driverConfig;
 
     /**
      * Initializes the main test driver.
@@ -84,6 +85,7 @@ public class Test {
      * @param driverConfig  test driver configuration.
      */
 	public Test(TestDriverConfig driverConfig) throws Exception {
+                this.driverConfig = driverConfig;
                 initAppLogger(driverConfig.getSessionDir());
                 appLogger.info("Initializing main test driver");
                 appLogger.entering(this.getClass().getName(), "ctor", new Object[]{driverConfig});
@@ -153,7 +155,7 @@ public class Test {
 							File txsl_file = new File(sourcefile, children[i].substring(0, children[i].length() - 3) + extension);
 							boolean needs_compiling;
 							if (txsl_file.exists()) {
-                                // regenerate if existing output file is obsolete
+                                                               // regenerate if existing output file is obsolete
 								needs_compiling = txsl_file.lastModified() < ctl_file.lastModified() ||
 								txsl_file.lastModified() < generatorStylesheet.lastModified();
 							} else {
@@ -167,6 +169,9 @@ public class Test {
 										generator.setParameter("filename", ctl_file.getAbsolutePath());
 										generator.setParameter("txsl_filename", txsl_file.toURL().toString());
 										inputCtl = inputDB.parse(ctl_file);
+                                                                                this.appLogger.fine("Stage 1 (generator) transformation parameters:" + 
+                                                                                        "\n filename (source): " + ctl_file.getAbsolutePath() + 
+                                                                                        "\n txsl_filename (result): " + txsl_file.getAbsolutePath());
 										generator.transform(new DOMSource(inputCtl), new StreamResult(txsl_file));
 									}
 								} catch (org.xml.sax.SAXException e) {
@@ -207,14 +212,21 @@ public class Test {
                 }
 			}
                         
-			if (script_chars != null) {
+			if (script_chars != null) { // when processing second and subsequent sources
 				CharArrayReader car = new CharArrayReader(script_chars);
 				identityTransformer.transform(new StreamSource(car), new DOMResult(scriptElem));
+                                if (this.appLogger.isLoggable(Level.FINE)) {
+                                  this.appLogger.fine("Saving previously generated output (script_chars) to scriptDoc/script");
+                                  writeNodeToLog(this.appLogger, scriptElem);
+                                }
 				composer.setParameter("prev", scriptElem);
 			}
 			CharArrayWriter caw = new CharArrayWriter();
 			composer.transform(new DOMSource(generatedDoc), new StreamResult(caw));
 			script_chars = caw.toCharArray();
+                        if (this.appLogger.isLoggable(Level.FINE)) {
+                          this.appLogger.fine("Content of script_chars variable:\n" + new String(script_chars));
+                        }
 		}
                 
                 
@@ -247,6 +259,10 @@ public class Test {
 		}
 	}
 
+        public TestDriverConfig getDriverConfig() {
+            return driverConfig;
+        }
+        
 	// Deletes a directory and its contents
 	public static void deleteDir(File dir) {
 		String[] children = dir.list();
@@ -307,10 +323,10 @@ public class Test {
 
         
 	// Main test method
-        public void test(TestDriverConfig sessionInfo, List tests, TECore core) throws Exception {
-		String sessionId = sessionInfo.getSessionId();
-                File logDir = sessionInfo.getLogDir();
-		File sessionDir = sessionInfo.getSessionDir();
+        public void test(List tests, TECore core) throws Exception {
+		String sessionId = this.driverConfig.getSessionId();
+                File logDir = this.driverConfig.getLogDir();
+		File sessionDir = this.driverConfig.getSessionDir();
 
 		core.setSessionId(sessionId);
 		core.setSessionDir(sessionDir.getAbsolutePath());
@@ -320,7 +336,7 @@ public class Test {
                 //}
 
 		//if (logDir == null) {
-		//	if (sessionInfo.getMode() != TEST_MODE) {
+		//	if (driverConfig.getMode() != TEST_MODE) {
                  //         this.appLogger.warning("Test log directory is not specified.");
 		 //         throw new Exception("Test log directory is not specified.");
 		//	}
@@ -329,7 +345,7 @@ public class Test {
 			//	logDir.mkdir();
 			//}
 			//if (logDir.isDirectory()) {
-				if (sessionInfo.getMode() == TEST_MODE) {
+				if (driverConfig.getMode() == TEST_MODE) {
 					//if (sessionDir.isDirectory()) {
 						File f = new File(sessionDir, "log.xml");
 						if (f.exists()) {
@@ -347,13 +363,13 @@ public class Test {
 		// Prepare suite
 		Map templates = new HashMap();
 		if (tests.isEmpty()) {
-			if (sessionInfo.getMode() == RETEST_MODE) {
+			if (driverConfig.getMode() == RETEST_MODE) {
 				// ToDo: Find failed tests
-			} else if (sessionInfo.getMode() == TEST_MODE) {
+			} else if (driverConfig.getMode() == TEST_MODE) {
 				Document doc = DB.newDocument();
 				String namespace = null;
 				String simple_name = "suite";
-                                String suiteName = sessionInfo.getSuiteName();
+                                String suiteName = driverConfig.getSuiteName();
 				if (suiteName != null) {
 					int i = suiteName.lastIndexOf(",");
 					if (i > 0) {
@@ -372,7 +388,7 @@ public class Test {
 				doc.appendChild(e);
 				templates.put(sessionId, doc);
 				//        TF.newTransformer().transform(new DOMSource(doc), new StreamResult(System.out));
-			} else if (sessionInfo.getMode() == RESUME_MODE) {
+			} else if (driverConfig.getMode() == RESUME_MODE) {
 				File testLog = new File(sessionDir, "log.xml");
 				if (testLog.exists()) {
 					templates.put(sessionId, getTemplateFromLog(logDir, sessionId));
@@ -394,7 +410,7 @@ public class Test {
 		Iterator it = templates.keySet().iterator();
 		while (it.hasNext()) {
 			String path = (String)it.next();
-			if (sessionInfo.getMode() == RETEST_MODE) {
+			if (driverConfig.getMode() == RETEST_MODE) {
 				File f = new File(logDir, path);
 				deleteSubDirs(f);
 			}
@@ -403,7 +419,7 @@ public class Test {
 			if (logDir != null) {
 				t.setParameter("{" + TE_NS + "}logdir", logDir.getCanonicalPath());
 			}
-			t.setParameter("{" + TE_NS + "}mode", Integer.toString(sessionInfo.getMode()));
+			t.setParameter("{" + TE_NS + "}mode", Integer.toString(driverConfig.getMode()));
 			t.setParameter("{" + TE_NS + "}starting-test-path", path);
 			t.setParameter("{" + TE_NS + "}core", core);
 			try {
@@ -436,13 +452,12 @@ public class Test {
 	//}
 
         
-	private void writeDocumentToLog(Document doc) {
-            Logger logger = Logger.getLogger(Test.class.getPackage().getName());
+	private void writeNodeToLog(Logger logger, Node node) {
             StringWriter strWriter = new StringWriter();
             Transformer identity = null;
             try {
                 identity = TF.newTransformer();
-                identity.transform(new DOMSource(doc), new StreamResult(strWriter));
+                identity.transform(new DOMSource(node), new StreamResult(strWriter));
             } catch (TransformerConfigurationException ex) {
                 logger.fine(ex.toString());
             } catch (TransformerException ex) {
@@ -592,11 +607,11 @@ public class Test {
 		//	}
 		//}
 
-                TestDriverConfig sessionInfo = new TestDriverConfig(suiteName, sessionId, sources, logDir, validate, mode);
+                TestDriverConfig driverConfig = new TestDriverConfig(suiteName, sessionId, sources, logDir, validate, mode);
 		Thread.currentThread().setName("CTL Test Engine");
-                Test t = new Test(sessionInfo);
+                Test t = new Test(driverConfig);
 		//if (mode == DOC_MODE) mode = TEST_MODE;
 		TECore core = new TECore(System.out, false);
-                t.test(sessionInfo, tests, core);
+                t.test(tests, core);
 	}
 }

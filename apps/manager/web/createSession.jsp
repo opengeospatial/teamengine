@@ -9,7 +9,7 @@ public void jspInit() {
 	try {
 		Config conf = new Config();
 		SuiteCollectionHash = new LinkedHashMap();
-		LinkedHashMap sourcesHash = conf.getSources();
+		LinkedHashMap sourcesHash = conf.getAvailableSuites();
 		Iterator it = sourcesHash.keySet().iterator();
 		while (it.hasNext()) {
 			String sourcesId = (String)it.next();

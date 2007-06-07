@@ -37,12 +37,7 @@ public class TestDriverConfig {
         }
         this.validationFlag = validate;
         this.mode = mode;
-        this.sessionId = sessionId;
-        if ((sessionId == null) || (sessionId.length() == 0)) {
-            if (mode != Test.RESUME_MODE) {
-                this.sessionId = generateSessionId(getLogDir());
-            }
-        }
+        setSessionId(sessionId);
     }
     
     /**
@@ -78,6 +73,11 @@ public class TestDriverConfig {
      */
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+        if ((sessionId == null) || (sessionId.length() == 0)) {
+            if (mode != Test.RESUME_MODE) {
+                this.sessionId = generateSessionId(this.logDir);
+            }
+        }
     }
     
     /**
@@ -106,7 +106,8 @@ public class TestDriverConfig {
     }
     
     /**
-     * 
+     * Sets the root directory for storing all test logs.
+     *
      * @param logDir 
      */
     public void setLogDir(File logDir) {
@@ -238,7 +239,7 @@ public class TestDriverConfig {
     * @return  a session id string ("s0001" by default, unless the session 
     *          sub-directory already exists).
     */
-    private String generateSessionId(File logDir) {
+    public static String generateSessionId(File logDir) {
         int i = 1;
 	String session = "s0001";
 	while (new File(logDir, session).exists() && i < 10000) {

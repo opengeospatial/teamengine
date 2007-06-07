@@ -21,12 +21,11 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
-import com.occamlab.te.Test;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.lang.ClassLoader;
+import java.net.URLDecoder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,32 +34,47 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * Reads the test harness configuration file. The file is structured as follows:
+ * <pre>
+ * &lt;config&gt;
+ *   &lt;home&gt;${base-url}&lt;/home&gt;
+ *   &lt;usersdir&gt;${users.dir}&lt;/usersdir&gt;
+ *   &lt;!-- one or more test suites --&gt;
+ *   &lt;sources id="${test-suite-id}"&gt;
+ *     &lt;source&gt;${ctl.source.location}&lt;/source&gt;
+ *     &lt;!-- additional CTL source locations --&gt;
+ *   &lt;/sources&gt;
+ * &lt;/config&gt;
+ * </pre>
+ */
 public class Config {
-  private String Home;
-  private File UsersDir;
-  private LinkedHashMap SourcesHash;
+  private String home;
+  private File usersDir;
+  private LinkedHashMap availableSuites;
 
   public Config() {
     try {
       DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
       Document doc = db.parse(cl.getResourceAsStream("com/occamlab/te/web/config.xml"));
-      Element config = (Element)(doc.getElementsByTagName("config").item(0));
-      Element home = (Element)(config.getElementsByTagName("home").item(0));
-      Home = home.getTextContent();
-      Element usersdir = (Element)(config.getElementsByTagName("usersdir").item(0));
-      UsersDir = getFile(usersdir.getTextContent());
-      if (!UsersDir.isDirectory()) {
+      Element configElem = (Element)(doc.getElementsByTagName("config").item(0));
+      Element homeElem = (Element)(configElem.getElementsByTagName("home").item(0));
+      home = homeElem.getTextContent();
+      Element usersdir = (Element)(configElem.getElementsByTagName("usersdir").item(0));
+      usersDir = getFile(usersdir.getTextContent());
+      if (!usersDir.isDirectory()) {
         System.out.println("Error: Directory " + usersdir.getTextContent() + " does not exist.");
       }
 
-      File script_dir = Test.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl").getParentFile();
+      File script_dir = new File(URLDecoder.decode( 
+          cl.getResource("com/occamlab/te/scripts/parsers.ctl").getFile(), "UTF-8")).getParentFile();
 
-      SourcesHash = new LinkedHashMap();
-      NodeList sourcesList = config.getElementsByTagName("sources");
+      availableSuites = new LinkedHashMap();
+      NodeList sourcesList = configElem.getElementsByTagName("sources");
       for (int i = 0; i < sourcesList.getLength(); i++) {
-        ArrayList list = new ArrayList();
-        list.add(script_dir);
+        ArrayList<File> ctlLocations = new ArrayList<File>();
+        ctlLocations.add(script_dir);
         Element sources = (Element)sourcesList.item(i);
         String id = sources.getAttribute("id"); 
         NodeList sourceList = sources.getElementsByTagName("source");  
@@ -70,9 +84,9 @@ public class Config {
           if (!f.exists()) {
             System.out.println("Error: Source " + source.getTextContent() + " does not exist.");
           }
-          list.add(f);
+          ctlLocations.add(f);
         }
-        SourcesHash.put(id, list);
+        availableSuites.put(id, ctlLocations);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -80,15 +94,15 @@ public class Config {
   }
   
   public String getHome() {
-    return Home;
+    return home;
   }
   
   public File getUsersDir() {
-    return UsersDir;
+    return usersDir;
   }
   
-  public LinkedHashMap getSources() {
-    return SourcesHash;
+  public LinkedHashMap getAvailableSuites() {
+    return availableSuites;
   }
 
   private File getFile(String path) {

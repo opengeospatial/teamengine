@@ -30,29 +30,34 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
+import com.occamlab.te.TestDriverConfig;
 
 public class TestServlet extends HttpServlet {
 	DocumentBuilder DB;
-	Config Conf;
-	Map TestClasses;
+	Config conf;
+	Map testDrivers;
 
 	public void init() throws ServletException {
 		try {
 			DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Conf = new Config();
-			TestClasses = new HashMap();
-			Map sources = Conf.getSources();
-			Iterator it = sources.keySet().iterator();
+			conf = new Config();
+			testDrivers = new HashMap();
+			Map suites = conf.getAvailableSuites();
+			Iterator it = suites.keySet().iterator();
 			while (it.hasNext()) {
-				String sourcesId = (String)it.next();
-				TestClasses.put(sourcesId, new Test((ArrayList)sources.get(sourcesId), false, Test.TEST_MODE));
+				String suiteId = (String) it.next();
+                List<File> sources = (List<File>) suites.get(suiteId);
+                TestDriverConfig driverConfig = new TestDriverConfig(suiteId, null, sources, null, true, Test.TEST_MODE);
+                driverConfig.setWebAppContext(true);
+                testDrivers.put(suiteId, new Test(driverConfig));
+				//testDrivers.put(suiteId, new Test((ArrayList)suites.get(suiteId), false, Test.TEST_MODE));
 			}
 		} catch(Exception e) {
 			throw new ServletException(e);
@@ -76,7 +81,7 @@ public class TestServlet extends HttpServlet {
 			if (operation.equals("Test")) {
 				TestSession s;
 				String user = request.getRemoteUser();
-				File userlogdir = new File(Conf.getUsersDir(), user);
+				File userlogdir = new File(conf.getUsersDir(), user);
 				String mode = request.getParameter("mode");
 				if (mode.equals("retest")) {
 					String sessionid = request.getParameter("session");
@@ -89,17 +94,17 @@ public class TestServlet extends HttpServlet {
 						test = sessionid;
 					}
 					s = TestSession.load(DB, userlogdir, sessionid);
-					s.prepare(TestClasses, Test.RETEST_MODE, test);
+					s.prepare(testDrivers, Test.RETEST_MODE, test);
 				} else if (mode.equals("resume")) {
 					String sessionid = request.getParameter("session");
 					s = TestSession.load(DB, userlogdir, sessionid);
-					s.prepare(TestClasses, Test.RESUME_MODE);
+					s.prepare(testDrivers, Test.RESUME_MODE);
 				} else {
 					String sources = request.getParameter("sources");
 					String suite = request.getParameter("suite");
 					String description = request.getParameter("description");
 					s = TestSession.create(userlogdir, sources, suite, description);
-					s.prepare(TestClasses, Test.TEST_MODE);
+					s.prepare(testDrivers, Test.TEST_MODE);
 				}
 				Thread thread = new Thread(s);
 				session.setAttribute("testsession", s);

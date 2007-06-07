@@ -36,63 +36,78 @@ import org.w3c.dom.Element;
 
 import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
+import com.occamlab.te.TestDriverConfig;
 
+/**
+ * Represents a test session.
+ */
 public class TestSession implements Runnable, HttpSessionBindingListener {
-  Test TestClass;
-  File LogDir;
-  String SourcesId;
-  String SessionId;
-  String Description;
-  String Suite;
+  Test testDriver;
+  File userLogDir;
+  String suiteId;
+  String sessionId;
+  String description;
+  String suiteName;
   int Mode;
-  ArrayList TestList;
-  TECore Core;
+  ArrayList testList;
+  TECore core;
   ByteArrayOutputStream Out;
   Thread ActiveThread = null;
   boolean Complete = false;
 
-  static TestSession create(File logdir, String sourcesId, String suite, String description) throws Exception {
+  /**
+   * Creates a new test session.
+   */
+  static TestSession create(File logdir, String suiteId, String suiteName, String description) throws Exception {
     TestSession s = new TestSession();
-    s.LogDir = logdir;
-    s.SourcesId = sourcesId;
-    s.SessionId = Test.newSessionId(logdir);
-    s.Suite = suite;
-    s.Description = description;
-    File dir = new File(logdir, s.SessionId);
+    s.userLogDir = logdir;
+    s.suiteId = suiteId;
+    s.sessionId = TestDriverConfig.generateSessionId(logdir);
+    s.suiteName = suiteName;
+    s.description = description;
+    File dir = new File(logdir, s.sessionId);
     dir.mkdir();
     PrintStream out = new PrintStream(new File(dir, "session.xml"));
-    out.println("<session id=\"" + s.SessionId + "\" sourcesId=\"" + s.SourcesId + "\">");
-    out.println("<suite>" + s.Suite + "</suite>");
-    out.println("<description>" + s.Description + "</description>");
+    out.println("<session id=\"" + s.sessionId + "\" sourcesId=\"" + s.suiteId + "\">");
+    out.println("<suite>" + s.suiteName + "</suite>");
+    out.println("<description>" + s.description + "</description>");
     out.println("</session>");
     return s;
   }
 
+  /**
+   * Creates a test session from a previous run.
+   */
   public static TestSession load(DocumentBuilder db, File logdir, String sessionId) throws Exception {
     TestSession s = new TestSession();
-    s.SessionId = sessionId;
-    File dir = new File(logdir, s.SessionId);
+    s.sessionId = sessionId;
+    File dir = new File(logdir, s.sessionId);
     Document doc = db.parse(new File(dir, "session.xml"));
     Element session = (Element)(doc.getElementsByTagName("session").item(0));
-    s.SourcesId = session.getAttribute("sourcesId");
+    s.suiteId = session.getAttribute("sourcesId");
     Element suite = (Element)(session.getElementsByTagName("suite").item(0));
-    s.Suite = suite.getTextContent();
+    s.suiteName = suite.getTextContent();
     Element description = (Element)(session.getElementsByTagName("description").item(0));
-    s.Description = description.getTextContent();
-    s.LogDir = logdir;
+    s.description = description.getTextContent();
+    s.userLogDir = logdir;
     return s;
   }
   
   void prepare(Map testClasses, int mode) {
-    TestClass = (Test)testClasses.get(SourcesId);
+    testDriver = (Test) testClasses.get(suiteId);
+    TestDriverConfig driverConfig = testDriver.getDriverConfig();
+    driverConfig.setLogDir(userLogDir);
+    driverConfig.setMode(mode);
+    driverConfig.setSessionId(sessionId);
+    driverConfig.setSuiteName(suiteName);
     Mode = mode;
-    TestList = new ArrayList();
+    testList = new ArrayList();
   }
   
   void prepare(Map testClasses, int mode, String test) {
     prepare(testClasses, mode);
     if (mode == Test.RETEST_MODE) {
-      TestList.add(test);
+      testList.add(test);
     }
   }
   
@@ -107,25 +122,27 @@ public class TestSession implements Runnable, HttpSessionBindingListener {
   }
   
   public TECore getCore() {
-    return Core;
+    return core;
   }
 
   public String getSessionId() {
-    return SessionId;
+    return sessionId;
   }
 
   public String getDescription() {
-    return Description;
+    return description;
   }
 
   public void run() {
+      assert (null != testDriver) : "Test driver has not been initialized in TestSession.prepare().";
     try {
       ActiveThread = Thread.currentThread();
-      LogDir.mkdir();
+      userLogDir.mkdir();
       Out = new ByteArrayOutputStream();
       PrintStream ps = new PrintStream(Out);
-      Core = new TECore(ps, true);
-      TestClass.test(Mode, LogDir, Suite, SessionId, TestList, Core);
+      core = new TECore(ps, true);
+      testDriver.test(testList, core);
+      //testDriver.test(Mode, userLogDir, Suite, sessionId, TestList, Core);
       ps.close();
     } catch(Exception e) {
       e.printStackTrace(System.out);

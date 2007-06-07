@@ -10,7 +10,7 @@ public void jspInit() {
 	try {
 		Config conf = new Config();
 		SuiteCollectionHash = new LinkedHashMap();
-		LinkedHashMap sourcesHash = conf.getSources();
+		LinkedHashMap sourcesHash = conf.getAvailableSuites();
 		Iterator it = sourcesHash.keySet().iterator();
 		while (it.hasNext()) {
 			String sourcesId = (String)it.next();
@@ -93,7 +93,7 @@ Url = new URL(request.getScheme(), request.getServerName(), request.getServerPor
 		</p>
         <p>
         <img alt="WARNING!" src="images/warn.png" align="bottom" hspace="4" />
-        Test data must be loaded before running a test suite!
+        It may be necessary to load test data before running a test suite!
         </p>
 		<a href="viewSessions.jsp"/>Start Testing</a>
 		<%@ include file="footer.jsp" %>
