@@ -98,8 +98,15 @@ public class ZipParser {
 		// Create the full directory path to store the zip entities
 		Document d = instruction.getOwnerDocument();
 		NodeList nodes = d.getElementsByTagNameNS(CTL_NS, "SessionDir");
-		Element e = (Element)nodes.item(0);
-		String path = e.getTextContent();
+		// Either use the given session directory, or make one in the java temp directory
+		String path = "";
+		if (nodes.getLength() > 0) {
+			Element e = (Element)nodes.item(0);
+			path = e.getTextContent();
+		}
+		else {
+			path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
+		}
 		String randomStr = randomString(16,new Random());		
 		path = path+"/work/"+randomStr;
 		new File(path).mkdirs();

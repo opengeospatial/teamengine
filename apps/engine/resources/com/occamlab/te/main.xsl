@@ -33,7 +33,7 @@
 	<xsl:param name="prev"><none/></xsl:param>
 
 	<xsl:variable name="prev-transform">
-		<xsl:copy-of select="$prev/*"/>
+		<xsl:copy-of select="$prev/*/*"/>
 	</xsl:variable>
  
 	<xsl:template match="/">
