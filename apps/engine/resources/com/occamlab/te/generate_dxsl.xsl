@@ -188,7 +188,7 @@
 	</xsl:template>
 -->
 	<xsl:template match="/">
-		<txsl:transform version="1.0" exclude-result-prefixes="ctl saxon">
+		<txsl:transform version="2.0" exclude-result-prefixes="ctl saxon">
 			<txsl:template name="file:te-initialize">
 				<xsl:call-template name="namespace-attribute">
 					<xsl:with-param name="prefix" select="'file'"/>

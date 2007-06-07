@@ -224,7 +224,7 @@
 		</txsl:variable>
 		<txsl:variable name="te:formresults">
 			<txsl:choose>
-				<txsl:when test="$te:mode=2 and boolean($te:log/log/formresults[@id = $te:form-call-id])">
+				<txsl:when test="$te:mode='2' and boolean($te:log/log/formresults[@id = $te:form-call-id])">
 					<txsl:copy-of select="$te:log/log/formresults[@id = $te:form-call-id]"/>
 				</txsl:when>
 				<txsl:otherwise>
@@ -247,7 +247,7 @@
 		</txsl:variable>
 		<txsl:variable name="te:request">
 			<txsl:choose>
-				<txsl:when test="$te:mode=2 and boolean($te:log/log/request[@id = $te:web-call-id])">
+				<txsl:when test="$te:mode='2' and boolean($te:log/log/request[@id = $te:web-call-id])">
 					<txsl:copy-of select="$te:log/log/request[@id = $te:web-call-id]"/>
 				</txsl:when>
 				<txsl:otherwise>
@@ -288,7 +288,7 @@
 		<xsl:call-template name="loc-element"/>
 		<txsl:variable name="te:response">
 			<txsl:choose>
-				<txsl:when test="$te:mode=2 and boolean($te:log/log/response[@id = $te:web-call-id])">
+				<txsl:when test="$te:mode='2' and boolean($te:log/log/response[@id = $te:web-call-id])">
 					<txsl:copy-of select="$te:log/log/response[@id = $te:web-call-id]"/>
 				</txsl:when>
 				<txsl:otherwise>
@@ -719,7 +719,7 @@
 	</xsl:template>
 
 	<xsl:template match="/">
-		<txsl:transform version="1.0" exclude-result-prefixes="ctl saxon">
+		<txsl:transform version="2.0" exclude-result-prefixes="ctl saxon">
 			<xsl:for-each select="//ctl:function|//ctl:parser">
 				<xsl:variable name="prefix" select="substring-before(@name, ':')"/>
 				<xsl:variable name="local-name" select="substring-after(@name, ':')"/>
