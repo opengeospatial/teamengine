@@ -31,14 +31,10 @@
 	<!-- Combines two compiled scripts and adds the root template -->
 	
 	<xsl:param name="prev"><none/></xsl:param>
-
-	<xsl:variable name="prev-transform">
-		<xsl:copy-of select="$prev/*/*"/>
-	</xsl:variable>
  
 	<xsl:template match="/">
 		<txsl:transform version="2.0">
-			<xsl:for-each select="$prev-transform/xsl:include">
+			<xsl:for-each select="$prev/xsl:transform/xsl:include">
 				<txsl:import href="{@href}"/>
 			</xsl:for-each>
 
@@ -51,10 +47,10 @@
 				<txsl:copy-of select="te:read_log($te:logdir, $te:starting-test-path)"/>
 			</txsl:param>
 
-			<xsl:copy-of select="$prev-transform/xsl:variable"/>
+			<xsl:copy-of select="$prev/xsl:transform/xsl:variable"/>
 
 			<xsl:variable name="functions" select="/xsl:transform/xsl:function"/>
-			<xsl:for-each select="$prev-transform/xsl:function">
+			<xsl:for-each select="$prev/xsl:transform/xsl:function">
 				<xsl:variable name="name" select="@name"/>
 				<xsl:if test="not($functions/xsl:function[@name=$name])">
 					<xsl:copy-of select="."/>
@@ -62,7 +58,7 @@
 			</xsl:for-each>
 
 			<xsl:variable name="templates" select="/xsl:transform/xsl:template"/>
-			<xsl:for-each select="$prev-transform/xsl:template[not(@match='/' or @match='*')]">
+			<xsl:for-each select="$prev/xsl:transform/xsl:template[not(@match='/' or @match='*')]">
 				<xsl:variable name="name" select="string(@name)"/>
 				<xsl:variable name="match" select="string(@match)"/>
 				<xsl:if test="not($templates/xsl:template[string(@name)=$name and string(@match)=$match])">
@@ -73,7 +69,7 @@
 			<xsl:copy-of select="/xsl:transform/*|/xsl:transform/comment()"/>
 
 			<txsl:template match="/">
-				<xsl:for-each select="$prev-transform/xsl:template[@match='/']/xsl:call-template[contains(@name, ':te-initialize')]">
+				<xsl:for-each select="$prev/xsl:transform/xsl:template[@match='/']/xsl:call-template[contains(@name, ':te-initialize')]">
 					<xsl:copy-of select="."/>
 				</xsl:for-each>
 				<xsl:for-each select="/xsl:transform/xsl:include">
