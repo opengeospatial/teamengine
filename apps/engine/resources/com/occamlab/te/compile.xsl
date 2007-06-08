@@ -108,7 +108,9 @@
 							<xsl:text>&gt;</xsl:text>
 						</txsl:when>
 						<txsl:otherwise>
-							<txsl:value-of select="${@name}"/>
+							<xsl:text>&lt;</xsl:text>
+							<txsl:value-of select="name(${@name}/*)"/>
+							<xsl:text>&gt;</xsl:text>
 						</txsl:otherwise>
 					</txsl:choose>
 				</txsl:param>
