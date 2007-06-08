@@ -1,18 +1,19 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
-DocumentBuilder DB;
+DocumentBuilderImpl DB;
 Templates ViewLogTemplates;
 
 public void jspInit() {
 	try {
 		Conf = new Config();
-		DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		DB = new DocumentBuilderImpl();      
+		DB.setConfiguration((Configuration) ViewLog.transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));        
 		File stylesheet = Test.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
-		ViewLogTemplates = TransformerFactory.newInstance().newTemplates(new StreamSource(stylesheet));
+		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
 	}

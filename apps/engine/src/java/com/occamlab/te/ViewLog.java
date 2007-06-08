@@ -94,7 +94,7 @@ public class ViewLog {
 		return test;
 	}
 
-	public static boolean view_log(DocumentBuilder db, File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
+	public static boolean view_log(DocumentBuilderImpl db, File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
 		passCount = 0;
 		failCount = 0;
 		warnCount = 0;
@@ -125,7 +125,8 @@ public class ViewLog {
 				System.out.println("Error: Directory " + session_dir.getAbsolutePath() + " does not exist.");
 				return false;
 			}
-			Document doc = db.newDocument();
+			DocumentBuilder db3 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc = db3.newDocument();
 			doc.appendChild(parse_log(db, doc, logdir, session));
 			DocumentBuilderImpl db2 = new DocumentBuilderImpl();              
 	            	db2.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));
@@ -141,7 +142,8 @@ public class ViewLog {
 				String test = (String)it.next();
 				File f = new File(new File(logdir, test), "log.xml");
 				if (f.exists()) {
-					Document index = db.newDocument();
+					DocumentBuilder db3 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					Document index = db3.newDocument();
 					index.appendChild(parse_log(db, index, logdir, test));
 					t.setParameter("index", index);
 					//          t.transform(new StreamSource(f), new StreamResult(System.out));
@@ -206,8 +208,8 @@ public class ViewLog {
 		
 		Templates templates = transformerFactory.newTemplates(new StreamSource(stylesheet));
 
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
+		DocumentBuilderImpl db = new DocumentBuilderImpl();
+		db.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));
 		
 		Writer out = new OutputStreamWriter(System.out);
 		view_log(db, logdir, session, tests, templates, out);
