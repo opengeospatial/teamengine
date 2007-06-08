@@ -49,6 +49,9 @@ public void jspInit() {
       t.setParameter("local-name", request.getParameter("name"));
       t.transform(new StreamSource(file), new StreamResult(out));
 %>
+		<br/>
+		<br/>
+		<a href="viewSessions.jsp"/>Sessions list</a>
 		<%@ include file="footer.jsp" %>
 	</body>
 </html>

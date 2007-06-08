@@ -102,7 +102,8 @@ public class ViewLog {
 		t.setParameter("logdir", logdir.getAbsolutePath());
 
 		if (tests.size() == 0 && session == null) {
-			Document doc = db.newDocument();
+			DocumentBuilder db3 = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc = db3.newDocument();
 			Element sessions_e = doc.createElement("sessions");
 			doc.appendChild(sessions_e);
 			String[] children = logdir.list();
