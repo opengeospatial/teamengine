@@ -43,13 +43,17 @@ public void jspInit() {
 	<body>
 		<%@ include file="header.jsp" %>
 <%
+      String sessionId = request.getParameter("sessionid");
       File file = new File(request.getParameter("file"));
       Transformer t = ViewTestTemplates.newTransformer();
       t.setParameter("namespace-uri", request.getParameter("namespace"));
       t.setParameter("local-name", request.getParameter("name"));
+      t.setParameter("sesion-id", request.getParameter("sessionid"));
       t.transform(new StreamSource(file), new StreamResult(out));
 %>
 		<br/>
+		<br/>
+		<a href="viewSessionLog.jsp?session=<%=sessionId%>">Complete session results</a>
 		<br/>
 		<a href="viewSessions.jsp"/>Sessions list</a>
 		<%@ include file="footer.jsp" %>

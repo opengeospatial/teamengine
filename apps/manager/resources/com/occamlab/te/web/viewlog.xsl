@@ -91,6 +91,8 @@
 			</xsl:choose>
 		</xsl:variable>
 
+		<xsl:variable name="sessionid" select="substring-before(@path,'/')"/>
+
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="test">
 			<img src="images/plus.png" name="image{$testnum}" onclick="javascript:toggle('{$testnum}')"/>
@@ -98,7 +100,7 @@
 		</xsl:if>
 		<img src="images/{$result}.png"/>
 		<xsl:text>&#xa;</xsl:text>
-		<a href="viewTest.jsp?file={encoder:encode(@file, 'UTF-8')}&amp;namespace={encoder:encode(@namespace-uri, 'UTF-8')}&amp;name={@local-name}">
+		<a href="viewTest.jsp?file={encoder:encode(@file, 'UTF-8')}&amp;namespace={encoder:encode(@namespace-uri, 'UTF-8')}&amp;name={@local-name}&amp;sessionid={$sessionid}">
 			<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
 		</a>
 		<xsl:text>&#xa;(</xsl:text>
