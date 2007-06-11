@@ -29,6 +29,10 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.dom.DocumentBuilderImpl;
+import net.sf.saxon.Configuration;
+
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -38,15 +42,17 @@ import com.occamlab.te.ViewLog;
 
 public class ViewLogServlet extends HttpServlet {
   Config Conf;
-  DocumentBuilder DB;
+  DocumentBuilderImpl DB;
   Templates ViewLogTemplates;
   
   public void init() throws ServletException {
     try {
-      Conf = new Config();
-      DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      Conf = new Config(); 
       File stylesheet = Test.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
-      ViewLogTemplates = TransformerFactory.newInstance().newTemplates(new StreamSource(stylesheet));
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      ViewLogTemplates = transformerFactory.newTemplates(new StreamSource(stylesheet));
+      DB = new DocumentBuilderImpl();              
+      DB.setConfiguration((Configuration) transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));           
     } catch(Exception e) {
       e.printStackTrace(System.out);
     }
