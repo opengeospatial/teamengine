@@ -83,9 +83,9 @@ public void jspInit() {
 		<table border="0" bgcolor="#EEEEEE" width="410">
 		<tr>
 		<th align="left"><font color="#000099">Summary</font></th>
-		<td align="right">Pass:</td><td align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
-		<td align="right">Warning:</td><td align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
-		<td align="right">Fail:</td><td align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
+		<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td><td align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
+		<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td><td align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
+		<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td><td align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
 		</tr>
 		</table>
 		</br>		

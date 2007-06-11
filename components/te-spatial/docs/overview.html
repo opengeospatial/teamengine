@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Spatial module - Overview</title>
+</head>
+<body>
+<h2>Spatial module</h2>
+<p>
+The spatial module provides functions for validating geometry instances.
+</p>
+
+<p>The following functions are defined.</p>
+
+<h4>validGeometry</h4>
+<pre>
+&lt;ctl:function name="kml:validGeometry">
+    &lt;ctl:param name="node">a Node representing a geometry item&lt;/ctl:param>
+    &lt;ctl:param name="key">a String specifying a message key&lt;/ctl:param>
+    &lt;ctl:return>A boolean value: true if the given node represents a valid geometry instance.&lt;/ctl:return>
+    &lt;ctl:description>Checks that the geometry is topologically correct.&lt;/ctl:description>
+    &lt;ctl:java class="com.occamlab.te.geo.KmlGeometryValidator" 
+              method="validGeometry" 
+              initialized="true"/>
+&lt;/ctl:function>
+</pre>
+
+<h4>getValidationMessage</h4>
+<pre>
+&lt;ctl:function name="kml:getValidationMessage">
+    &lt;ctl:param name="key">a String specifying a message key.&lt;/ctl:param>
+    &lt;ctl:return>A string containing a detail message (empty string if no message exists).&lt;/ctl:return>
+    &lt;ctl:description>Returns a message describing why the construction of a geometry object failed.&lt;/ctl:description>
+    &lt;ctl:java class="com.occamlab.te.geo.KmlGeometryValidator" 
+              method="getMessage" />
+&lt;/ctl:function>
+</pre>
+
+</body>
+</html>

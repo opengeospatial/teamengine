@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ctl:package 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:ctl="http://www.occamlab.com/ctl"
+  xmlns:saxon="http://saxon.sf.net/"
+  xmlns:kml="http://earth.google.com/kml/2.1" 
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <ctl:function name="kml:validGeometry">
+		<ctl:param name="node">A DOM Node representing a KML geometry element.</ctl:param>
+        <ctl:param name="key">A string value specifying a key to access an exception message (using the kml:getValidationMessage() function)</ctl:param>
+        <ctl:return>A boolean value: true if the given node represents a valid geometry instance.</ctl:return>
+		<ctl:description>Checks that the geometry is topologically correct.</ctl:description>
+		<ctl:java class="net.sf.teamengine.spatial.kml2.KmlGeometryValidator" 
+                  method="validGeometry" 
+                  initialized="true"/>
+    </ctl:function>
+    <ctl:function name="kml:getValidationMessage">
+        <ctl:param name="key">A string value specifying the key to look up a validation message.</ctl:param>
+        <ctl:return>A string containing a detail message (an empty string if no message exists).</ctl:return>
+		<ctl:description>Retrieves the message describing why a geometry instance is invalid.</ctl:description>
+		<ctl:java class="net.sf.teamengine.spatial.kml2.KmlGeometryValidator" 
+                  method="getMessage" />
+    </ctl:function>
+</ctl:package>
+
