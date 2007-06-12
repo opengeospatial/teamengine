@@ -6,7 +6,7 @@
   xmlns:kml="http://earth.google.com/kml/2.1" 
   xmlns:xi="http://www.w3.org/2001/XInclude">
 
-    <ctl:function name="kml:validGeometry">
+    <ctl:function name="kml:isValidGeometry">
 		<ctl:param name="node">A DOM Node representing a KML geometry element.</ctl:param>
         <ctl:param name="key">A string value specifying a key to access an exception message (using the kml:getValidationMessage() function)</ctl:param>
         <ctl:return>A boolean value: true if the given node represents a valid geometry instance.</ctl:return>
