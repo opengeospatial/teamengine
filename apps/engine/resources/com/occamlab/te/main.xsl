@@ -47,7 +47,13 @@
 				<txsl:copy-of select="te:read_log($te:logdir, $te:starting-test-path)"/>
 			</txsl:param>
 
-			<xsl:copy-of select="$prev/xsl:transform/xsl:variable"/>
+			<xsl:variable name="variables" select="/xsl:transform/xsl:variable"/>
+			<xsl:for-each select="$prev/xsl:transform/xsl:variable">
+				<xsl:variable name="name" select="@name"/>
+				<xsl:if test="not($variables/xsl:variable[@name=$name])">
+					<xsl:copy-of select="."/>
+				</xsl:if>
+			</xsl:for-each>
 
 			<xsl:variable name="functions" select="/xsl:transform/xsl:function"/>
 			<xsl:for-each select="$prev/xsl:transform/xsl:function">
