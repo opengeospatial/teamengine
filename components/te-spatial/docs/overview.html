@@ -9,12 +9,14 @@
 <body>
 <h2>Spatial module</h2>
 <p>
-The spatial module provides functions for validating geometry instances.
+The spatial module provides functions for validating geometry instances. General
+validity constraints are described in <a target="_blank" 
+href="http://portal.opengeospatial.org/files/?artifact_id=18241">OGC 06-103r3</a> (ISO 19125-1).
 </p>
 
-<p>The following functions are defined.</p>
+<p>The following functions are defined in the <code>te-spatial</code> package.</p>
 
-<h4>validGeometry</h4>
+<h4>isValidGeometry</h4>
 <pre>
 &lt;ctl:function name="kml:validGeometry">
     &lt;ctl:param name="node">a Node representing a geometry item&lt;/ctl:param>
@@ -22,7 +24,7 @@ The spatial module provides functions for validating geometry instances.
     &lt;ctl:return>A boolean value: true if the given node represents a valid geometry instance.&lt;/ctl:return>
     &lt;ctl:description>Checks that the geometry is topologically correct.&lt;/ctl:description>
     &lt;ctl:java class="com.occamlab.te.geo.KmlGeometryValidator" 
-              method="validGeometry" 
+              method="isValidGeometry" 
               initialized="true"/>
 &lt;/ctl:function>
 </pre>

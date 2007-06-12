@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Checks that a geometry instance satisfies all relevant topological constraints.
+ * Checks that a geometry instance satisfies all relevant validity constraints.
  */
 public class KmlGeometryValidator {
 
@@ -19,9 +19,10 @@ public class KmlGeometryValidator {
     }
 
     /**
-     * Checks that a geometry element is topologically correct. A failure to
-     * construct the corresponding JTS geometry object is taken as evidence 
-     * that it is not.
+     * Checks that a geometry element is topologically correct. See <a target="_blank" 
+     * href="http://portal.opengeospatial.org/files/?artifact_id=18241">
+     * OGC 06-103r3</a> or the <a target="_blank" href="http://www.vividsolutions.com/jts/javadoc/index.html">
+     * JTS API documentation</a> for general validity constraints.
      *
      * @param node
      *            a DOM node (Document or Element) parsed from a KML geometry 
@@ -32,15 +33,16 @@ public class KmlGeometryValidator {
      *            method).
      * @return true if the given node represents a valid geometry instance.
      */
-    public boolean validGeometry(Node node, String key) {
+    public boolean isValidGeometry(Node node, String key) {
 
         Geometry geom = null;
         try {
           geom = this.kmlUnmarshaller.unmarshalKmlGeometry(node);
+          // TODO: if invalid LineString, try looking for self-intersecting lines
         } catch (RuntimeException rex) {
             validationMessages.put(key, rex.getMessage());
         }
-        return (geom != null);
+        return (geom != null && geom.isValid());
     }
     
     /**
