@@ -198,6 +198,7 @@ public class Test {
 					if (driverConfig.hasValidationFlag()) ctl_validator.validate(new StreamSource(sourcefile));
 					if (validation_eh.getErrorCount() == old_count) {
 						generator.setParameter("filename", sourcefile.getAbsolutePath());
+						generator.setParameter("txsl_filename", sourcefile.toURL().toString());
 						inputCtl = inputDB.parse(sourcefile);
 						generator.transform(new DOMSource(inputCtl), new DOMResult(generatedDoc));
 					}
@@ -227,11 +228,6 @@ public class Test {
 			if (this.appLogger.isLoggable(Level.FINE)) {
 				this.appLogger.fine("Content of script_chars variable:\n" + new String(script_chars));
 			}
-			
-			// Reset the script element, avoid duplicate transform elements on script
-			scriptDoc = DB.newDocument();
-			scriptElem = scriptDoc.createElement("script");
-			scriptDoc.appendChild(scriptElem);
 			
 		}
 
