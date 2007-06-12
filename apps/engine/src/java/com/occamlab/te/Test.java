@@ -58,9 +58,9 @@ import javax.xml.validation.*;
 import javax.xml.XMLConstants;
 
 /**
- * The main test driver for a given test suite.
- *
- */
+* The main test driver for a given test suite.
+*
+*/
 public class Test {
 	public static final int TEST_MODE = 0;
 	public static final int RETEST_MODE = 1;
@@ -75,26 +75,26 @@ public class Test {
 	DocumentBuilder DB;
 	TransformerFactory TF;
 	Templates ScriptTemplates;
-        private Logger appLogger;
-        private TestDriverConfig driverConfig;
+	private Logger appLogger;
+	private TestDriverConfig driverConfig;
 
-    /**
-     * Initializes the main test driver.
-     * 
-     * 
-     * @param driverConfig  test driver configuration.
-     */
+	/**
+	* Initializes the main test driver.
+	*
+	*
+	* @param driverConfig  test driver configuration.
+	*/
 	public Test(TestDriverConfig driverConfig) throws Exception {
-                this.driverConfig = driverConfig;
-                initAppLogger(driverConfig.getSessionDir());
-                appLogger.info("Initializing main test driver");
-                appLogger.entering(this.getClass().getName(), "ctor", new Object[]{driverConfig});
-                
+		this.driverConfig = driverConfig;
+		initAppLogger(driverConfig.getSessionDir());
+		appLogger.info("Initializing main test driver");
+		appLogger.entering(this.getClass().getName(), "ctor", new Object[]{driverConfig});
+
 		// configure parser to resolve XIncludes
 		System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration","org.apache.xerces.parsers.XIncludeParserConfiguration");
 		DBF = DocumentBuilderFactory.newInstance();
 		DBF.setNamespaceAware(true);
-		DBF.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);		
+		DBF.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
 		DB = DBF.newDocumentBuilder();
 
 		// create CTL validator
@@ -104,7 +104,7 @@ public class Test {
 		CtlErrorHandler validation_eh = new CtlErrorHandler();
 		ctl_validator.setErrorHandler(validation_eh);
 
-                // create transformer to generate executable script from CTL sources
+		// create transformer to generate executable script from CTL sources
 		TF = TransformerFactory.newInstance();
 		TF.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
 		TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
@@ -135,7 +135,7 @@ public class Test {
 		Iterator it = driverConfig.getSources().iterator();
 		while (it.hasNext()) {
 			File sourcefile = (File)it.next();
-                        this.appLogger.info("Processing source(s) at: " + sourcefile.getAbsolutePath());
+			this.appLogger.info("Processing source(s) at: " + sourcefile.getAbsolutePath());
 			Document generatedDoc = DB.newDocument();
 			DocumentBuilder inputDB = DBF.newDocumentBuilder();
 			Document inputCtl = null;
@@ -155,7 +155,7 @@ public class Test {
 							File txsl_file = new File(sourcefile, children[i].substring(0, children[i].length() - 3) + extension);
 							boolean needs_compiling;
 							if (txsl_file.exists()) {
-                                                               // regenerate if existing output file is obsolete
+								// regenerate if existing output file is obsolete
 								needs_compiling = txsl_file.lastModified() < ctl_file.lastModified() ||
 								txsl_file.lastModified() < generatorStylesheet.lastModified();
 							} else {
@@ -169,20 +169,20 @@ public class Test {
 										generator.setParameter("filename", ctl_file.getAbsolutePath());
 										generator.setParameter("txsl_filename", txsl_file.toURL().toString());
 										inputCtl = inputDB.parse(ctl_file);
-                                                                                this.appLogger.fine("Stage 1 (generator) transformation parameters:" + 
-                                                                                        "\n filename (source): " + ctl_file.getAbsolutePath() + 
-                                                                                        "\n txsl_filename (result): " + txsl_file.getAbsolutePath());
+										this.appLogger.fine("Stage 1 (generator) transformation parameters:" +
+										"\n filename (source): " + ctl_file.getAbsolutePath() +
+										"\n txsl_filename (result): " + txsl_file.getAbsolutePath());
 										generator.transform(new DOMSource(inputCtl), new StreamResult(txsl_file));
 									}
 								} catch (org.xml.sax.SAXException e) {
 									appLogger.severe(e.getMessage());
-			                        throw e;
+									throw e;
 								} catch (TransformerException e) {
 									appLogger.severe(e.getMessageAndLocation());
-			                        throw e;
+									throw e;
 								} finally {
-                                    generator.reset();
-                                }
+									generator.reset();
+								}
 							}
 							Element include = generatedDoc.createElementNS(XSL_NS, "xsl:include");
 							include.setAttribute("href", txsl_file.toURL().toString());
@@ -190,10 +190,10 @@ public class Test {
 						}
 					}
 				}
-			} 
-			
+			}
+
 			else {  // process CTL file
-                try {
+				try {
 					int old_count = validation_eh.getErrorCount();
 					if (driverConfig.hasValidationFlag()) ctl_validator.validate(new StreamSource(sourcefile));
 					if (validation_eh.getErrorCount() == old_count) {
@@ -203,33 +203,39 @@ public class Test {
 					}
 				} catch (org.xml.sax.SAXException e) {
 					appLogger.severe(e.getMessage());
-			                throw e;
+					throw e;
 				} catch (TransformerException e) {
-                    appLogger.severe(e.getMessageAndLocation());
-			        throw e;
+					appLogger.severe(e.getMessageAndLocation());
+					throw e;
 				} finally {
-                    generator.reset();
-                }
+					generator.reset();
+				}
 			}
-                        
+
 			if (script_chars != null) { // when processing second and subsequent sources
 				CharArrayReader car = new CharArrayReader(script_chars);
 				identityTransformer.transform(new StreamSource(car), new DOMResult(scriptElem));
-                                if (this.appLogger.isLoggable(Level.FINE)) {
-                                  this.appLogger.fine("Saving previously generated output (script_chars) to scriptDoc/script");
-                                  writeNodeToLog(this.appLogger, scriptElem);
-                                }
+				if (this.appLogger.isLoggable(Level.FINE)) {
+					this.appLogger.fine("Saving previously generated output (script_chars) to scriptDoc/script");
+					writeNodeToLog(this.appLogger, scriptElem);
+				}
 				composer.setParameter("prev", scriptElem);
 			}
 			CharArrayWriter caw = new CharArrayWriter();
 			composer.transform(new DOMSource(generatedDoc), new StreamResult(caw));
 			script_chars = caw.toCharArray();
-                        if (this.appLogger.isLoggable(Level.FINE)) {
-                          this.appLogger.fine("Content of script_chars variable:\n" + new String(script_chars));
-                        }
+			if (this.appLogger.isLoggable(Level.FINE)) {
+				this.appLogger.fine("Content of script_chars variable:\n" + new String(script_chars));
+			}
+			
+			// Reset the script element, avoid duplicate transform elements on script
+			scriptDoc = DB.newDocument();
+			scriptElem = scriptDoc.createElement("script");
+			scriptDoc.appendChild(scriptElem);
+			
 		}
-                
-                
+
+
 		int error_count = validation_eh.getErrorCount();
 		if (error_count > 0) {
 			String msg = error_count + " validation error" + (error_count == 1 ? "" : "s");
@@ -238,15 +244,15 @@ public class Test {
 				msg += " and " + warning_count + " warning" + (warning_count == 1 ? "" : "s");
 			}
 			msg += " detected.";
-            appLogger.severe(msg);
+			appLogger.severe(msg);
 			throw new Exception(msg);
 		}
 
-                if (this.appLogger.isLoggable(Level.INFO)) {
-                    writeFinalStylesheetToFile(script_chars, driverConfig.getSessionDir());
-                }
-                
-                // Create resusable templates
+		if (this.appLogger.isLoggable(Level.INFO)) {
+			writeFinalStylesheetToFile(script_chars, driverConfig.getSessionDir());
+		}
+
+		// Create resusable templates
 		try {
 			TransformerFactory tf = TransformerFactory.newInstance();
 			tf.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
@@ -254,15 +260,15 @@ public class Test {
 			tf.setErrorListener(new TeErrorListener(script_chars));
 			ScriptTemplates = tf.newTemplates(new StreamSource(new CharArrayReader(script_chars)));
 		} catch (TransformerException e) {
-            appLogger.severe(e.getMessageAndLocation());
+			appLogger.severe(e.getMessageAndLocation());
 			throw new Exception("Unable to create final templates.");
 		}
 	}
 
-        public TestDriverConfig getDriverConfig() {
-            return driverConfig;
-        }
-        
+	public TestDriverConfig getDriverConfig() {
+		return driverConfig;
+	}
+
 	// Deletes a directory and its contents
 	public static void deleteDir(File dir) {
 		String[] children = dir.list();
@@ -321,43 +327,43 @@ public class Test {
 		return doc;
 	}
 
-        
+
 	// Main test method
-        public void test(List tests, TECore core) throws Exception {
+	public void test(List tests, TECore core) throws Exception {
 		String sessionId = this.driverConfig.getSessionId();
-                File logDir = this.driverConfig.getLogDir();
+		File logDir = this.driverConfig.getLogDir();
 		File sessionDir = this.driverConfig.getSessionDir();
 
 		core.setSessionId(sessionId);
 		core.setSessionDir(sessionDir.getAbsolutePath());
-		
+
 		//if ((sessionId != null) && sessionId.length() > 0) {
-                //    sessionDir = new File(logDir, sessionId);
-                //}
+		//    sessionDir = new File(logDir, sessionId);
+		//}
 
 		//if (logDir == null) {
 		//	if (driverConfig.getMode() != TEST_MODE) {
-                 //         this.appLogger.warning("Test log directory is not specified.");
-		 //         throw new Exception("Test log directory is not specified.");
+		//         this.appLogger.warning("Test log directory is not specified.");
+		//         throw new Exception("Test log directory is not specified.");
 		//	}
 		//} else {
-			//if (!logDir.isDirectory()) {
-			//	logDir.mkdir();
+		//if (!logDir.isDirectory()) {
+		//	logDir.mkdir();
+		//}
+		//if (logDir.isDirectory()) {
+		if (driverConfig.getMode() == TEST_MODE) {
+			//if (sessionDir.isDirectory()) {
+			File f = new File(sessionDir, "log.xml");
+			if (f.exists()) {
+				f.delete();
+			}
+			deleteSubDirs(sessionDir);
 			//}
-			//if (logDir.isDirectory()) {
-				if (driverConfig.getMode() == TEST_MODE) {
-					//if (sessionDir.isDirectory()) {
-						File f = new File(sessionDir, "log.xml");
-						if (f.exists()) {
-							f.delete();
-						}
-						deleteSubDirs(sessionDir);
-					//}
-				}
-			//} //else {
-                           // this.appLogger.warning("Unable to create test log directory " + logDir.toString());
-		           // new Exception("Unable to create test log directory " + logDir.toString());
-			//}
+		}
+		//} //else {
+		// this.appLogger.warning("Unable to create test log directory " + logDir.toString());
+		// new Exception("Unable to create test log directory " + logDir.toString());
+		//}
 		//}
 
 		// Prepare suite
@@ -369,7 +375,7 @@ public class Test {
 				Document doc = DB.newDocument();
 				String namespace = null;
 				String simple_name = "suite";
-                                String suiteName = driverConfig.getSuiteName();
+				String suiteName = driverConfig.getSuiteName();
 				if (suiteName != null) {
 					int i = suiteName.lastIndexOf(",");
 					if (i > 0) {
@@ -393,8 +399,8 @@ public class Test {
 				if (testLog.exists()) {
 					templates.put(sessionId, getTemplateFromLog(logDir, sessionId));
 				} else {
-                                    this.appLogger.warning("Unable to find test log " + testLog.getAbsolutePath());
-				    return;
+					this.appLogger.warning("Unable to find test log " + testLog.getAbsolutePath());
+					return;
 				}
 			}
 		} else {
@@ -434,13 +440,13 @@ public class Test {
 						core.close_log();
 					}
 				}
-                                this.appLogger.warning(e.getMessageAndLocation());
+				this.appLogger.warning(e.getMessageAndLocation());
 			}
 		}
 	}
 
 	// Determine next session number
-        // NOTE: ALREADY DONE IN TestDriverConfig
+	// NOTE: ALREADY DONE IN TestDriverConfig
 	//public static String newSessionId(File logdir) {
 	//	int i = 1;
 	//	String session = "s0001";
@@ -451,75 +457,75 @@ public class Test {
 	//	return session;
 	//}
 
-        
+
 	private void writeNodeToLog(Logger logger, Node node) {
-            StringWriter strWriter = new StringWriter();
-            Transformer identity = null;
-            try {
-                identity = TF.newTransformer();
-                identity.transform(new DOMSource(node), new StreamResult(strWriter));
-            } catch (TransformerConfigurationException ex) {
-                logger.fine(ex.toString());
-            } catch (TransformerException ex) {
-                logger.fine(ex.toString());
-            }
-                logger.fine(strWriter.toString());
-                return;
+		StringWriter strWriter = new StringWriter();
+		Transformer identity = null;
+		try {
+			identity = TF.newTransformer();
+			identity.transform(new DOMSource(node), new StreamResult(strWriter));
+		} catch (TransformerConfigurationException ex) {
+			logger.fine(ex.toString());
+		} catch (TransformerException ex) {
+			logger.fine(ex.toString());
+		}
+		logger.fine(strWriter.toString());
+		return;
 	}
-        
-    /**
-     * Writes the final executable stylesheet module to a file (ets.xsl) in the 
-     * given test log directory.
-     *
-     * @param chars  a char array containing an XSLT stylesheet module.
-     * @param logDir  a File representing the location of the log directory.
-     */
-        private void writeFinalStylesheetToFile(char[] chars, File logDir) {     
-            File etsFile = new File(logDir, "ets.xsl");
-            Writer out = null;
-            try {
-                out = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(etsFile), "UTF-8"));
-                out.write(chars);
-            } catch (IOException ex) {
-                this.appLogger.log(Level.INFO, ex.getMessage(), ex);
-            } finally {
-                try {
-                    if (null != out) out.close();
-                } catch (IOException ex) {
-                    this.appLogger.log(Level.INFO, ex.getMessage(), ex);
-                }
-            }
-            return;
+
+	/**
+	* Writes the final executable stylesheet module to a file (ets.xsl) in the
+	* given test log directory.
+	*
+	* @param chars  a char array containing an XSLT stylesheet module.
+	* @param logDir  a File representing the location of the log directory.
+	*/
+	private void writeFinalStylesheetToFile(char[] chars, File logDir) {
+		File etsFile = new File(logDir, "ets.xsl");
+		Writer out = null;
+		try {
+			out = new BufferedWriter(new OutputStreamWriter(
+			new FileOutputStream(etsFile), "UTF-8"));
+			out.write(chars);
+		} catch (IOException ex) {
+			this.appLogger.log(Level.INFO, ex.getMessage(), ex);
+		} finally {
+			try {
+				if (null != out) out.close();
+			} catch (IOException ex) {
+				this.appLogger.log(Level.INFO, ex.getMessage(), ex);
+			}
+		}
+		return;
 	}
-        
-    /**
-     * Initializes the main application logger. A log file (te.log) is created 
-     * in the test session directory.
-     *
-     * @param sessionDir  a File representing the location of test session directory.
-     */
-        private void initAppLogger(File sessionDir) {     
-            this.appLogger = Logger.getLogger(this.getClass().getPackage().getName());
-            File logFile = new File(sessionDir, "te.log");
-            StreamHandler streamHandler = null;
-            try {
-                streamHandler = new StreamHandler(new FileOutputStream(logFile), new SimpleFormatter());
-                streamHandler.setEncoding("UTF-8");
-            } catch (FileNotFoundException ex) {
-                this.appLogger.log(Level.WARNING, ex.getMessage(), ex);
-            } catch (UnsupportedEncodingException ex) {
-                this.appLogger.log(Level.WARNING, ex.getMessage(), ex);
-            } catch (SecurityException ex) {
-                this.appLogger.log(Level.WARNING, ex.getMessage(), ex);
-            }
-            
-            if (null != streamHandler) {
-                this.appLogger.addHandler(streamHandler);
-            }
-            return;
+
+	/**
+	* Initializes the main application logger. A log file (te.log) is created
+	* in the test session directory.
+	*
+	* @param sessionDir  a File representing the location of test session directory.
+	*/
+	private void initAppLogger(File sessionDir) {
+		this.appLogger = Logger.getLogger(this.getClass().getPackage().getName());
+		File logFile = new File(sessionDir, "te.log");
+		StreamHandler streamHandler = null;
+		try {
+			streamHandler = new StreamHandler(new FileOutputStream(logFile), new SimpleFormatter());
+			streamHandler.setEncoding("UTF-8");
+		} catch (FileNotFoundException ex) {
+			this.appLogger.log(Level.WARNING, ex.getMessage(), ex);
+		} catch (UnsupportedEncodingException ex) {
+			this.appLogger.log(Level.WARNING, ex.getMessage(), ex);
+		} catch (SecurityException ex) {
+			this.appLogger.log(Level.WARNING, ex.getMessage(), ex);
+		}
+
+		if (null != streamHandler) {
+			this.appLogger.addHandler(streamHandler);
+		}
+		return;
 	}
-        
+
 	public static void main(String[] args) throws Exception {
 		int mode = TEST_MODE;
 		boolean validate = true;
@@ -532,7 +538,7 @@ public class Test {
 
 		File f = getResourceAsFile("com/occamlab/te/compile.xsl");
 		sources.add(new File(f.getParentFile(), "scripts"));
-                
+
 		// Parse arguments from command-line
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].startsWith("-cmd=")) {
@@ -607,11 +613,11 @@ public class Test {
 		//	}
 		//}
 
-                TestDriverConfig driverConfig = new TestDriverConfig(suiteName, sessionId, sources, logDir, validate, mode);
+		TestDriverConfig driverConfig = new TestDriverConfig(suiteName, sessionId, sources, logDir, validate, mode);
 		Thread.currentThread().setName("CTL Test Engine");
-                Test t = new Test(driverConfig);
+		Test t = new Test(driverConfig);
 		//if (mode == DOC_MODE) mode = TEST_MODE;
 		TECore core = new TECore(System.out, false);
-                t.test(tests, core);
+		t.test(tests, core);
 	}
 }
