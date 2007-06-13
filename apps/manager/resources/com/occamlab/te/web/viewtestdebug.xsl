@@ -35,25 +35,10 @@
 
 	<xsl:template name="viewtest">
 		<h2>Test <xsl:value-of select="@name"/></h2>
-		<h3>Assertion:</h3>
-		<xsl:value-of select="./ctl:assertion"/><br/>
-		<h3>Links:</h3>
-		<xsl:if test="count(./ctl:link) gt 0">
-			<ul>
-			<xsl:for-each select="./ctl:link">
-				<xsl:variable name="title" select="./@title"/>
-				<xsl:variable name="content" select="."/>
-				<xsl:choose>
-					<xsl:when test="not($title = '')">
-						<li><a href="{$content}"><xsl:value-of select="$title"/></a></li>
-					</xsl:when>
-					<xsl:otherwise>
-						<li><a href="{$content}"><xsl:value-of select="$content"/></a></li>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:for-each>
-			</ul>
-		</xsl:if>
+		<pre>
+<!--			<xsl:value-of select="translate(saxon:serialize(., 'xml'), '&amp;', '&amp;amp;')"/> -->
+			<xsl:value-of select="saxon:serialize(., 'xml')"/>
+		</pre>
 	</xsl:template>
 	
 	<xsl:template match="/">
