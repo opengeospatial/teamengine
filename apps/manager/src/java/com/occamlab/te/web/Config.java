@@ -22,10 +22,12 @@
 package com.occamlab.te.web;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.lang.ClassLoader;
 import java.net.URLDecoder;
+import java.net.URISyntaxException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -62,27 +64,31 @@ public class Config {
       Element homeElem = (Element)(configElem.getElementsByTagName("home").item(0));
       home = homeElem.getTextContent();
       Element usersdir = (Element)(configElem.getElementsByTagName("usersdir").item(0));
-      usersDir = getFile(usersdir.getTextContent());
+      usersDir = findFile(usersdir.getTextContent(), cl);
       if (!usersDir.isDirectory()) {
         System.out.println("Error: Directory " + usersdir.getTextContent() + " does not exist.");
       }
 
       File script_dir = new File(URLDecoder.decode( 
           cl.getResource("com/occamlab/te/scripts/parsers.ctl").getFile(), "UTF-8")).getParentFile();
+      // automatically load extension modules
+      File modulesDir = new File(cl.getResource("modules/").getFile());
 
       availableSuites = new LinkedHashMap();
       NodeList sourcesList = configElem.getElementsByTagName("sources");
       for (int i = 0; i < sourcesList.getLength(); i++) {
         ArrayList<File> ctlLocations = new ArrayList<File>();
         ctlLocations.add(script_dir);
+        ctlLocations.add(modulesDir);
         Element sources = (Element)sourcesList.item(i);
         String id = sources.getAttribute("id"); 
         NodeList sourceList = sources.getElementsByTagName("source");  
         for (int j = 0; j < sourceList.getLength(); j++) {
           Element source = (Element)sourceList.item(j);
-          File f = getFile(source.getTextContent());
+          File f = findFile(source.getTextContent(), cl);
           if (!f.exists()) {
-            System.out.println("Error: Source " + source.getTextContent() + " does not exist.");
+            //TODO: Log this
+            throw new FileNotFoundException("Source location " + source.getTextContent() + " does not exist.");
           }
           ctlLocations.add(f);
         }
@@ -105,12 +111,22 @@ public class Config {
     return availableSuites;
   }
 
-  private File getFile(String path) {
+  /**
+   * Finds a source file or directory. The location may be specified using:
+   * <ul>
+   *   <li>an absolute system path;</li>
+   *   <li>a path relative to the location identified by the <code>catalina.base</code> system property;</li>
+   *   <li>a classpath location.</li>
+   * </ul>
+   */
+  private File findFile(String path, ClassLoader loader) {
     File f = new File(path);
-    if (f.exists()) {
-      return f;
-    } else {
-      return new File(System.getProperty("catalina.base"), path);
+    if (!f.exists()) {
+        f = new File(System.getProperty("catalina.base"), path);
+        if (!f.exists()) {
+              f = new File(loader.getResource(path).getFile());
+        }
     }
+    return f;
   }
 }

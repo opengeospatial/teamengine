@@ -80,7 +80,7 @@ public class KmlGeometryUnmarshaller {
 
 	/**
 	 * Creates a Point geometry object from a source KML2 Point representation.
-         * The ID of the spatial reference system is set to -1 (undefined). 
+         * The ID of the spatial reference system is set to 0 (undefined). 
 	 * 
 	 * @param doc
 	 *            a DOM Element representing a kml:Point element.
@@ -92,14 +92,13 @@ public class KmlGeometryUnmarshaller {
                 Node coords = geoElem.getElementsByTagNameNS(KML21_NS, "coordinates").item(0);
 		CoordinateArraySequence cas = buildCoordinateArraySequence(coords);
 		Point pt = geoFactory.createPoint(cas);
-		if (null != pt) pt.setSRID(-1);
 		return pt;
 	}
 
 
 	/**
 	 * Creates a LineString object from a KML2 LineString representation.
-         * The ID of the spatial reference system is set to -1 (undefined).
+         * The ID of the spatial reference system is set to 0 (undefined).
 	 * 
 	 * @param geoElem
 	 *            a DOM Element representing a gml:LineString element.
@@ -111,14 +110,13 @@ public class KmlGeometryUnmarshaller {
                 Node coords = geoElem.getElementsByTagNameNS(KML21_NS, "coordinates").item(0);
 		CoordinateArraySequence cas = buildCoordinateArraySequence(coords);
 		LineString line = geoFactory.createLineString(cas);
-		if (null != line) line.setSRID(-1);
 		return line;
 	}
 
         
         /**
 	 * Creates a LinearRing geometry object from a source KML2 LinearRing
-	 * representation. The ID of the spatial reference system is set to -1 
+	 * representation. The ID of the spatial reference system is set to 0 
          * (undefined). 
 	 * 
 	 * @param geoElem
@@ -132,17 +130,14 @@ public class KmlGeometryUnmarshaller {
                 Node coords = geoElem.getElementsByTagNameNS(KML21_NS, "coordinates").item(0);
 		CoordinateArraySequence cas = buildCoordinateArraySequence(coords);
 		ring = geoFactory.createLinearRing(cas);
-		if (null != ring) { 
-                    ring.setSRID(-1);
-                    //TODO: log(FINE) ring.toText()
-                }
+		//TODO: log(FINE) ring.toText()
 		return ring;
 	}
 
         
         /**
 	 * Creates a Polygon geometry object from a source KML2 Polygon
-	 * representation. The ID of the spatial reference system is set to -1 
+	 * representation. The ID of the spatial reference system is set to 0 
          * (undefined).
 	 * 
 	 * @param geoElem
@@ -163,7 +158,6 @@ public class KmlGeometryUnmarshaller {
 		}
 		Polygon poly = geoFactory.createPolygon(rings.remove(0), 
                         rings.toArray(new LinearRing[nBoundaries - 1]));
-		if (null != poly) poly.setSRID(-1);
 		return poly;
 	}
 
@@ -189,7 +183,6 @@ public class KmlGeometryUnmarshaller {
 		}
 		GeometryCollection geomColl = geoFactory.createGeometryCollection(
                         geometries.toArray(new Geometry[nMembers]));
-		if (null != geomColl) geomColl.setSRID(-1);
 		return geomColl;
 	}
 	

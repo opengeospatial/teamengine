@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html 
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>Spatial module - Overview</title>
@@ -11,14 +11,18 @@
 <p>
 The spatial module provides functions for validating geometry instances. General
 validity constraints are described in <a target="_blank" 
-href="http://portal.opengeospatial.org/files/?artifact_id=18241">OGC 06-103r3</a> (ISO 19125-1).
+href="http://portal.opengeospatial.org/files/?artifact_id=18241">Geographic
+information - Simple feature access - Part 1: Common architecture</a> (OGC 06-103r3, 
+also known as ISO 19125-1).
 </p>
 
-<p>The following functions are defined in the <code>te-spatial</code> package.</p>
+<p>The following functions are defined in the <code>te-spatial</code> package. The 
+"kml" prefix denotes the "http://earth.google.com/kml/2.1" namespace.
+</p>
 
-<h4>isValidGeometry</h4>
+<h4>kml:isValidGeometry</h4>
 <pre>
-&lt;ctl:function name="kml:validGeometry">
+&lt;ctl:function name="kml:isValidGeometry">
     &lt;ctl:param name="node">a Node representing a geometry item&lt;/ctl:param>
     &lt;ctl:param name="key">a String specifying a message key&lt;/ctl:param>
     &lt;ctl:return>A boolean value: true if the given node represents a valid geometry instance.&lt;/ctl:return>
@@ -29,16 +33,30 @@ href="http://portal.opengeospatial.org/files/?artifact_id=18241">OGC 06-103r3</a
 &lt;/ctl:function>
 </pre>
 
-<h4>getValidationMessage</h4>
+<h4>kml:getErrorMessage</h4>
 <pre>
-&lt;ctl:function name="kml:getValidationMessage">
-    &lt;ctl:param name="key">a String specifying a message key.&lt;/ctl:param>
+&lt;ctl:function name="kml:getErrorMessage">
+    &lt;ctl:param name="key">A string value specifying the key to look up a validation error message.&lt;/ctl:param>
     &lt;ctl:return>A string containing a detail message (empty string if no message exists).&lt;/ctl:return>
     &lt;ctl:description>Returns a message describing why the construction of a geometry object failed.&lt;/ctl:description>
     &lt;ctl:java class="com.occamlab.te.geo.KmlGeometryValidator" 
-              method="getMessage" />
+              method="getErrorMessage" />
 &lt;/ctl:function>
 </pre>
+
+<h3>Examples</h3>
+<pre>
+&lt;ctl:code>
+  &lt;xsl:for-each select="$kml.document//kml:LinearRing">
+    &lt;xsl:variable name="msg.key" select="generate-id()"/> 
+    &lt;xsl:if test="kml:isValidGeometry(., $msg.key) = false()">
+      &lt;ctl:message>[FAILURE] LinearRing is invalid: &lt;xsl:value-of select="kml:getErrorMessage($msg.key)"/> (@id='&lt;xsl:value-of select="@id"/>')&lt;/ctl:message>
+      &lt;ctl:fail/>
+    &lt;/xsl:if>
+  &lt;/xsl:for-each>
+&lt;/ctl:code>
+</pre>
+
 
 </body>
 </html>

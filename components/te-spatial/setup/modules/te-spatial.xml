@@ -15,12 +15,12 @@
                   method="isValidGeometry" 
                   initialized="true"/>
     </ctl:function>
-    <ctl:function name="kml:getValidationMessage">
-        <ctl:param name="key">A string value specifying the key to look up a validation message.</ctl:param>
+    <ctl:function name="kml:getErrorMessage">
+        <ctl:param name="key">A string value specifying the key to look up a validation error message.</ctl:param>
         <ctl:return>A string containing a detail message (an empty string if no message exists).</ctl:return>
 		<ctl:description>Retrieves the message describing why a geometry instance is invalid.</ctl:description>
 		<ctl:java class="net.sf.teamengine.spatial.kml2.KmlGeometryValidator" 
-                  method="getMessage" />
+                  method="getErrorMessage" />
     </ctl:function>
 </ctl:package>
 
