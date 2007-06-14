@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Compliance Test Language (CTL)</title>
+    <style type="text/css" media="screen,print">
+    body {
+      color: black;
+      background: white;
+      font-family: Georgia, serif;
+    }
+    h1, h2, h3 {
+      font-family: Verdana, sans-serif;
+      color: #000099;
+      text-align: left;
+    }
+    h1 { font-size: 1.50em; }
+    h2 { font-size: 1.25em; margin-top: 2em;}
+    h3 { font-size: 1em; margin-top: 2em; }
+    h4 { font-size: 0.9em; }
+    h5 { margin-bottom: 0.5em; margin-top: 1.5em; }
+    li { margin-bottom: 0.25em; }
+    table {
+      margin-bottom: 0.5em;
+      width: 75%;
+      border-collapse: separate;
+    }
+    td, th { padding: 0.25em; text-align: left}
+    caption { text-align: left; }
+    dt { 
+      margin-top: 1em; 
+      font-weight: bold ;
+    }
+    pre { background: WhiteSmoke; }
+    pre.example { background: AliceBlue; }
+    a:link img, a:visited img { border-style: none }
+    div.header { margin-bottom: 2em; }
+    ul.sourcelist { margin: 0.5em; }
+    table.content-model th {
+      font-size: 0.80em;
+      font-family: verdana, sans-serif;
+      background: #eeeeee;
+      color: #000099;
+    }
+    table.revhistory {
+      border-collapse: collapse;
+    }
+    table.revhistory th {
+      font-size: 0.80em;
+      font-family: verdana, sans-serif;
+      text-align: left;
+      background: #000099;
+      color: white;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <a href="http://sourceforge.net/projects/teamengine/">
+        <img alt="Teamengine graphic" src="img/teamengine.png" />
+      </a>
+    </div>
+    <h1>Compliance Test Language (CTL) 0.5</h1>
+    
+    <dl class="authorgroup">      
+      <dt>Contributors:</dt>
+      <dd>R. Martell</dd>
+      <dd>Chuck Morris &lt;chuck |DOT| morris |AT| ngc |DOT| com&gt;</dd>
+      <dd>J. Parr-Pearson</dd>
+    </dl>
+    
+    <div class="purpose">
+    <h3 id="purpose">Purpose</h3>
+    <p>This document establishes Compliance Test Language, an XML grammar for 
+    documenting and scripting suites of tests for verifying that an implementation 
+    of a specification complies with the specification.</p>
+    
+    <p>This document does:</p>
+    <ul>
+        <li>Define the structure of a test suite and tests in the test suite.</li>
+        <li>Define the elements that can be used to form the test script code.</li>
+        <li>Define interfaces for producing Java classes to extend the basic CTL functionality.</li>
+        <li>Provide informative examples test scripts and sample script output.</li>
+        <li>Provide guidelines on terminology used to properly document tests.</li>
+    </ul>
+
+    <p>It does <strong>not</strong>:</p>
+    <ul>
+        <li>Define an interface for submitting tests to a test engine.</li>
+        <li>Define a normative format for logging output from a test engine.</li>
+        <li>Define a normative format for documentation generated from the test suite</li>
+    </ul>
+    </div>
+    
+    <div class="sources">
+      <h3 id="sources">Related documents</h3>
+      <ul>
+        <li><a href="http://www.w3.org/TR/html401/">HTML 4.01 Specification</a> (W3C Recommendation, 1999-12-24)</li>
+        <li><a href="http://www.w3.org/TR/xhtml-basic/">XHTML Basic 1.1</a> (W3C Working Draft, 2006-07-05)</li>
+        <li><a href="http://www.w3.org/TR/xslt20/">XSL Transformations (XSLT) Version 2.0</a> (W3C Recommendation, 2007-01-23)</li>
+      </ul>
+    </div>
+
+    <div class="revisions">
+      <h3 id="revisions">Revision history</h3>
+      <table class="revhistory" border="1" summary="Revision history">
+        <tr>
+          <th>Revision</th>
+          <th>Date</th>
+          <th>Comments</th>
+        </tr>
+        <tr>
+          <td>0.5</td>
+          <td>2007-06-14</td>
+          <td>New capabilities: XInclude, ZipParser.</td>
+        </tr>
+        <tr>
+          <td>0.4</td>
+          <td>2006-09-06</td>
+          <td>Submitted as OGC Discussion Paper</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="contents">
+      <h2 id="toc">Contents</h2>
+      <ol id="contents-ats" class="toc1">
+        <li><a href="#overview">Overview of CTL</a></li>
+        <li><a href="#package">Package</a></li>
+        <li><a href="#objects">CTL Objects</a>
+          <ol class="toc2">
+            <li><a href="#suite">Suite</a></li>
+            <li><a href="#test">Test</a></li>
+            <li><a href="#function">Function</a></li>
+            <li><a href="#parser">Parser</a></li>
+          </ol>
+        </li>
+        <li><a href="#instructions">Instructions</a>
+          <ol class="toc2">
+            <li><a href="#form">Form</a></li>
+            <li><a href="#request">Request</a></li>
+          </ol>
+        </li>
+      </ol>
+    </div>
+    
+    <div id="sect.overview">
+    <h2 id="overview">1. Overview of CTL</h2>
+    <p>A test suite in CTL consists of a set of objects. The initial object is a 
+    suite, which identifies a starting test. The starting test contains instructions 
+    that may call other tests or use functions and parsers. See Figure 1 below.</p>
+    
+    <h5 id="fig-1">Figure 1: Structure of a CTL test suite</h5>
+    <p><img alt="Test suite components" src="img/ctl_fig1.gif" /></p>
+    
+    <p>A CTL file is an XML file that contains a CTL object or a package element 
+    as its root element. The package element, which is a container for multiple 
+    CTL objects, is described in detail in section 7. Each CTL object is identified 
+    by a unique, namespace qualified name, so the set of objects in a test suite 
+    may span several files. The CTL objects are described in section 8.</p>
+    
+    <p>Test objects contain programmatic code that consists of XSL instructions 
+    and/or CTL instructions. The CTL instructions are described in section 9.</p>
+  
+    <p>Some parser objects are built-in to CTL, and may be used without declaring 
+    a parser object. The built-in parsers are described in section 10.</p>
+    
+    </div>
+    
+    <div id="sect.package">
+    <h2 id="package">2. Package</h2>
+    
+    <h3 id="package.intro">2.1 Introduction</h3>
+    
+    <p>The &lt;package&gt; element is a container for CTL objects or traditional 
+    XSL templates. Each CTL object is complete on its own and may be placed in 
+    its own file, or several objects may be placed in a package for the convenience 
+    of grouping them in the same file.</p>
+    
+    <h3 id="package.encoding">2.2 Encoding</h3>
+    <pre>
+&lt;ctl:package xmlns:ctl="http://www.occamlab.com/ctl"
+  (tns:<em>anyAttribute</em> xmlns:tns="##other")?>
+
+  &lt;xi:include xmlns:xi="http://www.w3.org/2001/XInclude" /> *
+  &lt;ctl:suite /> *
+  &lt;ctl:test /> *
+  &lt;ctl:package /> *
+  &lt;ctl:parser /> *
+  &lt;ctl:function /> *
+  &lt;xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" /> *
+
+&lt;/ctl:package></pre>
+<!--    
+    <table id="package-content" class="content-model" frame="box">
+      <tbody>
+        <tr>
+          <th>Element/Attribute</th>
+          <th>Usage</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>&lt;package&gt;</code></td>
+          <td>Required</td>
+          <td>Establishes a package</td>
+        </tr>
+        <tr>
+          <td>&nbsp;<code>&lt;<em>suite|test|function|parser|xsl:template</em> /&gt;</code></td>
+          <td>Optional<sup>*</sup></td>
+          <td>CTL Objects</td>
+        </tr>
+        <tr>
+          <td><code>&lt;/package&gt;</code></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td colspan="3">
+          <h5>Usage Notes:</h5>
+          <sup>*</sup> May be repeated.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+-->    
+    </div>
+    
+    <div id="sect-objects">
+    <h2 id="objects">3. CTL Objects</h2>
+    
+    <h3 id="suite">3.1 Suite</h3>
+    <h4 id="suite.intro">3.1.1 Introduction</h4>
+    <p>The &lt;suite&gt; element establishes a set of tests. It names a test suite, 
+    describes its purpose, and identifies the starting test where processing 
+    begins when the test suite is executed.</p>
+    
+    <h4 id="suite.encoding">3.1.2 Encoding</h4>
+    <pre>
+&lt;suite <strong>name</strong>="xsd:QName" xmlns="http://www.occamlab.com/ctl">
+  &lt;title>Test suite title&lt;/title>
+  &lt;description>The purpose of the test suite&lt;/description> ?
+  &lt;starting-test>xsd:QName&lt;/starting-test>
+&lt;/suite></pre>
+ 
+
+    <h4 id="suite.example">3.1.3 Example</h4>
+    <pre class="example">
+&lt;ctl:suite name="example:suite"&gt;
+  &lt;ctl:title&gt;Example Test Suite&lt;/ctl:title&gt;
+  &lt;ctl:description&gt;
+  Tests compliance to the Example Service Implementation Specification, version 1.0
+  &lt;/ctl:description&gt;
+  &lt;ctl:starting-test&gt;example:main&lt;/ctl:starting-test&gt;
+&lt;/ctl:suite&gt;</pre>
+
+    <h3 id="test">3.2 Test</h3>
+    <h4 id="test.intro">3.2.1 Introduction</h4>
+    <p>The &lt;test&gt; element establishes an individual test. It states an 
+    assertion and contains program code to test the assertion.</p>
+    
+    <h4 id="test.encoding">3.2.2 Encoding</h4>
+    <pre>
+&lt;test <strong>name</strong>="xsd:QName" xmlns="http://www.occamlab.com/ctl">
+  &lt;param <strong>name</strong>="xsd:string">Parameter description&lt;/param> *
+  &lt;context>Describes the calling context&lt;/context> ?
+  &lt;assertion>Condition or system state to be verified&lt;/assertion>
+  &lt;comments>comment&lt;/comments> *
+  &lt;link title="xsd:string">xsd:anyURI&lt;/link> *
+  &lt;code>
+    <span style="color: blue;">&lt;!-- one or more instructions --></span>
+  &lt;/code>
+&lt;/test></pre>
+    
+    <h4 id="test.descriptions">3.2.3 Element descriptions</h4>
+    <h5 id="test.param">3.2.3.1 param</h5>
+    <p>Tests may have zero or more parameters specified as &lt;param&gt; elements, 
+    named with a name attribute. The content of the element should describe the 
+    parameter.</p>
+    
+    <h5 id="test.context">3.2.3.2 context</h5>
+    <p>When a test is executed, there is always an XML tree in memory, and a 
+    current node within the tree. This is known as the context. In some cases, 
+    the context in which a test is called is important, while in other cases in 
+    may not matter. If the test code depends on the context, the test should 
+    describe the proper context state with a &lt;context&gt; element.</p>
+    
+    <h5 id="test.assertion">3.2.3.3 assertion</h5>
+    <p>The &lt;assertion&gt; element specifies the test assertion. The assertion 
+    is a statement derived from the specification being tested which is true for 
+    a valid implementation.</p> 
+    
+    <p>The assertion may contain references to the labels 
+    of the parameters or the context by using {$name} notation. For example, 
+    {$context} refers to the current context label, and {$p1} refers to the 
+    label of the parameter named “p1”. The value of the label may evaluate to 
+    the content of the &lt;context&gt; or &lt;param&gt; element, or the value 
+    of the label or label-expr attribute on the &lt;for-each&gt; or &lt;with-param&gt; 
+    elements, depending on whether documentation is being generated or whether 
+    the test is actually being executed.</p>
+    
+    <p>In some cases, the assertion text may be vague if read in isolation, 
+    but its meaning should be clear when viewed in the context of the assertion 
+    of the calling test. For example, the assertion “A summary is present” is 
+    vague, but if the assertion of the parent test is “HTML tables are properly 
+    formatted”, then it is clear that the test looks for a summary on an HTML 
+    table.</p>
+    
+    <h5 id="test.comments">3.2.3.4 comments</h5>
+    <p>The &lt;comments&gt; element allows documentation of additional comments 
+    on the purpose of the test or method of verification. The comments should 
+    apply to the test as a whole. Of course, XML comments inside &lt;!-- --&gt; 
+    tags may also be used, but this comment tag is more formal and may be used 
+    in documentation.</p>
+    
+    <h5 id="test.link">3.2.3.5 link</h5>
+    <p>Zero or more &lt;link&gt; elements may be used to provide links back to 
+    the place or places in the specification where the assertion was derived 
+    from.</p>
+    
+    <h5 id="test.code">3.2.3.6 code</h5>
+    <p>The &lt;code&gt; element contains the programmatic code used to verify 
+    the assertion. Any XML is allowed in the code element. It should contain 
+    CTL instructions and/or XSL instructions for evaluation by a test engine. 
+    The test will pass unless one or more &lt;fail&gt; instructions are executed.</p>
+    
+    <h4 id="test.example">3.2.4 Example</h4>
+    <pre class="example">
+&lt;ctl:test name="example:zulu">
+  &lt;ctl:param name="time">time string&lt;/ctl:param>
+  &lt;ctl:assertion>
+  If the hours field is included in {$time}, the suffix Z (for zulu) is required.
+  &lt;/ctl:assertion>
+  &lt;ctl:link>wms:B.2.1&lt;/ctl:link>
+  &lt;ctl:code>
+    &lt;xsl:if test="contains($time, 'T')">
+      &lt;xsl:variable name="len" select="string-length($time)"/>
+      &lt;xsl:if test="not(substring($time, $len) = 'Z')">
+        &lt;ctl:fail/>
+      &lt;/xsl:if>
+    &lt;/xsl:if>
+  &lt;/ctl:code>
+&lt;/ctl:test></pre>
+
+    <h3 id="function">3.3 Function</h3>
+    <h4 id="function.intro">3.3.1 Introduction</h4>
+    <p>The &lt;function&gt; element is used to declare user-defined functions 
+    or external java functions. These functions may be called as XPath functions 
+    in instructions that use XPath expressions, or they may be called directly 
+    with the &lt;call-function&gt; instruction.</p>
+    
+    <h4 id="function.encoding">3.3.2 Encoding</h4>
+    <pre>
+&lt;ctl:function <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;ctl:description>Function description&lt;/ctl:description> ?
+  &lt;ctl:param name="xsd:string">Parameter description&lt;/ctl:param> *
+  <span style="color: blue;">&lt;!-- var-params only applies to a Java-based function --></span>
+  &lt;ctl:var-params <strong>min</strong>="xsd:int" <strong>max</strong>="xsd:int" /> ?
+  &lt;ctl:context>Describes the calling context&lt;/ctl:context> ?
+  &lt;ctl:return>Describes what the function returns&lt;/ctl:return> ?
+  &lt;ctl:comments>Comments about the function&lt;/ctl:comments> *
+  <span style="color: blue;">&lt;!-- choose either ctl:code or ctl:java --></span>
+  &lt;ctl:code>
+    <span style="color: blue;">&lt;!-- one or more instructions --></span>
+  &lt;/ctl:code>
+  &lt;ctl:java <strong>class</strong>="xsd:string" <strong>method</strong>="xsd:string" initialized="xsd:boolean">
+    <span style="color: blue;">&lt;!-- initialization parameters --></span>
+    &lt;ctl:with-param name="xsd:string" select="<em>XPath expression</em>"?> *
+      <span style="color: blue;">&lt;!-- literal XML content if @select is absent --></span>
+    &lt;ctl:with-param>
+  &lt;/ctl:java>
+&lt;/ctl:function></pre>
+
+    <h4 id="function.descriptions">3.3.3 Element descriptions</h4>
+    <h5 id="function.param">3.3.3.1 param</h5>
+    <p>Functions may have zero or more parameters specified as &lt;param&gt; 
+    elements, named with a name attribute. The content of the element should 
+    describe the parameter.</p>
+    
+    <h5 id="function.var-params">3.3.3.2 var-params</h5>
+    <p>Some functions implemented as Java methods may be called with a variable 
+    number of parameters. This optional element indicates that a variable number 
+    of parameters is allowed. It has attributes <code>min</code> and <code>max</code>, 
+    indicating the maximum and minimum number of parameters allowed.</p>
+    
+    <h5 id="function.context">3.3.3.3 context</h5>
+    <p>When a function is executed, there is always an XML tree in memory, and 
+    a current node within the tree. This is known as the context. In some cases, 
+    the context in which a function is called is important, while in other cases 
+    in may not matter. If the function code depends on the context, it should 
+    describe the proper context state with a &lt;context&gt; element.</p>
+    
+    <h5 id="function.return">3.3.3.4 return</h5>
+    <p>The optional &lt;return&gt; element should be used to provide a brief 
+    description of what the function returns.</p>
+    
+    <h5 id="function.description">3.3.3.5 description</h5>
+    <p>The optional &lt;description&gt; element is used to describe the 
+    function.</p>
+    
+    <h5 id="function.comment">3.3.3.6 comment</h5>
+    <p>Functions may contain zero or more &lt;comment&gt; elements.</p>
+    
+    <h5 id="function.code">3.3.3.7 code</h5>
+    <p>The &lt;code&gt; element is required unless a &lt;java&gt; element is 
+    supplied. Any XML is allowed in the code element. It should contain CTL 
+    instructions and/or XSL instructions implementing the function.</p>
+    
+    <h5 id="function.java">3.3.3.8 java</h5>
+    <p>The &lt;java&gt; element is required unless a &lt;code&gt; element is 
+    supplied. It indicates the function is implemented as an external Java 
+    method. It contains class and method attributes that identify the Java class 
+    and method.</p>
+    
+    <p>For a java method to be used, it must be implemented as a public method. 
+    If the method is not static, this must be indicated by setting the <code>initialized</code> 
+    attribute to "true". This will initialize the class, calling the class 
+    constructor (which also must be public) by passing it the parameter values 
+    supplied by the optional &lt;with-param&gt; elements.</p>
+    
+    <p>There are restrictions on the parameter types that may be used in the 
+    Java method and the class constructor. They must be one of the built-in 
+    primitive types (boolean, char, byte, short, int, long, float, double), 
+    String, org.w3c.dom.Node, or org.w3c.dom.NodeList.</p>
+    
+    <p>If there is a &lt;context&gt; element, it must be the first parameter in 
+    the method and must be of type org.w3c.dom.Node or org.w3c.dom.NodeList.</p>
+    
+    <p>The method may return a primitive type value, or a value of type String, 
+    org.w3c.dom.Node, or org.w3c.dom.NodeList.</p>
+    
+    <h4 id="function.example">3.3.4 Examples</h4>
+    <pre class="example">
+&lt;function name="example:add" xmlns="http://www.occamlab.com/ctl">
+  &lt;description>Adds two numbers&lt;/description>
+  &lt;param name="num1">First Number&lt;/param>
+  &lt;param name="num2">Second Number&lt;/param>
+  &lt;return>num1 + num2&lt;/return>
+  &lt;code>
+    &lt;xsl:value-of xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+      select="$num1 + $num2" />
+  &lt;/code>
+&lt;/function>
+
+&lt;function name="example:sqrt" xmlns="http://www.occamlab.com/ctl">
+  &lt;description>Calculates a square root&lt;/description>
+  &lt;param name="num"/>
+  &lt;return>the square root of num&lt;/return>
+  &lt;java class="java.lang.Math" method="sqrt"/>
+&lt;/function></pre>
+
+    <h3 id="parser">3.4 Parser</h3>
+    <h4 id="parser.intro">3.4.1 Introduction</h4>
+    <p>The &lt;parser&gt; element is used to declare a parser and link it to an 
+    external Java implementation. Parsers are used in the &lt;request&gt; 
+    instruction to convert the response from a web service into well-formed XML 
+    for processing.</p>
+    
+    <h4 id="parser.encoding">3.4.2 Encoding</h4>
+    <pre>
+&lt;ctl:parser <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;ctl:description>Parser description&lt;/ctl:description> ?
+  &lt;ctl:comments>Comments about the parser&lt;/ctl:comments> *
+  &lt;ctl:java <strong>class</strong>="xsd:string" <strong>method</strong>="xsd:string" initialized="xsd:boolean">
+    <span style="color: blue;">&lt;!-- initialization parameters --></span>
+    &lt;ctl:with-param name="xsd:string" select="<em>XPath expression</em>"?> *
+      <span style="color: blue;">&lt;!-- literal XML content if @select is absent --></span>
+    &lt;ctl:with-param>
+  &lt;/ctl:java>
+&lt;/ctl:parser></pre>
+
+    <h4 id="parser.descriptions">3.4.3 Element descriptions</h4>
+    <h5 id="parser.description">3.4.3.1 description</h5>
+    <p>The optional &lt;description&gt; element is used to describe the parser.</p>
+
+    <h5 id="parser.comment">3.4.3.2 comment</h5>
+    <p>Parsers may contain zero or more &lt;comment&gt; elements.</p>
+    
+    <h5 id="parser.java">3.4.3.3 java</h5>
+    <p>The required &lt;java&gt; element contains class and method attributes 
+    that identify the Java class and method. The Java method used must be 
+    implemented as a public method. If the method is not static, this must be 
+    indicated by setting the <code>initialized</code> attribute to "true"; this 
+    will initialize the class, calling the class constructor (which also must 
+    be public) by passing it the parameter values supplied by the optional 
+    &lt;with-param&gt; elements.</p>
+    
+    <p>Parser methods must contain three parameters. The first is of type 
+    <code>java.net.URLConnection</code> and contains the URLConnection object 
+    used to make the web service request. The second is of type <code>org.w3c.Element</code>, 
+    and contains an a copy of the parser element. The third is of type <code>java.io.PrintWriter</code> 
+    and can be used to write messages to the log. The parser method should 
+    return an XML document of type org.w3c.Document containing parsed XML, 
+    a String, or null if it encounters an error.</p>
+    </div>
+    
+    <div id="sect.instructions">
+    <h2 id="instructions">4. Instructions</h2>
+    
+    <h3 id="form">4.1 Form</h3>
+    <h4 id="form.intro">4.1.1 Introduction</h4>
+    <p>The &lt;form&gt; instruction is used to retrieve user input. A Swing- or 
+    XHTML-based form is generated and presented to the user. The user may the 
+    fill in the fields on the form and press a submit button. The instruction 
+    returns the values of the form fields and the button that was pressed.</p>
+    
+    <h4 id="form.encoding">4.1.2 Encoding</h4>
+    <p>The form instruction may contain a combination of literal XML elements 
+    and/or other CTL or XSL instructions. When any enclosed instructions have 
+    been evaluated, the resulting XML shall conform to this encoding.</p>
+    <pre>
+&lt;ctl:form xmlns:ctl="http://www.occamlab.com/ctl" 
+  height="xsd:positiveInteger" width="xsd:positiveInteger">
+  <span style="color: blue;">&lt;!-- XHTML Basic markup --></span>
+&lt;/ctl:form></pre>
+
+    <h4 id="form.descriptions">4.1.3 Element and attribute descriptions</h4>
+    <h5 id="form.size">4.1.3.1 size</h5>
+    <p>The form element contains height and width attributes, used to specify 
+    the desired height and width of the form in pixels. The user agent should 
+    regard these as hints on the size of window required, but does not have to 
+    follow these guidelines.</p>
+    
+    <h5 id="form.xhtml">4.1.3.2 XHTML Basic elements</h5>
+    <p>The content of the form should evaluate into <a href="http://www.w3.org/TR/xhtml-basic/">XHTML 
+    Basic</a> elements. All of the XHTML Basic elements valid inside the XHTML 
+    Basic &lt;form&gt; element are supported, with the exception of the &lt;object&gt; 
+    element.</p>
+    
+    <p>Of particular interest are the XHTML Basic elements that define form 
+    controls: &lt;input&gt;, &lt;select&gt;, and &lt;textarea&gt;. These elements 
+    can be used to define user options that the form will return. The form must 
+    contain at least one &lt;input type="submit"&gt; element to allow the user 
+    to submit the form.</p>
+    
+    <h4 id="form.results">4.1.4 Results</h4>
+    <p>When the user presses a submit button on the form, the instruction completes. 
+    It returns the user input as a set of key-value pairs, where the key corresponds 
+    to a control name and the value corresponds to the control value. A key-value 
+    pair is generated only for successful controls, as formally defined in 
+    <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.2">section 
+    17.13.2</a> of the HTML 4.01 specification.</p>
+
+    <p>The resulting form data set shall conform to this encoding:</p>
+    <pre>
+&lt;values>
+  &lt;value <strong>key</strong>="xsd:string">&lt;!-- text value --&gt;&lt;/value> *
+&lt;/values></pre>
+
+    <h4 id="form.example">4.1.5 Example</h4>
+    <p>The following form will be displayed to the user graphically as shown in 
+    Figure 2.</p>
+    <pre class="example">
+&lt;ctl:form xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;p>
+    &lt;img src="http://www.google.com/intl/en/images/logo.gif"/>&lt;br/>
+    Do you see the Google logo?&lt;br/>
+    &lt;input type="submit" name="answer" value="yes"/>
+    &lt;input type="submit" name="answer" value="no"/>
+  &lt;/p>
+&lt;/ctl:form></pre>
+
+    <h5 id="fig-2">Figure 2: Rendering of ctl:form content</h5>
+    <p><img alt="Form" src="img/ctl_fig2.png" /></p>
+
+    <p>If the user presses the "yes" button, the results will look like this:</p>
+    <pre class="example">
+&lt;values>
+  &lt;value key="answer">yes&lt;/value>
+&lt;/values></pre>
+    
+    <h3 id="request">4.2 Request</h3>
+    <h4 id="request.intro">4.2.1 Introduction</h4>
+    <p>The &lt;request&gt; element submits an HTTP request to a web service or 
+    other resource, and returns an XML representation of the response.</p>
+    
+    </div>
+  </body>
+</html>
