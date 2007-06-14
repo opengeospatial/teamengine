@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- LinearRing is not closed -->
+<kml:kml xmlns:kml="http://earth.google.com/kml/2.1">
+  <kml:Placemark id="Placemark-2">
+    <kml:LinearRing id="LinearRing-2">
+      <kml:coordinates>-122.082204,37.422290 -121.082204,38.422290 -120.082204,37.422290</kml:coordinates>
+    </kml:LinearRing>
+  </kml:Placemark>
+</kml:kml>
