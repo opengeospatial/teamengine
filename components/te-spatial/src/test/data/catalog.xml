@@ -8,5 +8,9 @@
             uri="kml-2.1/OpenLinearRing.xml" />
     <system systemId="kml-2.1/SelfIntersectingLinearRing" 
             uri="kml-2.1/SelfIntersectingLinearRing.xml" />
+    <system systemId="kml-2.1/ValidPolygon" 
+            uri="kml-2.1/ValidPolygon.xml" />
+    <system systemId="kml-2.1/SelfIntersectingPolygon" 
+            uri="kml-2.1/SelfIntersectingPolygon.xml" />
   </group>
 </catalog>
