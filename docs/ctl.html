@@ -97,9 +97,11 @@
     <div class="sources">
       <h3 id="sources">Related documents</h3>
       <ul>
+        <li><a href="http://www.w3.org/TR/xslt20/">XSL Transformations (XSLT) Version 2.0</a> (W3C Recommendation, 2007-01-23)</li>
+        <li><a href="http://www.w3.org/TR/xpath20/">XML Path Language (XPath) 2.0</a> (W3C Recommendation, 2007-01-23)</li>
+        <li><a href="http://www.w3.org/TR/xpath-functions/">XQuery 1.0 and XPath 2.0 Functions and Operators</a> (W3C Recommendation, 2007-01-23)</li>
         <li><a href="http://www.w3.org/TR/html401/">HTML 4.01 Specification</a> (W3C Recommendation, 1999-12-24)</li>
         <li><a href="http://www.w3.org/TR/xhtml-basic/">XHTML Basic 1.1</a> (W3C Working Draft, 2006-07-05)</li>
-        <li><a href="http://www.w3.org/TR/xslt20/">XSL Transformations (XSLT) Version 2.0</a> (W3C Recommendation, 2007-01-23)</li>
       </ul>
     </div>
 
@@ -113,8 +115,8 @@
         </tr>
         <tr>
           <td>0.5</td>
-          <td>2007-06-14</td>
-          <td>New capabilities: XInclude, ZipParser.</td>
+          <td>2007-06-15</td>
+          <td>New capabilities documented: XInclude support; multi-part requests; ZipParser.</td>
         </tr>
         <tr>
           <td>0.4</td>
@@ -139,8 +141,21 @@
         </li>
         <li><a href="#instructions">Instructions</a>
           <ol class="toc2">
-            <li><a href="#form">Form</a></li>
-            <li><a href="#request">Request</a></li>
+            <li><a href="#form">form</a></li>
+            <li><a href="#request">request</a></li>
+            <li><a href="#call-test">call-Test</a></li>
+            <li><a href="#for-each">for-Each</a></li>
+            <li><a href="#message">message</a></li>
+            <li><a href="#fail">fail</a></li>
+            <li><a href="#call-func">call-function</a></li>
+          </ol>
+        </li>
+        <li><a href="#parsers">Built-in parsers</a>
+          <ol class="toc2">
+            <li><a href="#parsers.intro">Introduction</a></li>
+            <li><a href="#cdata">CDataParser</a></li>
+            <li><a href="#http">HTTPParser</a></li>
+            <li><a href="#xsd-validator">XMLValidatingParser</a></li>
           </ol>
         </li>
       </ol>
@@ -347,7 +362,7 @@
     <h4 id="function.intro">3.3.1 Introduction</h4>
     <p>The &lt;function&gt; element is used to declare user-defined functions 
     or external java functions. These functions may be called as XPath functions 
-    in instructions that use XPath expressions, or they may be called directly 
+    in instructions that use ${XPath-expression}s, or they may be called directly 
     with the &lt;call-function&gt; instruction.</p>
     
     <h4 id="function.encoding">3.3.2 Encoding</h4>
@@ -366,7 +381,7 @@
   &lt;/ctl:code>
   &lt;ctl:java <strong>class</strong>="xsd:string" <strong>method</strong>="xsd:string" initialized="xsd:boolean">
     <span style="color: blue;">&lt;!-- initialization parameters --></span>
-    &lt;ctl:with-param name="xsd:string" select="<em>XPath expression</em>"?> *
+    &lt;ctl:with-param name="xsd:string" select="<em>${XPath-expression}</em>"?> *
       <span style="color: blue;">&lt;!-- literal XML content if @select is absent --></span>
     &lt;ctl:with-param>
   &lt;/ctl:java>
@@ -464,7 +479,7 @@
   &lt;ctl:comments>Comments about the parser&lt;/ctl:comments> *
   &lt;ctl:java <strong>class</strong>="xsd:string" <strong>method</strong>="xsd:string" initialized="xsd:boolean">
     <span style="color: blue;">&lt;!-- initialization parameters --></span>
-    &lt;ctl:with-param name="xsd:string" select="<em>XPath expression</em>"?> *
+    &lt;ctl:with-param name="xsd:string" select="<em>${XPath-expression}</em>"?> *
       <span style="color: blue;">&lt;!-- literal XML content if @select is absent --></span>
     &lt;ctl:with-param>
   &lt;/ctl:java>
@@ -545,7 +560,7 @@
     <p>The resulting form data set shall conform to this encoding:</p>
     <pre>
 &lt;values>
-  &lt;value <strong>key</strong>="xsd:string">&lt;!-- text value --&gt;&lt;/value> *
+  &lt;value <strong>key</strong>="xsd:string"><em>xsd:string</em>&lt;/value> *
 &lt;/values></pre>
 
     <h4 id="form.example">4.1.5 Example</h4>
@@ -575,6 +590,347 @@
     <p>The &lt;request&gt; element submits an HTTP request to a web service or 
     other resource, and returns an XML representation of the response.</p>
     
+    <h4 id="request.encoding">4.2.2 Encoding</h4>
+    <p>The request instruction may contain a combination of literal XML elements 
+    and/or other CTL or XSL instructions. When any enclosed instructions have 
+    been evaluated, the resulting XML shall conform to the following encoding.</p>
+    <pre>
+&lt;ctl:request xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;ctl:url><em>xsd:anyURI</em>&lt;/ctl:url>
+  &lt;ctl:method>[GET | POST | HEAD]&lt;/ctl:method>
+  &lt;ctl:param <strong>name</strong>="xsd:string"><em>xsd:string</em>&lt;/ctl:param> *
+  &lt;ctl:body> ?
+    <span style="color: blue;">&lt;!-- text/plain or application/xml entity (POST only) --></span>
+  &lt;/ctl:body>
+  &lt;ctl:parser /> ?
+&lt;/ctl:request></pre>
+
+    <h4 id="request.descriptions">4.2.3 Element and attribute descriptions</h4>
+    <h5 id="request.url">4.2.3.1 url</h5>
+    <p>The required &lt;url&gt; element indicates the web service or other HTTP 
+    resource where the request will be submitted.</p>
+    
+    <h5 id="request.method">4.2.3.2 method</h5>
+    <p>The required &lt;method&gt; element indicates the HTTP method that will 
+    be used to make the request. Supported method types are get, post, and head.</p>
+    
+    <h5 id="request.param">4.2.3.3 param</h5>
+    <p>Optional &lt;param&gt; elements may be included to supply CGI parameters 
+    for the request. The CGI parameters are added to the URL before the request 
+    is sent.</p>
+    
+    <h5 id="request.body">4.2.3.4 body</h5>
+    <p>The &lt;body&gt; element is used only for requests where the method is 
+    set to "POST". It contains the data to post when the request is sent. The 
+    element may contain character data (text/plain media type), which is passed 
+    on directly, or XML (application/xml media type) which is serialized and 
+    then passed on.</p>
+    
+    <h5 id="request.parser">4.2.3.5 parser</h5>
+    <p>A parser may be used to instruct the engine how to convert the response 
+    from the request into an XML representation. If present, the name of this 
+    element should correspond to the name attribute of a parser element (see 
+    <a href="#parser">section 3.4</a>). Parsers may contain various required or 
+    optional attributes or elements, depending on the parser implementation. 
+    See <a href="#fixme">section FIXME</a> for the correct encoding for built-in 
+    parsers.</p>
+    
+    <h4 id="request.results">4.2.4 Results</h4>
+    <p>The request element returns an XML representation of the response, as 
+    generated by the parser. If no parser element is present and the response 
+    is well-formed XML, the XML is returned. Otherwise, nothing is returned.</p>
+    
+    <h4 id="request.example">4.2.5 Example</h4>
+    <pre class="example">
+&lt;request xmlns="http://www.occamlab.com/ctl">
+  &lt;url>http://some.host.org/wms&lt;/url>
+  &lt;method>GET&lt;/method>
+  &lt;param name="SERVICE">WMS&lt;/param>
+  &lt;param name="REQUEST">GetCapabilities&lt;/param>
+  &lt;param name="VeRsIoN">1.1.1&lt;/param>
+&lt;/request></pre>
+    
+    <h3 id="call-test">4.3 Call-Test</h3>
+    <h4 id="call-test.intro">4.3.1 Introduction</h4>
+    <p>The call-test instruction executes a sub-test.</p>
+    
+    <h4 id="call-test.encoding">4.3.2 Encoding</h4>
+    <pre>
+&lt;ctl:call-test <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;ctl:with-param <strong>name</strong>="xsd:string" 
+    label="xsd:string" 
+    label-expr="<em>${XPath-expression}</em>" 
+    select="<em>${XPath-expression}</em>"?> *
+    <span style="color: blue;">&lt;!-- literal value if @select is absent --></span> *
+  &lt;/ctl:with-param>
+&lt;/ctl:call-test></pre>
+
+    <h4 id="call-test.descriptions">4.3.3 Element and attribute descriptions</h4>
+    <h5 id="call-test.name">4.3.3.1 Attribute: name</h5>
+    <p>The name attribute identifies the test to execute, and corresponds to 
+    the name of a &lt;test&gt; element as described in <a href="#test">section 3.2.</a></p>
+    
+    <h5 id="call-test.with-param">4.3.3.2 Element: with-param</h5>
+    <p>If the test to be called contains parameters, values for the parameters 
+    may be supplied using &lt;with-param&gt; elements. It is similar to the 
+    &lt;xsl:with-param&gt; instruction, but it supports two additional attributes. 
+    The optional <code>label</code> attribute is used for documentation purposes, 
+    to describe what is being passed to the subtest in the current instance of 
+    the call-test instruction. The optional <code>label-expr</code> attribute 
+    is an ${XPath-expression} that is calculated at run time to generate a label 
+    for the parameter. This value is substituted into the assertion text if the 
+    assertion text contains a reference to the parameter.</p>
+    
+    <h4 id="call-test.results">4.3.4 Results</h4>
+    <p>This instruction does not generate any content, but it will pass on 
+    failures from the subtest. In other words, if the subtest fails, the 
+    failure bubbles up the call stack, and parent tests will also fail.</p>
+    
+    <h4 id="call-test.example">4.3.5 Examples</h4>
+    <pre class="example">
+&lt;ctl:call-test name="example:subtest" xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;ctl:with-param name="param1" select=".//table[1]" 
+    label="The first table" 
+    label-expr="concat('Table titled ', caption)"/>
+&lt;/ctl:call-test>
+
+&lt;xsl:for-each select=".//table">
+  &lt;ctl:call-test name="example:subtest">
+    &lt;ctl:with-param name="param1" label="Each table" 
+              label-expr="concat('Table titled ', caption)">
+      &lt;xsl:value-of select="."/>
+    &lt;/ctl:with-param>
+  &lt;/ctl:call-test>
+&lt;/xsl:for-each></pre>
+    
+    <h3 id="for-each">4.4 For-each</h3>
+    <h4 id="for-each.intro">4.4.1 Introduction</h4>
+    <p>The for-each instruction loops through each node in a node-set, making 
+    it the current node and processing the instructions in the for-each 
+    instruction body. It is identical to the &lt;xsl:for-each&gt; instruction, 
+    except that it allows setting labels with the label and label-expr attributes.</p>
+    
+    <h4 id="for-each.encoding">4.4.2 Encoding</h4>
+    <pre>
+&lt;ctl:for-each xmlns:ctl="http://www.occamlab.com/ctl"
+  <strong>select</strong>="<em>${XPath-expression}</em>"  
+  label="xsd:string" 
+  label-expr="<em>${XPath-expression}</em>">
+    <span style="color: blue;">&lt;!-- one or more instructions --></span>
+&lt;/ctl:for-each></pre>
+
+    <h4 id="for-each.descriptions">4.4.3 Element and attribute descriptions</h4>
+    <h5 id="for-each.select">4.4.3.1 Attribute: select</h5>
+    <p>The required select attribute shall specify an ${XPath-expression} that 
+    evaluates to a node-set.</p>
+    
+    <h5 id="for-each.label">4.4.3.2 Attribute: label</h5>
+    <p>The optional label attribute is used for documentation purposes. It 
+    describes the context for any enclosed call-test instructions.</p>
+    
+    <h5 id="for-each.label-expr">4.4.3.3 Attribute: label-expr</h5>
+    <p>The optional label-expr attribute is an ${XPath-expression} that is 
+    calculated at run time to generate a label for the context. This value is 
+    substituted into the assertion text of any subtests that contains a reference 
+    to the context.</p>
+    
+    <h5 id="for-each.instructions">4.4.3.4 Content: instructions</h5>
+    <p>The body of the for-each instruction shall contain CTL instructions 
+    and/or XSL instructions. These instructions are processed for each node 
+    in the node-set specified by the select attribute, using that node as the 
+    current node.</p>
+
+    <h4 id="for-each.results">4.4.4 Results</h4>
+    <p>Returns any XML returned by processing the enclosed instructions.</p>
+    
+    <h4 id="for-each.example">4.4.5 Example</h4>
+    <pre class="example">
+&lt;ctl:for-each xmlns:ctl="http://www.occamlab.com/ctl" 
+  select=".//table" 
+  label="Each table"
+  label-expr="concat('Table titled ', caption)">
+  &lt;ctl:call-test name="example:subtest" />
+&lt;/for-each></pre>
+
+    <h3 id="message">4.5 Message</h3>
+    <h4 id="message.intro">4.5.1 Introduction</h4>
+    <p>The message instruction presents a message to the user. For instance, it 
+    may be used to describe what is wrong when a test fails. It may also be 
+    useful for debugging purposes when tests are in the development stage.</p>
+    
+    <p>The message may be supplied as an ${XPath-expression} using the select 
+    attribute or it may be provided as the body of the element. In either case, 
+    the message presented to the user will be the string value of the selected 
+    nodes.</p>
+    
+    <h4 id="message.encoding">4.5.2 Encoding</h4>
+    <pre>
+&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="<em>${XPath-expression}</em>">
+    <span style="color: blue;">&lt;!-- message text if @select is absent --></span>
+&lt;/ctl:message></pre>
+    
+    <h4 id="message.descriptions">4.5.3 Element and attribute descriptions</h4>
+    <h5 id="message.select">4.5.3.1 Attribute: select</h5>
+    <p>The optional select attribute specifies an ${XPath-expression}. If present, 
+    the message will be generated by evaluating the expression and converting 
+    it to a string.</p>
+    
+    <h5 id="message.content">4.5.3.2 Content: message</h5>
+    <p>If there is no <code>select</code> attribute, the content of the message 
+    instruction specifies the message. It may contain mixed content, including 
+    character data and other instructions. When any enclosed instructions have 
+    been evaluated, the result is converted to a string to generate the message.</p>
+
+    <h4 id="message.results">4.5.4 Results</h4>
+    <p>This instruction does not generate any content.</p>
+    
+    <h4 id="message.example">4.5.5 Examples</h4>
+    <pre class="example">
+&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="concat(’Table ’, caption)" />
+
+&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl">Table &lt;xsl:value-of select="caption"/>&lt;/ctl:message>
+</pre>
+
+    <h3 id="fail">4.6 Fail</h3>
+    <h4 id="fail.intro">4.6.1 Introduction</h4>
+    <p>The fail instruction is used to indicate that a test has failed.</p>
+    
+    <h4 id="fail.encoding">4.6.2 Encoding</h4>
+    <pre>
+&lt;ctl:fail xmlns:ctl="http://www.occamlab.com/ctl" /></pre>
+    
+    <h4 id="fail.results">4.6.3 Results</h4>
+    <p>The instruction does not generate any content. When the test processor 
+    encounters the fail instruction, it indicates that the test has failed. 
+    However, this does not halt test execution. The rest of the instructions 
+    will continue to be processed, including any subsequent calls to subtests, 
+    but regardless of their results the current test will fail.</p>
+    
+    <h4 id="fail.example">4.6.4 Examples</h4>
+    <pre class="example">
+&lt;xsl:if test="not(2 + 2 = 4)">
+  &lt;ctl:message>[FAILURE] Addition error: expected 2 + 2 = 4&lt;/ctl:message>
+  &lt;ctl:fail />
+&lt;/xsl:if></pre>
+
+    <h3 id="call-func">4.7 Call-Function</h3>
+    <h4 id="call-func.intro">4.7.1 Introduction</h4>
+    <p>The call-function instruction invokes a named function.</p>
+    
+    <h4 id="call-func.encoding">4.7.2 Encoding</h4>
+    <pre>
+&lt;ctl:call-function <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;ctl:with-param name="xsd:string" select="<em>${XPath-expression}</em>"> *
+    <span style="color: blue;">&lt;!-- parameter value if @select is absent --></span>
+  &lt;/ctl:with-param>
+&lt;/ctl:call-function></pre>
+
+    <h4 id="call-func.descriptions">4.7.3 Element and attribute descriptions</h4>
+    <h5 id="call-func.name">4.7.3.1 Attribute: name</h5>
+    <p>The name attribute identifies the function to execute, and corresponds 
+    to the name of a &lt;function&gt; element as described in <a href="#function">
+    section 3.3</a>.</p>
+    
+    <h5 id="call-func.with-param">4.7.3.2 Element: with-param</h5>
+    <p>If the test to be called contains parameters, values for the parameters 
+    may be supplied using &lt;with-param&gt; elements. Parameters must be passed 
+    in order. If the optional name attribute is specified, it must match the 
+    parameter in the corresponding position in the function definition is named, 
+    the names must match. As with the &lt;xsl:with-param&gt; instruction, the parameter 
+    value may be specified as an XPath expression using the select attribute 
+    or it may be specified using the content of the with-param element.</p>
+    
+    <h4 id="call-func.results">4.7.4 Results</h4>
+    <p>This instruction returns the value of the function call.</p>
+    
+    <h4 id="call-func.example">4.7.5 Examples</h4>
+    <pre class="example">
+&lt;ctl:call-function name="example:myfunction" xmlns:ctl="http://www.occamlab.com/ctl">
+  &lt;with-param select="$param1"/>
+  &lt;with-param>&lt;param2-value/>&lt;/with-param>
+&lt;/call-function></pre>
+    </div>
+    
+    <div id="sect.parsers">
+    <h2 id="parsers">5. Built-in parsers</h2>
+    
+    <h3 id="parsers.intro">5.1 Introduction</h3>
+    <p>This section describes several parser objects that are built-in to 
+    Compliance Test Language and shall be supported by test processors. Tests 
+    can use these parsers without declaring them.</p>
+    
+    <h3 id="cdata">5.2 CDataParser</h3>
+    <h4 id="cdata.intro">5.2.1 Introduction</h4>
+    <p>The <code>CDataParser</code> is a parser that parses the content into 
+    character data.</p>
+    
+    <h4 id="cdata.encoding">5.2.2 Encoding</h4>
+    <pre>&lt;ctlp:CDataParser xmlns:ctlp="http://www.occamlab.com/te/parsers" /></pre>
+
+    <h3 id="http">5.3 HTTPParser</h3>
+    <h4 id="http.intro">5.3.1 Introduction</h4>
+    <p>The <code>HTTPParser</code> is a parser that returns HTTP header information 
+    uses other parser(s) to parse the content. It supports multipart messages.</p>
+    
+    <h4 id="http.encoding">5.3.2 Encoding</h4>
+    <pre>
+&lt;ctlp:HTTPParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
+  &lt;ctlp:parse part="xsd:positiveInteger" mime="<em>${media-type}</em>"> *
+    <span style="color: blue;">&lt;!-- parser instruction --></span> ?
+  &lt;/ctlp:parse>
+&lt;/ctlp:HTTPParser></pre>
+
+    <h4 id="http.results">5.3.3 Results</h4>
+    <h5 id="http.standard">5.3.3.1 Standard media types</h5>
+    <p>If the Content-Type header of the message is not multipart, the results 
+    shall conform to the following encoding:</p>
+
+    <pre>
+&lt;response>
+  &lt;status <strong>protocol</strong>="${protocol-version}" <strong>code</strong>="${status-code}">
+    ${status-message}
+  &lt;/status>
+  &lt;headers>
+    &lt;header <strong>name</strong>="${header-name}"> *
+      ${header-value}
+    &lt;/header>
+  &lt;/headers>
+  &lt;content> ?
+    <span style="color: blue;">&lt;!-- message body (XML entity) --></span> ?
+  &lt;/content>
+&lt;/response></pre>
+
+    <h5 id="http.multipart">5.3.3.2 Multi-part media types</h5>
+    <p>If the Content-Type header of the message is multipart, the results shall 
+    conform to the following encoding:</p>
+
+    <pre>
+&lt;multipart-response>
+  &lt;status <strong>protocol</strong>="${protocol-version}" <strong>code</strong>="${status-code}">
+    ${status-message}
+  &lt;/status>
+  &lt;headers
+    &lt;header <strong>name</strong>="${header-name}"> *
+      ${header-value}
+    &lt;/header>
+  &lt;/headers>
+  &lt;part <strong>num</strong>="xsd:positiveInteger"> *
+    &lt;headers>
+      &lt;header <strong>name</strong>="${header-name}"> *
+        ${header-value}
+      &lt;/header>
+    &lt;/headers>
+    &lt;content> ?
+      <span style="color: blue;">&lt;!-- XML entity --></span> ?
+    &lt;/content>
+  &lt;/part>
+&lt;/multipart-response></pre>
+
+    <h3 id="xsd-validator">5.4 XMLValidatingParser</h3>
+    <h4 id="xsd-validator.intro">5.4.1 Introduction</h4>
+    <p>The <code>XMLValidatingParser</code>code> is a parser that parses data 
+    as XML and validates it against one or more XML Schemas.</p>
+
     </div>
   </body>
 </html>
