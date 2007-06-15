@@ -27,11 +27,12 @@
       width: 75%;
       border-collapse: separate;
     }
-    td, th { padding: 0.25em; text-align: left}
+    td, th { padding: 0.25em; text-align: left; vertical-align: top;}
     caption { text-align: left; }
+    dl {margin-top: 0em;}
     dt { 
-      margin-top: 1em; 
       font-weight: bold ;
+      margin-bottom: 0.5em;
     }
     pre { background: WhiteSmoke; }
     pre.example { background: AliceBlue; }
@@ -43,7 +44,6 @@
       font-family: verdana, sans-serif;
       background: #eeeeee;
       color: #000099;
-      vertical-align: top;
     }
     table.revhistory {
       border-collapse: collapse;
@@ -54,7 +54,6 @@
       text-align: left;
       background: #000099;
       color: white;
-      vertical-align: top;
     }
     </style>
   </head>
@@ -118,8 +117,9 @@
         <tr>
           <td>0.5</td>
           <td>2007-06-15</td>
-          <td>New capabilities documented: XInclude support; multi-part requests; 
-          SchematronValidatingParser; ZipParser; built-in functions.</td>
+          <td>Many new capabilities documented: XInclude support; multi-part 
+          requests; SchematronValidatingParser; ZipParser; warning verdict; 
+          get session info; built-in functions.</td>
         </tr>
         <tr>
           <td>0.4</td>
@@ -187,14 +187,15 @@
     as its root element. The package element, which is a container for multiple 
     CTL objects, is described in detail in section 7. Each CTL object is identified 
     by a unique, namespace qualified name, so the set of objects in a test suite 
-    may span several files. The CTL objects are described in section 8.</p>
+    may span several files. The CTL objects are described in <a href="#objects">
+    section 3</a>.</p>
     
     <p>Test objects contain programmatic code that consists of XSL instructions 
-    and/or CTL instructions. The CTL instructions are described in section 9.</p>
-  
-    <p>Some parser objects are built-in to CTL, and may be used without declaring 
-    a parser object. The built-in parsers are described in section 10.</p>
-    
+    and/or CTL instructions. The CTL instructions are described in <a href="#instructions">
+    section 4</a>. Some parser objects are built-in to CTL, and may be used without 
+    declaring a parser object. The built-in parsers are described in <a href="#parsers">
+    section 5.</a></p>
+
     </div>
     
     <div id="sect.package">
@@ -220,7 +221,10 @@
   &lt;ctl:function /> *
   &lt;xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" /> *
 
-&lt;/ctl:package></pre>    
+&lt;/ctl:package></pre>
+    
+    <p>The CTL content model is defined using <a href="ctl-schemas.zip">this set of XML 
+    Schema grammars</a> (ZIP archive, 9 KB).</p>
     </div>
     
     <div id="sect-objects">
@@ -518,9 +522,9 @@
     regard these as hints on the size of window required, but does not have to 
     follow these guidelines.</p>
     
-    <h5 id="form.size">4.1.3.2 method</h5>
-    <p>The user can also specify the method attribute as "get" (default) or 
-    "post" to specify which method the form will use to send data.</p>    
+    <h5 id="form.method">4.1.3.2 method</h5>
+    <p>The user can also specify the method attribute as "GET" (default) or 
+    "POST" to specify which method the form will use to send data.</p>    
     
     <h5 id="form.xhtml">4.1.3.3 XHTML Basic elements</h5>
     <p>The content of the form should evaluate into <a href="http://www.w3.org/TR/xhtml-basic/">XHTML 
@@ -1087,7 +1091,7 @@
     
 	<h3 id="zip-parser">5.7 ZipParser</h3>
     
-    <h4 id="zip-parser".intro">5.7.1 Introduction</h4>
+    <h4 id="zip-parser.intro">5.7.1 Introduction</h4>
     <p>The <code>ZipParser</code> is a parser that retrieves and extracts 
     a zip file and returns a manifest for the files that were contained
     in the original compressed file.</p>
@@ -1137,9 +1141,10 @@
     <h2 id="functions">6. Built-in functions</h2>
     
     <h3 id="getImageType">6.1 getImageType</h3>
-    <h4 id="getImageType.synposis">6.1.2 Synposis</h4>
-    <p>The <code>getImageType</code> function does ...</p>   
-    <table class="function" frame="box">
+    <p>The <code>getImageType</code> function may be used to identify the media 
+    type of a putative image resource.</p>
+    <table id="getImageType.synposis" class="function" frame="box">
+      <caption>Synopsis &mdash; getImageType</caption>
       <tbody>
         <tr>
           <th>Name</th>
@@ -1149,16 +1154,18 @@
         <tr>
           <th>Parameters</th>
           <td>
-          <dt>image.uri (required)</dt>
-          <dd>A URI pointing to the image to check</dd>
+          <dl>
+            <dt>image.uri (required)</dt>
+            <dd>A URL referring to the image to check</dd>
           </dl>
           </td>
         </tr>
         <tr>
           <th>Returns</th>
-          <td>The name of the image filetype, if supported by Java, or null otherwise.
-          If the image could not be retrieved the funciton also returns null.  The supported
-          Java types are: bmp, jpeg, wbmp, png, and gif.</td>
+          <td>The name of the image filetype, if supported by Java, or <code>null</code> 
+          otherwise. If the image could not be retrieved the function also returns 
+          <code>null</code>. The supported image types are: bmp, jpeg, wbmp, png, 
+          and gif.</td>
         </tr>
       </tbody>
     </table>
