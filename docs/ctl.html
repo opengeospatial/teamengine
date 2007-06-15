@@ -116,7 +116,9 @@
         <tr>
           <td>0.5</td>
           <td>2007-06-15</td>
-          <td>New capabilities documented: XInclude support; multi-part requests; ZipParser.</td>
+          <td>New capabilities documented: XInclude support; multi-part requests; 
+          SchematronValidatingParser; ZipParser; enhancements to ImageParser 
+          (getImageType function).</td>
         </tr>
         <tr>
           <td>0.4</td>
@@ -153,9 +155,11 @@
         <li><a href="#parsers">Built-in parsers</a>
           <ol class="toc2">
             <li><a href="#parsers.intro">Introduction</a></li>
-            <li><a href="#cdata">CDataParser</a></li>
-            <li><a href="#http">HTTPParser</a></li>
+            <li><a href="#cdata-parser">CDataParser</a></li>
+            <li><a href="#http-parser">HTTPParser</a></li>
             <li><a href="#xsd-validator">XMLValidatingParser</a></li>
+            <li><a href="#sch-validator">SchematronValidatingParser</a></li>
+            <li><a href="#img-parser">ImageParser</a></li>
           </ol>
         </li>
       </ol>
@@ -859,20 +863,20 @@
     Compliance Test Language and shall be supported by test processors. Tests 
     can use these parsers without declaring them.</p>
     
-    <h3 id="cdata">5.2 CDataParser</h3>
-    <h4 id="cdata.intro">5.2.1 Introduction</h4>
+    <h3 id="cdata-parser">5.2 CDataParser</h3>
+    <h4 id="cdata-parser.intro">5.2.1 Introduction</h4>
     <p>The <code>CDataParser</code> is a parser that parses the content into 
     character data.</p>
     
     <h4 id="cdata.encoding">5.2.2 Encoding</h4>
     <pre>&lt;ctlp:CDataParser xmlns:ctlp="http://www.occamlab.com/te/parsers" /></pre>
 
-    <h3 id="http">5.3 HTTPParser</h3>
-    <h4 id="http.intro">5.3.1 Introduction</h4>
+    <h3 id="http-parser">5.3 HTTPParser</h3>
+    <h4 id="http-parser.intro">5.3.1 Introduction</h4>
     <p>The <code>HTTPParser</code> is a parser that returns HTTP header information 
     uses other parser(s) to parse the content. It supports multipart messages.</p>
     
-    <h4 id="http.encoding">5.3.2 Encoding</h4>
+    <h4 id="http-parser.encoding">5.3.2 Encoding</h4>
     <pre>
 &lt;ctlp:HTTPParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
   &lt;ctlp:parse part="xsd:positiveInteger" mime="<em>${media-type}</em>"> *
@@ -880,8 +884,8 @@
   &lt;/ctlp:parse>
 &lt;/ctlp:HTTPParser></pre>
 
-    <h4 id="http.results">5.3.3 Results</h4>
-    <h5 id="http.standard">5.3.3.1 Standard media types</h5>
+    <h4 id="http-parser.results">5.3.3 Results</h4>
+    <h5 id="http-parser.standard">5.3.3.1 Standard media types</h5>
     <p>If the Content-Type header of the message is not multipart, the results 
     shall conform to the following encoding:</p>
 
@@ -900,7 +904,7 @@
   &lt;/content>
 &lt;/response></pre>
 
-    <h5 id="http.multipart">5.3.3.2 Multi-part media types</h5>
+    <h5 id="http-parser.multipart">5.3.3.2 Multi-part media types</h5>
     <p>If the Content-Type header of the message is multipart, the results shall 
     conform to the following encoding:</p>
 
@@ -971,6 +975,19 @@
 &lt;xsl:if test="not($results/*)">
   &lt;ctl:message>[FAILURE} Parsing or validation errors.&lt;/ctl:message>
 &lt;/xsl:if></pre>
+
+    <h3 id="sch-validator">5.5 SchematronValidatingParser</h3>
+    
+    <h4 id="sch-validator.intro">5.5.1 Introduction</h4>
+    <p>The <code>SchematronValidatingParser</code> is a parser that validates 
+    XML sources against one or more Schematron (v1.5) schemas.</p>
+    
+    
+    <h3 id="image-parser">5.6 ImageParser</h3>
+    
+    <h4 id="image-parser.intro">5.6.1 Introduction</h4>
+    <p>The <code>ImageParser</code> does something.</p>
+    
     </div>
   </body>
 </html>
