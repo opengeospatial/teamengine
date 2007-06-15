@@ -1,5 +1,5 @@
-<project name="team" default="all">
-  <description>TEAM Engine main build file</description>
+<project name="team" default="all" basedir=".">
+  <description>Master build file for TEAM engine</description>
 
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
     <classpath>
@@ -11,7 +11,7 @@
   <property file="${user.home}/${ant.project.name}.properties"/>
 
   <property file="build.properties"/>
-
+  <property name="common.lib.dir" value="${basedir}/lib"/>
   <property name="usersdir" value="webapps/teamengine/WEB-INF/users"/>
 
   <property name="component.excludes" value=""/>
@@ -176,18 +176,18 @@
 
   <target name="webapp.component">
     <if>
-      <available file="${component}/resources"/>
+      <available file="${component}/setup"/>
       <then>
         <copy todir="webapps/teamengine/WEB-INF/classes">
-          <fileset dir="${component}/resources" includes="**"/>
+          <fileset dir="${component}/setup" excludes="**/*README*"/>
         </copy>
       </then>
     </if>
     <if>
-      <available file="${component}/lib"/>
+      <available file="${component}/dist"/>
       <then>
         <copy todir="webapps/teamengine/WEB-INF/lib" overwrite="yes">
-          <fileset dir="${component}/lib" includes="**"/>
+          <fileset dir="${component}/dist" />
         </copy>
       </then>
     </if>
@@ -195,7 +195,7 @@
       <available file="${component}/web"/>
       <then>
         <copy todir="webapps/teamengine">
-          <fileset dir="${component}/web" includes="**"/>
+          <fileset dir="${component}/web" />
         </copy>
       </then>
     </if>
@@ -253,8 +253,14 @@
 
   <target name="webapps" depends="webapp.manager,webapp.components,webapp.scripts"/>
 
-
   <target name="war" depends="webapps">
+    <copy todir="webapps/teamengine/WEB-INF/lib">
+      <fileset dir="${common.lib.dir}" includes="*.jar" 
+               excludesfile="${common.lib.dir}/war-excludes.txt"/>
+    </copy>
+    <copy todir="webapps/teamengine/docs">
+      <fileset dir="docs" includes="ctl/" />
+    </copy>
     <zip destfile="setup/teamengine.war">
       <fileset dir="webapps/teamengine">
         <exclude name="**/*.dxsl"/>
@@ -278,7 +284,7 @@
         <include name="bin/viewlog.*"/>
         <include name="bin/listsuites.*"/>
         <include name="docs/teamengine.html"/>
-        <include name="docs/ctl.doc"/>
+        <include name="docs/ctl/**"/>
         <include name="LICENSE.txt"/>
       </fileset>
     </copy>
@@ -381,64 +387,6 @@
         <antcall target="jar.realm"/>
       </then>
     </if>
-  </target>
-
-  <target name="test" depends="jar.engine,jar.components">
-    <path id="test.classpath">
-      <path refid="engine.classpath"/>
-      <fileset dir="components" excludes="${component.excludes}">
-        <include name="*/lib/*.jar"/>
-      </fileset>
-      <dirset dir="components" excludes="${component.excludes}">
-        <include name="*/resources"/>
-      </dirset>
-      <dirset dir="scripts" excludes="${script.excludes}">
-        <include name="*/resources"/>
-      </dirset>
-    </path>
-<!--
-    <property name="debug.test.classpath" refid="test.classpath"/>
-    <echo>${debug.test.classpath}</echo>
--->
-    <property name="test.args" value=""/>
-    <if>
-      <equals arg1="${test.args}" arg2=""/>
-      <then>
-        <echo>Supply arguments using -Dtest.args="string"</echo>
-      </then>
-    </if>
-
-    <java classname="com.occamlab.te.Test" fork="true" jvm="${env.JAVA_HOME}/bin/java.exe" maxmemory="512m" classpathref="test.classpath">
-      <arg line="${test.args}"/>
-    </java>
-  </target>
-
-  <target name="viewlog" depends="jar.engine">
-    <property name="viewlog.args" value=""/>
-    <if>
-      <equals arg1="${viewlog.args}" arg2=""/>
-      <then>
-        <echo>Supply arguments using -Dviewlog.args="string"</echo>
-      </then>
-    </if>
-
-    <java classname="com.occamlab.te.ViewLog" fork="true" jvm="${env.JAVA_HOME}/bin/java.exe" classpathref="engine.classpath">
-      <arg line="${viewlog.args}"/>
-    </java>
-  </target>
-
-  <target name="listsuites" depends="jar.engine">
-    <property name="listsuites.args" value=""/>
-    <if>
-      <equals arg1="${listsuites.args}" arg2=""/>
-      <then>
-        <echo>Supply arguments using -Dlistsuites.args="string"</echo>
-      </then>
-    </if>
-
-    <java classname="com.occamlab.te.ListSuites" fork="true" jvm="${env.JAVA_HOME}/bin/java.exe" classpathref="engine.classpath">
-      <arg line="${listsuites.args}"/>
-    </java>
   </target>
 
 </project>

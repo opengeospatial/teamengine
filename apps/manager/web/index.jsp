@@ -53,8 +53,8 @@ public void jspInit() {
 		<h2>Welcome</h2>
 		<p>
 			The Test, Evaluation, And Measurement (TEAM) Engine is a test script interpreter.
-			It executes test scripts written in
-			<a href="http://portal.opengeospatial.org/files/?artifact_id=16860">Compliance Test Language (CTL)</a>
+			It executes test scripts written using the 
+			<a href="docs/ctl/ctl.html">Compliance Test Language (CTL)</a>
 			to verify that an implementation of a specification complies with the specification.
 		</p>
 		<p>
