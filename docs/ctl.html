@@ -38,11 +38,12 @@
     a:link img, a:visited img { border-style: none }
     div.header { margin-bottom: 2em; }
     ul.sourcelist { margin: 0.5em; }
-    table.content-model th {
+    table.function th {
       font-size: 0.80em;
       font-family: verdana, sans-serif;
       background: #eeeeee;
       color: #000099;
+      vertical-align: top;
     }
     table.revhistory {
       border-collapse: collapse;
@@ -53,6 +54,7 @@
       text-align: left;
       background: #000099;
       color: white;
+      vertical-align: top;
     }
     </style>
   </head>
@@ -215,39 +217,7 @@
   &lt;ctl:function /> *
   &lt;xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" /> *
 
-&lt;/ctl:package></pre>
-<!--    
-    <table id="package-content" class="content-model" frame="box">
-      <tbody>
-        <tr>
-          <th>Element/Attribute</th>
-          <th>Usage</th>
-          <th>Description</th>
-        </tr>
-        <tr>
-          <td><code>&lt;package&gt;</code></td>
-          <td>Required</td>
-          <td>Establishes a package</td>
-        </tr>
-        <tr>
-          <td>&nbsp;<code>&lt;<em>suite|test|function|parser|xsl:template</em> /&gt;</code></td>
-          <td>Optional<sup>*</sup></td>
-          <td>CTL Objects</td>
-        </tr>
-        <tr>
-          <td><code>&lt;/package&gt;</code></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td colspan="3">
-          <h5>Usage Notes:</h5>
-          <sup>*</sup> May be repeated.
-          </td>
-        </tr>
-      </tbody>
-    </table>
--->    
+&lt;/ctl:package></pre>    
     </div>
     
     <div id="sect-objects">
@@ -977,7 +947,7 @@
 &lt;/xsl:variable>
 
 &lt;xsl:if test="not($results/*)">
-  &lt;ctl:message>[FAILURE} Parsing or validation errors.&lt;/ctl:message>
+  &lt;ctl:message>[FAILURE] Parsing or validation errors.&lt;/ctl:message>
 &lt;/xsl:if></pre>
 
     <h3 id="sch-validator">5.5 SchematronValidatingParser</h3>
@@ -999,8 +969,31 @@
     
     <h3 id="getImageType">6.1 getImageType</h3>
     <h4 id="getImageType.synposis">6.1.2 Synposis</h4>
-    <p>The <code>getImageType</code> function does ...</p>
-    
+    <p>The <code>getImageType</code> function does ...</p>   
+    <table class="function" frame="box">
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td>[local name] = "getImageType" <br/>
+          [namespace name] = "http://www.occamlab.com/ctl"</td>
+        </tr>
+        <tr>
+          <th>Parameters</th>
+          <td>
+          <dl>      
+          <dt>alpha (required)</dt>
+          <dd>What is it?</dd>
+          <dt>beta (optional)</dt>
+          <dd>What is it?</dd>
+          </dl>
+          </td>
+        </tr>
+        <tr>
+          <th>Returns</th>
+          <td>What?</td>
+        </tr>
+      </tbody>
+    </table>
     </div>
   </body>
 </html>
