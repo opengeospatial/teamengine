@@ -146,11 +146,12 @@
           <ol class="toc2">
             <li><a href="#form">form</a></li>
             <li><a href="#request">request</a></li>
-            <li><a href="#call-test">call-Test</a></li>
-            <li><a href="#for-each">for-Each</a></li>
+            <li><a href="#call-test">call-test</a></li>
+            <li><a href="#for-each">for-each</a></li>
             <li><a href="#message">message</a></li>
             <li><a href="#fail">fail</a></li>
             <li><a href="#call-func">call-function</a></li>
+            <li><a href="#get-session">get-session-info</a></li>
           </ol>
         </li>
         <li><a href="#parsers">Built-in parsers</a>
@@ -505,7 +506,7 @@
     been evaluated, the resulting XML shall conform to this encoding.</p>
     <pre>
 &lt;ctl:form xmlns:ctl="http://www.occamlab.com/ctl" 
-  height="xsd:positiveInteger" width="xsd:positiveInteger">
+  height="xsd:positiveInteger" width="xsd:positiveInteger" method="[get | post]">
   <span style="color: blue;">&lt;!-- XHTML Basic markup --></span>
 &lt;/ctl:form></pre>
 
@@ -516,7 +517,11 @@
     regard these as hints on the size of window required, but does not have to 
     follow these guidelines.</p>
     
-    <h5 id="form.xhtml">4.1.3.2 XHTML Basic elements</h5>
+    <h5 id="form.size">4.1.3.2 method</h5>
+    <p>The user can also specify the method attribute as "get" (default) or 
+    "post" to specify which method the form will use to send data.</p>    
+    
+    <h5 id="form.xhtml">4.1.3.3 XHTML Basic elements</h5>
     <p>The content of the form should evaluate into <a href="http://www.w3.org/TR/xhtml-basic/">XHTML 
     Basic</a> elements. All of the XHTML Basic elements valid inside the XHTML 
     Basic &lt;form&gt; element are supported, with the exception of the &lt;object&gt; 
@@ -828,6 +833,23 @@
   &lt;with-param select="$param1"/>
   &lt;with-param>&lt;param2-value/>&lt;/with-param>
 &lt;/call-function></pre>
+
+    <h3 id="get-session">4.8 Get-Session-Info</h3>
+    <h4 id="get-session.intro">4.8.1 Introduction</h4>
+    <p>The get-session-info instruction returns an XML document with current session 
+    information. Currently this includes the session id (unique for each test run) and the 
+    session directory (log and working directory for the session).</p>
+    
+    <h4 id="get-session.encoding">4.8.2 Encoding</h4>
+    <pre>
+&lt;ctl:get-session-info/></pre>
+
+    <h4 id="get-session.results">4.8.3 Results</h4>
+    <pre>
+&lt;ctl:SessionInfo>
+	&lt;ctl:SessionId>${session.id}&lt;/ctl:SessionId/>
+	&lt;ctl:SessionDir>${session.dir}&lt;/ctl:SessionDir/>
+&lt;/ctl:SessionInfo></pre>
     </div>
     
     <div id="sect.parsers">
@@ -957,7 +979,7 @@
     <p>The <code>SchematronValidatingParser</code> is a parser that validates 
     XML sources against one or more Schematron (v1.5) schemas.</p>
 
-    <h4 id="xsd-validator.encoding">5.5.2 Encoding</h4>
+    <h4 id="sch-validator.encoding">5.5.2 Encoding</h4>
     <pre>
 &lt;ctlp:SchematronValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers" 
   ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
@@ -968,7 +990,7 @@
   &lt;/ctlp:schemas>
 &lt;/ctlp:XMLValidatingParser></pre>
 
-    <h4 id="xsd-validator.results">5.5.3 Results</h4>
+    <h4 id="sch-validator.results">5.5.3 Results</h4>
     <p>The <code>SchematronValidatingParser</code> attempts to parse the data stream 
     returned by a request into XML, and validates the XML against each of the 
     Schematron Schemas of the desired phase.  If no phase is defined, the "Default" phase
@@ -977,7 +999,7 @@
     the parser returns the XML. If the data stream cannot be parsed or there 
     are errors or warnings that are not ignored, no content is returned.</p>
 
-    <h4 id="xsd-validator.example">5.5.4 Example</h4>
+    <h4 id="sch-validator.example">5.5.4 Example</h4>
     <pre class="example">
 &lt;xsl:variable name="results" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -1004,20 +1026,20 @@
     <h4 id="image-parser.intro">5.6.1 Introduction</h4>
     <p>The <code>ImageParser</code> does something.</p>
     
-<h3 id="zip-parser">5.7 ZipParser</h3>
+	<h3 id="zip-parser">5.7 ZipParser</h3>
     
-    <h4 id="sch-validator.intro">5.7.1 Introduction</h4>
+    <h4 id="zip-parser".intro">5.7.1 Introduction</h4>
     <p>The <code>ZipParser</code> is a parser that retrieves and extracts 
     a zip file and returns a manifest for the files that were contained
     in the original compressed file.</p>
 
-    <h4 id="xsd-validator.encoding">5.7.2 Encoding</h4>
+    <h4 id="zip-parser.encoding">5.7.2 Encoding</h4>
     <pre>
 &lt;ctlp:ZipParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
   &lt;ctl:get-session-info/>
 &lt;/ctlp:XMLValidatingParser></pre>
 
-    <h4 id="xsd-validator.results">5.7.3 Results</h4>
+    <h4 id="zip-parser.results">5.7.3 Results</h4>
     <p>The <code>ZipParser</code> attempts to aquired the requested zip file,
     and extract the contents to a working directory (or java.io.temp).  A manifest
     XML document is then returned describing and indexing the extracted files.</p>
@@ -1031,7 +1053,7 @@
 	size="2048" />
 &lt;/ctl:manifest></pre>
 
-    <h4 id="xsd-validator.example">5.7.4 Example</h4>
+    <h4 id="zip-parser.example">5.7.4 Example</h4>
     <pre class="example">
 &lt;xsl:variable name="results" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
