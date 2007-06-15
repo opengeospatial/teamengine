@@ -161,6 +161,7 @@
             <li><a href="#xsd-validator">XMLValidatingParser</a></li>
             <li><a href="#sch-validator">SchematronValidatingParser</a></li>
             <li><a href="#img-parser">ImageParser</a></li>
+            <li><a href="#zip-parser">ZipParser</a></li>
           </ol>
         </li>
         <li><a href="#functions">Built-in functions</a>
@@ -955,12 +956,99 @@
     <h4 id="sch-validator.intro">5.5.1 Introduction</h4>
     <p>The <code>SchematronValidatingParser</code> is a parser that validates 
     XML sources against one or more Schematron (v1.5) schemas.</p>
-    
+
+    <h4 id="xsd-validator.encoding">5.5.2 Encoding</h4>
+    <pre>
+&lt;ctlp:SchematronValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers" 
+  ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
+  &lt;ctlp:schemas> ?
+    &lt;ctlp:schema type="[URL | File | Resource]" phase="[Schematron phase name]"> +
+      ${schema-location} <span style="color: blue;">&lt;!-- required if @type is present --></span>
+    &lt;/ctlp:schema>
+  &lt;/ctlp:schemas>
+&lt;/ctlp:XMLValidatingParser></pre>
+
+    <h4 id="xsd-validator.results">5.5.3 Results</h4>
+    <p>The <code>SchematronValidatingParser</code> attempts to parse the data stream 
+    returned by a request into XML, and validates the XML against each of the 
+    Schematron Schemas of the desired phase.  If no phase is defined, the "Default" phase
+    will be used.  Any validation errors and warnings are presented to the user. 
+    If there are no errors or warnings, or if errors and warning are ignored, 
+    the parser returns the XML. If the data stream cannot be parsed or there 
+    are errors or warnings that are not ignored, no content is returned.</p>
+
+    <h4 id="xsd-validator.example">5.5.4 Example</h4>
+    <pre class="example">
+&lt;xsl:variable name="results" 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:ctl="http://www.occamlab.com/ctl"
+  xmlns:ctlp="http://www.occamlab.com/te/parsers">
+
+  &lt;ctl:request>
+    &lt;ctl:url>http://www.example.com/example.xml&lt;/ctl:url>
+    &lt;ctl:method>GET&lt;/ctl:method>
+    &lt;ctlp:SchematronValidatingParser>
+      &lt;ctlp:schemas>
+        &lt;ctlp:schema type="url" phase="myphase">http://www.example.com/example.sch&lt;/ctlp:schema>
+      &lt;/ctlp:schemas>
+    &lt;/ctlp:SchematronValidatingParser>
+  &lt;/ctl:request>
+&lt;/xsl:variable>
+
+&lt;xsl:if test="not($results/*)">
+  &lt;ctl:message>[FAILURE] Parsing or validation errors.&lt;/ctl:message>
+&lt;/xsl:if></pre>   
     
     <h3 id="image-parser">5.6 ImageParser</h3>
     
     <h4 id="image-parser.intro">5.6.1 Introduction</h4>
     <p>The <code>ImageParser</code> does something.</p>
+    
+<h3 id="zip-parser">5.7 ZipParser</h3>
+    
+    <h4 id="sch-validator.intro">5.7.1 Introduction</h4>
+    <p>The <code>ZipParser</code> is a parser that retrieves and extracts 
+    a zip file and returns a manifest for the files that were contained
+    in the original compressed file.</p>
+
+    <h4 id="xsd-validator.encoding">5.7.2 Encoding</h4>
+    <pre>
+&lt;ctlp:ZipParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
+  &lt;ctl:get-session-info/>
+&lt;/ctlp:XMLValidatingParser></pre>
+
+    <h4 id="xsd-validator.results">5.7.3 Results</h4>
+    <p>The <code>ZipParser</code> attempts to aquired the requested zip file,
+    and extract the contents to a working directory (or java.io.temp).  A manifest
+    XML document is then returned describing and indexing the extracted files.</p>
+
+	<p>The following is an example response from the ZipParser, where a single
+	file was extracted from the zip file:</p>
+    <pre>
+&lt;ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl">
+	&lt;ctl:file-entry 
+	full-path="${java.io.temp}/zipparser.temp/doc.kml" 
+	size="2048" />
+&lt;/ctl:manifest></pre>
+
+    <h4 id="xsd-validator.example">5.7.4 Example</h4>
+    <pre class="example">
+&lt;xsl:variable name="results" 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:ctl="http://www.occamlab.com/ctl">
+
+  &lt;ctl:request>
+    &lt;ctl:url>http://www.example.com/example.zip&lt;/ctl:url>
+    &lt;ctl:method>GET&lt;/ctl:method>
+    &lt;ctlp:ZipParser>
+      &lt;ctl:get-session-info/>
+    &lt;/ctlp:ZipParser>
+  &lt;/ctl:request>
+&lt;/xsl:variable>
+
+&lt;xsl:if test="not(count($results//ctl:file-entry) gt 0)">
+  &lt;ctl:message>[FAILURE] There were no files in the given zip file.&lt;/ctl:message>
+&lt;/xsl:if></pre>    
     
     </div>
     
