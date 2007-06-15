@@ -928,9 +928,49 @@
 
     <h3 id="xsd-validator">5.4 XMLValidatingParser</h3>
     <h4 id="xsd-validator.intro">5.4.1 Introduction</h4>
-    <p>The <code>XMLValidatingParser</code>code> is a parser that parses data 
-    as XML and validates it against one or more XML Schemas.</p>
+    <p>The <code>XMLValidatingParser</code> is a parser that parses data as XML 
+    and validates it against one or more XML Schemas.</p>
 
+    <h4 id="xsd-validator.encoding">5.4.2 Encoding</h4>
+    <pre>
+&lt;ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers" 
+  ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
+  &lt;ctlp:schemas> ?
+    &lt;ctlp:schema type="[URL | File | Resource]"> +
+      ${schema-location} <span style="color: blue;">&lt;!-- required if @type is present --></span>
+    &lt;/ctlp:schema>
+  &lt;/ctlp:schemas>
+&lt;/ctlp:XMLValidatingParser></pre>
+
+    <h4 id="xsd-validator.results">5.4.3 Results</h4>
+    <p>The <code>XMLValidatingParser</code> attempts to parse the data stream 
+    returned by a request into XML, and validates the XML against each of the 
+    XML Schemas. Any validation errors and warnings are presented to the user. 
+    If there are no errors or warnings, or if errors and warning are ignored, 
+    the parser returns the XML. If the data stream cannot be parsed or there 
+    are errors or warnings that are not ignored, no content is returned.</p>
+
+    <h4 id="xsd-validator.example">5.4.4 Example</h4>
+    <pre class="example">
+&lt;xsl:variable name="results" 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:ctl="http://www.occamlab.com/ctl"
+  xmlns:ctlp="http://www.occamlab.com/te/parsers">
+
+  &lt;ctl:request>
+    &lt;ctl:url>http://www.example.com/example.xml&lt;/ctl:url>
+    &lt;ctl:method>GET&lt;/ctl:method>
+    &lt;ctlp:XMLValidatingParser>
+      &lt;ctlp:schemas>
+        &lt;ctlp:schema type="url">http://www.example.com/example.xsd&lt;/ctlp:schema>
+      &lt;/ctlp:schemas>
+    &lt;/ctlp:XMLValidatingParser>
+  &lt;/ctl:request>
+&lt;/xsl:variable>
+
+&lt;xsl:if test="not($results/*)">
+  &lt;ctl:message>[FAILURE} Parsing or validation errors.&lt;/ctl:message>
+&lt;/xsl:if></pre>
     </div>
   </body>
 </html>
