@@ -152,6 +152,7 @@
             <li><a href="#fail">fail</a></li>
             <li><a href="#call-func">call-function</a></li>
             <li><a href="#get-session">get-session-info</a></li>
+            <li><a href="#warning">warning</a></li>
           </ol>
         </li>
         <li><a href="#parsers">Built-in parsers</a>
@@ -261,7 +262,7 @@
   &lt;param <strong>name</strong>="xsd:string">Parameter description&lt;/param> *
   &lt;context>Describes the calling context&lt;/context> ?
   &lt;assertion>Condition or system state to be verified&lt;/assertion>
-  &lt;comments>comment&lt;/comments> *
+  &lt;comment>comment&lt;/comment> *
   &lt;link title="xsd:string">xsd:anyURI&lt;/link> *
   &lt;code>
     <span style="color: blue;">&lt;!-- one or more instructions --></span>
@@ -302,8 +303,8 @@
     formatted”, then it is clear that the test looks for a summary on an HTML 
     table.</p>
     
-    <h5 id="test.comments">3.2.3.4 comments</h5>
-    <p>The &lt;comments&gt; element allows documentation of additional comments 
+    <h5 id="test.comments">3.2.3.4 comment</h5>
+    <p>The &lt;comment&gt; element allows documentation of additional comments 
     on the purpose of the test or method of verification. The comments should 
     apply to the test as a whole. Of course, XML comments inside &lt;!-- --&gt; 
     tags may also be used, but this comment tag is more formal and may be used 
@@ -887,6 +888,27 @@
 	&lt;ctl:SessionId>${session.id}&lt;/ctl:SessionId/>
 	&lt;ctl:SessionDir>${session.dir}&lt;/ctl:SessionDir/>
 &lt;/ctl:SessionInfo></pre>
+
+    <h3 id="warning">4.9 Warning</h3>
+    <h4 id="warning.intro">4.9.1 Introduction</h4>
+    <p>The warning instruction is used to indicate that a test has produced a warning.</p>
+    
+    <h4 id="warning.encoding">4.9.2 Encoding</h4>
+    <pre>
+&lt;ctl:warning xmlns:ctl="http://www.occamlab.com/ctl" /></pre>
+    
+    <h4 id="warning.results">4.9.3 Results</h4>
+    <p>The instruction does not generate any content. When the test processor 
+    encounters the warning instruction, it indicates that the test has produced
+    a warning. The warning is not propagated to parent tests, as is the case with
+    the fail instruction.</p>
+    
+    <h4 id="warning.example">4.9.4 Examples</h4>
+    <pre class="example">
+&lt;xsl:if test="$document//ctl:dep">
+  &lt;ctl:message>[WARNING] The ctl:dep element is deprecated in favour of something else.&lt;/ctl:message>
+  &lt;ctl:warning />
+&lt;/xsl:if></pre>
     </div>
     
     <div id="sect.parsers">
@@ -1074,7 +1096,7 @@
     <pre>
 &lt;ctlp:ZipParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
   &lt;ctl:get-session-info/>
-&lt;/ctlp:XMLValidatingParser></pre>
+&lt;/ctlp:ZipParser></pre>
 
     <h4 id="zip-parser.results">5.7.3 Results</h4>
     <p>The <code>ZipParser</code> attempts to aquired the requested zip file,
