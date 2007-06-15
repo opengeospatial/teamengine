@@ -22,10 +22,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Checks validation behaviour using a variety of valid and invalid Polygon 
+ * Checks validation behaviour using a variety of valid and invalid KML 
  * geometry instances.
  */
-public class PolygonTestSuite {
+public class KmlGeometryValidationTestSuite {
     private static final String KML21_NS_URI = "http://earth.google.com/kml/2.1";
     private static DocumentBuilder domBuilder;
     private static CatalogResolver resolver;
@@ -72,6 +72,59 @@ public class PolygonTestSuite {
         msgKey = null;
     }
 
+    @Test
+    public void checkOpenLinearRing() {
+        Document kmlDoc = null;
+        try {
+          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/OpenLinearRing"));
+        } catch (SAXException e) {
+          System.err.println(e.getMessage());
+        } catch (IOException e) {
+          System.err.println(e.getMessage());
+        }
+        NodeList rings = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "LinearRing");
+        Assert.assertFalse("An open LinearRing is invalid", 
+            geoValidator.isValidGeometry(rings.item(0), msgKey));
+        String errMsg = geoValidator.getErrorMessage(msgKey);
+        Assert.assertTrue("No error message provided", errMsg.length() > 0);
+        Assert.assertFalse("Error message should have been discarded", 
+            geoValidator.getErrorMessage(msgKey).length() > 0);
+    }
+
+    @Test
+    public void checkSelfIntersectingLinearRing() {
+        Document kmlDoc = null;
+        try {
+          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/SelfIntersectingLinearRing"));
+        } catch (SAXException e) {
+          System.err.println(e.getMessage());
+        } catch (IOException e) {
+          System.err.println(e.getMessage());
+        }
+        NodeList rings = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "LinearRing");
+        Assert.assertFalse("A non-simple LinearRing is invalid", 
+            geoValidator.isValidGeometry(rings.item(0), msgKey));
+        Assert.assertTrue("No error message provided", 
+            geoValidator.getErrorMessage(msgKey).length() > 0);
+    }
+    
+    @Test
+    public void checkValidLinearRing() {
+        Document kmlDoc = null;
+        try {
+          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/ValidLinearRing"));
+        } catch (SAXException e) {
+          System.err.println(e.getMessage());
+        } catch (IOException e) {
+          System.err.println(e.getMessage());
+        }
+        NodeList rings = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "LinearRing");
+        Assert.assertTrue("LinearRing is valid", 
+            geoValidator.isValidGeometry(rings.item(0), msgKey));
+        Assert.assertFalse("Error message exists", 
+            geoValidator.getErrorMessage(msgKey).length() > 0);
+    }
+    
     @Test
     public void checkSelfIntersectingPolygon() {
         Document kmlDoc = null;

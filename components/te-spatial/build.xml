@@ -108,6 +108,7 @@
            srcdir="${src.test.dir}">
       <classpath>
         <path refid="test.classpath"/>
+        <path refid="compile.classpath"/>
         <pathelement location="${build.classes.dir}"/>
       </classpath>
     </javac>

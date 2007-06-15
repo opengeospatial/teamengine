@@ -12,5 +12,7 @@
             uri="kml-2.1/ValidPolygon.xml" />
     <system systemId="kml-2.1/SelfIntersectingPolygon" 
             uri="kml-2.1/SelfIntersectingPolygon.xml" />
+    <system systemId="kml-2.1/UnsupportedGeometry" 
+            uri="kml-2.1/UnsupportedGeometry.xml" />
   </group>
 </catalog>

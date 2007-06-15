@@ -1,11 +1,13 @@
 package net.sf.teamengine.spatial.kml2;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 import org.apache.xml.resolver.tools.CatalogResolver;
 
@@ -22,16 +24,15 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Checks validation behaviour using a variety of valid and invalid LinearRing 
- * geometry instances.
+ * Checks unmarshalling behaviour using a variety of valid and invalid  
+ * KML geometry instances.
  */
-public class LinearRingTestSuite {
+public class KmlUnmarshallingTestSuite {
     private static final String KML21_NS_URI = "http://earth.google.com/kml/2.1";
     private static DocumentBuilder domBuilder;
     private static CatalogResolver resolver;
-    private static KmlGeometryValidator geoValidator = 
-        new KmlGeometryValidator();
-    private String msgKey;
+    private static KmlGeometryUnmarshaller kmlUnmarshaller = 
+        new KmlGeometryUnmarshaller();
 
     /**
      * Initializes a DocumentBuilder and a CatalogResolver that uses OASIS entity 
@@ -59,8 +60,6 @@ public class LinearRingTestSuite {
      */
     @Before
     public void foreword() {
-        msgKey = new String(UUID.randomUUID().toString());
-        System.out.println("Message key = " + msgKey);
     }
 
     /**
@@ -69,59 +68,36 @@ public class LinearRingTestSuite {
      */
    @After
     public void afterword() {
-        msgKey = null;
     }
 
     @Test
-    public void checkOpenLinearRing() {
+    public void unmarshalPolygon() {
         Document kmlDoc = null;
         try {
-          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/OpenLinearRing"));
+          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/ValidPolygon"));
         } catch (SAXException e) {
           System.err.println(e.getMessage());
         } catch (IOException e) {
           System.err.println(e.getMessage());
         }
-        NodeList rings = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "LinearRing");
-        Assert.assertFalse("An open LinearRing is invalid", 
-            geoValidator.isValidGeometry(rings.item(0), msgKey));
-        String errMsg = geoValidator.getErrorMessage(msgKey);
-        Assert.assertTrue("No error message provided", errMsg.length() > 0);
-        Assert.assertFalse("Error message should have been discarded", 
-            geoValidator.getErrorMessage(msgKey).length() > 0);
-    }
-
-    @Test
-    public void checkSelfIntersectingLinearRing() {
-        Document kmlDoc = null;
-        try {
-          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/SelfIntersectingLinearRing"));
-        } catch (SAXException e) {
-          System.err.println(e.getMessage());
-        } catch (IOException e) {
-          System.err.println(e.getMessage());
-        }
-        NodeList rings = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "LinearRing");
-        Assert.assertFalse("A non-simple LinearRing is invalid", 
-            geoValidator.isValidGeometry(rings.item(0), msgKey));
-        Assert.assertTrue("No error message provided", 
-            geoValidator.getErrorMessage(msgKey).length() > 0);
+        NodeList polys = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "Polygon");
+        Geometry geom = kmlUnmarshaller.unmarshalKmlGeometry(polys.item(0));
+        Assert.assertEquals("Wrong geometry type", "Polygon", geom.getGeometryType());
+        Polygon poly = (Polygon) geom; 
+        Assert.assertEquals("Too many interior rings", 1, poly.getNumInteriorRing());
     }
     
-    @Test
-    public void checkValidLinearRing() {
+    @Test(expected = IllegalArgumentException.class)
+    public void unmarshalUnsupportedGeometry() {
         Document kmlDoc = null;
         try {
-          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/ValidLinearRing"));
+          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/UnsupportedGeometry"));
         } catch (SAXException e) {
           System.err.println(e.getMessage());
         } catch (IOException e) {
           System.err.println(e.getMessage());
         }
-        NodeList rings = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "LinearRing");
-        Assert.assertTrue("LinearRing is valid", 
-            geoValidator.isValidGeometry(rings.item(0), msgKey));
-        Assert.assertFalse("Error message exists", 
-            geoValidator.getErrorMessage(msgKey).length() > 0);
+        NodeList boxes = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "Box");
+        Geometry geom = kmlUnmarshaller.unmarshalKmlGeometry(boxes.item(0));
     }
 }
