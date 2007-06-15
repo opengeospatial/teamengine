@@ -19,7 +19,7 @@
   Contributor(s): No additional contributors to date
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
- <!-- Global parsers, always included in the source when compiling a test suite-->
+ <!-- Global parsers, always included in the source when compiling a test suite -->
 <ctl:package 
  xmlns:parsers="http://www.occamlab.com/te/parsers"
  xmlns:ctl="http://www.occamlab.com/ctl">

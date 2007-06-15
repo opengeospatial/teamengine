@@ -1149,17 +1149,16 @@
         <tr>
           <th>Parameters</th>
           <td>
-          <dl>      
-          <dt>alpha (required)</dt>
-          <dd>What is it?</dd>
-          <dt>beta (optional)</dt>
-          <dd>What is it?</dd>
+          <dt>image.uri (required)</dt>
+          <dd>A URI pointing to the image to check</dd>
           </dl>
           </td>
         </tr>
         <tr>
           <th>Returns</th>
-          <td>What?</td>
+          <td>The name of the image filetype, if supported by Java, or null otherwise.
+          If the image could not be retrieved the funciton also returns null.  The supported
+          Java types are: bmp, jpeg, wbmp, png, and gif.</td>
         </tr>
       </tbody>
     </table>
