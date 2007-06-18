@@ -22,10 +22,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Checks validation behaviour using a variety of valid and invalid KML 
+ * Assesses validation behaviour using a variety of valid and invalid KML 
  * geometry instances.
  */
-public class KmlGeometryValidationTestSuite {
+public class KmlGeometryValidationBehavior {
     private static final String KML21_NS_URI = "http://earth.google.com/kml/2.1";
     private static DocumentBuilder domBuilder;
     private static CatalogResolver resolver;
@@ -58,7 +58,7 @@ public class KmlGeometryValidationTestSuite {
      * 
      */
     @Before
-    public void foreword() {
+    public void createMessageKey() {
         msgKey = new String(UUID.randomUUID().toString());
         System.out.println("Message key = " + msgKey);
     }
@@ -68,12 +68,12 @@ public class KmlGeometryValidationTestSuite {
      * 
      */
    @After
-    public void afterword() {
+    public void discardMessageKey() {
         msgKey = null;
     }
 
     @Test
-    public void checkOpenLinearRing() {
+    public void expectOpenRingIsInvalid() {
         Document kmlDoc = null;
         try {
           kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/OpenLinearRing"));
@@ -92,7 +92,7 @@ public class KmlGeometryValidationTestSuite {
     }
 
     @Test
-    public void checkSelfIntersectingLinearRing() {
+    public void expectSelfIntersectingRingIsInvalid() {
         Document kmlDoc = null;
         try {
           kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/SelfIntersectingLinearRing"));
@@ -109,7 +109,7 @@ public class KmlGeometryValidationTestSuite {
     }
     
     @Test
-    public void checkValidLinearRing() {
+    public void expectRingIsValid() {
         Document kmlDoc = null;
         try {
           kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/ValidLinearRing"));
@@ -126,7 +126,7 @@ public class KmlGeometryValidationTestSuite {
     }
     
     @Test
-    public void checkSelfIntersectingPolygon() {
+    public void expectSelfIntersectingPolygonIsInvalid() {
         Document kmlDoc = null;
         try {
           kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/SelfIntersectingPolygon"));
@@ -143,7 +143,7 @@ public class KmlGeometryValidationTestSuite {
     }
     
     @Test
-    public void checkValidPolygon() {
+    public void expectPolygonIsValid() {
         Document kmlDoc = null;
         try {
           kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/ValidPolygon"));

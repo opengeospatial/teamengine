@@ -24,10 +24,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Checks unmarshalling behaviour using a variety of valid and invalid  
+ * Assesses unmarshalling behaviour using a variety of valid and invalid  
  * KML geometry instances.
  */
-public class KmlUnmarshallingTestSuite {
+public class KmlUnmarshallingBehavior {
     private static final String KML21_NS_URI = "http://earth.google.com/kml/2.1";
     private static DocumentBuilder domBuilder;
     private static CatalogResolver resolver;
