@@ -11,7 +11,7 @@
       background: white;
       font-family: Georgia, serif;
     }
-    h1, h2, h3 {
+    h1, h2, h3, caption {
       font-family: Verdana, sans-serif;
       color: #000099;
       text-align: left;
@@ -28,7 +28,12 @@
       border-collapse: separate;
     }
     td, th { padding: 0.25em; text-align: left; vertical-align: top;}
-    caption { text-align: left; }
+    table th {
+      font-size: 0.80em;
+      font-family: verdana, sans-serif;
+      background: #eeeeee;
+      color: #000099;
+    }
     dl {margin-top: 0em;}
     dt { 
       font-weight: bold ;
@@ -39,12 +44,6 @@
     a:link img, a:visited img { border-style: none }
     div.header { margin-bottom: 2em; }
     ul.sourcelist { margin: 0.5em; }
-    table.function th {
-      font-size: 0.80em;
-      font-family: verdana, sans-serif;
-      background: #eeeeee;
-      color: #000099;
-    }
     table.revhistory {
       border-collapse: collapse;
     }
@@ -67,9 +66,9 @@
     
     <dl class="authorgroup">      
       <dt>Contributors:</dt>
-      <dd>R. Martell</dd>
-      <dd>Chuck Morris &lt;chuck |DOT| morris |AT| ngc |DOT| com&gt;</dd>
-      <dd>J. Parr-Pearson</dd>
+      <dd>R. Martell &lt;rmartell {AT} users {DOT} sourceforge {DOT} net&gt;</dd>
+      <dd>Chuck Morris &lt;morrich {AT} users {DOT} sourceforge {DOT} net&gt;</dd>
+      <dd>J. Parr-Pearson &lt;jparrpearson {AT} users {DOT} sourceforge {DOT} net&gt;</dd>
     </dl>
     
     <div class="purpose">
@@ -116,7 +115,7 @@
         </tr>
         <tr>
           <td>0.5</td>
-          <td>2007-06-15</td>
+          <td>2007-06-18</td>
           <td>Many new capabilities documented: XInclude support; multi-part 
           requests; SchematronValidatingParser; ZipParser; warning verdict; 
           get session info; built-in functions.</td>
@@ -127,6 +126,51 @@
           <td>Submitted as an OGC Discussion Paper</td>
         </tr>
       </table>
+    </div>
+    
+    <div class="div.conventions">
+      <h3 id="conventions">Conventions</h3>
+      <p>Content models are typically described using an informal notation as 
+      summarized below.</p>
+      <ul>
+        <li>occurrence constraints are denoted using the following symbols: 
+        "?" (zero or one), "*" (zero or more), "+" (one or more)</li>
+        <li>simple attribute and element values refer to the appropriate XML Schema 
+        data type (e.g., xsd:positiveInteger)</li>
+        <li>enumerated values are listed like so: [value1 | value2 | ...]</li>
+        <li>required attributes appear in <strong>bold typeface</strong></li>
+        <li>placeholder values are denoted using XSLT-style references (e.g. $place-holder)</li>
+      </ul>
+      
+      <p>Several namespace bindings are used throughout this document. While a 
+      prefix has no semantic significance, for convenience the following bindings 
+      are implied wherever a namespace declaration is omitted.</p>
+      
+      <table id="namespace.bindings" frame="box">
+      <caption>Table 1: Namespace bindings</caption>
+      <tbody>
+        <tr>
+          <th>Prefix</th>
+          <th>Namespace URI</th>
+        </tr>
+        <tr>
+          <td><code>ctl</code></td>
+          <td>"http://www.occamlab.com/ctl"</td>
+        </tr>
+        <tr>
+          <td><code>ctlp</code></td>
+          <td>"http://www.occamlab.com/te/parsers"</td>
+        </tr>
+        <tr>
+          <td><code>xsl</code></td>
+          <td>"http://www.w3.org/1999/XSL/Transform"</td>
+        </tr>
+        <tr>
+          <td><code>xsd</code></td>
+          <td>"http://www.w3.org/2001/XMLSchema"</td>
+        </tr>
+      </tbody>
+    </table>
     </div>
     
     <div class="contents">
@@ -232,17 +276,19 @@
     
     <h3 id="suite">3.1 Suite</h3>
     <h4 id="suite.intro">3.1.1 Introduction</h4>
-    <p>The &lt;suite&gt; element establishes a set of tests. It names a test suite, 
+    <p>The &lt;ctl:suite&gt; element defines a set of tests. It names a test suite, 
     describes its purpose, and identifies the starting test where processing 
-    begins when the test suite is executed.</p>
+    begins when the test suite is executed. If a test suite uses one or more 
+    extension modules, these must be specified as a whitespace-delimited list 
+    of module names.</p>
     
     <h4 id="suite.encoding">3.1.2 Encoding</h4>
     <pre>
-&lt;suite <strong>name</strong>="xsd:QName" xmlns="http://www.occamlab.com/ctl">
-  &lt;title>Test suite title&lt;/title>
-  &lt;description>The purpose of the test suite&lt;/description> ?
-  &lt;starting-test>xsd:QName&lt;/starting-test>
-&lt;/suite></pre>
+&lt;ctl:suite <strong>name</strong>="xsd:QName" requires-modules="$module-list"?>
+  &lt;ctl:title>Test suite title&lt;/ctl:title>
+  &lt;ctl:description>The purpose of the test suite&lt;/ctl:description> ?
+  &lt;ctl:starting-test>xsd:QName&lt;/ctl:starting-test>
+&lt;/ctl:suite></pre>
  
 
     <h4 id="suite.example">3.1.3 Example</h4>
@@ -257,8 +303,8 @@
 
     <h3 id="test">3.2 Test</h3>
     <h4 id="test.intro">3.2.1 Introduction</h4>
-    <p>The &lt;test&gt; element establishes an individual test. It states an 
-    assertion and contains program code to test the assertion.</p>
+    <p>The &lt;ctl:test&gt; element specifies an individual test. It states an 
+    assertion and contains executable statements to check the assertion.</p>
     
     <h4 id="test.encoding">3.2.2 Encoding</h4>
     <pre>
@@ -347,7 +393,7 @@
     <h4 id="function.intro">3.3.1 Introduction</h4>
     <p>The &lt;function&gt; element is used to declare user-defined functions 
     or external java functions. These functions may be called as XPath functions 
-    in instructions that use ${XPath-expression}s, or they may be called directly 
+    in instructions that use <em>$XPath-expressions</em>, or they may be called directly 
     with the &lt;call-function&gt; instruction.</p>
     
     <h4 id="function.encoding">3.3.2 Encoding</h4>
@@ -366,7 +412,7 @@
   &lt;/ctl:code>
   &lt;ctl:java <strong>class</strong>="xsd:string" <strong>method</strong>="xsd:string" initialized="xsd:boolean">
     <span style="color: blue;">&lt;!-- initialization parameters --></span>
-    &lt;ctl:with-param name="xsd:string" select="<em>${XPath-expression}</em>"?> *
+    &lt;ctl:with-param name="xsd:string" select="<em>$XPath-expression</em>"?> *
       <span style="color: blue;">&lt;!-- literal XML content if @select is absent --></span>
     &lt;ctl:with-param>
   &lt;/ctl:java>
@@ -464,7 +510,7 @@
   &lt;ctl:comments>Comments about the parser&lt;/ctl:comments> *
   &lt;ctl:java <strong>class</strong>="xsd:string" <strong>method</strong>="xsd:string" initialized="xsd:boolean">
     <span style="color: blue;">&lt;!-- initialization parameters --></span>
-    &lt;ctl:with-param name="xsd:string" select="<em>${XPath-expression}</em>"?> *
+    &lt;ctl:with-param name="xsd:string" select="<em>$XPath-expression</em>"?> *
       <span style="color: blue;">&lt;!-- literal XML content if @select is absent --></span>
     &lt;ctl:with-param>
   &lt;/ctl:java>
@@ -593,7 +639,7 @@
     <span style="color: blue;">&lt;!-- text/plain or application/xml entity (POST only) --></span>
   &lt;/ctl:body>
   &lt;ctl:part <strong>name</strong>="xsd:string" content-type="xsd:string"> *
-	[&lt;ctl:file type="[resource | url | file]">${filename}&lt;/ctl:file> | xsd:string]
+	[&lt;ctl:file type="[resource | url | file]">$filename&lt;/ctl:file> | xsd:string]
   &lt;/ctl:part>
   &lt;ctl:parser /> ?
 &lt;/ctl:request></pre>
@@ -685,8 +731,8 @@
 &lt;ctl:call-test <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;ctl:with-param <strong>name</strong>="xsd:string" 
     label="xsd:string" 
-    label-expr="<em>${XPath-expression}</em>" 
-    select="<em>${XPath-expression}</em>"?> *
+    label-expr="<em>$XPath-expression</em>" 
+    select="<em>$XPath-expression</em>"?> *
     <span style="color: blue;">&lt;!-- literal value if @select is absent --></span> *
   &lt;/ctl:with-param>
 &lt;/ctl:call-test></pre>
@@ -703,7 +749,7 @@
     The optional <code>label</code> attribute is used for documentation purposes, 
     to describe what is being passed to the subtest in the current instance of 
     the call-test instruction. The optional <code>label-expr</code> attribute 
-    is an ${XPath-expression} that is calculated at run time to generate a label 
+    is an XPath expression that is calculated at run time to generate a label 
     for the parameter. This value is substituted into the assertion text if the 
     assertion text contains a reference to the parameter.</p>
     
@@ -739,15 +785,15 @@
     <h4 id="for-each.encoding">4.4.2 Encoding</h4>
     <pre>
 &lt;ctl:for-each xmlns:ctl="http://www.occamlab.com/ctl"
-  <strong>select</strong>="<em>${XPath-expression}</em>"  
+  <strong>select</strong>="<em>$XPath-expression</em>"  
   label="xsd:string" 
-  label-expr="<em>${XPath-expression}</em>">
+  label-expr="<em>$XPath-expression</em>">
     <span style="color: blue;">&lt;!-- one or more instructions --></span>
 &lt;/ctl:for-each></pre>
 
     <h4 id="for-each.descriptions">4.4.3 Element and attribute descriptions</h4>
     <h5 id="for-each.select">4.4.3.1 Attribute: select</h5>
-    <p>The required select attribute shall specify an ${XPath-expression} that 
+    <p>The required select attribute shall specify an XPath expression that 
     evaluates to a node-set.</p>
     
     <h5 id="for-each.label">4.4.3.2 Attribute: label</h5>
@@ -755,7 +801,7 @@
     describes the context for any enclosed call-test instructions.</p>
     
     <h5 id="for-each.label-expr">4.4.3.3 Attribute: label-expr</h5>
-    <p>The optional label-expr attribute is an ${XPath-expression} that is 
+    <p>The optional label-expr attribute is an XPath-expression that is 
     calculated at run time to generate a label for the context. This value is 
     substituted into the assertion text of any subtests that contains a reference 
     to the context.</p>
@@ -784,20 +830,20 @@
     may be used to describe what is wrong when a test fails. It may also be 
     useful for debugging purposes when tests are in the development stage.</p>
     
-    <p>The message may be supplied as an ${XPath-expression} using the select 
+    <p>The message may be supplied as an XPath expression using the select 
     attribute or it may be provided as the body of the element. In either case, 
     the message presented to the user will be the string value of the selected 
     nodes.</p>
     
     <h4 id="message.encoding">4.5.2 Encoding</h4>
     <pre>
-&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="<em>${XPath-expression}</em>">
+&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="<em>$XPath-expression</em>">
     <span style="color: blue;">&lt;!-- message text if @select is absent --></span>
 &lt;/ctl:message></pre>
     
     <h4 id="message.descriptions">4.5.3 Element and attribute descriptions</h4>
     <h5 id="message.select">4.5.3.1 Attribute: select</h5>
-    <p>The optional select attribute specifies an ${XPath-expression}. If present, 
+    <p>The optional select attribute specifies an $XPath-expression. If present, 
     the message will be generated by evaluating the expression and converting 
     it to a string.</p>
     
@@ -846,7 +892,7 @@
     <h4 id="call-func.encoding">4.7.2 Encoding</h4>
     <pre>
 &lt;ctl:call-function <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
-  &lt;ctl:with-param name="xsd:string" select="<em>${XPath-expression}</em>"> *
+  &lt;ctl:with-param name="xsd:string" select="<em>$XPath-expression</em>"> *
     <span style="color: blue;">&lt;!-- parameter value if @select is absent --></span>
   &lt;/ctl:with-param>
 &lt;/ctl:call-function></pre>
@@ -889,8 +935,8 @@
     <h4 id="get-session.results">4.8.3 Results</h4>
     <pre>
 &lt;ctl:SessionInfo>
-	&lt;ctl:SessionId>${session.id}&lt;/ctl:SessionId/>
-	&lt;ctl:SessionDir>${session.dir}&lt;/ctl:SessionDir/>
+	&lt;ctl:SessionId>$session.id&lt;/ctl:SessionId/>
+	&lt;ctl:SessionDir>$session.dir&lt;/ctl:SessionDir/>
 &lt;/ctl:SessionInfo></pre>
 
     <h3 id="warning">4.9 Warning</h3>
@@ -939,7 +985,7 @@
     <h4 id="http-parser.encoding">5.3.2 Encoding</h4>
     <pre>
 &lt;ctlp:HTTPParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
-  &lt;ctlp:parse part="xsd:positiveInteger" mime="<em>${media-type}</em>"> *
+  &lt;ctlp:parse part="xsd:positiveInteger" mime="<em>$media-type</em>"> *
     <span style="color: blue;">&lt;!-- parser instruction --></span> ?
   &lt;/ctlp:parse>
 &lt;/ctlp:HTTPParser></pre>
@@ -951,12 +997,12 @@
 
     <pre>
 &lt;response>
-  &lt;status <strong>protocol</strong>="${protocol-version}" <strong>code</strong>="${status-code}">
-    ${status-message}
+  &lt;status <strong>protocol</strong>="$protocol-version" <strong>code</strong>="$status-code">
+    $status-message
   &lt;/status>
   &lt;headers>
-    &lt;header <strong>name</strong>="${header-name}"> *
-      ${header-value}
+    &lt;header <strong>name</strong>="$header-name"> *
+      $header-value
     &lt;/header>
   &lt;/headers>
   &lt;content> ?
@@ -970,18 +1016,18 @@
 
     <pre>
 &lt;multipart-response>
-  &lt;status <strong>protocol</strong>="${protocol-version}" <strong>code</strong>="${status-code}">
-    ${status-message}
+  &lt;status <strong>protocol</strong>="$protocol-version" <strong>code</strong>="$status-code">
+    $status-message
   &lt;/status>
   &lt;headers
-    &lt;header <strong>name</strong>="${header-name}"> *
-      ${header-value}
+    &lt;header <strong>name</strong>="$header-name"> *
+      $header-value
     &lt;/header>
   &lt;/headers>
   &lt;part <strong>num</strong>="xsd:positiveInteger"> *
     &lt;headers>
-      &lt;header <strong>name</strong>="${header-name}"> *
-        ${header-value}
+      &lt;header <strong>name</strong>="$header-name"> *
+        $header-value
       &lt;/header>
     &lt;/headers>
     &lt;content> ?
@@ -1001,7 +1047,7 @@
   ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
   &lt;ctlp:schemas> ?
     &lt;ctlp:schema type="[URL | File | Resource]"> +
-      ${schema-location} <span style="color: blue;">&lt;!-- required if @type is present --></span>
+      $schema-location <span style="color: blue;">&lt;!-- required if @type is present --></span>
     &lt;/ctlp:schema>
   &lt;/ctlp:schemas>
 &lt;/ctlp:XMLValidatingParser></pre>
@@ -1048,7 +1094,7 @@
   ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
   &lt;ctlp:schemas> ?
     &lt;ctlp:schema type="[URL | File | Resource]" phase="[Schematron phase name]"> +
-      ${schema-location} <span style="color: blue;">&lt;!-- required if @type is present --></span>
+      $schema-location <span style="color: blue;">&lt;!-- required if @type is present --></span>
     &lt;/ctlp:schema>
   &lt;/ctlp:schemas>
 &lt;/ctlp:XMLValidatingParser></pre>
@@ -1084,11 +1130,37 @@
   &lt;ctl:message>[FAILURE] Parsing or validation errors.&lt;/ctl:message>
 &lt;/xsl:if></pre>   
     
-    <h3 id="image-parser">5.6 ImageParser</h3>
+    <h3 id="img-parser">5.6 ImageParser</h3>
     
-    <h4 id="image-parser.intro">5.6.1 Introduction</h4>
-    <p>The <code>ImageParser</code> does something.</p>
+    <h4 id="img-parser.intro">5.6.1 Introduction</h4>
+    <p>The <code>ImageParser</code> extracts the body of a message and treats 
+    it as an image resource. If the entity does not correspond to a supported 
+    image format, an exception is reported in the test log.</p>
     
+    <h4 id="img-parser.encoding">5.6.2 Encoding</h4>
+    <pre>
+&lt;ctlp:ImageParser>
+  &lt;ctlp:type /> ?
+  &lt;ctlp:height /> ?
+  &lt;ctlp:width /> ?
+  &lt;ctlp:model value="[MONOCHROME | GRAY | RGB | ARGB]"> ?
+    &lt;ctlp:checksum /> ?
+  &lt;/ctlp:model>  
+&lt;/ctlp:ImageParser></pre>
+
+    <h4 id="img-parser.example">5.6.3 Example</h4>
+    <pre class="example">
+&lt;ctl:request>
+   &lt;ctl:url>http://some.host:port/base/url&lt;/ctl:url>
+   &lt;ctl:method>GET&lt;/ctl:method>
+   &lt;ctl:param name="param-1">&lt;xsl:value-of select="$param-1.value"/>&lt;/ctl:param>
+   &lt;ctlp:ImageParser>
+      &lt;ctlp:height />
+      &lt;ctlp:width />
+   &lt;/ctlp:ImageParser>
+&lt;/ctl:request></pre>
+
+
 	<h3 id="zip-parser">5.7 ZipParser</h3>
     
     <h4 id="zip-parser.intro">5.7.1 Introduction</h4>
@@ -1112,7 +1184,7 @@
     <pre>
 &lt;ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl">
 	&lt;ctl:file-entry 
-	full-path="${java.io.temp}/zipparser.temp/doc.kml" 
+	full-path="$java.io.temp/$zipparser.temp/doc.kml" 
 	size="2048" />
 &lt;/ctl:manifest></pre>
 
@@ -1143,29 +1215,35 @@
     <h3 id="getImageType">6.1 getImageType</h3>
     <p>The <code>getImageType</code> function may be used to identify the media 
     type of a putative image resource.</p>
-    <table id="getImageType.synposis" class="function" frame="box">
-      <caption>Synopsis &mdash; getImageType</caption>
+    <table id="getImageType.synposis" frame="box">
+      <caption>Table 2: Synopsis &mdash; getImageType</caption>
       <tbody>
         <tr>
           <th>Name</th>
-          <td>[local name] = "getImageType" <br/>
-          [namespace name] = "http://www.occamlab.com/ctl"</td>
+          <td>ctl:getImageType</td>
         </tr>
         <tr>
           <th>Parameters</th>
           <td>
           <dl>
             <dt>image.uri (required)</dt>
-            <dd>A URL referring to the image to check</dd>
+            <dd>A URL referring to the image to examine.</dd>
           </dl>
           </td>
         </tr>
         <tr>
           <th>Returns</th>
-          <td>The name of the image filetype, if supported by Java, or <code>null</code> 
-          otherwise. If the image could not be retrieved the function also returns 
-          <code>null</code>. The supported image types are: bmp, jpeg, wbmp, png, 
-          and gif.</td>
+          <td>The name of the image filetype, if supported, or an empty string 
+          (<code>null</code>) otherwise. If the image could not be retrieved the 
+          function also returns <code>null</code>. The supported image media types 
+          are listed below: 
+          <ul>
+            <li>image/jpeg (Joint Photographic Experts Group)</li>
+            <li>image/png (Portable Network Graphics)</li>
+            <li>image/gif (Graphic Interchange Format)</li>
+            <li>image/vnd.wap.wbmp (Wireless Bitmap)</li>
+            <li>image/x-bmp (Bitmap)</li>
+          </ul></td>
         </tr>
       </tbody>
     </table>
