@@ -11,4 +11,12 @@
                   method="getImageType"/>
 	</ctl:function>   
    
+	<ctl:function name="ctl:dateTimeConverter">
+		<ctl:param name="dateTime"/>
+		<ctl:description>Converts a string to a correct dateTime representation.</ctl:description>
+		<ctl:java class="com.occamlab.te.util.DateTimeConverter" 
+			method="getDateTimeValue"
+			initialized="true"/>
+	</ctl:function>   
+   
 </ctl:package>
