@@ -4,7 +4,7 @@
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:ctl="http://www.occamlab.com/ctl">
    
-	<ctl:function name="ctl:get-image-type">
+	<ctl:function name="ctl:getImageType">
 		<ctl:param name="image.uri"/>
 		<ctl:description>Returns the image type name (null if invalid).</ctl:description>
 		<ctl:java class="com.occamlab.te.parsers.ImageParser" 

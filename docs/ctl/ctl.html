@@ -1248,5 +1248,33 @@
       </tbody>
     </table>
     </div>
+    
+    <h3 id="dateTimeConverter">6.2 dateTimeConverter</h3>
+    <p>The <code>dateTimeConverter</code> function may be used to convert an XSD
+    date, gYear, gYearMonth, and others to the standard dateTime type.</p>
+    <table id="dateTimeConverter.synposis" class="function" frame="box">
+      <caption>Table 3: Synopsis &mdash; dateTimeConverter</caption>
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td>[local name] = "dateTimeConverter" <br/>
+          [namespace name] = "http://www.occamlab.com/ctl"</td>
+        </tr>
+        <tr>
+          <th>Parameters</th>
+          <td>
+          <dl>
+            <dt>dateTime (required)</dt>
+            <dd>A date-related string representation</dd>
+          </dl>
+          </td>
+        </tr>
+        <tr>
+          <th>Returns</th>
+          <td>The string representation of the dateTime object that was created 
+          with the original passed date-related string.</td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>
