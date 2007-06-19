@@ -44,20 +44,24 @@ public class TestServlet extends HttpServlet {
 	Config conf;
 	Map testDrivers;
 
+    /**
+     * Generates executable test suites from available CTL sources.
+     */
 	public void init() throws ServletException {
 		try {
 			DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			conf = new Config();
+            File logsDir = new File(System.getProperty("catalina.base"), "logs");
 			testDrivers = new HashMap();
 			Map suites = conf.getAvailableSuites();
 			Iterator it = suites.keySet().iterator();
 			while (it.hasNext()) {
 				String suiteId = (String) it.next();
                 List<File> sources = (List<File>) suites.get(suiteId);
-                TestDriverConfig driverConfig = new TestDriverConfig(suiteId, null, sources, null, true, Test.TEST_MODE);
+                TestDriverConfig driverConfig = new TestDriverConfig(suiteId, suiteId, sources, logsDir, true, Test.TEST_MODE);
                 driverConfig.setWebAppContext(true);
+                // generate executable test suites
                 testDrivers.put(suiteId, new Test(driverConfig));
-				//testDrivers.put(suiteId, new Test((ArrayList)suites.get(suiteId), false, Test.TEST_MODE));
 			}
 		} catch(Exception e) {
 			throw new ServletException(e);
@@ -65,7 +69,7 @@ public class TestServlet extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		processFormData(request, response);
+		doPost(request, response);
 	}
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {

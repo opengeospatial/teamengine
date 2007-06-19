@@ -59,7 +59,7 @@ public class Config {
     try {
       DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      Document doc = db.parse(cl.getResourceAsStream("com/occamlab/te/web/config.xml"));
+      Document doc = db.parse(cl.getResourceAsStream("config.xml"));
       Element configElem = (Element)(doc.getElementsByTagName("config").item(0));
       Element homeElem = (Element)(configElem.getElementsByTagName("home").item(0));
       home = homeElem.getTextContent();

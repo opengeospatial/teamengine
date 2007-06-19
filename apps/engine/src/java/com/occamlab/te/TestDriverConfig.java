@@ -33,7 +33,7 @@ public class TestDriverConfig {
         this.ctlFiles = ctlFiles;
         this.logDir = logDir;
         if (null == logDir) {
-            this.logDir = new File(System.getProperty("user.dir"));
+            this.logDir = new File(System.getProperty("java.io.tmpdir"));
         }
         this.validationFlag = validate;
         this.mode = mode;

@@ -87,7 +87,7 @@ public class Test {
 	public Test(TestDriverConfig driverConfig) throws Exception {
 		this.driverConfig = driverConfig;
 		initAppLogger(driverConfig.getSessionDir());
-		appLogger.info("Initializing main test driver");
+		appLogger.log(Level.INFO, "Initializing main test driver");
 		appLogger.entering(this.getClass().getName(), "ctor", new Object[]{driverConfig});
 
 		// configure parser to resolve XIncludes
@@ -135,7 +135,7 @@ public class Test {
 		Iterator it = driverConfig.getSources().iterator();
 		while (it.hasNext()) {
 			File sourcefile = (File)it.next();
-			this.appLogger.info("Processing source(s) at: " + sourcefile.getAbsolutePath());
+			this.appLogger.log(Level.INFO, "Processing source(s) at: " + sourcefile.getAbsolutePath());
 			Document generatedDoc = DB.newDocument();
 			DocumentBuilder inputDB = DBF.newDocumentBuilder();
 			Document inputCtl = null;
@@ -502,8 +502,8 @@ public class Test {
 	* @param sessionDir  a File representing the location of test session directory.
 	*/
 	private void initAppLogger(File sessionDir) {
-		this.appLogger = Logger.getLogger(this.getClass().getPackage().getName());
-		File logFile = new File(sessionDir, "te.log");
+		this.appLogger = Logger.getLogger(this.getClass().getName());
+		File logFile = new File(sessionDir, "teamengine.log");
 		StreamHandler streamHandler = null;
 		try {
 			streamHandler = new StreamHandler(new FileOutputStream(logFile), new SimpleFormatter());

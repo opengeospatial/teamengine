@@ -65,9 +65,9 @@ public class TestSession implements Runnable, HttpSessionBindingListener {
     s.sessionId = TestDriverConfig.generateSessionId(logdir);
     s.suiteName = suiteName;
     s.description = description;
-    File dir = new File(logdir, s.sessionId);
-    dir.mkdir();
-    PrintStream out = new PrintStream(new File(dir, "session.xml"));
+    File sessionDir = new File(logdir, s.sessionId);
+    sessionDir.mkdir();
+    PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
     out.println("<session id=\"" + s.sessionId + "\" sourcesId=\"" + s.suiteId + "\">");
     out.println("<suite>" + s.suiteName + "</suite>");
     out.println("<description>" + s.description + "</description>");
@@ -81,8 +81,8 @@ public class TestSession implements Runnable, HttpSessionBindingListener {
   public static TestSession load(DocumentBuilder db, File logdir, String sessionId) throws Exception {
     TestSession s = new TestSession();
     s.sessionId = sessionId;
-    File dir = new File(logdir, s.sessionId);
-    Document doc = db.parse(new File(dir, "session.xml"));
+    File sessionDir = new File(logdir, s.sessionId);
+    Document doc = db.parse(new File(sessionDir, "session.xml"));
     Element session = (Element)(doc.getElementsByTagName("session").item(0));
     s.suiteId = session.getAttribute("sourcesId");
     Element suite = (Element)(session.getElementsByTagName("suite").item(0));

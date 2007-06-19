@@ -111,7 +111,7 @@
     <mkdir dir="webapps/teamengine/WEB-INF/classes/com/occamlab"/>
     <mkdir dir="webapps/teamengine/WEB-INF/classes/com/occamlab/te"/>
     <mkdir dir="webapps/teamengine/WEB-INF/classes/com/occamlab/te/web"/>
-    <property name="configfile" value="webapps/teamengine/WEB-INF/classes/com/occamlab/te/web/config.xml"/>
+    <property name="configfile" value="webapps/teamengine/WEB-INF/classes/config.xml"/>
     <if>
       <available file="apps/manager/src/conf/config.xml"/>
       <then>
