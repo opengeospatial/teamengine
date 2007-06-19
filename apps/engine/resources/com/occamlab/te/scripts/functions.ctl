@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Global functions--these are always included when processing a test suite -->
+<!-- Global functions - these are always included when processing a test suite -->
 <ctl:package
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:ctl="http://www.occamlab.com/ctl">

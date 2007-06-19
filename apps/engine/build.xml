@@ -34,8 +34,9 @@
 	<target name="clean">
 		<delete dir="build"/>
         <delete dir="dist"/>
-        <delete file="${basedir}/resources/com/occamlab/te/scripts/parsers.txsl"/>
-        <delete file="${basedir}/resources/com/occamlab/te/scripts/functions.txsl"/>
+	    <delete>
+		  <fileset dir="${basedir}/resources/com/occamlab/te/scripts" includes="*.txsl,*.dxsl"/>
+	    </delete>
 	</target>
 	
 </project>
