@@ -118,7 +118,7 @@
           <td>2007-06-18</td>
           <td>Many new capabilities documented: XInclude support; multi-part 
           requests; SchematronValidatingParser; ZipParser; warning verdict; 
-          get session info; built-in functions.</td>
+          get session info; added built-in functions.</td>
         </tr>
         <tr>
           <td>0.4</td>
@@ -213,6 +213,7 @@
         <li><a href="#functions">Built-in functions</a>
           <ol class="toc2">
             <li><a href="#getImageType">getImageType</a></li>
+            <li><a href="#getBeginningDateTime">getBeginningDateTime</a></li>
           </ol>
         </li>
       </ol>
@@ -1249,30 +1250,37 @@
     </table>
     </div>
     
-    <h3 id="dateTimeConverter">6.2 dateTimeConverter</h3>
-    <p>The <code>dateTimeConverter</code> function may be used to convert an XSD
-    date, gYear, gYearMonth, and others to the standard dateTime type.</p>
-    <table id="dateTimeConverter.synposis" class="function" frame="box">
-      <caption>Table 3: Synopsis &mdash; dateTimeConverter</caption>
+    <h3 id="getBeginningDateTime">6.2 getBeginningDateTime</h3>
+    <p>The <code>getBeginningDateTime</code> function returns the time instant 
+    (a dateTime value) at which a given time period begins. The period may be 
+    expressed as a year, month, or date according to the Gregorian calendar.</p>
+    
+    <table id="getBeginningDateTime.synposis" class="function" frame="box">
+      <caption>Table 3: Synopsis &mdash; getBeginningDateTime</caption>
       <tbody>
         <tr>
           <th>Name</th>
-          <td>[local name] = "dateTimeConverter" <br/>
-          [namespace name] = "http://www.occamlab.com/ctl"</td>
+          <td>ctl:getBeginningDateTime</td>
         </tr>
         <tr>
           <th>Parameters</th>
           <td>
           <dl>
-            <dt>dateTime (required)</dt>
-            <dd>A date-related string representation</dd>
+            <dt>timestamp (required)</dt>
+            <dd>A temporal value conforming to one of the following XML Schema 
+            data types: xsd:gYear, xsd:gYearMonth, or xsd:date (with an optional 
+            time zone designator).
+            <p><strong>Note</strong>: an xsd:dateTime value is also acceptable, 
+            although the same instant will be returned (converted to the local 
+            timezone).</p></dd>
           </dl>
           </td>
         </tr>
         <tr>
           <th>Returns</th>
-          <td>The string representation of the dateTime object that was created 
-          with the original passed date-related string.</td>
+          <td>A string representing the beginning moment of the period, expressed
+          as an xsd:dateTime value in the local (server) timezone. If a dateTime 
+          value was provided, it is converted to the local timezone.</td>
         </tr>
       </tbody>
     </table>

@@ -22,11 +22,10 @@ implementation of a specification complies with the specification.
 General installation instructions (for both the console and web interface):
 
 <ol>
-  <li> <b>Install JRE 1.6.0</b> -
+  <li> <b>Install JRE 1.5.0</b> -
        You will need a copy of the Java Runtime Environment (JRE),
-       version 1.6.0 or greater.  It is part of the Java 2 Platform
-       Standard Edition (J2SE) 6.0 package. If not already on your system, 
-       download this from <a href="http://java.sun.com">Sun.com</a> 
+       version 1.5.0 or greater. If not already installed on your system, 
+       download it from <a href="http://java.sun.com">Sun.com</a> 
        and install it.
   </li>
   <li> <b>Install Ant 1.7.0</b> -
@@ -49,17 +48,18 @@ General installation instructions (for both the console and web interface):
 Additional web interface-specific installation steps:<br/>
 
 <ol>
-  <li> <b>Install a web container (Tomcat 5.5.20)</b> -
-       You will need a copy of a web container to deploy the web component
-       of the engine.  Tomcat 5.5.20 is recommended; download this from 
-       <a href="http://tomcat.apache.org/">Apache.org</a> and install it.
+  <li> <b>Install a servlet container (Tomcat 5.5.x)</b> -
+       You will need a servlet container to deploy the web component of the 
+       engine. The latest production release of Tomcat 5.5 is recommended; 
+       download this from <a href="http://tomcat.apache.org/">Apache.org</a> 
+       and install it.
   </li>
   <li> <b>Add test suites</b> -
-       Add any desired test suites to the scripts/ directory.  Under the root suite 
-       directory there should be at least a ctl/ directory to hold the ctl scripts, 
-       with optional resources/ (schemas, and other resources to be accessed by the 
-       scripts), web/data/ (test data for the scripts), and web/docs/ 
-       (documentation) directories.
+       Add any desired test suites to the WEB-INF/scripts/ directory.  Under the 
+       root suite directory there should be at least a ctl/ directory to contain 
+       the ctl scripts, with optional resources/ (schemas, and other resources to 
+       be accessed by the scripts), web/data/ (test data for the scripts), and 
+       web/docs/(documentation) directories.
   </li>
   <li> <b>Build the Engine</b> -
        Use the default "build" target in the root build.xml file and copy the content 
@@ -69,10 +69,12 @@ Additional web interface-specific installation steps:<br/>
        Copy the UserFilesRealm.jar file (located at setup/UserFilesRealm/) into the 
        Tomcat server/lib directory.
   </li>    
-  <li> <b>Update the context and config files</b> -
-       Ensure that the config.xml file (located at teamengine/WEB-INF/classes/com/occamlab/te/web/)
-       correct points to the directory or CTL file for each suites included.  As well, the 
-       context.xml file (located at teamengine/META-INF/) must point to the appropriate users/ directory.
+  <li> <b>Update the configuration files</b> -
+       Ensure that the config.xml file (located in the WEB-INF/classes/ directory)
+       correctly refers to the parent directory or main file for each available 
+       test suite. Also, the context.xml file (located at teamengine/META-INF/) 
+       must identify the appropriate users directory&mdash;the default location 
+       is ${catalina.base}/users.
   </li>    
   <li> <b>Start the Tomcat server</b> -
        Start the Tomcat server and access the manager via http://localhost:8080/teamengine (or other
@@ -146,7 +148,7 @@ with the same qualified name, the tests in the later source location will take p
 In test mode, execution begins with one of the test suite elements in the source CTL.  If 
 there is just one suite in the CTL sources, the test tool will start there, but if there are 
 multiple suites, you will need to supply a -suite parameter.  The suite name may be 
-specified using the suite element’s unqualified name, its prefix qualified name, or its 
+specified using the suite elementï¿½s unqualified name, its prefix qualified name, or its 
 namespace qualified name.  For the prefix qualified form, use the same namespace prefix 
 used in the CTL file, followed by a colon, followed by the base suite name.  For the 
 namespace qualified form, use the full namespace URI, followed by a comma, followed 
