@@ -79,6 +79,7 @@
 			<xs:element name="starting-test" type="xs:QName"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:QName" use="required"/>
+        <xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="paramType">
 		<xs:simpleContent>
@@ -101,7 +102,7 @@
 		</xs:sequence>
 		<xs:attribute name="class" type="xs:string" use="required"/>
 		<xs:attribute name="method" type="xs:string" use="required"/>
-		<xs:attribute name="initialized" type="ctl:boolean" use="optional"/>
+		<xs:attribute name="initialized" type="xs:boolean" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="codeType" mixed="true">
 		<xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -115,10 +116,12 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
-	<xs:simpleType name="boolean">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="true"/>
-			<xs:enumeration value="false"/>
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:simpleType name="ModuleListType">
+      <xs:annotation>
+      <xs:documentation>
+      A whitespace-delimited list of extension modules required by this test suite.
+      </xs:documentation>
+      </xs:annotation>
+      <xs:list itemType="xs:string" />
+  	</xs:simpleType>
 </xs:schema>
