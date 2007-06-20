@@ -3,6 +3,10 @@ package com.occamlab.te;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * Provides metadata about a test suite.
+ * 
+ */
 public class Suite {
     private String prefix;
 

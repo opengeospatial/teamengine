@@ -25,8 +25,8 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 /**
- * Validation error handler that accumulates the total number of errors and
- * warnings.
+ * Validation error handler that accumulates the total number of error and
+ * warning notifications received.
  * 
  */
 public class CtlErrorHandler implements ErrorHandler {

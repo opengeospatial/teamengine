@@ -43,8 +43,12 @@ import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
 
-// import javax.xml.transform.stream.StreamResult;
 
+/**
+ * Parses an HTTP response message and produces a DOM Document representation of
+ * the message content.
+ * 
+ */
 public class HTTPParser {
     public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
 
@@ -159,9 +163,6 @@ public class HTTPParser {
         if (uc.getHeaderFieldKey(0) == null) {
             String status_line = uc.getHeaderField(0);
             String status_array[] = status_line.split("\\s");
-            // Element protocol = doc.createElement("protocol");
-            // protocol.appendChild(doc.createTextNode(status_array[0]));
-            // root.appendChild(protocol);
             Element status = doc.createElement("status");
             status.setAttribute("protocol", status_array[0]);
             status.setAttribute("code", status_array[1]);
@@ -214,9 +215,6 @@ public class HTTPParser {
                 Node parser = select_parser(num, contentType, instruction);
                 Document doc2 = core.parse(pc, null, parser);
                 temp.delete();
-                // Element content =
-                // (Element)(doc2.getDocumentElement().getElementsByTagName("content").item(0));
-                // root.appendChild(content);
                 t.transform(new DOMSource(doc2), new DOMResult(part));
                 root.appendChild(part);
                 line = in.readLine();
@@ -232,17 +230,9 @@ public class HTTPParser {
             }
             Element content = (Element) (doc2.getDocumentElement()
                     .getElementsByTagName("content").item(0));
-            // String messages =
-            // ((Element)(doc2.getDocumentElement().getElementsByTagName("parser").item(0))).getTextContent();
-            // t.transform(new DOMSource(content), new
-            // StreamResult(System.out));
             t.transform(new DOMSource(content), new DOMResult(root));
-            // root.appendChild(content);
         }
-
         doc.appendChild(root);
-        // t.transform(new DOMSource(doc), new StreamResult(System.out));
-        // System.out.println("x");
         return doc;
     }
 }

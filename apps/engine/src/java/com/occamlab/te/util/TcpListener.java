@@ -28,7 +28,7 @@ class TcpListener implements Runnable {
 
     /**
      * Constructs a TCP listener on the requested port. Uses the default port
-     * number if it is not in the range 1-65535.
+     * number (7777) if it is not in the range 1-65535.
      * 
      * @param requestedPort
      *            requested TCP port number
@@ -49,6 +49,11 @@ class TcpListener implements Runnable {
         System.out.println("Started TCP listener on port " + this.port);
     }
 
+    /**
+     * Starts the callback listener.
+     * 
+     * @see java.lang.Runnable#run()
+     */
     public void run() {
         // wait until a client connects
         while (true) {

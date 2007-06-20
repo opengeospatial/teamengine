@@ -12,7 +12,8 @@ import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.helper.ProjectHelper2;
 
 /**
- * Creates an Ant project and calls it with the given build file.
+ * Creates an Ant project and invokes the given target in the supplied build
+ * file.
  */
 public class CallAntTask {
 
@@ -22,7 +23,7 @@ public class CallAntTask {
      * @param filename
      *            the resource location (on classpath) of the build file to run
      * @param target
-     *            the string name of the target to run
+     *            the name of the target to run
      */
     public void callAnt(String filename, String target) {
         // Create a new project object, ProjectHelper2 is the newer

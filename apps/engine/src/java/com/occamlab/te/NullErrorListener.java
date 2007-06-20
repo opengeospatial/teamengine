@@ -21,8 +21,13 @@
  ****************************************************************************/
 package com.occamlab.te;
 
-import javax.xml.transform.*;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerException;
 
+/**
+ * Ignores all errors arising during a transformation process.
+ * 
+ */
 public class NullErrorListener implements ErrorListener {
 
     public void error(TransformerException exception) {

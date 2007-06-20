@@ -45,11 +45,15 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
+/**
+ * Extracts the body of a response message and treats it as an image resource.
+ * If the entity does not correspond to a supported image format, an exception
+ * is reported in the test log.
+ * 
+ */
 public class ImageParser {
 
     private static class ImageTracker implements ImageObserver {
-        private int flags;
-
         private boolean done;
 
         private String type;
@@ -106,18 +110,18 @@ public class ImageParser {
             }
         }
 
+        /**
+         * Determines image type by parsing a stack trace to find out which
+         * ImageDecoder class is being used. This is admittedly a rather
+         * contrived method, but it seems to be the only way to retrieve the
+         * information from an Image created with an ImageProducer class.
+         * 
+         * @see java.awt.image.ImageObserver#imageUpdate(java.awt.Image, int,
+         *      int, int, int, int)
+         */
         public synchronized boolean imageUpdate(Image img, int infoflags,
                 int x, int y, int width, int height) {
             if (type == null) {
-                // Determine image type by parsing a stack trace to find out
-                // which
-                // ImageDecoder class is being used. This is admittedly a rather
-                // contrived method, but it seems to be the only way to retrieve
-                // the information from an Image created with an ImageProducer
-                // class.
-                // This may not work with all Java implementations, but it works
-                // with
-                // Sun JDKs 1.3 and 1.4.
                 try {
                     java.io.StringWriter sw = new java.io.StringWriter();
                     new Throwable("").printStackTrace(new java.io.PrintWriter(
@@ -314,11 +318,6 @@ public class ImageParser {
                             countnode.appendChild(textnode);
                             parent.insertBefore(countnode, node);
                             if (sampleIt.hasNext()) {
-                                // if (nextSibling.getNodeType() ==
-                                // Node.TEXT_NODE) {
-                                // parent.insertBefore(nextSibling.cloneNode(false),
-                                // node);
-                                // }
                                 if (prevSibling.getNodeType() == Node.TEXT_NODE) {
                                     parent.insertBefore(prevSibling
                                             .cloneNode(false), node);
@@ -392,7 +391,7 @@ public class ImageParser {
      */
     public static String getSupportedImageTypes() {
         String[] readers = ImageIO.getReaderFormatNames();
-        ArrayList imageArray = new ArrayList();
+        ArrayList<String> imageArray = new ArrayList<String>();
         String str = "";
         for (int i = 0; i < readers.length; i++) {
             String current = readers[i].toLowerCase();

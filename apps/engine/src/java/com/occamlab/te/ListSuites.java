@@ -13,9 +13,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * Provides utility methods for managing a collection of CTL test suites.
+ * 
+ */
 public class ListSuites {
     public static Collection getSuites(ArrayList sources) throws Exception {
-        LinkedHashMap suites = new LinkedHashMap();
+        LinkedHashMap<String, Suite> suites = new LinkedHashMap<String, Suite>();
 
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -54,7 +58,7 @@ public class ListSuites {
     }
 
     public static void main(String[] args) throws Exception {
-        ArrayList sources = new ArrayList();
+        ArrayList<File> sources = new ArrayList<File>();
         String cmd = "java com.occamlab.te.ListSessions";
 
         for (int i = 0; i < args.length; i++) {

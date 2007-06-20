@@ -57,7 +57,7 @@ import javax.xml.validation.*;
 import javax.xml.XMLConstants;
 
 /**
- * The main test driver for a given test suite.
+ * The main test driver for a given executable test suite.
  * 
  */
 public class Test {
@@ -83,7 +83,7 @@ public class Test {
 
     TransformerFactory TF;
 
-    Templates ScriptTemplates;
+    Templates executableTestSuite;
 
     private Logger appLogger;
 
@@ -91,7 +91,6 @@ public class Test {
 
     /**
      * Initializes the main test driver.
-     * 
      * 
      * @param driverConfig
      *            test driver configuration.
@@ -264,7 +263,7 @@ public class Test {
             }
 
             if (script_chars != null) { // when processing second and subsequent
-                                        // sources
+                // sources
                 CharArrayReader car = new CharArrayReader(script_chars);
                 identityTransformer.transform(new StreamSource(car),
                         new DOMResult(scriptElem));
@@ -311,7 +310,7 @@ public class Test {
             tf.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
             tf.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
             tf.setErrorListener(new TeErrorListener(script_chars));
-            ScriptTemplates = tf.newTemplates(new StreamSource(
+            executableTestSuite = tf.newTemplates(new StreamSource(
                     new CharArrayReader(script_chars)));
         } catch (TransformerException e) {
             appLogger.severe(e.getMessageAndLocation());
@@ -393,39 +392,16 @@ public class Test {
         core.setSessionId(sessionId);
         core.setSessionDir(sessionDir.getAbsolutePath());
 
-        // if ((sessionId != null) && sessionId.length() > 0) {
-        // sessionDir = new File(logDir, sessionId);
-        // }
-
-        // if (logDir == null) {
-        // if (driverConfig.getMode() != TEST_MODE) {
-        // this.appLogger.warning("Test log directory is not specified.");
-        // throw new Exception("Test log directory is not specified.");
-        // }
-        // } else {
-        // if (!logDir.isDirectory()) {
-        // logDir.mkdir();
-        // }
-        // if (logDir.isDirectory()) {
         if (driverConfig.getMode() == TEST_MODE) {
-            // if (sessionDir.isDirectory()) {
             File f = new File(sessionDir, "log.xml");
             if (f.exists()) {
                 f.delete();
             }
             deleteSubDirs(sessionDir);
-            // }
         }
-        // } //else {
-        // this.appLogger.warning("Unable to create test log directory " +
-        // logDir.toString());
-        // new Exception("Unable to create test log directory " +
-        // logDir.toString());
-        // }
-        // }
 
         // Prepare suite
-        Map templates = new HashMap();
+        Map<String, Document> templates = new HashMap<String, Document>();
         if (tests.isEmpty()) {
             if (driverConfig.getMode() == RETEST_MODE) {
                 // ToDo: Find failed tests
@@ -451,8 +427,7 @@ public class Test {
                 }
                 doc.appendChild(e);
                 templates.put(sessionId, doc);
-                // TF.newTransformer().transform(new DOMSource(doc), new
-                // StreamResult(System.out));
+
             } else if (driverConfig.getMode() == RESUME_MODE) {
                 File testLog = new File(sessionDir, "log.xml");
                 if (testLog.exists()) {
@@ -473,7 +448,7 @@ public class Test {
         }
 
         // Run each test and log the results
-        Transformer t = ScriptTemplates.newTransformer();
+        Transformer t = executableTestSuite.newTransformer();
         Iterator it = templates.keySet().iterator();
         while (it.hasNext()) {
             String path = (String) it.next();
@@ -509,18 +484,6 @@ public class Test {
             }
         }
     }
-
-    // Determine next session number
-    // NOTE: ALREADY DONE IN TestDriverConfig
-    // public static String newSessionId(File logdir) {
-    // int i = 1;
-    // String session = "s0001";
-    // while (new File(logdir, session).exists() && i < 10000) {
-    // i++;
-    // session = "s" + Integer.toString(10000 + i).substring(1);
-    // }
-    // return session;
-    // }
 
     private void writeNodeToLog(Logger logger, Node node) {
         StringWriter strWriter = new StringWriter();
@@ -602,8 +565,8 @@ public class Test {
         File logDir = null;
         String sessionId = null;
         String suiteName = null;
-        ArrayList sources = new ArrayList();
-        ArrayList tests = new ArrayList();
+        ArrayList<File> sources = new ArrayList<File>();
+        ArrayList<String> tests = new ArrayList<String>();
         String cmd = "java com.occamlab.te.Test";
 
         File f = getResourceAsFile("com/occamlab/te/compile.xsl");
@@ -692,20 +655,10 @@ public class Test {
             return;
         }
 
-        // if (sessionId == null) {
-        // if (mode == TEST_MODE || mode == DOC_MODE) {
-        // sessionId = newSessionId(logDir);
-        // } else if (mode == RESUME_MODE) {
-        // System.out.println("Please provide a session Id parameter.");
-        // return;
-        // }
-        // }
-
         TestDriverConfig driverConfig = new TestDriverConfig(suiteName,
                 sessionId, sources, logDir, validate, mode);
         Thread.currentThread().setName("CTL Test Engine");
         Test t = new Test(driverConfig);
-        // if (mode == DOC_MODE) mode = TEST_MODE;
         TECore core = new TECore(System.out, false);
         t.test(tests, core);
     }

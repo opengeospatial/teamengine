@@ -21,19 +21,29 @@
  ****************************************************************************/
 package com.occamlab.te;
 
-import javax.xml.transform.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URI;
 
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerException;
+
+/**
+ * Handles errors arising in the course of generating an executable test suite
+ * from CTL source files.
+ * 
+ */
 public class TeErrorListener implements ErrorListener {
-    private char[] ScriptChars;
+    private char[] scriptChars;
 
     private int ErrorCount = 0;
 
     private int WarningCount = 0;
 
     public TeErrorListener(char[] script_chars) {
-        ScriptChars = script_chars;
+        scriptChars = script_chars;
     }
 
     public int getErrorCount() {
@@ -49,7 +59,7 @@ public class TeErrorListener implements ErrorListener {
             String systemId = exception.getLocator().getSystemId();
             BufferedReader in;
             if (systemId.length() == 0) {
-                in = new BufferedReader(new CharArrayReader(ScriptChars));
+                in = new BufferedReader(new CharArrayReader(scriptChars));
             } else {
                 File txsl_file = new File(new URI(systemId));
                 in = new BufferedReader(new FileReader(txsl_file));
@@ -87,22 +97,16 @@ public class TeErrorListener implements ErrorListener {
     }
 
     public void error(TransformerException exception) {
-        // System.out.println("TE Error: " + exception.getMessageAndLocation() +
-        // "\n.\n");
         error("Error", exception);
         ErrorCount++;
     }
 
     public void fatalError(TransformerException exception) {
-        // System.out.println("TE Fatal Error: " +
-        // exception.getMessageAndLocation() + "\n.\n");
         error("Fatal Error", exception);
         ErrorCount++;
     }
 
     public void warning(TransformerException exception) {
-        // System.out.println("TE Warning: " + exception.getMessageAndLocation()
-        // + "\n.\n");
         error("Warning Error", exception);
         WarningCount++;
     }

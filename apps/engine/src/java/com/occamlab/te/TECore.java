@@ -25,21 +25,49 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 
+import java.lang.reflect.Method;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Stack;
 
 import javax.xml.parsers.*;
 import net.sf.saxon.Configuration;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
-import java.io.*;
-import java.lang.reflect.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.RandomAccessFile;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.dom.DocumentBuilderImpl;
-import java.util.*;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * Provides various utility methods to support test execution and logging.
+ * 
+ */
 public class TECore {
     static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
 
@@ -55,21 +83,21 @@ public class TECore {
 
     PrintStream Out;
 
-    String FormHtml;
+    String formHtml;
 
     static String SessionId;
 
     static String SessionDir;
 
-    Document FormResults;
+    Document formResults;
 
     boolean Web;
 
-    public HashMap ParserInstances = new HashMap();
+    public HashMap parserInstances = new HashMap();
 
-    public HashMap ParserMethods = new HashMap();
+    public HashMap parserMethods = new HashMap();
 
-    Stack Loggers = new Stack();
+    Stack<PrintWriter> loggers = new Stack<PrintWriter>();
 
     public TECore(PrintStream out, boolean web) throws Exception {
         System.setProperty(
@@ -111,19 +139,19 @@ public class TECore {
     }
 
     public String getFormHtml() {
-        return FormHtml;
+        return formHtml;
     }
 
     public void setFormHtml(String html) {
-        FormHtml = html;
+        formHtml = html;
     }
 
     public Document getFormResults() {
-        return FormResults;
+        return formResults;
     }
 
     public void setFormResults(Document doc) {
-        FormResults = doc;
+        formResults = doc;
     }
 
     public static short node_type(Node node) {
@@ -181,7 +209,14 @@ public class TECore {
         return doc;
     }
 
-    // Start logging (create log file)
+    /**
+     * Creates a test log.
+     * 
+     * @param logdir
+     * @param callpath
+     * @return
+     * @throws Exception
+     */
     public Node create_log(String logdir, String callpath) throws Exception {
         PrintWriter logger = null;
         if (logdir.length() > 0) {
@@ -189,19 +224,18 @@ public class TECore {
             dir.mkdir();
             File f = new File(dir, "log.xml");
             f.delete();
-            // logger = new PrintWriter(new BufferedWriter(new FileWriter(f)));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(f), "UTF-8"));
             logger = new PrintWriter(writer);
             logger.println("<log>");
         }
-        Loggers.push(logger);
+        loggers.push(logger);
         return null;
     }
 
     // Log additional information to the log file
     public Node log_xml(Node xml) throws Exception {
-        PrintWriter logger = (PrintWriter) Loggers.peek();
+        PrintWriter logger = (PrintWriter) loggers.peek();
         if (logger != null) {
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer t = tf.newTransformer();
@@ -215,7 +249,7 @@ public class TECore {
 
     // Close the log file
     public Node close_log() throws Exception {
-        PrintWriter logger = (PrintWriter) Loggers.pop();
+        PrintWriter logger = (PrintWriter) loggers.pop();
         if (logger != null) {
             logger.println("</log>");
             logger.close();
@@ -224,10 +258,10 @@ public class TECore {
     }
 
     public PrintWriter getLogger() {
-        if (Loggers.empty()) {
+        if (loggers.empty()) {
             return null;
         } else {
-            return (PrintWriter) Loggers.peek();
+            return (PrintWriter) loggers.peek();
         }
     }
 
@@ -278,8 +312,8 @@ public class TECore {
     // Create a URLConnection to the service with the proper headers, etc
     public static URLConnection build_request(Node xml) throws Exception {
         Node body = null;
-        ArrayList headers = new ArrayList();
-        ArrayList parts = new ArrayList();
+        ArrayList<String[]> headers = new ArrayList<String[]>();
+        ArrayList<Node> parts = new ArrayList<Node>();
         String sUrl = null;
         String sParams = "";
         String method = "GET";
@@ -461,37 +495,13 @@ public class TECore {
             uc.setRequestProperty("Content-Length", Integer
                     .toString(bytes.length));
 
-            // System.out.println("Content-Type:
-            // "+uc.getRequestProperty("Content-Type"));
-            // System.out.println("Content-Length:
-            // "+uc.getRequestProperty("Content-Length"));
-
             // Enter the custom headers (overwrites the defaults if present)
             for (int i = 0; i < headers.size(); i++) {
                 String[] header = (String[]) headers.get(i);
-                // System.out.println("Custom Headers: "+header[0]+"
-                // "+header[1]);
                 uc.setRequestProperty(header[0], header[1]);
             }
 
             OutputStream os = uc.getOutputStream();
-
-            // DEBUG
-            /*
-             * System.out.println("Info for "+uc.getURL().toString()+":"); for
-             * (int i = 0; i < uc.getHeaderFields().size(); i++) {
-             * System.out.println("Header: "+uc.getHeaderFieldKey(i)+"
-             * "+uc.getHeaderField(i)); }
-             */
-
-            /*
-             * try { File respFile = new
-             * File(System.getProperty("java.io.tmpdir"), "tecore-request.txt");
-             * FileWriter fw = new FileWriter(respFile); fw.write(new
-             * String(bytes)); fw.close(); } catch (Exception ex) {
-             * ex.printStackTrace(); }
-             */
-
             os.write(bytes);
         }
 
@@ -580,13 +590,13 @@ public class TECore {
     public Node register_parser(String namespace_uri, String local_name,
             String method_name, Object parser) throws Exception {
         String key = namespace_uri + "," + local_name;
-        // System.out.println("Registered " + key);
+
         if (parser instanceof String || parser instanceof Node) {
-            ParserInstances.put(key, null);
+            parserInstances.put(key, null);
         } else {
-            ParserInstances.put(key, parser);
+            parserInstances.put(key, parser);
         }
-        ParserMethods.put(key, get_parser_method(method_name, parser));
+        parserMethods.put(key, get_parser_method(method_name, parser));
         return null;
     }
 
@@ -654,8 +664,8 @@ public class TECore {
             }
             String key = instruction_e.getNamespaceURI() + ","
                     + instruction_e.getLocalName();
-            Object instance = ParserInstances.get(key);
-            Method method = (Method) ParserMethods.get(key);
+            Object instance = parserInstances.get(key);
+            Method method = (Method) parserMethods.get(key);
             ;
             StringWriter swLogger = new StringWriter();
             PrintWriter pwLogger = new PrintWriter(swLogger);
@@ -681,7 +691,6 @@ public class TECore {
                 content_e.appendChild(response_doc.createTextNode(return_object
                         .toString()));
             }
-            // System.out.println(content_e.getTextContent());
 
             parser_e.setAttribute("prefix", instruction_e.getPrefix());
             parser_e.setAttribute("local-name", instruction_e.getLocalName());
@@ -763,7 +772,7 @@ public class TECore {
         StringWriter sw = new StringWriter();
         Document xhtml2 = rebuildDocument(xhtml);
         FormTransformer.transform(new DOMSource(xhtml2), new StreamResult(sw));
-        FormHtml = sw.toString();
+        formHtml = sw.toString();
 
         if (!Web) {
             int width = 700;
@@ -777,12 +786,12 @@ public class TECore {
             new SwingForm(name, width, height, this);
         }
 
-        while (FormResults == null) {
+        while (formResults == null) {
             Thread.sleep(250);
         }
 
-        Document doc = FormResults;
-        FormResults = null;
+        Document doc = formResults;
+        formResults = null;
         return doc;
     }
 

@@ -45,6 +45,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 
+/**
+ * Validates an XML resource using a set of W3C XML Schema documents.
+ * 
+ */
 public class XMLValidatingParser {
     SchemaFactory SF;
 
@@ -151,9 +155,6 @@ public class XMLValidatingParser {
         if (schemas.size() == 0) {
             eh.setRole("ValidatingParser");
             dbf.setValidating(true);
-            // dbf.setFeature("http://xml.org/sax/features/validation", true);
-            // dbf.setFeature("http://apache.org/xml/features/validation/schema",
-            // true);
             dbf.setAttribute(
                     "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
                     "http://www.w3.org/2001/XMLSchema");
@@ -196,8 +197,6 @@ public class XMLValidatingParser {
             msg += " detected.";
             logger.println(msg);
         }
-
-        // Element instruction_e = (Element)instruction.getFirstChild();
 
         boolean b_ignore_errors = false;
         String s_ignore_errors = instruction.getAttribute("ignoreErrors");
@@ -274,12 +273,6 @@ public class XMLValidatingParser {
             msg += " detected.";
             logger.println(msg);
         }
-
-        // Element instruction_e = (Element)instruction.getFirstChild();
-
-        // TEMP
-        // System.out.println("Warning/error count:
-        // "+warning_count+"/"+error_count);
 
         // If there were errors return null, otherwise the repsonse document
         boolean b_ignore_errors = false;

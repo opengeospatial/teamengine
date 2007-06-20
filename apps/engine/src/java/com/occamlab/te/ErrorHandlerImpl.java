@@ -1,8 +1,15 @@
 package com.occamlab.te;
 
-import org.xml.sax.*;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
+
 import java.io.PrintWriter;
 
+/**
+ * Handles errors arising while processing XML resources and records the numbers
+ * of error and warning notifications received.
+ * 
+ */
 public class ErrorHandlerImpl implements ErrorHandler {
     private int ErrorCount = 0;
 

@@ -134,6 +134,9 @@ public class TestDriverConfig {
         File sessionDir = new File(this.logDir, sessionId);
         if (!sessionDir.isDirectory()) {
             boolean created = sessionDir.mkdirs();
+            if (!created) {
+                // TODO: log failure to create sessionDir
+            }
         }
         return sessionDir;
     }
@@ -241,7 +244,8 @@ public class TestDriverConfig {
      * @return true if all constraints are satisfied; false otherwise.
      */
     private boolean validState() {
-        return false;
+        // TODO: Implement these checks.
+        return true;
     }
 
     /**

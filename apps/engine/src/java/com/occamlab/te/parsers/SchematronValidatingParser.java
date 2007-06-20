@@ -37,12 +37,11 @@ import javax.xml.transform.dom.DOMSource;
 import com.occamlab.te.ErrorHandlerImpl;
 
 /**
- * Validates the given XML file (document) with the desred schematron file. Used
- * in conjuction with standard XML schema validation to give a better validation
- * coverage.
+ * Validates the given XML resource against the rules specified in a Schematron
+ * (v1.5) file. Used in conjunction with standard XML Schema validator to
+ * provide more thorough validation coverage.
  * 
  * @author jparrpearson
- * @version 1.0
  */
 public class SchematronValidatingParser {
 

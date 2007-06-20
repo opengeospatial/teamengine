@@ -27,6 +27,10 @@ import java.net.URLConnection;
 
 import org.w3c.dom.Element;
 
+/**
+ * Reads a response message and produces a String representation of its content.
+ * 
+ */
 public class CDataParser {
 
     public static String parse(URLConnection uc, Element instruction,

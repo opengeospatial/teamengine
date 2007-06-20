@@ -20,11 +20,12 @@ import org.w3c.dom.NodeList;
 import com.occamlab.te.TECore;
 
 /**
- * Parses a zip file input by extracting the contents to the java temp directory
- * and returning a manifest describing the files as follows:
+ * Parses a zip file input by extracting the contents into the directory
+ * specified by the value of the <code>java.io.tmpdir</code> system property.
+ * The resulting manifest is structured as follows:
  * 
  * <ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl"> <ctl:file-entry
- * full-path="${java.io.temp}/dir/doc.kml" size="2048" /> </ctl:manifest>
+ * full-path="${java.io.tmpdir}/dir/doc.kml" size="2048" /> </ctl:manifest>
  * 
  * @author jparrpearson
  */
@@ -69,7 +70,21 @@ public class ZipParser {
     }
 
     /**
-     * Parse function called within the <ctl:request> element
+     * Parses the entity (a ZIP archive) obtained in response to submitting a
+     * request to some URL. The resulting manifest is an XML document with
+     * <ctl:manifest> as the document element.
+     * 
+     * @param uc
+     *            a connection to a remote endpoint
+     * @param instruction
+     *            a DOM Element representation of configuration information for
+     *            this parser
+     * @param logger
+     *            the test logger
+     * @param core
+     *            the test harness
+     * @return a DOM Document representing the manifest of items in the archive.
+     * @throws Throwable
      */
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
@@ -138,10 +153,6 @@ public class ZipParser {
         }
 
         doc.appendChild(root);
-
-        // TEMP: Print the document to stdout
-        // Transformer t = TransformerFactory.newInstance().newTransformer();
-        // t.transform(new DOMSource(doc), new StreamResult(System.out));
 
         // Return the <ctl:manifest> document
         return doc;

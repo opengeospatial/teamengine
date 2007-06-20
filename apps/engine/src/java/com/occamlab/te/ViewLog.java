@@ -45,6 +45,10 @@ import org.xml.sax.SAXException;
 
 import org.w3c.dom.*;
 
+/**
+ * Presents a test log for display.
+ * 
+ */
 public class ViewLog {
 
     // Count how many errors and passes for output later
@@ -190,7 +194,7 @@ public class ViewLog {
     public static void main(String[] args) throws Exception {
         File logdir = null;
         String session = null;
-        ArrayList tests = new ArrayList();
+        ArrayList<String> tests = new ArrayList<String>();
         String cmd = "java com.occamlab.te.ViewLog";
         String style = null;
 
