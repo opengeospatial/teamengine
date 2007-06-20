@@ -13,170 +13,163 @@ import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream .StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
 
 /**
-* Parses a zip file input by extracting the contents to the java temp directory
-* and returning a manifest describing the files as follows:
-*
-* <ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl">
-*    <ctl:file-entry 
-*    full-path="${java.io.temp}/dir/doc.kml" 
-*    size="2048" />
-* </ctl:manifest>
-*
-* @author jparrpearson
-*/
+ * Parses a zip file input by extracting the contents to the java temp directory
+ * and returning a manifest describing the files as follows:
+ * 
+ * <ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl"> <ctl:file-entry
+ * full-path="${java.io.temp}/dir/doc.kml" size="2048" /> </ctl:manifest>
+ * 
+ * @author jparrpearson
+ */
 public class ZipParser {
-	
-	public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
-	public static final String CTL_NS = "http://www.occamlab.com/ctl";
 
-	// Add more mime types as necessary, if mime type not listed a default will be given
-	public static String[][] ApplicationMediaTypeMappings = {
-	{"kml","vnd.google-earth.kml+xml"},
-	{"kmz","vnd.google-earth.kmz"},
-	{"xml","application/xml"},
-	{"txt","text/plain"},
-	{"jpg","image/jpeg"},
-	{"jpeg","image/jpeg"},
-	{"gif","image/gif"},
-	{"png","image/png"}};
+    public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
 
-	/**
-	 * Returns the mime media type value for the given extension
-	 * 
-	 * @param ext
-	 *	the filename extension to lookup
-	 * @return String
-	 *	the mime type for the given extension
-	 */
-	public static String getMediaType (String ext) {
-		String mediaType = "";
-		
-		// Find the media type value in the lookup table
-		for (int i = 0; i < ApplicationMediaTypeMappings.length; i++) {
-			if (ApplicationMediaTypeMappings[i][0].equals(ext.toLowerCase())) {
-				mediaType = ApplicationMediaTypeMappings[i][1];
-			}
-		}
-		
-		// Give the media type default of "application/octet-stream"
-		if (mediaType.equals("")) {
-			mediaType = "application/octet-stream";
-		}
-		
-		return mediaType;
-	}
+    public static final String CTL_NS = "http://www.occamlab.com/ctl";
 
-	/**
-	 * Parse function called within the <ctl:request> element
-	 */
-	public static Document parse(URLConnection uc, Element instruction, PrintWriter logger, TECore core) throws Throwable {
-		uc.connect();
+    // Add more mime types as necessary, if mime type not listed a default will
+    // be given
+    public static String[][] ApplicationMediaTypeMappings = {
+            { "kml", "vnd.google-earth.kml+xml" },
+            { "kmz", "vnd.google-earth.kmz" }, { "xml", "application/xml" },
+            { "txt", "text/plain" }, { "jpg", "image/jpeg" },
+            { "jpeg", "image/jpeg" }, { "gif", "image/gif" },
+            { "png", "image/png" } };
 
-		// Create the response element, <ctl:manifest>
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.newDocument();
-		Element root = doc.createElementNS(CTL_NS, "manifest");
+    /**
+     * Returns the mime media type value for the given extension
+     * 
+     * @param ext
+     *            the filename extension to lookup
+     * @return String the mime type for the given extension
+     */
+    public static String getMediaType(String ext) {
+        String mediaType = "";
 
-		// Open the connection to the zip file
-		InputStream is = uc.getInputStream();
-		ZipInputStream zis = new ZipInputStream(is);
+        // Find the media type value in the lookup table
+        for (int i = 0; i < ApplicationMediaTypeMappings.length; i++) {
+            if (ApplicationMediaTypeMappings[i][0].equals(ext.toLowerCase())) {
+                mediaType = ApplicationMediaTypeMappings[i][1];
+            }
+        }
 
-		// Create the full directory path to store the zip entities
-		Document d = instruction.getOwnerDocument();
-		NodeList nodes = d.getElementsByTagNameNS(CTL_NS, "SessionDir");
-		// Either use the given session directory, or make one in the java temp directory
-		String path = "";
-		if (nodes.getLength() > 0) {
-			Element e = (Element)nodes.item(0);
-			path = e.getTextContent();
-		}
-		else {
-			path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
-		}
-		String randomStr = randomString(16,new Random());		
-		path = path+"/work/"+randomStr;
-		new File(path).mkdirs();
-		
-		// Unzip the file to a temporary location (java temp)
-		ZipEntry entry = null;
-		while ((entry = zis.getNextEntry()) != null) {
-		        // Open the output file and get info from it
-		        String filename = entry.getName();
-		        long size = entry.getSize();
-		        String ext = filename.substring(filename.lastIndexOf(".")+1);
-		        String mediaType = getMediaType(ext);
-		        // Make the temp directory and subdirectories if needed
-		        String subdir = "";
-		        if (filename.lastIndexOf("/") != -1) subdir = filename.substring(0,filename.lastIndexOf("/"));
-		        else if (filename.lastIndexOf("\\") != -1) subdir = filename.substring(0,filename.lastIndexOf("\\"));
-		        new File(path + "/" + subdir).mkdir();
-		        File outFile = new File(path, filename);
-		        if (outFile.isDirectory()) continue;
-		        OutputStream out = new FileOutputStream(outFile);
+        // Give the media type default of "application/octet-stream"
+        if (mediaType.equals("")) {
+            mediaType = "application/octet-stream";
+        }
 
-		        // Transfer bytes from the ZIP file to the output file
-		        byte[] buf = new byte[1024];
-		        int len;
-		        while ((len = zis.read(buf)) > 0) {
-		            out.write(buf, 0, len);
-		        }
+        return mediaType;
+    }
 
-			// Add the file information to the document
-		        Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-		        fileEntry.setAttribute("full-path", outFile.getPath().replace('\\','/'));
-		        fileEntry.setAttribute("media-type", mediaType);
-		        fileEntry.setAttribute("size", String.valueOf(size));
-		        root.appendChild(fileEntry);
-		}
+    /**
+     * Parse function called within the <ctl:request> element
+     */
+    public static Document parse(URLConnection uc, Element instruction,
+            PrintWriter logger, TECore core) throws Throwable {
+        uc.connect();
 
-		doc.appendChild(root);
-				
-		// TEMP: Print the document to stdout		
-		//Transformer t = TransformerFactory.newInstance().newTransformer();
-		//t.transform(new DOMSource(doc), new StreamResult(System.out));
-		
-		// Return the <ctl:manifest> document
-		return doc;
-	}
-	
-	// Returns a random string of length len
-	public static String randomString(int len, Random random) {
-		if (len < 1) {
-			return "";
-		} 
-		
-		int start = ' ';
-		int end = 'z'+1;
+        // Create the response element, <ctl:manifest>
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.newDocument();
+        Element root = doc.createElementNS(CTL_NS, "manifest");
 
-		StringBuffer buffer = new StringBuffer();
-		int gap = end - start;
-	
-		while (len-- != 0) {
-			char ch;
-			ch = (char) (random.nextInt(gap) + start);
+        // Open the connection to the zip file
+        InputStream is = uc.getInputStream();
+        ZipInputStream zis = new ZipInputStream(is);
 
-			if (Character.isLetterOrDigit(ch)) {
-				buffer.append(ch);
-			} else {
-				len++;
-			}
-		}
-		return buffer.toString();
-	}
+        // Create the full directory path to store the zip entities
+        Document d = instruction.getOwnerDocument();
+        NodeList nodes = d.getElementsByTagNameNS(CTL_NS, "SessionDir");
+        // Either use the given session directory, or make one in the java temp
+        // directory
+        String path = "";
+        if (nodes.getLength() > 0) {
+            Element e = (Element) nodes.item(0);
+            path = e.getTextContent();
+        } else {
+            path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
+        }
+        String randomStr = randomString(16, new Random());
+        path = path + "/work/" + randomStr;
+        new File(path).mkdirs();
 
-	
+        // Unzip the file to a temporary location (java temp)
+        ZipEntry entry = null;
+        while ((entry = zis.getNextEntry()) != null) {
+            // Open the output file and get info from it
+            String filename = entry.getName();
+            long size = entry.getSize();
+            String ext = filename.substring(filename.lastIndexOf(".") + 1);
+            String mediaType = getMediaType(ext);
+            // Make the temp directory and subdirectories if needed
+            String subdir = "";
+            if (filename.lastIndexOf("/") != -1)
+                subdir = filename.substring(0, filename.lastIndexOf("/"));
+            else if (filename.lastIndexOf("\\") != -1)
+                subdir = filename.substring(0, filename.lastIndexOf("\\"));
+            new File(path + "/" + subdir).mkdir();
+            File outFile = new File(path, filename);
+            if (outFile.isDirectory())
+                continue;
+            OutputStream out = new FileOutputStream(outFile);
+
+            // Transfer bytes from the ZIP file to the output file
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = zis.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+
+            // Add the file information to the document
+            Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+            fileEntry.setAttribute("full-path", outFile.getPath().replace('\\',
+                    '/'));
+            fileEntry.setAttribute("media-type", mediaType);
+            fileEntry.setAttribute("size", String.valueOf(size));
+            root.appendChild(fileEntry);
+        }
+
+        doc.appendChild(root);
+
+        // TEMP: Print the document to stdout
+        // Transformer t = TransformerFactory.newInstance().newTransformer();
+        // t.transform(new DOMSource(doc), new StreamResult(System.out));
+
+        // Return the <ctl:manifest> document
+        return doc;
+    }
+
+    // Returns a random string of length len
+    public static String randomString(int len, Random random) {
+        if (len < 1) {
+            return "";
+        }
+
+        int start = ' ';
+        int end = 'z' + 1;
+
+        StringBuffer buffer = new StringBuffer();
+        int gap = end - start;
+
+        while (len-- != 0) {
+            char ch;
+            ch = (char) (random.nextInt(gap) + start);
+
+            if (Character.isLetterOrDigit(ch)) {
+                buffer.append(ch);
+            } else {
+                len++;
+            }
+        }
+        return buffer.toString();
+    }
+
 }
