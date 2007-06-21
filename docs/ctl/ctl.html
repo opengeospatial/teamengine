@@ -130,8 +130,8 @@
     
     <div class="div.conventions">
       <h3 id="conventions">Conventions</h3>
-      <p>Content models are typically described using an informal notation as 
-      summarized below.</p>
+      <p>Content models are typically described using an informal syntax notation 
+      as summarized below.</p>
       <ul>
         <li>occurrence constraints are denoted using the following symbols: 
         "?" (zero or one), "*" (zero or more), "+" (one or more)</li>
@@ -155,19 +155,19 @@
         </tr>
         <tr>
           <td><code>ctl</code></td>
-          <td>"http://www.occamlab.com/ctl"</td>
+          <td>http://www.occamlab.com/ctl</td>
         </tr>
         <tr>
           <td><code>ctlp</code></td>
-          <td>"http://www.occamlab.com/te/parsers"</td>
+          <td>http://www.occamlab.com/te/parsers</td>
         </tr>
         <tr>
           <td><code>xsl</code></td>
-          <td>"http://www.w3.org/1999/XSL/Transform"</td>
+          <td>http://www.w3.org/1999/XSL/Transform</td>
         </tr>
         <tr>
           <td><code>xsd</code></td>
-          <td>"http://www.w3.org/2001/XMLSchema"</td>
+          <td>http://www.w3.org/2001/XMLSchema</td>
         </tr>
       </tbody>
     </table>
@@ -253,7 +253,7 @@
     its own file, or several objects may be placed in a package for the convenience 
     of grouping them in the same file.</p>
     
-    <h3 id="package.encoding">2.2 Encoding</h3>
+    <h3 id="package.encoding">2.2 Syntax</h3>
     <pre>
 &lt;ctl:package xmlns:ctl="http://www.occamlab.com/ctl"
   (tns:<em>anyAttribute</em> xmlns:tns="##other")?>
@@ -268,7 +268,7 @@
 
 &lt;/ctl:package></pre>
     
-    <p>The CTL content model is defined using <a href="ctl-schemas.zip">this set of XML 
+    <p>The CTL content model is formally defined using <a href="ctl-schemas.zip">this set of XML 
     Schema grammars</a> (ZIP archive, 9 KB).</p>
     </div>
     
@@ -283,7 +283,7 @@
     extension modules, these must be specified as a whitespace-delimited list 
     of module names.</p>
     
-    <h4 id="suite.encoding">3.1.2 Encoding</h4>
+    <h4 id="suite.encoding">3.1.2 Syntax</h4>
     <pre>
 &lt;ctl:suite <strong>name</strong>="xsd:QName" requires-modules="$module-list"?>
   &lt;ctl:title>Test suite title&lt;/ctl:title>
@@ -292,7 +292,7 @@
 &lt;/ctl:suite></pre>
  
 
-    <h4 id="suite.example">3.1.3 Example</h4>
+    <h4 id="suite.example">3.1.3 Sample usage</h4>
     <pre class="example">
 &lt;ctl:suite name="example:suite"&gt;
   &lt;ctl:title&gt;Example Test Suite&lt;/ctl:title&gt;
@@ -307,7 +307,7 @@
     <p>The &lt;ctl:test&gt; element specifies an individual test. It states an 
     assertion and contains executable statements to check the assertion.</p>
     
-    <h4 id="test.encoding">3.2.2 Encoding</h4>
+    <h4 id="test.encoding">3.2.2 Syntax</h4>
     <pre>
 &lt;test <strong>name</strong>="xsd:QName" xmlns="http://www.occamlab.com/ctl">
   &lt;param <strong>name</strong>="xsd:string">Parameter description&lt;/param> *
@@ -372,7 +372,7 @@
     CTL instructions and/or XSL instructions for evaluation by a test engine. 
     The test will pass unless one or more &lt;fail&gt; instructions are executed.</p>
     
-    <h4 id="test.example">3.2.4 Example</h4>
+    <h4 id="test.example">3.2.4 Sample usage</h4>
     <pre class="example">
 &lt;ctl:test name="example:zulu">
   &lt;ctl:param name="time">time string&lt;/ctl:param>
@@ -397,7 +397,7 @@
     in instructions that use <em>$XPath-expressions</em>, or they may be called directly 
     with the &lt;call-function&gt; instruction.</p>
     
-    <h4 id="function.encoding">3.3.2 Encoding</h4>
+    <h4 id="function.encoding">3.3.2 Syntax</h4>
     <pre>
 &lt;ctl:function <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;ctl:description>Function description&lt;/ctl:description> ?
@@ -477,7 +477,7 @@
     <p>The method may return a primitive type value, or a value of type String, 
     org.w3c.dom.Node, or org.w3c.dom.NodeList.</p>
     
-    <h4 id="function.example">3.3.4 Examples</h4>
+    <h4 id="function.example">3.3.4 Sample usage</h4>
     <pre class="example">
 &lt;function name="example:add" xmlns="http://www.occamlab.com/ctl">
   &lt;description>Adds two numbers&lt;/description>
@@ -504,7 +504,7 @@
     instruction to convert the response from a web service into well-formed XML 
     for processing.</p>
     
-    <h4 id="parser.encoding">3.4.2 Encoding</h4>
+    <h4 id="parser.encoding">3.4.2 Syntax</h4>
     <pre>
 &lt;ctl:parser <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;ctl:description>Parser description&lt;/ctl:description> ?
@@ -552,7 +552,7 @@
     fill in the fields on the form and press a submit button. The instruction 
     returns the values of the form fields and the button that was pressed.</p>
     
-    <h4 id="form.encoding">4.1.2 Encoding</h4>
+    <h4 id="form.encoding">4.1.2 Syntax</h4>
     <p>The form instruction may contain a combination of literal XML elements 
     and/or other CTL or XSL instructions. When any enclosed instructions have 
     been evaluated, the resulting XML shall conform to this encoding.</p>
@@ -599,7 +599,7 @@
   &lt;value <strong>key</strong>="xsd:string"><em>xsd:string</em>&lt;/value> *
 &lt;/values></pre>
 
-    <h4 id="form.example">4.1.5 Example</h4>
+    <h4 id="form.example">4.1.5 Sample usage</h4>
     <p>The following form will be displayed to the user graphically as shown in 
     Figure 2.</p>
     <pre class="example">
@@ -612,7 +612,7 @@
   &lt;/p>
 &lt;/ctl:form></pre>
 
-    <h5 id="fig-2">Figure 2: Rendering of ctl:form content</h5>
+    <h5 id="fig-2">Figure 2: Rendering ctl:form content</h5>
     <p><img alt="Form" src="img/ctl_fig2.png" /></p>
 
     <p>If the user presses the "yes" button, the results will look like this:</p>
@@ -626,7 +626,7 @@
     <p>The &lt;request&gt; element submits an HTTP request to a web service or 
     other resource, and returns an XML representation of the response.</p>
     
-    <h4 id="request.encoding">4.2.2 Encoding</h4>
+    <h4 id="request.encoding">4.2.2 Syntax</h4>
     <p>The request instruction may contain a combination of literal XML elements 
     and/or other CTL or XSL instructions. When any enclosed instructions have 
     been evaluated, the resulting XML shall conform to the following encoding.</p>
@@ -693,7 +693,7 @@
     generated by the parser. If no parser element is present and the response 
     is well-formed XML, the XML is returned. Otherwise, nothing is returned.</p>
     
-    <h4 id="request.example">4.2.5 Examples</h4>
+    <h4 id="request.example">4.2.5 Sample usage</h4>
     <pre class="example">
 &lt;request xmlns="http://www.occamlab.com/ctl">
   &lt;url>http://some.host.org/wms&lt;/url>
@@ -727,7 +727,7 @@
     <h4 id="call-test.intro">4.3.1 Introduction</h4>
     <p>The call-test instruction executes a sub-test.</p>
     
-    <h4 id="call-test.encoding">4.3.2 Encoding</h4>
+    <h4 id="call-test.encoding">4.3.2 Syntax</h4>
     <pre>
 &lt;ctl:call-test <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;ctl:with-param <strong>name</strong>="xsd:string" 
@@ -759,7 +759,7 @@
     failures from the subtest. In other words, if the subtest fails, the 
     failure bubbles up the call stack, and parent tests will also fail.</p>
     
-    <h4 id="call-test.example">4.3.5 Examples</h4>
+    <h4 id="call-test.example">4.3.5 Sample usage</h4>
     <pre class="example">
 &lt;ctl:call-test name="example:subtest" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;ctl:with-param name="param1" select=".//table[1]" 
@@ -783,7 +783,7 @@
     instruction body. It is identical to the &lt;xsl:for-each&gt; instruction, 
     except that it allows setting labels with the label and label-expr attributes.</p>
     
-    <h4 id="for-each.encoding">4.4.2 Encoding</h4>
+    <h4 id="for-each.encoding">4.4.2 Syntax</h4>
     <pre>
 &lt;ctl:for-each xmlns:ctl="http://www.occamlab.com/ctl"
   <strong>select</strong>="<em>$XPath-expression</em>"  
@@ -816,7 +816,7 @@
     <h4 id="for-each.results">4.4.4 Results</h4>
     <p>Returns any XML returned by processing the enclosed instructions.</p>
     
-    <h4 id="for-each.example">4.4.5 Example</h4>
+    <h4 id="for-each.example">4.4.5 Sample usage</h4>
     <pre class="example">
 &lt;ctl:for-each xmlns:ctl="http://www.occamlab.com/ctl" 
   select=".//table" 
@@ -836,7 +836,7 @@
     the message presented to the user will be the string value of the selected 
     nodes.</p>
     
-    <h4 id="message.encoding">4.5.2 Encoding</h4>
+    <h4 id="message.encoding">4.5.2 Syntax</h4>
     <pre>
 &lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="<em>$XPath-expression</em>">
     <span style="color: blue;">&lt;!-- message text if @select is absent --></span>
@@ -857,7 +857,7 @@
     <h4 id="message.results">4.5.4 Results</h4>
     <p>This instruction does not generate any content.</p>
     
-    <h4 id="message.example">4.5.5 Examples</h4>
+    <h4 id="message.example">4.5.5 Sample usage</h4>
     <pre class="example">
 &lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="concat(’Table ’, caption)" />
 
@@ -868,7 +868,7 @@
     <h4 id="fail.intro">4.6.1 Introduction</h4>
     <p>The fail instruction is used to indicate that a test has failed.</p>
     
-    <h4 id="fail.encoding">4.6.2 Encoding</h4>
+    <h4 id="fail.encoding">4.6.2 Syntax</h4>
     <pre>
 &lt;ctl:fail xmlns:ctl="http://www.occamlab.com/ctl" /></pre>
     
@@ -879,7 +879,7 @@
     will continue to be processed, including any subsequent calls to subtests, 
     but regardless of their results the current test will fail.</p>
     
-    <h4 id="fail.example">4.6.4 Examples</h4>
+    <h4 id="fail.example">4.6.4 Sample usage</h4>
     <pre class="example">
 &lt;xsl:if test="not(2 + 2 = 4)">
   &lt;ctl:message>[FAILURE] Addition error: expected 2 + 2 = 4&lt;/ctl:message>
@@ -890,7 +890,7 @@
     <h4 id="call-func.intro">4.7.1 Introduction</h4>
     <p>The call-function instruction invokes a named function.</p>
     
-    <h4 id="call-func.encoding">4.7.2 Encoding</h4>
+    <h4 id="call-func.encoding">4.7.2 Syntax</h4>
     <pre>
 &lt;ctl:call-function <strong>name</strong>="xsd:QName" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;ctl:with-param name="xsd:string" select="<em>$XPath-expression</em>"> *
@@ -916,7 +916,7 @@
     <h4 id="call-func.results">4.7.4 Results</h4>
     <p>This instruction returns the value of the function call.</p>
     
-    <h4 id="call-func.example">4.7.5 Examples</h4>
+    <h4 id="call-func.example">4.7.5 Sample usage</h4>
     <pre class="example">
 &lt;ctl:call-function name="example:myfunction" xmlns:ctl="http://www.occamlab.com/ctl">
   &lt;with-param select="$param1"/>
@@ -929,7 +929,7 @@
     information. Currently this includes the session id (unique for each test run) and the 
     session directory (log and working directory for the session).</p>
     
-    <h4 id="get-session.encoding">4.8.2 Encoding</h4>
+    <h4 id="get-session.encoding">4.8.2 Syntax</h4>
     <pre>
 &lt;ctl:get-session-info/></pre>
 
@@ -944,9 +944,9 @@
     <h4 id="warning.intro">4.9.1 Introduction</h4>
     <p>The warning instruction is used to indicate that a test has produced a warning.</p>
     
-    <h4 id="warning.encoding">4.9.2 Encoding</h4>
+    <h4 id="warning.encoding">4.9.2 Syntax</h4>
     <pre>
-&lt;ctl:warning xmlns:ctl="http://www.occamlab.com/ctl" /></pre>
+&lt;ctl:warning /></pre>
     
     <h4 id="warning.results">4.9.3 Results</h4>
     <p>The instruction does not generate any content. When the test processor 
@@ -954,7 +954,7 @@
     a warning. The warning is not propagated to parent tests, as is the case with
     the fail instruction.</p>
     
-    <h4 id="warning.example">4.9.4 Examples</h4>
+    <h4 id="warning.example">4.9.4 Sample usage</h4>
     <pre class="example">
 &lt;xsl:if test="$document//ctl:dep">
   &lt;ctl:message>[WARNING] The ctl:dep element is deprecated in favour of something else.&lt;/ctl:message>
@@ -975,7 +975,7 @@
     <p>The <code>CDataParser</code> is a parser that parses the content into 
     character data.</p>
     
-    <h4 id="cdata.encoding">5.2.2 Encoding</h4>
+    <h4 id="cdata.encoding">5.2.2 Syntax</h4>
     <pre>&lt;ctlp:CDataParser xmlns:ctlp="http://www.occamlab.com/te/parsers" /></pre>
 
     <h3 id="http-parser">5.3 HTTPParser</h3>
@@ -983,7 +983,7 @@
     <p>The <code>HTTPParser</code> is a parser that returns HTTP header information 
     uses other parser(s) to parse the content. It supports multipart messages.</p>
     
-    <h4 id="http-parser.encoding">5.3.2 Encoding</h4>
+    <h4 id="http-parser.encoding">5.3.2 Syntax</h4>
     <pre>
 &lt;ctlp:HTTPParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
   &lt;ctlp:parse part="xsd:positiveInteger" mime="<em>$media-type</em>"> *
@@ -993,8 +993,8 @@
 
     <h4 id="http-parser.results">5.3.3 Results</h4>
     <h5 id="http-parser.standard">5.3.3.1 Standard media types</h5>
-    <p>If the Content-Type header of the message is not multipart, the results 
-    shall conform to the following encoding:</p>
+    <p>If the Content-Type header of the response message does not indicate a multipart 
+    type, the results shall conform to the following content model:</p>
 
     <pre>
 &lt;response>
@@ -1012,8 +1012,8 @@
 &lt;/response></pre>
 
     <h5 id="http-parser.multipart">5.3.3.2 Multi-part media types</h5>
-    <p>If the Content-Type header of the message is multipart, the results shall 
-    conform to the following encoding:</p>
+    <p>If the Content-Type header of the response message does indicate a multipart 
+    type, the results shall conform to the following content model:</p>
 
     <pre>
 &lt;multipart-response>
@@ -1042,7 +1042,7 @@
     <p>The <code>XMLValidatingParser</code> is a parser that parses data as XML 
     and validates it against one or more XML Schemas.</p>
 
-    <h4 id="xsd-validator.encoding">5.4.2 Encoding</h4>
+    <h4 id="xsd-validator.encoding">5.4.2 Syntax</h4>
     <pre>
 &lt;ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers" 
   ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
@@ -1061,7 +1061,7 @@
     the parser returns the XML. If the data stream cannot be parsed or there 
     are errors or warnings that are not ignored, no content is returned.</p>
 
-    <h4 id="xsd-validator.example">5.4.4 Example</h4>
+    <h4 id="xsd-validator.example">5.4.4 Sample usage</h4>
     <pre class="example">
 &lt;xsl:variable name="results" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -1089,7 +1089,7 @@
     <p>The <code>SchematronValidatingParser</code> is a parser that validates 
     XML sources against one or more Schematron (v1.5) schemas.</p>
 
-    <h4 id="sch-validator.encoding">5.5.2 Encoding</h4>
+    <h4 id="sch-validator.encoding">5.5.2 Syntax</h4>
     <pre>
 &lt;ctlp:SchematronValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers" 
   ignoreErrors="xsd:boolean" ignoreWarnings="xsd:boolean">
@@ -1109,7 +1109,7 @@
     the parser returns the XML. If the data stream cannot be parsed or there 
     are errors or warnings that are not ignored, no content is returned.</p>
 
-    <h4 id="sch-validator.example">5.5.4 Example</h4>
+    <h4 id="sch-validator.example">5.5.4 Sample usage</h4>
     <pre class="example">
 &lt;xsl:variable name="results" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -1138,7 +1138,7 @@
     it as an image resource. If the entity does not correspond to a supported 
     image format, an exception is reported in the test log.</p>
     
-    <h4 id="img-parser.encoding">5.6.2 Encoding</h4>
+    <h4 id="img-parser.encoding">5.6.2 Syntax</h4>
     <pre>
 &lt;ctlp:ImageParser>
   &lt;ctlp:type /> ?
@@ -1149,7 +1149,7 @@
   &lt;/ctlp:model>  
 &lt;/ctlp:ImageParser></pre>
 
-    <h4 id="img-parser.example">5.6.3 Example</h4>
+    <h4 id="img-parser.example">5.6.3 Sample usage</h4>
     <pre class="example">
 &lt;ctl:request>
    &lt;ctl:url>http://some.host:port/base/url&lt;/ctl:url>
@@ -1169,7 +1169,7 @@
     a zip file and returns a manifest for the files that were contained
     in the original compressed file.</p>
 
-    <h4 id="zip-parser.encoding">5.7.2 Encoding</h4>
+    <h4 id="zip-parser.encoding">5.7.2 Syntax</h4>
     <pre>
 &lt;ctlp:ZipParser xmlns:ctlp="http://www.occamlab.com/te/parsers">
   &lt;ctl:get-session-info/>
@@ -1189,7 +1189,7 @@
 	size="2048" />
 &lt;/ctl:manifest></pre>
 
-    <h4 id="zip-parser.example">5.7.4 Example</h4>
+    <h4 id="zip-parser.example">5.7.4 Sample usage</h4>
     <pre class="example">
 &lt;xsl:variable name="results" 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -1217,7 +1217,7 @@
     <p>The <code>getImageType</code> function may be used to identify the media 
     type of a putative image resource.</p>
     <table id="getImageType.synposis" frame="box">
-      <caption>Table 2: Synopsis &mdash; getImageType</caption>
+      <caption>Table 2: Function &mdash; getImageType</caption>
       <tbody>
         <tr>
           <th>Name</th>
@@ -1256,7 +1256,7 @@
     expressed as a year, month, or date according to the Gregorian calendar.</p>
     
     <table id="getBeginningDateTime.synposis" class="function" frame="box">
-      <caption>Table 3: Synopsis &mdash; getBeginningDateTime</caption>
+      <caption>Table 3: Function &mdash; getBeginningDateTime</caption>
       <tbody>
         <tr>
           <th>Name</th>
