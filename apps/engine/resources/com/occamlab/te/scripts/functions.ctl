@@ -22,4 +22,15 @@
 			method="getBeginningInstant" />
 	</ctl:function>
    
+  <ctl:function name="ctl:addDomAttr">
+	  <ctl:param name="doc"/>
+	  <ctl:param name="tag.name"/>
+	  <ctl:param name="tag.namespace"/>
+	  <ctl:param name="attr.name"/>
+	  <ctl:param name="attr.value"/>
+	  <ctl:description>Adds a given attribute to the nodes of a document, retrieved by the xpath expression.</ctl:description>
+	  <ctl:java class="com.occamlab.te.util.DomUtils" 
+					method="addDomAttr"/>
+  </ctl:function>   
+   
 </ctl:package>

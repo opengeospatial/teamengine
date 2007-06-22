@@ -645,7 +645,7 @@
 						</xsl:for-each>
 					</xsl:variable>
 					<xsl:for-each select="ctl:java">
-						<txsl:value-of select="function:{@method}({substring($param-list,2)})">
+						<txsl:copy-of select="function:{@method}({substring($param-list,2)})">
 							<xsl:call-template name="loc"/>
 							<xsl:call-template name="namespace-attribute">
 								<xsl:with-param name="prefix" select="'function'"/>
@@ -657,7 +657,7 @@
 									<xsl:with-param name="uri" select="$namespace-uri"/>
 								</xsl:call-template>
 							</xsl:if>
-						</txsl:value-of>
+						</txsl:copy-of>
 					</xsl:for-each>
 				</xsl:when>
 			</xsl:choose>

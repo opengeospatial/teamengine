@@ -1248,7 +1248,6 @@
         </tr>
       </tbody>
     </table>
-    </div>
     
     <h3 id="getBeginningDateTime">6.2 getBeginningDateTime</h3>
     <p>The <code>getBeginningDateTime</code> function returns the time instant 
@@ -1284,5 +1283,70 @@
         </tr>
       </tbody>
     </table>
+    
+        <h3 id="addDomAttr">6.3 addDomAttr</h3>
+    <p>The <code>addDomAttr</code> function adds an attribute to all the named nodes
+    in a document and returns the modified document.</p>
+    
+    <table id="addDomAttr.synposis" class="function" frame="box">
+      <caption>Table 3: Function &mdash; addDomAttr</caption>
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td>ctl:addDomAttr</td>
+        </tr>
+        <tr>
+          <th>Parameters</th>
+          <td>
+          <dl>
+            <dt>doc (required)</dt>
+            <dd>The document to modify.</dd>
+          </dl>
+          <dl>
+            <dt>tag.name (required)</dt>
+            <dd>The local name of the tag to add/modify the attribute of.</dd>
+          </dl>
+          <dl>
+            <dt>tag.namespace (required)</dt>
+            <dd>The namespace uri of the tag to add/modify the attribute of.</dd>
+          </dl>
+          <dl>
+            <dt>attr.name (required)</dt>
+            <dd>The name of the attribute to add/modify, i.e. "xml:base", "length".</dd>
+          </dl>
+          <dl>
+            <dt>attr.value (required)</dt>
+            <dd>The value of the attribute to add/modify.</dd>
+          </dl>                                                
+          </td>
+        </tr>
+        <tr>
+          <th>Returns</th>
+          <td>A original document modified with the added attributes.</td>
+        </tr>
+        <tr>
+          <th>Sample usage</th>
+          <td>
+          <pre class="example">
+ctl:addDomAttr($kml.doc, 'kml', 'http://earth.google.com/kml/2.1', 'xml:base', 'http:www.rofl.com')
+	  </pre>
+	  
+	  <pre class="example">
+&lt;xsl:variable name="kml.doc">
+	&lt;ctl:call-function name="ctl:addDomAttr">
+		&lt;ctl:with-param name="doc" select="$orig.kml.doc"/>
+		&lt;ctl:with-param name="tag.name" select="'kml'"/>
+		&lt;ctl:with-param name="tag.namespace" select="'http://earth.google.com/kml/2.1'"/>
+		&lt;ctl:with-param name="attr.name" select="'xml:base'"/>
+		&lt;ctl:with-param name="attr.value" select="'http://www.asdf.com'"/>
+	&lt;/ctl:call-function>
+&lt;/xsl:variable>
+	  </pre>
+          </td>
+        </tr>        
+      </tbody>
+    </table>
+    
+    </div>
   </body>
 </html>
