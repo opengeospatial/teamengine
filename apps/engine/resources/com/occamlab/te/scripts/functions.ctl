@@ -32,5 +32,12 @@
 	  <ctl:java class="com.occamlab.te.util.DomUtils" 
 					method="addDomAttr"/>
   </ctl:function>   
+  
+  <ctl:function name="ctl:getPathFromString">
+	  <ctl:param name="filepath"/>
+	  <ctl:description>Extracts the path portion of a filepath (minus the filename).</ctl:description>
+	  <ctl:java class="com.occamlab.te.util.StringUtils" 
+					method="getPathFromString"/>
+  </ctl:function>     
    
 </ctl:package>

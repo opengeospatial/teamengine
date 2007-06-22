@@ -214,6 +214,8 @@
           <ol class="toc2">
             <li><a href="#getImageType">getImageType</a></li>
             <li><a href="#getBeginningDateTime">getBeginningDateTime</a></li>
+            <li><a href="#addDomAttr">addDomAttr</a></li>
+            <li><a href="#getPathFromString">getPathFromString</a></li>
           </ol>
         </li>
       </ol>
@@ -1346,6 +1348,33 @@ ctl:addDomAttr($kml.doc, 'kml', 'http://earth.google.com/kml/2.1', 'xml:base', '
         </tr>        
       </tbody>
     </table>
+    
+    <h3 id="getPathFromString">6.4 getPathFromString</h3>
+    <p>The <code>getPathFromString</code> function is used to get the path portion of
+    a filepath (without the filename).</p>
+    <table id="getPathFromString.synposis" frame="box">
+      <caption>Table 2: Function &mdash; getPathFromString</caption>
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td>ctl:getPathFromString</td>
+        </tr>
+        <tr>
+          <th>Parameters</th>
+          <td>
+          <dl>
+            <dt>filepath (required)</dt>
+            <dd>A string path to a file (relative or absolute).</dd>
+          </dl>
+          </td>
+        </tr>
+        <tr>
+          <th>Returns</th>
+          <td>The path to the file (minus the filename).  Bascially, takes the substring
+          before the last occurance of either "/" or "\".</td>
+        </tr>
+      </tbody>
+    </table>    
     
     </div>
   </body>
