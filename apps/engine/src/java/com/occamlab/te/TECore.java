@@ -26,10 +26,14 @@ import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.URLDecoder;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.Random;
 
 import javax.xml.parsers.*;
 import net.sf.saxon.Configuration;
@@ -47,6 +51,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
@@ -66,35 +71,27 @@ import org.xml.sax.SAXException;
 
 /**
  * Provides various utility methods to support test execution and logging.
- * 
+ *
  */
 public class TECore {
+
     static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
-
     static final String CTL_NS = "http://www.occamlab.com/ctl";
-
     static public DocumentBuilderFactory DBF;
 
-    DocumentBuilder DB;
-
-    static public TransformerFactory TF = TransformerFactory.newInstance();
-
-    Transformer FormTransformer;
-
-    PrintStream Out;
-
-    String formHtml;
-
     static String SessionId;
-
     static String SessionDir;
 
-    Document formResults;
+    static public TransformerFactory TF = TransformerFactory.newInstance();
+    Transformer FormTransformer;
+    DocumentBuilder DB;
 
+    PrintStream Out;
+    String formHtml;
+    Document formResults;
     boolean Web;
 
     public HashMap parserInstances = new HashMap();
-
     public HashMap parserMethods = new HashMap();
 
     Stack<PrintWriter> loggers = new Stack<PrintWriter>();
@@ -211,7 +208,7 @@ public class TECore {
 
     /**
      * Creates a test log.
-     * 
+     *
      * @param logdir
      * @param callpath
      * @return
@@ -741,7 +738,7 @@ public class TECore {
 
     /**
      * Converts a CTL input form to generate a Swing-based or XHTML form?
-     * 
+     *
      * @param xhtml
      *            a DOM Document containing ?
      * @throws java.lang.Exception
@@ -761,9 +758,23 @@ public class TECore {
         if (attr != null)
             method = attr.getValue();
 
+	// Determine if there are file widgets or not
+	boolean hasFiles = false;
+	NodeList inputs = xhtml.getElementsByTagName("input");
+	for (int i = 0; i < inputs.getLength(); i++) {
+		NamedNodeMap inputAttrs = inputs.item(i).getAttributes();
+		Attr typeAttr = (Attr) inputAttrs.getNamedItem("type");
+		if (typeAttr != null) {
+			if (typeAttr.getValue().toLowerCase().equals("file")) {
+				hasFiles = true;
+			}
+		}
+	}
+
         // Set parameters for use by formfn.xsl
         FormTransformer.setParameter("title", name);
         FormTransformer.setParameter("web", Web ? "yes" : "no");
+        FormTransformer.setParameter("files", hasFiles ? "yes" : "no");
         FormTransformer.setParameter("thread", Long.toString(Thread
                 .currentThread().getId()));
         FormTransformer.setParameter("method", method.toLowerCase().equals(
@@ -796,8 +807,71 @@ public class TECore {
     }
 
     /**
+     * Save a file on the local file system to the working directory for use
+     * in the validation, returns the new local path to the file
+     */
+    public String saveFileToWorkingDir (String origFilepath) {
+    	try {
+    		origFilepath = URLDecoder.decode(origFilepath, "UTF-8");
+	} catch (Exception e) {
+            System.err.print("Error decoding path.  "
+                    + e.getMessage());
+            return "";
+	}
+
+	// Create the working directory	for this file
+	String path = makeWorkingDir();
+
+	// Save the file to that path
+	File file = null;
+	try {
+		// Create new file, and get streams to each file
+		File origFile = new File(origFilepath);
+		file = new File(path, origFile.getName());
+		file.createNewFile();
+
+		FileInputStream in = new FileInputStream(origFile);
+		FileOutputStream out = new FileOutputStream(file);
+
+		// Transfer bytes from one file to the other
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
+		}
+	} catch (Exception e) {
+            System.err.print("Error creating and writing to file.  "
+                    + e.getMessage());
+            return "";
+	}
+
+	return file.getAbsolutePath();
+    }
+
+    /**
+     * Gets the proper directory to save working files to
+     */
+    public String makeWorkingDir () {
+
+	// Create the working directory	for this file
+	String path = "";
+        if (SessionDir != null) {
+            path = SessionDir;
+        } else {
+            path = System.getProperty("java.io.tmpdir") + "/tecore.temp";
+        }
+
+        String randomStr = TECore.randomString(16, new Random());
+        path = path + "/work/" + randomStr;
+        File dir = new File(path);
+        dir.mkdirs();
+
+	return dir.getAbsolutePath();
+    }
+
+    /**
      * Converts a DOM Document/Node to a String
-     * 
+     *
      * @param node
      *            the node to convert
      * @return String a string representation of the DOM
@@ -823,7 +897,7 @@ public class TECore {
      * configuration as the Saxon form transformer. This is done because it is
      * not possible for any query or transformation to manipulate multiple
      * documents unless they all belong to the same Configuration.
-     * 
+     *
      * @param a
      *            DOM Document the node to be rebuilt.
      * @return Document the new document with the same configuration as the
@@ -842,4 +916,30 @@ public class TECore {
         }
         return newDoc;
     }
+
+    // Returns a random string of length len
+    public static String randomString(int len, Random random) {
+        if (len < 1) {
+            return "";
+        }
+
+        int start = ' ';
+        int end = 'z' + 1;
+
+        StringBuffer buffer = new StringBuffer();
+        int gap = end - start;
+
+        while (len-- != 0) {
+            char ch;
+            ch = (char) (random.nextInt(gap) + start);
+
+            if (Character.isLetterOrDigit(ch)) {
+                buffer.append(ch);
+            } else {
+                len++;
+            }
+        }
+        return buffer.toString();
+    }
+
 }

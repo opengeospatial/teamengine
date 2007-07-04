@@ -14,7 +14,9 @@
 
   <target name="compile">
     <mkdir dir="build"/>
-    <javac srcdir="src/java" destdir="build" classpathref="classpath" debug="true"/>
+    <javac srcdir="src/java" destdir="build" classpathref="classpath" debug="true">
+    	<compilerarg value="-Xlint:none"/>
+	</javac>
   </target>
 
   <target name="jar" depends="compile">
@@ -25,5 +27,6 @@
 
   <target name="clean">
     <delete dir="build"/>
+    <delete file="lib/te-manager.jar"/>
   </target>
 </project>

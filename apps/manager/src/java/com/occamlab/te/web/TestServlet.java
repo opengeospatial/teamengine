@@ -21,6 +21,12 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import java.io.File;
+import java.util.List;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -33,28 +39,28 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.io.File;
-import java.util.List;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.FileItemFactory;
 
 import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
 import com.occamlab.te.TestDriverConfig;
+import com.occamlab.te.util.StringUtils;
 
 /**
  * Main request handler.
- * 
+ *
  */
 public class TestServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 4553970234639898744L;
 
+	public static final String CTL_NS = "http://www.occamlab.com/ctl";
+
 	DocumentBuilder DB;
-
 	Config conf;
-
 	Map<String, Test> testDrivers;
 
 	/**
@@ -89,10 +95,18 @@ public class TestServlet extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException {
-		processFormData(request, response);
+
+		// Multipart form data
+		if (ServletFileUpload.isMultipartContent(request)) {
+			processMultipartFormData(request, response);
+		}
+		// Non-multipart
+		else {
+			processFormData(request, response);
+		}
 	}
 
-	// Post and Get method parse the form data and process it accordingly
+	// Parse data for POST/GET method and process it accordingly
 	public void processFormData(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
 		try {
@@ -191,40 +205,228 @@ public class TestServlet extends HttpServlet {
 				out.print("<body onload=\"window.parent.update()\"></body>");
 				out.println("</html>");
 			} else if (operation.equals("SubmitPostForm")) {
-
-				String content = request.getHeader("Content-Type");
-				// Multipart form data
-				if (content.trim().startsWith("multipart/form-data")) {
-					// TODO: Multipart support
-				}
-				// Regular form data
-				else {
-					TestSession s = (TestSession) session
-							.getAttribute("testsession");
-					TECore core = s.getCore();
-					Document doc = DB.newDocument();
-					Element root = doc.createElement("values");
-					doc.appendChild(root);
-					Iterator it = request.getParameterMap().keySet().iterator();
-					while (it.hasNext()) {
-						String key = (String) it.next();
-						if (!key.startsWith("te-")) {
-							Element valueElement = doc.createElement("value");
-							valueElement.setAttribute("key", key);
-							valueElement.appendChild(doc.createTextNode(request
-									.getParameter(key)));
-							root.appendChild(valueElement);
-						}
+				TestSession s = (TestSession) session
+						.getAttribute("testsession");
+				TECore core = s.getCore();
+				Document doc = DB.newDocument();
+				Element root = doc.createElement("values");
+				doc.appendChild(root);
+				Iterator it = request.getParameterMap().keySet().iterator();
+				while (it.hasNext()) {
+					String key = (String) it.next();
+					if (!key.startsWith("te-")) {
+						Element valueElement = doc.createElement("value");
+						valueElement.setAttribute("key", key);
+						valueElement.appendChild(doc.createTextNode(request
+								.getParameter(key)));
+						root.appendChild(valueElement);
 					}
-					core.setFormResults(doc);
-					response.setContentType("text/html");
-					out.println("<html>");
-					out.println("<head><title>Form Submitted</title></head>");
-					out
-							.print("<body onload=\"window.parent.update()\"></body>");
-					out.println("</html>");
 				}
+				core.setFormResults(doc);
+				response.setContentType("text/html");
+				out.println("<html>");
+				out.println("<head><title>Form Submitted</title></head>");
+				out.print("<body onload=\"window.parent.update()\"></body>");
+				out.println("</html>");
+			}
+		} catch (Exception e) {
+			throw new ServletException(e);
+		}
+	}
 
+	// Parse data for POST Multipart/form-data method and process it accordingly
+	public void processMultipartFormData(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
+		try {
+			// Get the parts as items
+			FileItemFactory ffactory = new DiskFileItemFactory();
+			ServletFileUpload upload = new ServletFileUpload(ffactory);
+			List /* FileItem */ items = upload.parseRequest(request);
+
+			String operation = "";
+			String mode = "";
+			String sessionid = "";
+			String test = "";
+			String sources = "";
+			String suite = "";
+			String description = "";
+
+			// Process the uploaded items
+			Iterator iter = items.iterator();
+			while (iter.hasNext()) {
+			    FileItem item = (FileItem) iter.next();
+
+			    if (item.isFormField()) {
+			        String name = item.getFieldName();
+    			    	String value = item.getString();
+    			    	if (name.equals("te-operation")) {
+    			    		operation = value;
+    			    	}
+    			    	else if (name.equals("mode")) {
+    			    		mode = value;
+    			    	}
+    			    	else if (name.equals("session")) {
+    			    		sessionid = value;
+    			    	}
+    			    	else if (name.equals("test")) {
+    			    		test = value;
+    			    	}
+    			    	else if (name.equals("sources")) {
+    			    		sources = value;
+    			    	}
+    			    	else if (name.equals("suite")) {
+    			    		suite = value;
+    			    	}
+    			    	else if (name.equals("description")) {
+    			    		description = value;
+    			    	}
+			    }
+			}
+
+			HttpSession session = request.getSession();
+			ServletOutputStream out = response.getOutputStream();
+			if (operation.equals("Test")) {
+				TestSession s;
+				String user = request.getRemoteUser();
+				File userlogdir = new File(conf.getUsersDir(), user);
+				if (mode.equals("retest")) {
+					if (sessionid == null) {
+						int i = test.indexOf("/");
+						sessionid = i > 0 ? test.substring(0, i) : test;
+					}
+					if (test == null) {
+						test = sessionid;
+					}
+					s = TestSession.load(DB, userlogdir, sessionid);
+					s.prepare(testDrivers, Test.RETEST_MODE, test);
+				} else if (mode.equals("resume")) {
+					s = TestSession.load(DB, userlogdir, sessionid);
+					s.prepare(testDrivers, Test.RESUME_MODE);
+				} else {
+					s = TestSession.create(userlogdir, sources, suite,
+							description);
+					s.prepare(testDrivers, Test.TEST_MODE);
+				}
+				Thread thread = new Thread(s);
+				session.setAttribute("testsession", s);
+				thread.start();
+				response.setContentType("text/xml");
+				out.println("<thread id=\"" + thread.getId()
+						+ "\" sessionId=\"" + s.getSessionId() + "\"/>");
+			} else if (operation.equals("Stop")) {
+				session.removeAttribute("testsession");
+				response.setContentType("text/xml");
+				out.println("<stopped/>");
+			} else if (operation.equals("GetStatus")) {
+				TestSession s = (TestSession) session
+						.getAttribute("testsession");
+				response.setContentType("text/xml");
+				out.print("<status");
+				if (s.getCore().getFormHtml() != null) {
+					out.print(" form=\"true\"");
+				}
+				if (s.isComplete()) {
+					out.print(" complete=\"true\"");
+					session.removeAttribute("testsession");
+				}
+				out.println(">");
+				out.print("<![CDATA[");
+				out.print(s.getOutput());
+				out.println("]]>");
+				out.println("</status>");
+			} else if (operation.equals("GetForm")) {
+				TestSession s = (TestSession) session
+						.getAttribute("testsession");
+				TECore core = s.getCore();
+				String html;
+				synchronized (core) {
+					html = core.getFormHtml();
+					core.setFormHtml(null);
+				}
+				response.setContentType("text/html");
+				out.print(html);
+			} else if (operation.equals("SubmitForm")) {
+				TestSession s = (TestSession) session
+						.getAttribute("testsession");
+				TECore core = s.getCore();
+				Document doc = DB.newDocument();
+				Element root = doc.createElement("values");
+				doc.appendChild(root);
+				Iterator params = items.iterator();
+				while (params.hasNext()) {
+				    FileItem param = (FileItem) params.next();
+				    String name = param.getFieldName();
+
+				    if (param.isFormField()) {
+	    			    	String value = param.getString();
+	    			    	if (!name.startsWith("te-")) {
+						Element valueElement = doc.createElement("value");
+						valueElement.setAttribute("key", name);
+						valueElement.appendChild(doc.createTextNode(value));
+						root.appendChild(valueElement);
+	    			    	}
+				    }
+				    else {
+			        	File uploadedFile = new File(core.makeWorkingDir(), StringUtils.getFilenameFromString(param.getName()));
+    					param.write(uploadedFile);
+
+					Element valueElement = doc.createElement("value");
+					valueElement.setAttribute("key", name);
+			                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+			                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
+			                fileEntry.setAttribute("media-type", param.getContentType());
+			                fileEntry.setAttribute("size", String.valueOf(param.getSize()));
+			                valueElement.appendChild(fileEntry);
+					root.appendChild(valueElement);
+	    			    }
+				}
+				core.setFormResults(doc);
+				response.setContentType("text/html");
+				out.println("<html>");
+				out.println("<head><title>Form Submitted</title></head>");
+				out.print("<body onload=\"window.parent.update()\"></body>");
+				out.println("</html>");
+			} else if (operation.equals("SubmitPostForm")) {
+				TestSession s = (TestSession) session
+						.getAttribute("testsession");
+				TECore core = s.getCore();
+				Document doc = DB.newDocument();
+				Element root = doc.createElement("values");
+				doc.appendChild(root);
+				Iterator params = items.iterator();
+				while (params.hasNext()) {
+				    FileItem param = (FileItem) params.next();
+				    String name = param.getFieldName();
+
+				    if (param.isFormField()) {
+	    			    	String value = param.getString();
+	    			    	if (!name.startsWith("te-")) {
+						Element valueElement = doc.createElement("value");
+						valueElement.setAttribute("key", name);
+						valueElement.appendChild(doc.createTextNode(value));
+						root.appendChild(valueElement);
+	    			    	}
+				    }
+	    			    else {
+			        	File uploadedFile = new File(core.makeWorkingDir(), StringUtils.getFilenameFromString(param.getName()));
+    					param.write(uploadedFile);
+
+					Element valueElement = doc.createElement("value");
+					valueElement.setAttribute("key", name);
+			                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+			                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
+			                fileEntry.setAttribute("media-type", param.getContentType());
+			                fileEntry.setAttribute("size", String.valueOf(param.getSize()));
+			                valueElement.appendChild(fileEntry);
+					root.appendChild(valueElement);
+	    			    }
+				}
+				core.setFormResults(doc);
+				response.setContentType("text/html");
+				out.println("<html>");
+				out.println("<head><title>Form Submitted</title></head>");
+				out.print("<body onload=\"window.parent.update()\"></body>");
+				out.println("</html>");
 			}
 		} catch (Exception e) {
 			throw new ServletException(e);

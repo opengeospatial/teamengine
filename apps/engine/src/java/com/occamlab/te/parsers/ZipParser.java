@@ -23,10 +23,10 @@ import com.occamlab.te.TECore;
  * Parses a zip file input by extracting the contents into the directory
  * specified by the value of the <code>java.io.tmpdir</code> system property.
  * The resulting manifest is structured as follows:
- * 
+ *
  * <ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl"> <ctl:file-entry
  * full-path="${java.io.tmpdir}/dir/doc.kml" size="2048" /> </ctl:manifest>
- * 
+ *
  * @author jparrpearson
  */
 public class ZipParser {
@@ -46,7 +46,7 @@ public class ZipParser {
 
     /**
      * Returns the mime media type value for the given extension
-     * 
+     *
      * @param ext
      *            the filename extension to lookup
      * @return String the mime type for the given extension
@@ -73,7 +73,7 @@ public class ZipParser {
      * Parses the entity (a ZIP archive) obtained in response to submitting a
      * request to some URL. The resulting manifest is an XML document with
      * <ctl:manifest> as the document element.
-     * 
+     *
      * @param uc
      *            a connection to a remote endpoint
      * @param instruction
@@ -112,7 +112,7 @@ public class ZipParser {
         } else {
             path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
         }
-        String randomStr = randomString(16, new Random());
+        String randomStr = TECore.randomString(16, new Random());
         path = path + "/work/" + randomStr;
         new File(path).mkdirs();
 
@@ -156,31 +156,6 @@ public class ZipParser {
 
         // Return the <ctl:manifest> document
         return doc;
-    }
-
-    // Returns a random string of length len
-    public static String randomString(int len, Random random) {
-        if (len < 1) {
-            return "";
-        }
-
-        int start = ' ';
-        int end = 'z' + 1;
-
-        StringBuffer buffer = new StringBuffer();
-        int gap = end - start;
-
-        while (len-- != 0) {
-            char ch;
-            ch = (char) (random.nextInt(gap) + start);
-
-            if (Character.isLetterOrDigit(ch)) {
-                buffer.append(ch);
-            } else {
-                len++;
-            }
-        }
-        return buffer.toString();
     }
 
 }

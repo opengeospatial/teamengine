@@ -22,6 +22,7 @@
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
 	<xsl:param name="title"/>
 	<xsl:param name="web"/>
+	<xsl:param name="files"/>
 	<xsl:param name="thread"/>
 	<xsl:param name="method"/>
 	<xsl:output method="html"/>
@@ -34,16 +35,32 @@
 			<body>
 				<xsl:choose>
 					<xsl:when test="$method = 'post'">
-						<form method="post">
-							<xsl:if test="$web = 'yes'">
-								<xsl:attribute name="action">test</xsl:attribute>
-								<input type="hidden" name="te-operation" value="SubmitPostForm"/>
-								<input type="hidden" name="te-thread" value="{$thread}"/>
-							</xsl:if>
-							<xsl:for-each select="form">
-								<xsl:copy-of select="*|text()"/>
-							</xsl:for-each>
-						</form>
+						<xsl:choose>
+							<xsl:when test="$files = 'yes'">
+								<form method="post" enctype="multipart/form-data">
+								<xsl:if test="$web = 'yes'">
+									<xsl:attribute name="action">test</xsl:attribute>
+									<input type="hidden" name="te-operation" value="SubmitPostForm"/>
+									<input type="hidden" name="te-thread" value="{$thread}"/>
+								</xsl:if>
+								<xsl:for-each select="form">
+									<xsl:copy-of select="*|text()"/>
+								</xsl:for-each>
+								</form>								
+							</xsl:when>
+							<xsl:otherwise>
+								<form method="post">
+								<xsl:if test="$web = 'yes'">
+									<xsl:attribute name="action">test</xsl:attribute>
+									<input type="hidden" name="te-operation" value="SubmitPostForm"/>
+									<input type="hidden" name="te-thread" value="{$thread}"/>
+								</xsl:if>
+								<xsl:for-each select="form">
+									<xsl:copy-of select="*|text()"/>
+								</xsl:for-each>
+								</form>								
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:when>
 					<xsl:otherwise>
 						<form method="get">

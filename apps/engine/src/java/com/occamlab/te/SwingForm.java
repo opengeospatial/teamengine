@@ -2,6 +2,7 @@ package com.occamlab.te;
 
 import java.awt.BorderLayout;
 import java.net.URLDecoder;
+import java.io.File;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -27,13 +28,15 @@ import org.w3c.dom.Element;
 public class SwingForm extends JFrame implements HyperlinkListener {
     static final long serialVersionUID = 7907599307261079944L;
 
+    public static final String CTL_NS = "http://www.occamlab.com/ctl";
+
     class CustomFormView extends FormView {
         public CustomFormView(javax.swing.text.Element elem) {
             super(elem);
         }
 
         protected void submitData(String data) {
-            // System.out.println(data);
+            //System.out.println("data: "+data);
             try {
                 String kvps = data + "&=";
                 int start = 0;
@@ -47,6 +50,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                 do {
                     String key;
                     String value;
+
                     int eq = kvps.indexOf("=", start);
                     int amp = kvps.indexOf("&", start);
                     if (amp > eq) {
@@ -56,12 +60,27 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                         key = kvps.substring(start, amp);
                         value = "";
                     }
+
                     Element valueElement = doc.createElement("value");
                     valueElement.setAttribute("key", key);
-                    valueElement.appendChild(doc.createTextNode(URLDecoder
-                            .decode(value, "UTF-8")));
+                    // Special case for file inputs
+                    // TODO: Fix this, it is not a very good method at the moment, it
+                    // just looks for the string "file" in the name of the input object.
+                    if (key.contains("file")) {
+                    	File temp = new File(value);
+                    	if (temp != null) {
+                    		value = Core.saveFileToWorkingDir(value);
+		                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+		                fileEntry.setAttribute("full-path", value.replace('\\','/'));
+		                valueElement.appendChild(fileEntry);
+                    	}
+                    }
+                    else {
+                    	valueElement.appendChild(doc.createTextNode(URLDecoder.decode(value, "UTF-8")));
+                    }
                     root.appendChild(valueElement);
                     start = amp + 1;
+                    //System.out.println("key|value: "+key+"|"+value);
                 } while (start < end);
 
                 Core.setFormResults(doc);
@@ -95,9 +114,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
     }
 
     JEditorPane Jedit;
-
     TECore Core;
-
     SwingForm Form;
 
     SwingForm(String name, int width, int height, TECore core) {
