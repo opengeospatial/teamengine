@@ -366,18 +366,20 @@ public class TestServlet extends HttpServlet {
 						root.appendChild(valueElement);
 	    			    	}
 				    }
-				    else {
-			        	File uploadedFile = new File(core.makeWorkingDir(), StringUtils.getFilenameFromString(param.getName()));
-    					param.write(uploadedFile);
+	    			    else if (param.getName() != null) {
+	    			    	if (!param.getName().equals("")) {
+				        	File uploadedFile = new File(core.makeWorkingDir(), StringUtils.getFilenameFromString(param.getName()));
+	    					param.write(uploadedFile);
 
-					Element valueElement = doc.createElement("value");
-					valueElement.setAttribute("key", name);
-			                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-			                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
-			                fileEntry.setAttribute("media-type", param.getContentType());
-			                fileEntry.setAttribute("size", String.valueOf(param.getSize()));
-			                valueElement.appendChild(fileEntry);
-					root.appendChild(valueElement);
+						Element valueElement = doc.createElement("value");
+						valueElement.setAttribute("key", name);
+				                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+				                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
+				                fileEntry.setAttribute("media-type", param.getContentType());
+				                fileEntry.setAttribute("size", String.valueOf(param.getSize()));
+				                valueElement.appendChild(fileEntry);
+						root.appendChild(valueElement);
+					}
 	    			    }
 				}
 				core.setFormResults(doc);
@@ -407,18 +409,20 @@ public class TestServlet extends HttpServlet {
 						root.appendChild(valueElement);
 	    			    	}
 				    }
-	    			    else {
-			        	File uploadedFile = new File(core.makeWorkingDir(), StringUtils.getFilenameFromString(param.getName()));
-    					param.write(uploadedFile);
+	    			    else if (param.getName() != null) {
+	    			    	if (!param.getName().equals("")) {
+				        	File uploadedFile = new File(core.makeWorkingDir(), StringUtils.getFilenameFromString(param.getName()));
+	    					param.write(uploadedFile);
 
-					Element valueElement = doc.createElement("value");
-					valueElement.setAttribute("key", name);
-			                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-			                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
-			                fileEntry.setAttribute("media-type", param.getContentType());
-			                fileEntry.setAttribute("size", String.valueOf(param.getSize()));
-			                valueElement.appendChild(fileEntry);
-					root.appendChild(valueElement);
+						Element valueElement = doc.createElement("value");
+						valueElement.setAttribute("key", name);
+				                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+				                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
+				                fileEntry.setAttribute("media-type", param.getContentType());
+				                fileEntry.setAttribute("size", String.valueOf(param.getSize()));
+				                valueElement.appendChild(fileEntry);
+						root.appendChild(valueElement);
+					}
 	    			    }
 				}
 				core.setFormResults(doc);
