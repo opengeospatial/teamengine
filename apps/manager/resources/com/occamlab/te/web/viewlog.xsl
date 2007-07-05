@@ -112,10 +112,16 @@
 			</a>		
 		</xsl:otherwise>
 		</xsl:choose>				
-		<xsl:text>&#xa;(</xsl:text>
+		<!--<xsl:text>&#xa;(</xsl:text>
 		<a href="viewTestLog.jsp?test={@path}">
 			<xsl:value-of select="@path"/>
 		</a>
+		<xsl:text>): </xsl:text>-->
+		<!--<xsl:text>&#xa;</xsl:text>
+		<a href="viewTestLog.jsp?test={@path}"><img src="images/details.png" border="0" vspace="0" hspace="0"/></a>
+		<xsl:text>&#xa;:&#xa;</xsl:text>-->		
+		<xsl:text>&#xa;(</xsl:text>
+		<a href="viewTestLog.jsp?test={@path}">View Details</a>
 		<xsl:text>): </xsl:text>
 		<xsl:choose>
 			<xsl:when test="$result = 'fail' and @failed='yes' and @complete='no'">Failed and did not complete</xsl:when>
