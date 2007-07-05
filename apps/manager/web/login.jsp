@@ -31,16 +31,16 @@
 		<h2>Login</h2>
 <%
 if (request.getParameter("error") != null) {
-	out.println("<span style=\"color: red\">Sorry, your username and password did not match.  Please try again.</span>");
+	out.println("<span style=\"color: red\">The username and/or password did not match.  Please try again.</span>");
 }
 %>
-		<form action="j_security_check">
+		<form method="POST" action="j_security_check">
 			<p>
 				Enter your username and password:<br/>
 				<br/>
 				Username: <input type="text" name="j_username"/><br/>
 				Password: <input type="password" name="j_password"/><br/>
-				<input type="submit" value="OK"/><br/>
+				<input type="submit" value="Log In"/><br/>
 			</p>
 		</form>
 		If you don't have a username and password, please <a href="register.jsp">register</a>.

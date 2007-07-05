@@ -140,7 +140,7 @@ public class TECore {
     }
 
     public void setFormHtml(String html) {
-        formHtml = html;
+        this.formHtml = html;
     }
 
     public Document getFormResults() {
@@ -148,7 +148,7 @@ public class TECore {
     }
 
     public void setFormResults(Document doc) {
-        formResults = doc;
+        this.formResults = doc;
     }
 
     public static short node_type(Node node) {
@@ -737,16 +737,20 @@ public class TECore {
     }
 
     /**
-     * Converts a CTL input form to generate a Swing-based or XHTML form?
-     *
-     * @param xhtml
-     *            a DOM Document containing ?
+     * Converts CTL input form data to generate a Swing-based or XHTML form and
+     * reports the results of processing the submitted form. The results document 
+     * is produced in {@link TestServlet#processFormData} (web context) or 
+     * {@link SwingForm.CustomFormView#submitData}.
+     * 
+     * @param ctlForm
+     *            a DOM Document representing a &lt;ctl:form&gt; element.
      * @throws java.lang.Exception
-     * @return a DOM Document containing ?
+     * @return a DOM Document containing the resulting &lt;values&gt; element 
+     *        as the document element.
      */
-    public Document form(Document xhtml) throws Exception {
+    public Document form(Document ctlForm) throws Exception {
         String name = Thread.currentThread().getName();
-        NamedNodeMap attrs = xhtml.getElementsByTagName("form").item(0)
+        NamedNodeMap attrs = ctlForm.getElementsByTagName("form").item(0)
                 .getAttributes();
         Attr attr = (Attr) attrs.getNamedItem("name");
         if (attr != null)
@@ -760,7 +764,7 @@ public class TECore {
 
 	// Determine if there are file widgets or not
 	boolean hasFiles = false;
-	NodeList inputs = xhtml.getElementsByTagName("input");
+	NodeList inputs = ctlForm.getElementsByTagName("input");
 	for (int i = 0; i < inputs.getLength(); i++) {
 		NamedNodeMap inputAttrs = inputs.item(i).getAttributes();
 		Attr typeAttr = (Attr) inputAttrs.getNamedItem("type");
@@ -781,9 +785,9 @@ public class TECore {
                 "post") ? "post" : "get");
 
         StringWriter sw = new StringWriter();
-        Document xhtml2 = rebuildDocument(xhtml);
-        FormTransformer.transform(new DOMSource(xhtml2), new StreamResult(sw));
-        formHtml = sw.toString();
+        Document formDoc = rebuildDocument(ctlForm);
+        FormTransformer.transform(new DOMSource(formDoc), new StreamResult(sw));
+        this.formHtml = sw.toString();
 
         if (!Web) {
             int width = 700;
@@ -797,12 +801,12 @@ public class TECore {
             new SwingForm(name, width, height, this);
         }
 
-        while (formResults == null) {
+        while (this.formResults == null) {
             Thread.sleep(250);
         }
 
-        Document doc = formResults;
-        formResults = null;
+        Document doc = this.formResults;
+        this.formResults = null;
         return doc;
     }
 

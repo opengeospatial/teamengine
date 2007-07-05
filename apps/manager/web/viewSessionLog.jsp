@@ -80,12 +80,12 @@ public void jspInit() {
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<br/>
 		<br/>
-		<table border="0" bgcolor="#EEEEEE" width="410">
+		<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
 		<tr>
 		<th align="left"><font color="#000099">Summary</font></th>
-		<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td><td align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
-		<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td><td align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
-		<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td><td align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
+		<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td><td id="nPass" align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
+		<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td><td id="nWarn" align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
+		<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td><td id="nFail" align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
 		</tr>
 		</table>
 		</br>		
