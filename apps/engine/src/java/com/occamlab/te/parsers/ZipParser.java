@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.InputStream;
-import java.net.URLConnection;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -74,8 +73,8 @@ public class ZipParser {
      * request to some URL. The resulting manifest is an XML document with
      * <ctl:manifest> as the document element.
      *
-     * @param uc
-     *            a connection to a remote endpoint
+     * @paramisc
+     *            a stream from the remote connection
      * @param instruction
      *            a DOM Element representation of configuration information for
      *            this parser
@@ -86,9 +85,8 @@ public class ZipParser {
      * @return a DOM Document representing the manifest of items in the archive.
      * @throws Throwable
      */
-    public static Document parse(URLConnection uc, Element instruction,
+    public static Document parse(InputStream is, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
-        uc.connect();
 
         // Create the response element, <ctl:manifest>
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -97,7 +95,6 @@ public class ZipParser {
         Element root = doc.createElementNS(CTL_NS, "manifest");
 
         // Open the connection to the zip file
-        InputStream is = uc.getInputStream();
         ZipInputStream zis = new ZipInputStream(is);
 
         // Create the full directory path to store the zip entities

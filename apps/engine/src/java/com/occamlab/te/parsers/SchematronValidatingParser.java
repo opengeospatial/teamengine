@@ -13,7 +13,6 @@ import java.lang.ClassLoader;
 import java.lang.Thread;
 
 import java.net.URL;
-import java.net.URLConnection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,7 +39,7 @@ import com.occamlab.te.ErrorHandlerImpl;
  * Validates the given XML resource against the rules specified in a Schematron
  * (v1.5) file. Used in conjunction with standard XML Schema validator to
  * provide more thorough validation coverage.
- * 
+ *
  * @author jparrpearson
  */
 public class SchematronValidatingParser {
@@ -70,7 +69,7 @@ public class SchematronValidatingParser {
 
     /**
      * Converts an org.w3c.dom.Document element to an java.io.InputStream.
-     * 
+     *
      * @param edoc
      *            The org.w3c.dom.Document to be converted
      * @return The InputStream value of the passed doument
@@ -117,7 +116,7 @@ public class SchematronValidatingParser {
     /**
      * Checks the given schematron phase for the XML file and returns the
      * validation status.
-     * 
+     *
      * @param doc
      *            The XML file to validate (Document)
      * @param schemaFile
@@ -185,7 +184,7 @@ public class SchematronValidatingParser {
      * Checks the given schematron phase for the XML file and returns the
      * validation status (takes schematron file, not string location). New and
      * ADVANCED! (team engine can't work with overloaded methods :P)
-     * 
+     *
      * @param doc
      *            The XML file to validate (Document)
      * @param schemaFile
@@ -231,7 +230,7 @@ public class SchematronValidatingParser {
     /**
      * Sets up the schematron reader with all the necessary parameters. Calls
      * initSchematronReader() to do further setup of the validation driver.
-     * 
+     *
      * @param phase
      *            The string phase name (contained in schematron file)
      * @return The ValidationDriver to use in validating the XML document
@@ -269,7 +268,7 @@ public class SchematronValidatingParser {
     /**
      * Parses the parser element to get the schematron file location and type of
      * resource (from ctl file).
-     * 
+     *
      * @param schema_links
      *            Gets the location of the scehma (and type of resource) and
      * saves to global parameter @ return The type of resource (URL, File,
@@ -293,17 +292,16 @@ public class SchematronValidatingParser {
     /**
      * Parses the document by first retieving it, then validating, before
      * returning the parsed document (schematron in this case)
-     * 
-     * @param uc
-     *            The URL information (host, port,request, etc) for the response
-     *            document
+     *
+     * @param is
+     *            The InputStream for the response document
      * @param instruction
      *            A copy of the parser Element
      * @param logger
      *            The PrintWriter to log any errors to
      * @return The Document response from the URL connection made
      */
-    public Document parse(URLConnection uc, Element instruction,
+    public Document parse(InputStream is, Element instruction,
             PrintWriter logger) throws Exception {
 
         // Get schematron schema information from ctl file
@@ -340,7 +338,7 @@ public class SchematronValidatingParser {
         // Gets the response document
         Document doc = null;
         try {
-            doc = db.parse(uc.getInputStream());
+            doc = db.parse(is);
         } catch (Exception e) {
             logger.println(e.getMessage());
         }

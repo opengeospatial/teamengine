@@ -37,6 +37,7 @@
 	<xsl:variable name="apos">'</xsl:variable>
 
 	<xsl:include href="ext/session_info.xsl"/>
+	<xsl:include href="ext/async_request.xsl"/>
 
 	<xsl:template name="namespace-attribute">
 		<xsl:param name="prefix"/>
@@ -266,7 +267,7 @@
 			</txsl:choose>
 		</txsl:variable>
 		<txsl:value-of select="te:log_xml($te:core, $te:request)"/>
-		<txsl:variable name="te:request-urlconnection" select="te:build_request($te:request/request)">
+		<txsl:variable name="te:request-inputstream" select="te:build_request($te:request/request, $te:core)">
 			<xsl:call-template name="loc"/>
 		</txsl:variable>					
 		<xsl:variable name="parser">
@@ -297,12 +298,12 @@
 					<xsl:choose>
 						<xsl:when test="boolean($parser/*)">
 							<xsl:variable name="parser-prefix" select="substring-before(name($parser/*), ':')"/>
-							<txsl:copy-of select="te:parse($te:core, $te:request-urlconnection, $te:web-call-id, $te:parser)">
+							<txsl:copy-of select="te:parse($te:core, $te:request-inputstream, $te:web-call-id, $te:parser)">
 								<xsl:copy-of select="namespace::*[name()=$parser-prefix]"/>
 							</txsl:copy-of>
 						</xsl:when>
 						<xsl:otherwise>
-							<txsl:copy-of select="te:parse($te:core, $te:request-urlconnection, $te:web-call-id)"/>
+							<txsl:copy-of select="te:parse($te:core, $te:request-inputstream, $te:web-call-id)"/>
 						</xsl:otherwise>
 					</xsl:choose>
 				</txsl:otherwise>

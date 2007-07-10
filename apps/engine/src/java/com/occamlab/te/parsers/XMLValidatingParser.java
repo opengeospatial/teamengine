@@ -21,19 +21,19 @@
  ****************************************************************************/
 package com.occamlab.te.parsers;
 
-import java.net.*;
+import java.net.URL;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-import com.occamlab.te.ErrorHandlerImpl;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.io.InputStream;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -45,9 +45,11 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 
+import com.occamlab.te.ErrorHandlerImpl;
+
 /**
  * Validates an XML resource using a set of W3C XML Schema documents.
- * 
+ *
  */
 public class XMLValidatingParser {
     SchemaFactory SF;
@@ -135,7 +137,7 @@ public class XMLValidatingParser {
         load_schemas(schema_links, schemaList);
     }
 
-    public Document parse(URLConnection uc, Element instruction,
+    public Document parse(InputStream is, Element instruction,
             PrintWriter logger) throws Exception {
         ArrayList schemas = new ArrayList();
         schemas.addAll(schemaList);
@@ -164,7 +166,7 @@ public class XMLValidatingParser {
 
         Document doc = null;
         try {
-            doc = db.parse(uc.getInputStream());
+            doc = db.parse(is);
         } catch (Exception e) {
             logger.println(e.getMessage());
         }
@@ -217,14 +219,14 @@ public class XMLValidatingParser {
 
     /**
      * A method to validate a pool of schemas outside of the request element.
-     * 
+     *
      * @param Document
      *            doc The file document to validate
      * @param Document
      *            instruction The xml encapsulated schema information (file
      *            locations)
      * @return false if there were errors, true if none
-     * 
+     *
      * @author jparrpearson
      */
     public boolean checkXMLRules(Document doc, Document instruction)

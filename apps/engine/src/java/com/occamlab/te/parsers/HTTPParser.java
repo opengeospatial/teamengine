@@ -3,11 +3,11 @@
  The contents of this file are subject to the Mozilla Public License
  Version 1.1 (the "License"); you may not use this file except in
  compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/ 
+ http://www.mozilla.org/MPL/
 
  Software distributed under the License is distributed on an "AS IS" basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- the specific language governing rights and limitations under the License. 
+ the specific language governing rights and limitations under the License.
 
  The Original Code is TEAM Engine.
 
@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
+import java.io.InputStream;
 import java.net.URLConnection;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -47,7 +48,7 @@ import com.occamlab.te.TECore;
 /**
  * Parses an HTTP response message and produces a DOM Document representation of
  * the message content.
- * 
+ *
  */
 public class HTTPParser {
     public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
@@ -149,9 +150,9 @@ public class HTTPParser {
         return temp;
     }
 
-    public static Document parse(URLConnection uc, Element instruction,
+    public static Document parse(InputStream is, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
-        uc.connect();
+        URLConnection uc = core.getUrlConnection();
         boolean multipart = uc.getContentType().startsWith("multipart");
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -184,8 +185,7 @@ public class HTTPParser {
             }
             int end = mime.indexOf(endchar, start);
             String boundary = mime.substring(start, end);
-            BufferedReader in = new BufferedReader(new InputStreamReader(uc
-                    .getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
             File temp = create_part_file(in, boundary, "text/plain");
             temp.delete();
             String line = in.readLine();
@@ -213,7 +213,7 @@ public class HTTPParser {
                 URLConnection pc = temp.toURL().openConnection();
                 pc.setRequestProperty("Content-type", mime);
                 Node parser = select_parser(num, contentType, instruction);
-                Document doc2 = core.parse(pc, null, parser);
+                Document doc2 = core.parse(pc.getInputStream(), null, parser);
                 temp.delete();
                 t.transform(new DOMSource(doc2), new DOMResult(part));
                 root.appendChild(part);
@@ -222,7 +222,7 @@ public class HTTPParser {
             }
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
-            Document doc2 = core.parse(uc, null, parser);
+            Document doc2 = core.parse(uc.getInputStream(), null, parser);
             Element parser_e = (Element) (doc2.getDocumentElement()
                     .getElementsByTagName("parser").item(0));
             if (parser_e != null) {

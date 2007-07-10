@@ -3,11 +3,11 @@
  The contents of this file are subject to the Mozilla Public License
  Version 1.1 (the "License"); you may not use this file except in
  compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/ 
+ http://www.mozilla.org/MPL/
 
  Software distributed under the License is distributed on an "AS IS" basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- the specific language governing rights and limitations under the License. 
+ the specific language governing rights and limitations under the License.
 
  The Original Code is TEAM Engine.
 
@@ -24,7 +24,7 @@ package com.occamlab.te.parsers;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLConnection;
+import java.io.ObjectInputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
@@ -49,7 +49,7 @@ import javax.imageio.stream.ImageInputStream;
  * Extracts the body of a response message and treats it as an image resource.
  * If the entity does not correspond to a supported image format, an exception
  * is reported in the test log.
- * 
+ *
  */
 public class ImageParser {
 
@@ -115,7 +115,7 @@ public class ImageParser {
          * ImageDecoder class is being used. This is admittedly a rather
          * contrived method, but it seems to be the only way to retrieve the
          * information from an Image created with an ImageProducer class.
-         * 
+         *
          * @see java.awt.image.ImageObserver#imageUpdate(java.awt.Image, int,
          *      int, int, int, int)
          */
@@ -342,7 +342,7 @@ public class ImageParser {
 
     /**
      * Determines the type of image, or null if not a valid image type
-     * 
+     *
      * @param imageLoc
      *            the string location of the image (uri syntax expected)
      * @return String the name of the image type/format, or null if not valid
@@ -403,7 +403,7 @@ public class ImageParser {
         return str.substring(0, str.lastIndexOf(","));
     }
 
-    public static Document parse(URLConnection uc, Element instruction,
+    public static Document parse(InputStream is, Element instruction,
             PrintWriter logger) throws Exception {
         if (System.getProperty("java.awt.headless") == null) {
             System.setProperty("java.awt.headless", "true");
@@ -412,7 +412,7 @@ public class ImageParser {
         try {
             ImageProducer producer;
             try {
-                producer = (ImageProducer) uc.getContent();
+                producer = (ImageProducer) ((ObjectInputStream) is).readObject();
             } catch (Exception e) {
                 logger
                         .println("ImageParser Error: Not a recognized image format");
@@ -517,7 +517,8 @@ public class ImageParser {
                 "http://www.occamlab.com/te/parsers", "ImageParser").item(0);
 
         PrintWriter logger = new PrintWriter(System.out);
-        Document result = parse(image_url.openConnection(), instruction, logger);
+        InputStream image_is = image_url.openConnection().getInputStream();
+        Document result = parse(image_is, instruction, logger);
         logger.flush();
 
         TransformerFactory tf = TransformerFactory.newInstance();

@@ -69,6 +69,8 @@ import net.sf.saxon.dom.DocumentBuilderImpl;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.occamlab.te.util.TcpListener;
+
 /**
  * Provides various utility methods to support test execution and logging.
  *
@@ -90,6 +92,7 @@ public class TECore {
     String formHtml;
     Document formResults;
     boolean Web;
+    URLConnection urlConnection;
 
     public HashMap parserInstances = new HashMap();
     public HashMap parserMethods = new HashMap();
@@ -128,11 +131,19 @@ public class TECore {
     }
 
     public void setSessionId(String sessionId) {
-        SessionId = sessionId;
+        this.SessionId = sessionId;
     }
 
     public void setSessionDir(String sessionDir) {
-        SessionDir = sessionDir;
+        this.SessionDir = sessionDir;
+    }
+
+    public void setUrlConnection(URLConnection urlConn) {
+        this.urlConnection = urlConn;
+    }
+
+    public URLConnection getUrlConnection() {
+        return urlConnection;
     }
 
     public String getFormHtml() {
@@ -306,8 +317,34 @@ public class TECore {
         return file;
     }
 
-    // Create a URLConnection to the service with the proper headers, etc
-    public static URLConnection build_request(Node xml) throws Exception {
+    public static InputStream[] build_async_request(Node xml, TECore core) throws Exception {
+	// Retrieve the initial acknowledgement
+    	InputStream ackStream = build_request(xml, core);
+
+    	// Start the listener to catch the response
+    	NamedNodeMap nnm = xml.getAttributes();
+    	int port = Integer.parseInt(((Attr) nnm.getNamedItem("port")).getValue());
+    	int timeout = Integer.parseInt(((Attr) nnm.getNamedItem("timeout")).getValue());
+    	TcpListener tcpListener = new TcpListener(port, timeout);
+    	tcpListener.run();
+	InputStream respStream = tcpListener.getInputStream();
+
+    	return new InputStream[] {ackStream, respStream};
+    }
+
+    public Document parse_async(InputStream[] isArray, String response_id, Node instruction)
+            throws Throwable {
+        // TODO: Implement
+        return null;
+    }
+
+    public Document parse_async(InputStream[] isArray, String response_id)
+            throws Throwable {
+        return parse_async(isArray, response_id, null);
+    }
+
+    // Create an InputStream to the service with the proper headers, etc
+    public static InputStream build_request(Node xml, TECore core) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -502,7 +539,9 @@ public class TECore {
             os.write(bytes);
         }
 
-        return uc;
+	core.setUrlConnection(uc);
+	//uc.connect();
+        return uc.getInputStream();
     }
 
     public Document serialize_and_parse(Node parse_instruction)
@@ -579,7 +618,7 @@ public class TECore {
             t.transform(new DOMSource((Node) content), new StreamResult(temp));
         }
         URLConnection uc = temp.toURL().openConnection();
-        Document doc = parse(uc, null, parser_instruction);
+        Document doc = parse(uc.getInputStream(), null, parser_instruction);
         temp.delete();
         return doc;
     }
@@ -610,14 +649,14 @@ public class TECore {
         Method method = null;
         try {
             Class[] types = new Class[4];
-            types[0] = URLConnection.class;
+            types[0] = InputStream.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             types[3] = TECore.class;
             method = parser_class.getMethod(method_name, types);
         } catch (java.lang.NoSuchMethodException e) {
             Class[] types = new Class[3];
-            types[0] = URLConnection.class;
+            types[0] = InputStream.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             method = parser_class.getMethod(method_name, types);
@@ -625,7 +664,7 @@ public class TECore {
         return method;
     }
 
-    public Document parse(URLConnection uc, String response_id, Node instruction)
+    public Document parse(InputStream is, String response_id, Node instruction)
             throws Throwable {
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -647,7 +686,7 @@ public class TECore {
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
             try {
-                t.transform(new StreamSource(uc.getInputStream()),
+                t.transform(new StreamSource(is),
                         new DOMResult(content_e));
             } catch (Exception e) {
                 parser_e.setTextContent(e.getMessage());
@@ -663,12 +702,11 @@ public class TECore {
                     + instruction_e.getLocalName();
             Object instance = parserInstances.get(key);
             Method method = (Method) parserMethods.get(key);
-            ;
             StringWriter swLogger = new StringWriter();
             PrintWriter pwLogger = new PrintWriter(swLogger);
             int arg_count = method.getParameterTypes().length;
             Object[] args = new Object[arg_count];
-            args[0] = uc;
+            args[0] = is;
             args[1] = instruction_e;
             args[2] = pwLogger;
             if (arg_count > 3) {
@@ -701,9 +739,9 @@ public class TECore {
         return response_doc;
     }
 
-    public Document parse(URLConnection uc, String response_id)
+    public Document parse(InputStream is, String response_id)
             throws Throwable {
-        return parse(uc, response_id, null);
+        return parse(is, response_id, null);
     }
 
     public Node message(int depth, String message) {
@@ -738,14 +776,14 @@ public class TECore {
 
     /**
      * Converts CTL input form data to generate a Swing-based or XHTML form and
-     * reports the results of processing the submitted form. The results document 
-     * is produced in {@link TestServlet#processFormData} (web context) or 
+     * reports the results of processing the submitted form. The results document
+     * is produced in {@link TestServlet#processFormData} (web context) or
      * {@link SwingForm.CustomFormView#submitData}.
-     * 
+     *
      * @param ctlForm
      *            a DOM Document representing a &lt;ctl:form&gt; element.
      * @throws java.lang.Exception
-     * @return a DOM Document containing the resulting &lt;values&gt; element 
+     * @return a DOM Document containing the resulting &lt;values&gt; element
      *        as the document element.
      */
     public Document form(Document ctlForm) throws Exception {
@@ -855,7 +893,7 @@ public class TECore {
     /**
      * Gets the proper directory to save working files to
      */
-    public String makeWorkingDir () {
+    public String makeWorkingDir() {
 
 	// Create the working directory	for this file
 	String path = "";
