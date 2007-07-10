@@ -91,7 +91,9 @@ public class TcpListener implements Runnable {
 
                 clientSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("ERROR: "+e.getMessage());
+                this.inputStream = null;
+                return;
             }
         }
     }

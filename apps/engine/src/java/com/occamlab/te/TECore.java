@@ -323,8 +323,16 @@ public class TECore {
 
     	// Start the listener to catch the response
     	NamedNodeMap nnm = xml.getAttributes();
-    	int port = Integer.parseInt(((Attr) nnm.getNamedItem("port")).getValue());
-    	int timeout = Integer.parseInt(((Attr) nnm.getNamedItem("timeout")).getValue());
+    	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
+    	int port = 7777;
+    	if (portAttr != null) {
+    		port = Integer.parseInt(portAttr.getValue());
+    	}
+    	Attr timeoutAttr = ((Attr) nnm.getNamedItem("timeout"));
+    	int timeout = 10;
+    	if (timeoutAttr != null) {
+    		timeout = Integer.parseInt(timeoutAttr.getValue());
+    	}
     	TcpListener tcpListener = new TcpListener(port, timeout);
     	tcpListener.run();
 	InputStream respStream = tcpListener.getInputStream();
@@ -334,8 +342,109 @@ public class TECore {
 
     public Document parse_async(InputStream[] isArray, String response_id, Node instruction)
             throws Throwable {
-        // TODO: Implement
-        return null;
+	System.setProperty(
+                "org.apache.xerces.xni.parser.XMLParserConfiguration",
+                "org.apache.xerces.parsers.XIncludeParserConfiguration");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setFeature(
+                "http://apache.org/xml/features/xinclude/fixup-base-uris",
+                false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+        Document response_doc = db.newDocument();
+        Element parser_e = response_doc.createElement("parser");
+        Element response_e = response_doc.createElement("response");
+        if (response_id != null) {
+            response_e.setAttribute("id", response_id);
+        }
+
+        InputStream is1 = isArray[0];
+       	InputStream is2 = null;
+       	if (isArray.length > 1) {
+       		is2 = isArray[1];
+       	}
+
+        Element content_e1 = response_doc.createElement("content");
+        Element content_e2 = response_doc.createElement("content");
+        if (instruction == null) {
+            try {
+                t.transform(new StreamSource(is1),
+                        new DOMResult(content_e1));
+                if (is2 != null) {
+                	t.transform(new StreamSource(is2),
+                        	new DOMResult(content_e2));
+                }
+            } catch (Exception e) {
+                parser_e.setTextContent(e.getMessage());
+            }
+        } else {
+            Element instruction_e;
+            if (instruction instanceof Element) {
+                instruction_e = (Element) instruction;
+            } else {
+                instruction_e = ((Document) instruction).getDocumentElement();
+            }
+            String key = instruction_e.getNamespaceURI() + ","
+                    + instruction_e.getLocalName();
+            Object instance = parserInstances.get(key);
+            Method method = (Method) parserMethods.get(key);
+            StringWriter swLogger = new StringWriter();
+            PrintWriter pwLogger = new PrintWriter(swLogger);
+            int arg_count = method.getParameterTypes().length;
+            Object[] args = new Object[arg_count];
+            args[0] = is1;
+            args[1] = instruction_e;
+            args[2] = pwLogger;
+            if (arg_count > 3) {
+                args[3] = this;
+            }
+            Object return_object;
+            try {
+                return_object = method.invoke(instance, args);
+            } catch (java.lang.reflect.InvocationTargetException e) {
+                throw e.getTargetException();
+            }
+            if (return_object instanceof Node) {
+                t.transform(new DOMSource((Node) return_object), new DOMResult(
+                        content_e1));
+            } else if (return_object != null) {
+                content_e1.appendChild(response_doc.createTextNode(return_object
+                        .toString()));
+            }
+            if (is2 != null) {
+                args[0] = is2;
+                args[1] = instruction_e;
+                args[2] = pwLogger;
+                if (arg_count > 3) {
+                    args[3] = this;
+                }
+                try {
+                    return_object = method.invoke(instance, args);
+                } catch (java.lang.reflect.InvocationTargetException e) {
+                    throw e.getTargetException();
+                }
+                pwLogger.close();
+                if (return_object instanceof Node) {
+                    t.transform(new DOMSource((Node) return_object), new DOMResult(
+                            content_e2));
+                } else if (return_object != null) {
+                    content_e2.appendChild(response_doc.createTextNode(return_object
+                            .toString()));
+                }
+            }
+            parser_e.setAttribute("prefix", instruction_e.getPrefix());
+            parser_e.setAttribute("local-name", instruction_e.getLocalName());
+            parser_e.setAttribute("namespace-uri", instruction_e
+                    .getNamespaceURI());
+            parser_e.setTextContent(swLogger.toString());
+        }
+        response_e.appendChild(parser_e);
+        response_e.appendChild(content_e1);
+        response_e.appendChild(content_e2);
+        response_doc.appendChild(response_e);
+        return response_doc;
     }
 
     public Document parse_async(InputStream[] isArray, String response_id)

@@ -13,6 +13,8 @@
 
 	<xsl:template match="ctl:async-request">
 		<xsl:variable name="request-id" select="generate-id()"/>
+		<xsl:variable name="port" select="@port"/>
+		<xsl:variable name="timeout" select="@timeout"/>
 		<txsl:variable name="te:web-call-id">
 			<xsl:call-template name="loc"/>
 			<xsl:attribute name="select"><xsl:value-of select="concat('concat(', $apos, $request-id, '_', $apos, ', position())')"/></xsl:attribute>
@@ -25,8 +27,8 @@
 				<txsl:otherwise>
 					<async-request>
 						<txsl:attribute name="id"><txsl:value-of select="$te:web-call-id"/></txsl:attribute>
-						<txsl:attribute name="port"><txsl:value-of select="@port"/></txsl:attribute>
-						<txsl:attribute name="timeout"><txsl:value-of select="@timeout"/></txsl:attribute>
+						<txsl:attribute name="port"><txsl:value-of select="{$port}"/></txsl:attribute>
+						<txsl:attribute name="timeout"><txsl:value-of select="{$timeout}"/></txsl:attribute>
 						<xsl:apply-templates select="ctl:url" mode="drop-namespace"/>
 						<xsl:apply-templates select="ctl:method" mode="drop-namespace"/>
 						<xsl:apply-templates select="ctl:header" mode="drop-namespace"/>
