@@ -16,6 +16,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import org.apache.http.HttpMessage;
+import org.apache.http.message.BasicHttpResponse;
+
 import com.occamlab.te.TECore;
 
 /**
@@ -85,8 +88,10 @@ public class ZipParser {
      * @return a DOM Document representing the manifest of items in the archive.
      * @throws Throwable
      */
-    public static Document parse(InputStream is, Element instruction,
+    public static Document parse(HttpMessage msg, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
+
+	InputStream is = ((BasicHttpResponse) msg).getEntity().getContent();
 
         // Create the response element, <ctl:manifest>
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

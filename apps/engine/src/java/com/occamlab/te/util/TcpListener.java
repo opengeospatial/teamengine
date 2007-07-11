@@ -1,11 +1,16 @@
 package com.occamlab.te.util;
 
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.ServerSocket;
+
+import com.occamlab.te.TECore;
 
 /**
  * Establishes a TCP listener for handling asynchronous callbacks. It is not
@@ -18,13 +23,15 @@ import java.net.ServerSocket;
 public class TcpListener implements Runnable {
 
     public final static int DEFAULT_PORT = 7777;
-    public final static int DEFAULT_TIMEOUT = 10000;
+    public final static int DEFAULT_TIMEOUT = 100;
 
     protected int port;
     protected int timeout;
 
     protected ServerSocket serverSocket;
-    protected InputStream inputStream;
+    protected byte[] bytes;
+    protected String status;
+    protected Map<String,String> headers;
 
     public TcpListener() {
         this(DEFAULT_PORT, DEFAULT_TIMEOUT);
@@ -41,6 +48,7 @@ public class TcpListener implements Runnable {
      *            requested timeout in seconds to wait for a response
      */
     public TcpListener(int requestedPort, int requestedTimeout) {
+    	headers = new LinkedHashMap<String,String>();
         if (requestedPort < 1 || requestedPort > 65535) {
             this.port = DEFAULT_PORT;
         } else {
@@ -60,7 +68,7 @@ public class TcpListener implements Runnable {
             iox.printStackTrace();
         }
         System.out.println("Started TCP listener on port " + this.port
-        	+ ", with timeout of "+ this.timeout + "s");
+        	+ ", with timeout of "+ Math.round(this.timeout/1000) + "s");
     }
 
     /**
@@ -77,29 +85,63 @@ public class TcpListener implements Runnable {
                         + clientSocket.getInetAddress() + ":"
                         + clientSocket.getPort());
 
-                // Print stream to STDOUT
-                /*BufferedReader in = new BufferedReader(new InputStreamReader(
-                        clientSocket.getInputStream()));
-                String inputLine = null;
-                while ((inputLine = in.readLine()) != null) {
-                    System.out.println(inputLine);
-                }
-                in.close();*/
+                // Read in the data
+                InputStream is = clientSocket.getInputStream();
+                String inputStr = TECore.inputStreamToString(is);
 
-                // Get InputStream to the socket data
-                this.inputStream = clientSocket.getInputStream();
+            	// Split on the \r\n\r\n sequence between headers and body
+            	String[] message = inputStr.split("\r\n\r\n");
+
+		// Get headers
+		String[] headerStr = message[0].split("\n");
+		for (int i = 0; i < headerStr.length; i++) {
+			// HTTP status line
+			if (i == 0) {
+			    this.status = headerStr[i];
+			    continue;
+			}
+			int firstSpace = headerStr[i].indexOf(" ");
+   			String key = headerStr[i].substring(0,firstSpace-1);
+   			String value = headerStr[i].substring(firstSpace+1);
+   			//System.out.println("Header: "+key+": "+value);
+   			this.headers.put(key, value);
+		}
+
+		// Save the body
+		this.bytes = message[1].getBytes();
 
                 clientSocket.close();
             } catch (IOException e) {
                 System.out.println("ERROR: "+e.getMessage());
-                this.inputStream = null;
+                this.bytes = null;
+                this.headers = null;
                 return;
             }
         }
     }
 
-    public InputStream getInputStream() {
-    	return this.inputStream;
+    public static void printStream(InputStream in) {
+    	try {
+	        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	        String inputLine = null;
+	        while ((inputLine = br.readLine()) != null) {
+	            System.out.println(inputLine);
+	        }
+	} catch (Exception e) {
+		System.out.println("ERROR: "+e.getMessage());
+	}
+   }
+
+    public String getStatus() {
+    	return this.status;
+    }
+
+    public byte[] getBytes() {
+    	return this.bytes;
+    }
+
+    public Map getHeaders() {
+    	return this.headers;
     }
 
     public static void main(String[] args) {

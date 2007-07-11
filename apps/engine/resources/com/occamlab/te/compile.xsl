@@ -267,7 +267,7 @@
 			</txsl:choose>
 		</txsl:variable>
 		<txsl:value-of select="te:log_xml($te:core, $te:request)"/>
-		<txsl:variable name="te:request-inputstream" select="te:build_request($te:request/request, $te:core)">
+		<txsl:variable name="te:request-httpmsg" select="te:build_request($te:request/request)">
 			<xsl:call-template name="loc"/>
 		</txsl:variable>					
 		<xsl:variable name="parser">
@@ -298,12 +298,12 @@
 					<xsl:choose>
 						<xsl:when test="boolean($parser/*)">
 							<xsl:variable name="parser-prefix" select="substring-before(name($parser/*), ':')"/>
-							<txsl:copy-of select="te:parse($te:core, $te:request-inputstream, $te:web-call-id, $te:parser)">
+							<txsl:copy-of select="te:parse($te:core, $te:request-httpmsg, $te:web-call-id, $te:parser)">
 								<xsl:copy-of select="namespace::*[name()=$parser-prefix]"/>
 							</txsl:copy-of>
 						</xsl:when>
 						<xsl:otherwise>
-							<txsl:copy-of select="te:parse($te:core, $te:request-inputstream, $te:web-call-id)"/>
+							<txsl:copy-of select="te:parse($te:core, $te:request-httpmsg, $te:web-call-id)"/>
 						</xsl:otherwise>
 					</xsl:choose>
 				</txsl:otherwise>

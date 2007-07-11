@@ -21,9 +21,15 @@
  ****************************************************************************/
 package com.occamlab.te;
 
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
@@ -32,19 +38,12 @@ import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.Random;
-
-import javax.xml.parsers.*;
-import net.sf.saxon.Configuration;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -55,6 +54,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -65,9 +65,25 @@ import java.io.StringWriter;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.dom.DocumentBuilderImpl;
+import net.sf.saxon.Configuration;
+
+import org.apache.http.HttpMessage;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import com.occamlab.te.util.TcpListener;
 
@@ -317,9 +333,15 @@ public class TECore {
         return file;
     }
 
-    public static InputStream[] build_async_request(Node xml, TECore core) throws Exception {
+    // Build and send off the request, get the acknowledgement and final response
+    public static HttpMessage[] build_async_request(Node xml) {
 	// Retrieve the initial acknowledgement
-    	InputStream ackStream = build_request(xml, core);
+    	HttpMessage ackMessage = null;
+    	try {
+    		ackMessage = build_request(xml);
+    	} catch (Exception e){
+    		System.out.println("ERROR: "+e.getMessage());
+    	}
 
     	// Start the listener to catch the response
     	NamedNodeMap nnm = xml.getAttributes();
@@ -335,12 +357,37 @@ public class TECore {
     	}
     	TcpListener tcpListener = new TcpListener(port, timeout);
     	tcpListener.run();
-	InputStream respStream = tcpListener.getInputStream();
 
-    	return new InputStream[] {ackStream, respStream};
+	BasicHttpResponse respMessage = null;
+	if (tcpListener.getBytes() != null) {
+	    	// Get socket response values
+	    	Map respHeaders = tcpListener.getHeaders();
+		byte[] respBytes = tcpListener.getBytes();
+		String[] status = tcpListener.getStatus().split(" ");
+
+		// Construct the message from the socket response values
+		String[] statusStr = (status[0].split("/"))[1].split(".");
+		if (statusStr[1].equals("x")) statusStr[1] = "1";
+		HttpVersion version = new HttpVersion(Integer.valueOf(statusStr[0]), Integer.valueOf(statusStr[1]));
+		BasicStatusLine statusLine = new BasicStatusLine(version, Integer.valueOf(status[1]), status[2]);
+		respMessage = new BasicHttpResponse(statusLine);
+		Set respHeadersSet = respHeaders.keySet();
+		for( Iterator it = respHeadersSet.iterator(); it.hasNext(); ) {
+			String name = (String) it.next();
+			List valueList = (List) respHeaders.get(name);
+			String value = (String) valueList.get(0);
+			if (name == null) continue;
+			respMessage.addHeader(name, value);
+		}
+		HttpEntity entity = new ByteArrayEntity(respBytes);
+		respMessage.setEntity(entity);
+	}
+
+    	return new HttpMessage[] {ackMessage, respMessage};
     }
 
-    public Document parse_async(InputStream[] isArray, String response_id, Node instruction)
+    // Parse both the acknowledgement and response with the same parser
+    public Document parse_async(HttpMessage[] msgArray, String response_id, Node instruction)
             throws Throwable {
 	System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -360,21 +407,21 @@ public class TECore {
             response_e.setAttribute("id", response_id);
         }
 
-        InputStream is1 = isArray[0];
-       	InputStream is2 = null;
-       	if (isArray.length > 1) {
-       		is2 = isArray[1];
+        BasicHttpResponse msgAck = (BasicHttpResponse) msgArray[0];
+       	BasicHttpResponse msgResp = null;
+       	if (msgArray.length > 1) {
+       		msgResp = (BasicHttpResponse) msgArray[1];
        	}
 
-        Element content_e1 = response_doc.createElement("content");
-        Element content_e2 = response_doc.createElement("content");
+        Element content_eAck = response_doc.createElement("content");
+        Element content_eResp = response_doc.createElement("content");
         if (instruction == null) {
             try {
-                t.transform(new StreamSource(is1),
-                        new DOMResult(content_e1));
-                if (is2 != null) {
-                	t.transform(new StreamSource(is2),
-                        	new DOMResult(content_e2));
+                t.transform(new StreamSource(msgAck.getEntity().getContent()),
+                        new DOMResult(content_eAck));
+                if (msgResp != null) {
+                	t.transform(new StreamSource(msgResp.getEntity().getContent()),
+                        	new DOMResult(content_eResp));
                 }
             } catch (Exception e) {
                 parser_e.setTextContent(e.getMessage());
@@ -394,7 +441,7 @@ public class TECore {
             PrintWriter pwLogger = new PrintWriter(swLogger);
             int arg_count = method.getParameterTypes().length;
             Object[] args = new Object[arg_count];
-            args[0] = is1;
+            args[0] = msgAck;
             args[1] = instruction_e;
             args[2] = pwLogger;
             if (arg_count > 3) {
@@ -408,13 +455,13 @@ public class TECore {
             }
             if (return_object instanceof Node) {
                 t.transform(new DOMSource((Node) return_object), new DOMResult(
-                        content_e1));
+                        content_eAck));
             } else if (return_object != null) {
-                content_e1.appendChild(response_doc.createTextNode(return_object
+                content_eAck.appendChild(response_doc.createTextNode(return_object
                         .toString()));
             }
-            if (is2 != null) {
-                args[0] = is2;
+            if (msgResp != null) {
+                args[0] = msgResp;
                 args[1] = instruction_e;
                 args[2] = pwLogger;
                 if (arg_count > 3) {
@@ -428,9 +475,9 @@ public class TECore {
                 pwLogger.close();
                 if (return_object instanceof Node) {
                     t.transform(new DOMSource((Node) return_object), new DOMResult(
-                            content_e2));
+                            content_eResp));
                 } else if (return_object != null) {
-                    content_e2.appendChild(response_doc.createTextNode(return_object
+                    content_eResp.appendChild(response_doc.createTextNode(return_object
                             .toString()));
                 }
             }
@@ -441,19 +488,19 @@ public class TECore {
             parser_e.setTextContent(swLogger.toString());
         }
         response_e.appendChild(parser_e);
-        response_e.appendChild(content_e1);
-        response_e.appendChild(content_e2);
+        response_e.appendChild(content_eAck);
+        response_e.appendChild(content_eResp);
         response_doc.appendChild(response_e);
         return response_doc;
     }
 
-    public Document parse_async(InputStream[] isArray, String response_id)
+    public Document parse_async(HttpMessage[] msgArray, String response_id)
             throws Throwable {
-        return parse_async(isArray, response_id, null);
+        return parse_async(msgArray, response_id, null);
     }
 
-    // Create an InputStream to the service with the proper headers, etc
-    public static InputStream build_request(Node xml, TECore core) throws Exception {
+    // Create and send an HttpRequest then return an HttpMessage (HttpResponse)
+    public static HttpMessage build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -648,9 +695,29 @@ public class TECore {
             os.write(bytes);
         }
 
-	core.setUrlConnection(uc);
-	//uc.connect();
-        return uc.getInputStream();
+    	// Get URLConnection values
+	InputStream is = uc.getInputStream();
+	byte[] respBytes = inputStreamToString(is).getBytes();
+	int respCode = ((HttpURLConnection) uc).getResponseCode();
+	String respMess = ((HttpURLConnection) uc).getResponseMessage();
+    	Map respHeaders = ((HttpURLConnection) uc).getHeaderFields();
+
+	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
+	HttpVersion version = new HttpVersion(1,1);
+	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
+	BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+	Set respHeadersSet = respHeaders.keySet();
+	for( Iterator it = respHeadersSet.iterator(); it.hasNext(); ) {
+		String name = (String) it.next();
+		List valueList = (List) respHeaders.get(name);
+		String value = (String) valueList.get(0);
+		if (name == null) continue;
+		respMessage.addHeader(name, value);
+	}
+	HttpEntity entity = new ByteArrayEntity(respBytes);
+	respMessage.setEntity(entity);
+
+        return respMessage;
     }
 
     public Document serialize_and_parse(Node parse_instruction)
@@ -727,7 +794,21 @@ public class TECore {
             t.transform(new DOMSource((Node) content), new StreamResult(temp));
         }
         URLConnection uc = temp.toURL().openConnection();
-        Document doc = parse(uc.getInputStream(), null, parser_instruction);
+
+    	// Get URLConnection values
+	InputStream is = uc.getInputStream();
+	byte[] respBytes = inputStreamToString(is).getBytes();
+
+	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
+	HttpVersion version = new HttpVersion(1,1);
+	int respCode = 200;
+	String respMess = "OK";
+	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
+	BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+	HttpEntity entity = new ByteArrayEntity(respBytes);
+	respMessage.setEntity(entity);
+
+        Document doc = parse(respMessage, null, parser_instruction);
         temp.delete();
         return doc;
     }
@@ -758,14 +839,14 @@ public class TECore {
         Method method = null;
         try {
             Class[] types = new Class[4];
-            types[0] = InputStream.class;
+            types[0] = HttpMessage.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             types[3] = TECore.class;
             method = parser_class.getMethod(method_name, types);
         } catch (java.lang.NoSuchMethodException e) {
             Class[] types = new Class[3];
-            types[0] = InputStream.class;
+            types[0] = HttpMessage.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             method = parser_class.getMethod(method_name, types);
@@ -773,7 +854,7 @@ public class TECore {
         return method;
     }
 
-    public Document parse(InputStream is, String response_id, Node instruction)
+    public Document parse(HttpMessage msg, String response_id, Node instruction)
             throws Throwable {
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -795,7 +876,7 @@ public class TECore {
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
             try {
-                t.transform(new StreamSource(is),
+                t.transform(new StreamSource(((BasicHttpResponse) msg).getEntity().getContent()),
                         new DOMResult(content_e));
             } catch (Exception e) {
                 parser_e.setTextContent(e.getMessage());
@@ -815,7 +896,7 @@ public class TECore {
             PrintWriter pwLogger = new PrintWriter(swLogger);
             int arg_count = method.getParameterTypes().length;
             Object[] args = new Object[arg_count];
-            args[0] = is;
+            args[0] = msg;
             args[1] = instruction_e;
             args[2] = pwLogger;
             if (arg_count > 3) {
@@ -848,9 +929,9 @@ public class TECore {
         return response_doc;
     }
 
-    public Document parse(InputStream is, String response_id)
+    public Document parse(HttpMessage msg, String response_id)
             throws Throwable {
-        return parse(is, response_id, null);
+        return parse(msg, response_id, null);
     }
 
     public Node message(int depth, String message) {
@@ -1068,7 +1149,10 @@ public class TECore {
         return newDoc;
     }
 
-    // Returns a random string of length len
+    /**
+     * Returns a random string of a certain length
+     *
+     */
     public static String randomString(int len, Random random) {
         if (len < 1) {
             return "";
@@ -1092,5 +1176,24 @@ public class TECore {
         }
         return buffer.toString();
     }
+
+    /**
+     * Converts an InputStream to a String
+     *
+     */
+    public static String inputStreamToString(InputStream in) {
+    	StringBuffer buffer = new StringBuffer();
+    	try {
+		BufferedReader br = new BufferedReader(new InputStreamReader(in), 1024);
+		char[] cbuf = new char[1024];
+		int bytesRead;
+		while ((bytesRead = br.read(cbuf, 0, cbuf.length)) != -1) {
+			buffer.append(cbuf, 0, bytesRead);
+		}
+	} catch (Exception e) {
+		System.out.println("ERROR: "+e.getMessage());
+	}
+	return buffer.toString();
+   }
 
 }

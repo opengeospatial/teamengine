@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageProducer;
 import java.awt.image.ImageObserver;
 import java.awt.image.Raster;
-import org.w3c.dom.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
@@ -44,6 +43,17 @@ import javax.xml.parsers.*;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+
+import org.w3c.dom.*;
+
+import org.apache.http.HttpMessage;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
+
+import com.occamlab.te.TECore;
 
 /**
  * Extracts the body of a response message and treats it as an image resource.
@@ -403,7 +413,7 @@ public class ImageParser {
         return str.substring(0, str.lastIndexOf(","));
     }
 
-    public static Document parse(InputStream is, Element instruction,
+    public static Document parse(HttpMessage msg, Element instruction,
             PrintWriter logger) throws Exception {
         if (System.getProperty("java.awt.headless") == null) {
             System.setProperty("java.awt.headless", "true");
@@ -412,6 +422,7 @@ public class ImageParser {
         try {
             ImageProducer producer;
             try {
+            	InputStream is = ((BasicHttpResponse) msg).getEntity().getContent();
                 producer = (ImageProducer) ((ObjectInputStream) is).readObject();
             } catch (Exception e) {
                 logger
@@ -518,7 +529,20 @@ public class ImageParser {
 
         PrintWriter logger = new PrintWriter(System.out);
         InputStream image_is = image_url.openConnection().getInputStream();
-        Document result = parse(image_is, instruction, logger);
+
+        // Get URLConnection values
+	byte[] respBytes = TECore.inputStreamToString(image_is).getBytes();
+
+	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
+	HttpVersion version = new HttpVersion(1,1);
+	int respCode = 200;
+	String respMess = "OK";
+	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
+	BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+	HttpEntity entity = new ByteArrayEntity(respBytes);
+	respMessage.setEntity(entity);
+
+        Document result = parse(respMessage, instruction, logger);
         logger.flush();
 
         TransformerFactory tf = TransformerFactory.newInstance();

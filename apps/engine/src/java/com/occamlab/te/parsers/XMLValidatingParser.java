@@ -45,6 +45,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.http.HttpMessage;
+import org.apache.http.message.BasicHttpResponse;
+
 import com.occamlab.te.ErrorHandlerImpl;
 
 /**
@@ -137,8 +140,11 @@ public class XMLValidatingParser {
         load_schemas(schema_links, schemaList);
     }
 
-    public Document parse(InputStream is, Element instruction,
+    public Document parse(HttpMessage httpMsg, Element instruction,
             PrintWriter logger) throws Exception {
+
+	InputStream is = ((BasicHttpResponse) httpMsg).getEntity().getContent();
+
         ArrayList schemas = new ArrayList();
         schemas.addAll(schemaList);
         load_schemas(instruction, schemas);

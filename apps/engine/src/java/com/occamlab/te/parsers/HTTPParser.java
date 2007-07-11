@@ -42,8 +42,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.occamlab.te.TECore;
+import org.apache.http.HttpMessage;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
+import org.apache.http.Header;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
 
+
+import com.occamlab.te.TECore;
 
 /**
  * Parses an HTTP response message and produces a DOM Document representation of
@@ -53,24 +62,24 @@ import com.occamlab.te.TECore;
 public class HTTPParser {
     public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
 
-    private static void append_headers(URLConnection uc, Element e) {
+    private static void append_headers(BasicHttpResponse resp, Element e) {
         Document doc = e.getOwnerDocument();
         Element headers = doc.createElement("headers");
         e.appendChild(headers);
 
-        for (int i = 0;; i++) {
-            String headerKey = uc.getHeaderFieldKey(i);
-            String headerValue = uc.getHeaderField(i);
-            if (headerKey == null) {
-                if (headerValue == null)
-                    break;
-            } else {
-                Element header = doc.createElement("header");
-                headers.appendChild(header);
-                header.setAttribute("name", headerKey);
-                header.appendChild(doc.createTextNode(headerValue));
-            }
-        }
+	Header[] respHeaders = resp.getAllHeaders();
+	for (int i = 0; i < respHeaders.length; i++) {
+		String name = respHeaders[i].getName();
+		String value = respHeaders[i].getValue();
+		if (name == null || value == null) {
+                }
+                else {
+	                Element header = doc.createElement("header");
+	                headers.appendChild(header);
+	                header.setAttribute("name", name);
+	                header.appendChild(doc.createTextNode(value));
+                }
+	}
     }
 
     private static Node select_parser(int partnum, String mime,
@@ -150,10 +159,15 @@ public class HTTPParser {
         return temp;
     }
 
-    public static Document parse(InputStream is, Element instruction,
+    public static Document parse(HttpMessage msg, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
-        URLConnection uc = core.getUrlConnection();
-        boolean multipart = uc.getContentType().startsWith("multipart");
+
+	BasicHttpResponse response = (BasicHttpResponse) msg;
+        InputStream is = response.getEntity().getContent();
+
+	Header content_type = response.getFirstHeader("Content-Type");
+
+        boolean multipart = content_type.getValue().startsWith("multipart");
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -161,22 +175,20 @@ public class HTTPParser {
         Element root = doc.createElement(multipart ? "multipart-response"
                 : "response");
 
-        if (uc.getHeaderFieldKey(0) == null) {
-            String status_line = uc.getHeaderField(0);
-            String status_array[] = status_line.split("\\s");
+        if (response.getAllHeaders().length < 1) {
             Element status = doc.createElement("status");
-            status.setAttribute("protocol", status_array[0]);
-            status.setAttribute("code", status_array[1]);
-            status.appendChild(doc.createTextNode(status_array[2]));
+            status.setAttribute("protocol", response.getStatusLine().getHttpVersion().toString());
+            status.setAttribute("code", String.valueOf(response.getStatusLine().getStatusCode()));
+            status.appendChild(doc.createTextNode(response.getStatusLine().getReasonPhrase()));
             root.appendChild(status);
         }
 
-        append_headers(uc, root);
+        append_headers(response, root);
 
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
         if (multipart) {
-            String mime = uc.getContentType() + ";";
+            String mime = content_type.getValue() + ";";
             int start = mime.indexOf("boundary=") + 9;
             char endchar = ';';
             if (mime.charAt(start) == '"') {
@@ -213,7 +225,21 @@ public class HTTPParser {
                 URLConnection pc = temp.toURL().openConnection();
                 pc.setRequestProperty("Content-type", mime);
                 Node parser = select_parser(num, contentType, instruction);
-                Document doc2 = core.parse(pc.getInputStream(), null, parser);
+
+                // Get URLConnection values
+		InputStream pcIs = pc.getInputStream();
+		byte[] respBytes = TECore.inputStreamToString(pcIs).getBytes();
+
+		// Construct the HttpMessage (HttpBasicResponse) to send to parsers
+		HttpVersion version = new HttpVersion(1,1);
+		int respCode = 200;
+		String respMess = "OK";
+		BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
+		BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+		HttpEntity entity = new ByteArrayEntity(respBytes);
+		respMessage.setEntity(entity);
+
+                Document doc2 = core.parse(respMessage, null, parser);
                 temp.delete();
                 t.transform(new DOMSource(doc2), new DOMResult(part));
                 root.appendChild(part);
@@ -221,8 +247,22 @@ public class HTTPParser {
                 num++;
             }
         } else {
-            Node parser = select_parser(0, uc.getContentType(), instruction);
-            Document doc2 = core.parse(uc.getInputStream(), null, parser);
+            Node parser = select_parser(0, content_type.getValue(), instruction);
+
+            // Get URLConnection values
+            InputStream ucIs = response.getEntity().getContent();
+            byte[] respBytes = TECore.inputStreamToString(ucIs).getBytes();
+
+            // Construct the HttpMessage (HttpBasicResponse) to send to parsers
+            HttpVersion version = new HttpVersion(1,1);
+            int respCode = 200;
+            String respMess = "OK";
+            BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
+            BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+            HttpEntity entity = new ByteArrayEntity(respBytes);
+            respMessage.setEntity(entity);
+
+            Document doc2 = core.parse(respMessage, null, parser);
             Element parser_e = (Element) (doc2.getDocumentElement()
                     .getElementsByTagName("parser").item(0));
             if (parser_e != null) {

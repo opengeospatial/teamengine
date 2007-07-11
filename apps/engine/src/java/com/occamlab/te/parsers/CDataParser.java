@@ -24,6 +24,9 @@ package com.occamlab.te.parsers;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
+import org.apache.http.HttpMessage;
+import org.apache.http.message.BasicHttpResponse;
+
 import org.w3c.dom.Element;
 
 /**
@@ -32,8 +35,9 @@ import org.w3c.dom.Element;
  */
 public class CDataParser {
 
-    public static String parse(InputStream is, Element instruction,
+    public static String parse(HttpMessage msg, Element instruction,
             PrintWriter logger) throws Exception {
+        InputStream is = ((BasicHttpResponse) msg).getEntity().getContent();
         byte[] buf = new byte[1024];
         int numread = is.read(buf);
         String s = new String(buf, 0, numread);

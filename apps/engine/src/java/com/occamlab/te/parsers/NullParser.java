@@ -22,7 +22,7 @@
 package com.occamlab.te.parsers;
 
 import java.io.PrintWriter;
-import java.io.InputStream;
+import org.apache.http.HttpMessage;
 
 import org.w3c.dom.Element;
 
@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
  */
 public class NullParser {
 
-    public static String parse(InputStream is, Element instruction,
+    public static String parse(HttpMessage msg, Element instruction,
             PrintWriter logger) throws Exception {
         return null;
     }
