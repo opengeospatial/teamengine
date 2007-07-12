@@ -57,34 +57,11 @@ import com.occamlab.te.ErrorHandlerImpl;
 public class XMLValidatingParser {
     SchemaFactory SF;
 
-    ArrayList schemaList = new ArrayList();
+    ArrayList<File> schemaList = new ArrayList<File>();
 
-    void load_schemas(Node schema_links, ArrayList<Schema> schemas)
-            throws Exception {
-        Document d = schema_links.getOwnerDocument();
-        NodeList nodes = d.getElementsByTagNameNS(
-                "http://www.occamlab.com/te/parsers", "schema");
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element e = (Element) nodes.item(i);
-            Schema schema = null;
-            String type = e.getAttribute("type");
-            if (type.equals("url")) {
-                schema = SF.newSchema(new URL(e.getTextContent()));
-            } else if (type.equals("file")) {
-                schema = SF.newSchema(new File(e.getTextContent()));
-            } else if (type.equals("resource")) {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                schema = SF.newSchema(new File(cl.getResource(
-                        e.getTextContent()).getFile()));
-            } else {
-                schema = SF.newSchema();
-            }
-            schemas.add(schema);
-        }
-    }
-
-    // Similar to load_schemas, but in this case hold the File pointer for each
-    // schema, not the schema itself (for use in pooling schema validation)
+    /**
+     * Holds the File pointer for each schema, used to create a collection of schemas to validate with
+     */
     void loadSchemaList(Node schemaLinks, ArrayList<File> schemas)
             throws Exception {
 
@@ -124,8 +101,7 @@ public class XMLValidatingParser {
         System.setProperty(property_name,
                 "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
         SF = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        SF
-                .setFeature(
+        SF.setFeature(
                         "http://apache.org/xml/features/validation/schema-full-checking",
                         false);
         if (oldprop == null) {
@@ -137,17 +113,31 @@ public class XMLValidatingParser {
 
     public XMLValidatingParser(Document schema_links) throws Exception {
         this();
-        load_schemas(schema_links, schemaList);
+        loadSchemaList(schema_links, schemaList);
     }
 
+    /**
+     * A method to validate a pool of schemas within the ctl:request element.
+     *
+     * @param resp
+     *            the HttpResponse do parse and validate
+     * @param instruction
+     *            the xml encapsulated schema information (file locations)
+     * @param logger
+     *            the PrintWriter to log all results to
+     * @return null if there were errors, the parse document otherwise
+     *
+     * @author jparrpearson
+     */
     public Document parse(HttpResponse resp, Element instruction,
             PrintWriter logger) throws Exception {
 
 	InputStream is = resp.getEntity().getContent();
 
-        ArrayList schemas = new ArrayList();
+        ArrayList<File> schemas = new ArrayList<File>();
         schemas.addAll(schemaList);
-        load_schemas(instruction, schemas);
+        loadSchemaList(instruction, schemas);
+
         String property_name = "javax.xml.parsers.DocumentBuilderFactory";
         String oldprop = System.getProperty(property_name);
         System.setProperty(property_name,
@@ -158,6 +148,7 @@ public class XMLValidatingParser {
         } else {
             System.setProperty(property_name, oldprop);
         }
+
         dbf.setNamespaceAware(true);
         ErrorHandlerImpl eh = new ErrorHandlerImpl("Parsing", logger);
         if (schemas.size() == 0) {
@@ -178,14 +169,17 @@ public class XMLValidatingParser {
         }
 
         if (doc != null) {
-            Iterator it = schemas.iterator();
-            while (it.hasNext()) {
-                Schema schema = (Schema) it.next();
-                Validator validator = schema.newValidator();
-                eh.setRole("Validation");
-                validator.setErrorHandler(eh);
-                validator.validate(new DOMSource(doc));
+            // Get all the schemas and make them into one
+            Source[] schemaSources = new Source[schemas.size()];
+            for (int i = 0; i < schemas.size(); i++) {
+                schemaSources[i] = new StreamSource((File) schemas.get(i));
             }
+            Schema schema = SF.newSchema(schemaSources);
+            // Validate with the combined schema
+            Validator validator = schema.newValidator();
+            eh.setRole("Validation");
+            validator.setErrorHandler(eh);
+            validator.validate(new DOMSource(doc));
         }
 
         int error_count = eh.getErrorCount();
@@ -241,7 +235,7 @@ public class XMLValidatingParser {
         boolean isValid = true;
 
         // Load schemas
-        ArrayList schemas = new ArrayList();
+        ArrayList<File> schemas = new ArrayList<File>();
         schemas.addAll(schemaList);
         loadSchemaList(instruction.getDocumentElement(), schemas);
 
