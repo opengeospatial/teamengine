@@ -531,7 +531,7 @@ public class ImageParser {
         InputStream image_is = image_url.openConnection().getInputStream();
 
         // Get URLConnection values
-	byte[] respBytes = TECore.inputStreamToString(image_is).getBytes();
+	byte[] respBytes = TECore.inputStreamToBytes(image_is);
 
 	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);

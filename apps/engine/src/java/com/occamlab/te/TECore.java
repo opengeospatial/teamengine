@@ -697,7 +697,7 @@ public class TECore {
 
     	// Get URLConnection values
 	InputStream is = uc.getInputStream();
-	byte[] respBytes = inputStreamToString(is).getBytes();
+	byte[] respBytes = inputStreamToBytes(is);
 	int respCode = ((HttpURLConnection) uc).getResponseCode();
 	String respMess = ((HttpURLConnection) uc).getResponseMessage();
     	Map respHeaders = ((HttpURLConnection) uc).getHeaderFields();
@@ -797,7 +797,7 @@ public class TECore {
 
     	// Get URLConnection values
 	InputStream is = uc.getInputStream();
-	byte[] respBytes = inputStreamToString(is).getBytes();
+	byte[] respBytes = inputStreamToBytes(is);
 
 	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);
@@ -1194,6 +1194,24 @@ public class TECore {
 		System.out.println("ERROR: "+e.getMessage());
 	}
 	return buffer.toString();
+   }
+
+    /**
+     * Converts an InputStream to a byte[]
+     *
+     */
+    public static byte[] inputStreamToBytes(InputStream in) {
+    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+    	try {
+		byte[] buffer = new byte[1024];
+		int len;
+		while((len = in.read(buffer)) != -1) {
+			out.write(buffer, 0, len);
+		}
+	} catch (Exception e) {
+		System.out.println("ERROR: "+e.getMessage());
+	}
+	return out.toByteArray();
    }
 
 }

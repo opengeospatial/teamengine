@@ -87,7 +87,8 @@ public class TcpListener implements Runnable {
 
                 // Read in the data
                 InputStream is = clientSocket.getInputStream();
-                String inputStr = TECore.inputStreamToString(is);
+		byte[] inputByte = TECore.inputStreamToBytes(is);
+		String inputStr = new String(inputByte, "UTF-8");
 
             	// Split on the \r\n\r\n sequence between headers and body
             	String[] message = inputStr.split("\r\n\r\n");
@@ -108,7 +109,7 @@ public class TcpListener implements Runnable {
 		}
 
 		// Save the body
-		this.bytes = message[1].getBytes();
+		this.bytes = message[1].getBytes("UTF-8");
 
                 clientSocket.close();
             } catch (IOException e) {

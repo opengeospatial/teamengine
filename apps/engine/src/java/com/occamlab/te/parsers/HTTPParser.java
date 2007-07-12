@@ -228,7 +228,7 @@ public class HTTPParser {
 
                 // Get URLConnection values
 		InputStream pcIs = pc.getInputStream();
-		byte[] respBytes = TECore.inputStreamToString(pcIs).getBytes();
+		byte[] respBytes = TECore.inputStreamToBytes(pcIs);
 
 		// Construct the HttpMessage (HttpBasicResponse) to send to parsers
 		HttpVersion version = new HttpVersion(1,1);
@@ -251,7 +251,7 @@ public class HTTPParser {
 
             // Get URLConnection values
             InputStream ucIs = response.getEntity().getContent();
-            byte[] respBytes = TECore.inputStreamToString(ucIs).getBytes();
+            byte[] respBytes = TECore.inputStreamToBytes(ucIs);
 
             // Construct the HttpMessage (HttpBasicResponse) to send to parsers
             HttpVersion version = new HttpVersion(1,1);
