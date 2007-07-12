@@ -33,7 +33,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 
-import org.apache.http.HttpMessage;
+import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 
 import com.occamlab.te.ErrorHandlerImpl;
@@ -296,18 +296,18 @@ public class SchematronValidatingParser {
      * Parses the document by first retieving it, then validating, before
      * returning the parsed document (schematron in this case)
      *
-     * @param is
-     *            The InputStream for the response document
+     * @param resp
+     *            The HttpResponse for the response document
      * @param instruction
      *            A copy of the parser Element
      * @param logger
      *            The PrintWriter to log any errors to
      * @return The Document response from the URL connection made
      */
-    public Document parse(HttpMessage httpMsg, Element instruction,
+    public Document parse(HttpResponse resp, Element instruction,
             PrintWriter logger) throws Exception {
 
-	InputStream is = ((BasicHttpResponse) httpMsg).getEntity().getContent();
+	InputStream is = resp.getEntity().getContent();
 
         // Get schematron schema information from ctl file
         String localType = getFileType(instruction);

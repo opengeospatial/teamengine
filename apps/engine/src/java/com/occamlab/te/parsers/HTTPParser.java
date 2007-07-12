@@ -42,7 +42,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.apache.http.HttpMessage;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.Header;
@@ -62,7 +62,7 @@ import com.occamlab.te.TECore;
 public class HTTPParser {
     public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
 
-    private static void append_headers(BasicHttpResponse resp, Element e) {
+    private static void append_headers(HttpResponse resp, Element e) {
         Document doc = e.getOwnerDocument();
         Element headers = doc.createElement("headers");
         e.appendChild(headers);
@@ -159,13 +159,12 @@ public class HTTPParser {
         return temp;
     }
 
-    public static Document parse(HttpMessage msg, Element instruction,
+    public static Document parse(HttpResponse resp, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
 
-	BasicHttpResponse response = (BasicHttpResponse) msg;
-        InputStream is = response.getEntity().getContent();
+        InputStream is = resp.getEntity().getContent();
 
-	Header content_type = response.getFirstHeader("Content-Type");
+	Header content_type = resp.getFirstHeader("Content-Type");
 
         boolean multipart = content_type.getValue().startsWith("multipart");
 
@@ -175,15 +174,15 @@ public class HTTPParser {
         Element root = doc.createElement(multipart ? "multipart-response"
                 : "response");
 
-        if (response.getAllHeaders().length < 1) {
+        if (resp.getAllHeaders().length < 1) {
             Element status = doc.createElement("status");
-            status.setAttribute("protocol", response.getStatusLine().getHttpVersion().toString());
-            status.setAttribute("code", String.valueOf(response.getStatusLine().getStatusCode()));
-            status.appendChild(doc.createTextNode(response.getStatusLine().getReasonPhrase()));
+            status.setAttribute("protocol", resp.getStatusLine().getHttpVersion().toString());
+            status.setAttribute("code", String.valueOf(resp.getStatusLine().getStatusCode()));
+            status.appendChild(doc.createTextNode(resp.getStatusLine().getReasonPhrase()));
             root.appendChild(status);
         }
 
-        append_headers(response, root);
+        append_headers(resp, root);
 
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
@@ -250,7 +249,7 @@ public class HTTPParser {
             Node parser = select_parser(0, content_type.getValue(), instruction);
 
             // Get URLConnection values
-            InputStream ucIs = response.getEntity().getContent();
+            InputStream ucIs = resp.getEntity().getContent();
             byte[] respBytes = TECore.inputStreamToBytes(ucIs);
 
             // Construct the HttpMessage (HttpBasicResponse) to send to parsers

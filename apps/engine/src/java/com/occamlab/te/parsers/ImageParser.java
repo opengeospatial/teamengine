@@ -46,7 +46,7 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.w3c.dom.*;
 
-import org.apache.http.HttpMessage;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.ByteArrayEntity;
@@ -64,10 +64,9 @@ import com.occamlab.te.TECore;
 public class ImageParser {
 
     private static class ImageTracker implements ImageObserver {
+
         private boolean done;
-
         private String type;
-
         private Image image;
 
         public ImageTracker(Image image, boolean wait) {
@@ -173,7 +172,7 @@ public class ImageParser {
 
     private static void processBufferedImage(BufferedImage buffimage,
             NodeList nodes) throws Exception {
-        java.util.HashMap bandMap = new java.util.HashMap();
+        java.util.HashMap<Object, Object> bandMap = new java.util.HashMap<Object, Object>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
@@ -204,11 +203,11 @@ public class ImageParser {
                     if (sample.equals("all")) {
                         bandMap.put(band, null);
                     } else {
-                        java.util.HashMap sampleMap = (java.util.HashMap) bandMap
+                        java.util.HashMap<Object, Object> sampleMap = (java.util.HashMap<Object, Object>) bandMap
                                 .get(band);
                         if (sampleMap == null) {
                             if (!bandMap.containsKey(band)) {
-                                sampleMap = new java.util.HashMap();
+                                sampleMap = new java.util.HashMap<Object, Object>();
                                 bandMap.put(band, sampleMap);
                             }
                         }
@@ -413,7 +412,7 @@ public class ImageParser {
         return str.substring(0, str.lastIndexOf(","));
     }
 
-    public static Document parse(HttpMessage msg, Element instruction,
+    public static Document parse(HttpResponse resp, Element instruction,
             PrintWriter logger) throws Exception {
         if (System.getProperty("java.awt.headless") == null) {
             System.setProperty("java.awt.headless", "true");
@@ -422,7 +421,7 @@ public class ImageParser {
         try {
             ImageProducer producer;
             try {
-            	InputStream is = ((BasicHttpResponse) msg).getEntity().getContent();
+            	InputStream is = resp.getEntity().getContent();
                 producer = (ImageProducer) ((ObjectInputStream) is).readObject();
             } catch (Exception e) {
                 logger

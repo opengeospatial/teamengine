@@ -67,7 +67,7 @@ import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.dom.DocumentBuilderImpl;
 import net.sf.saxon.Configuration;
 
-import org.apache.http.HttpMessage;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.ByteArrayEntity;
@@ -110,8 +110,8 @@ public class TECore {
     boolean Web;
     URLConnection urlConnection;
 
-    public HashMap parserInstances = new HashMap();
-    public HashMap parserMethods = new HashMap();
+    public HashMap<Object, Object> parserInstances = new HashMap<Object, Object>();
+    public HashMap<Object, Object> parserMethods = new HashMap<Object, Object>();
 
     Stack<PrintWriter> loggers = new Stack<PrintWriter>();
 
@@ -334,11 +334,11 @@ public class TECore {
     }
 
     // Build and send off the request, get the acknowledgement and final response
-    public static HttpMessage[] build_async_request(Node xml) {
+    public static HttpResponse[] build_async_request(Node xml) {
 	// Retrieve the initial acknowledgement
-    	HttpMessage ackMessage = null;
+    	HttpResponse ackResp = null;
     	try {
-    		ackMessage = build_request(xml);
+    		ackResp = build_request(xml);
     	} catch (Exception e){
     		System.out.println("ERROR: "+e.getMessage());
     	}
@@ -358,7 +358,7 @@ public class TECore {
     	TcpListener tcpListener = new TcpListener(port, timeout);
     	tcpListener.run();
 
-	BasicHttpResponse respMessage = null;
+	BasicHttpResponse resp = null;
 	if (tcpListener.getBytes() != null) {
 	    	// Get socket response values
 	    	Map respHeaders = tcpListener.getHeaders();
@@ -370,24 +370,24 @@ public class TECore {
 		if (statusStr[1].equals("x")) statusStr[1] = "1";
 		HttpVersion version = new HttpVersion(Integer.valueOf(statusStr[0]), Integer.valueOf(statusStr[1]));
 		BasicStatusLine statusLine = new BasicStatusLine(version, Integer.valueOf(status[1]), status[2]);
-		respMessage = new BasicHttpResponse(statusLine);
+		resp = new BasicHttpResponse(statusLine);
 		Set respHeadersSet = respHeaders.keySet();
 		for( Iterator it = respHeadersSet.iterator(); it.hasNext(); ) {
 			String name = (String) it.next();
 			List valueList = (List) respHeaders.get(name);
 			String value = (String) valueList.get(0);
 			if (name == null) continue;
-			respMessage.addHeader(name, value);
+			resp.addHeader(name, value);
 		}
 		HttpEntity entity = new ByteArrayEntity(respBytes);
-		respMessage.setEntity(entity);
+		resp.setEntity(entity);
 	}
 
-    	return new HttpMessage[] {ackMessage, respMessage};
+    	return new HttpResponse[] {ackResp, resp};
     }
 
     // Parse both the acknowledgement and response with the same parser
-    public Document parse_async(HttpMessage[] msgArray, String response_id, Node instruction)
+    public Document parse_async(HttpResponse[] respArray, String response_id, Node instruction)
             throws Throwable {
 	System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -407,20 +407,20 @@ public class TECore {
             response_e.setAttribute("id", response_id);
         }
 
-        BasicHttpResponse msgAck = (BasicHttpResponse) msgArray[0];
-       	BasicHttpResponse msgResp = null;
-       	if (msgArray.length > 1) {
-       		msgResp = (BasicHttpResponse) msgArray[1];
+        BasicHttpResponse respAck = (BasicHttpResponse) respArray[0];
+       	BasicHttpResponse resp = null;
+       	if (respArray.length > 1) {
+       		resp = (BasicHttpResponse) respArray[1];
        	}
 
         Element content_eAck = response_doc.createElement("content");
         Element content_eResp = response_doc.createElement("content");
         if (instruction == null) {
             try {
-                t.transform(new StreamSource(msgAck.getEntity().getContent()),
+                t.transform(new StreamSource(respAck.getEntity().getContent()),
                         new DOMResult(content_eAck));
-                if (msgResp != null) {
-                	t.transform(new StreamSource(msgResp.getEntity().getContent()),
+                if (resp != null) {
+                	t.transform(new StreamSource(resp.getEntity().getContent()),
                         	new DOMResult(content_eResp));
                 }
             } catch (Exception e) {
@@ -441,7 +441,7 @@ public class TECore {
             PrintWriter pwLogger = new PrintWriter(swLogger);
             int arg_count = method.getParameterTypes().length;
             Object[] args = new Object[arg_count];
-            args[0] = msgAck;
+            args[0] = respAck;
             args[1] = instruction_e;
             args[2] = pwLogger;
             if (arg_count > 3) {
@@ -460,8 +460,8 @@ public class TECore {
                 content_eAck.appendChild(response_doc.createTextNode(return_object
                         .toString()));
             }
-            if (msgResp != null) {
-                args[0] = msgResp;
+            if (resp != null) {
+                args[0] = resp;
                 args[1] = instruction_e;
                 args[2] = pwLogger;
                 if (arg_count > 3) {
@@ -494,13 +494,13 @@ public class TECore {
         return response_doc;
     }
 
-    public Document parse_async(HttpMessage[] msgArray, String response_id)
+    public Document parse_async(HttpResponse[] respArray, String response_id)
             throws Throwable {
-        return parse_async(msgArray, response_id, null);
+        return parse_async(respArray, response_id, null);
     }
 
-    // Create and send an HttpRequest then return an HttpMessage (HttpResponse)
-    public static HttpMessage build_request(Node xml) throws Exception {
+    // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
+    public static HttpResponse build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -702,22 +702,22 @@ public class TECore {
 	String respMess = ((HttpURLConnection) uc).getResponseMessage();
     	Map respHeaders = ((HttpURLConnection) uc).getHeaderFields();
 
-	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
+	// Construct the HttpResponse (HttpBasicResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);
 	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
-	BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+	BasicHttpResponse resp = new BasicHttpResponse(statusLine);
 	Set respHeadersSet = respHeaders.keySet();
 	for( Iterator it = respHeadersSet.iterator(); it.hasNext(); ) {
 		String name = (String) it.next();
 		List valueList = (List) respHeaders.get(name);
 		String value = (String) valueList.get(0);
 		if (name == null) continue;
-		respMessage.addHeader(name, value);
+		resp.addHeader(name, value);
 	}
 	HttpEntity entity = new ByteArrayEntity(respBytes);
-	respMessage.setEntity(entity);
+	resp.setEntity(entity);
 
-        return respMessage;
+        return resp;
     }
 
     public Document serialize_and_parse(Node parse_instruction)
@@ -799,16 +799,16 @@ public class TECore {
 	InputStream is = uc.getInputStream();
 	byte[] respBytes = inputStreamToBytes(is);
 
-	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
+	// Construct the HttpResponse (HttpBasicResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);
 	int respCode = 200;
 	String respMess = "OK";
 	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
-	BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
+	BasicHttpResponse resp = new BasicHttpResponse(statusLine);
 	HttpEntity entity = new ByteArrayEntity(respBytes);
-	respMessage.setEntity(entity);
+	resp.setEntity(entity);
 
-        Document doc = parse(respMessage, null, parser_instruction);
+        Document doc = parse(resp, null, parser_instruction);
         temp.delete();
         return doc;
     }
@@ -839,14 +839,14 @@ public class TECore {
         Method method = null;
         try {
             Class[] types = new Class[4];
-            types[0] = HttpMessage.class;
+            types[0] = HttpResponse.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             types[3] = TECore.class;
             method = parser_class.getMethod(method_name, types);
         } catch (java.lang.NoSuchMethodException e) {
             Class[] types = new Class[3];
-            types[0] = HttpMessage.class;
+            types[0] = HttpResponse.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             method = parser_class.getMethod(method_name, types);
@@ -854,7 +854,7 @@ public class TECore {
         return method;
     }
 
-    public Document parse(HttpMessage msg, String response_id, Node instruction)
+    public Document parse(HttpResponse resp, String response_id, Node instruction)
             throws Throwable {
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -876,7 +876,7 @@ public class TECore {
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
             try {
-                t.transform(new StreamSource(((BasicHttpResponse) msg).getEntity().getContent()),
+                t.transform(new StreamSource(resp.getEntity().getContent()),
                         new DOMResult(content_e));
             } catch (Exception e) {
                 parser_e.setTextContent(e.getMessage());
@@ -896,7 +896,7 @@ public class TECore {
             PrintWriter pwLogger = new PrintWriter(swLogger);
             int arg_count = method.getParameterTypes().length;
             Object[] args = new Object[arg_count];
-            args[0] = msg;
+            args[0] = resp;
             args[1] = instruction_e;
             args[2] = pwLogger;
             if (arg_count > 3) {
@@ -929,9 +929,9 @@ public class TECore {
         return response_doc;
     }
 
-    public Document parse(HttpMessage msg, String response_id)
+    public Document parse(HttpResponse resp, String response_id)
             throws Throwable {
-        return parse(msg, response_id, null);
+        return parse(resp, response_id, null);
     }
 
     public Node message(int depth, String message) {
