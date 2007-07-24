@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.lang.ClassLoader;
 import java.net.URLDecoder;
+import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -133,9 +134,16 @@ public class Config {
 		File f = new File(path);
 		if (!f.exists()) {
 			f = new File(System.getProperty("catalina.base"), path);
-			if (!f.exists()) {
-				f = new File(loader.getResource(path).getFile());
-			}
+		}
+        if (!f.exists()) {
+            URL url = loader.getResource(path);
+            if (null != url) {
+                f = new File(url.getFile());
+            }
+			else {
+                System.out.println("Directory is not accessible: " + path);
+                // TODO: Use fallback at WEB-INF/users?
+            }
 		}
 		return f;
 	}
