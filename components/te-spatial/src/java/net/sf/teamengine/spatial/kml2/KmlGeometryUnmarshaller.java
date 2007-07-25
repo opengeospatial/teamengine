@@ -190,6 +190,8 @@ public class KmlGeometryUnmarshaller {
 	 * Builds a raw coordinate sequence from the tuples included in a given
 	 * coordinates element. According to the KML reference, coordinates must be
 	 * specified as a space-separated list of 2D or 3D tuples: lon,lat[,alt].
+     * An <code>IllegalArgumentException</code> is thrown if a coordinate tuple 
+     * is is not 2D or 3D.
 	 * 
 	 * @param coords
 	 *            a DOM Node representing a kml:coordinates element
@@ -207,6 +209,10 @@ public class KmlGeometryUnmarshaller {
 			Coordinate coord = null;
 			String[] values = tuples[i].split(",");
 			int crsDim = values.length;
+            if (crsDim < 2 || crsDim > 3) {
+                throw new IllegalArgumentException("Not a 2D or 3D coordinate tuple: " 
+                    + tuples[i]);
+            }
 			if (crsDim == 2) {
 				coord = new Coordinate(Double.parseDouble(values[0]), Double
 						.parseDouble(values[1]));
