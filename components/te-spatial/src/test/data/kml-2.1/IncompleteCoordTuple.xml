@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Second coordinate tuple is incomplete -->
+<kml:kml xmlns:kml="http://earth.google.com/kml/2.1">
+  <kml:Placemark>
+    <kml:Point id="Point-1">
+      <kml:coordinates>-122.082204,37.422290 -121.082204 -120.082204,37.422290</kml:coordinates>
+    </kml:Point>
+  </kml:Placemark>
+</kml:kml>

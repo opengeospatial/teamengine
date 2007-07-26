@@ -100,4 +100,18 @@ public class KmlUnmarshallingBehavior {
         NodeList boxes = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "Box");
         Geometry geom = kmlUnmarshaller.unmarshalKmlGeometry(boxes.item(0));
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void unmarshalIncompleteCoordTuple() {
+        Document kmlDoc = null;
+        try {
+          kmlDoc = domBuilder.parse(resolver.resolveEntity(null, "kml-2.1/IncompleteCoordTuple.xml"));
+        } catch (SAXException e) {
+          System.err.println(e.getMessage());
+        } catch (IOException e) {
+          System.err.println(e.getMessage());
+        }
+        NodeList points = kmlDoc.getElementsByTagNameNS(KML21_NS_URI, "Point");
+        Geometry geom = kmlUnmarshaller.unmarshalKmlGeometry(points.item(0));
+    }
 }
