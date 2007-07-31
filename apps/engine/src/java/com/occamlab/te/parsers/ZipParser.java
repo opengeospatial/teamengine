@@ -1,6 +1,7 @@
 package com.occamlab.te.parsers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -121,6 +122,96 @@ public class ZipParser {
         // Unzip the file to a temporary location (java temp)
         ZipEntry entry = null;
         while ((entry = zis.getNextEntry()) != null) {
+            // Open the output file and get info from it
+            String filename = entry.getName();
+            long size = entry.getSize();
+            String ext = filename.substring(filename.lastIndexOf(".") + 1);
+            String mediaType = getMediaType(ext);
+            // Make the temp directory and subdirectories if needed
+            String subdir = "";
+            if (filename.lastIndexOf("/") != -1)
+                subdir = filename.substring(0, filename.lastIndexOf("/"));
+            else if (filename.lastIndexOf("\\") != -1)
+                subdir = filename.substring(0, filename.lastIndexOf("\\"));
+            new File(path + "/" + subdir).mkdir();
+            File outFile = new File(path, filename);
+            if (outFile.isDirectory())
+                continue;
+            OutputStream out = new FileOutputStream(outFile);
+
+            // Transfer bytes from the ZIP file to the output file
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = zis.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+
+            // Add the file information to the document
+            Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+            fileEntry.setAttribute("full-path", outFile.getPath().replace('\\',
+                    '/'));
+            fileEntry.setAttribute("media-type", mediaType);
+            fileEntry.setAttribute("size", String.valueOf(size));
+            root.appendChild(fileEntry);
+        }
+
+        doc.appendChild(root);
+
+        // Return the <ctl:manifest> document
+        return doc;
+    }
+
+    /**
+     * Extracts the local Zip file and saves to the working directory. The resulting
+     * manifest is an XML document with <ctl:manifest> as the document element.
+     *
+     * @param path
+     *            the full path to the local Zip file
+     * @param instruction
+     *            a DOM Element representation of configuration information for
+     *            this parser
+     * @return a DOM Document representing the manifest of items in the archive.
+     */
+    public Document saveZipFile(String filepath, Document instruction) throws Exception {
+
+	// Get a connection to the Zip file
+	FileInputStream is = null;
+        ZipInputStream zis = null;
+	try {
+		is = new FileInputStream(filepath);
+		zis = new ZipInputStream(is);
+	}
+	catch (Exception e) {
+		System.out.println("ERROR: "+e.getMessage());
+		return null;
+	}
+
+        // Create the response element, <ctl:manifest>
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.newDocument();
+        Element root = doc.createElementNS(CTL_NS, "manifest");
+
+        // Create the full directory path to store the zip entities
+        Document d = instruction.getOwnerDocument();
+        NodeList nodes = d.getElementsByTagNameNS(CTL_NS, "SessionDir");
+        // Either use the given session directory, or make one in the java temp
+        // directory
+        String path = "";
+        if (nodes.getLength() > 0) {
+            Element e = (Element) nodes.item(0);
+            path = e.getTextContent();
+        } else {
+            path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
+        }
+        String randomStr = TECore.randomString(16, new Random());
+        path = path + "/work/" + randomStr;
+        new File(path).mkdirs();
+
+        // Unzip the file to a temporary location (java temp)
+        ZipEntry entry = null;
+        while ((entry = zis.getNextEntry()) != null) {
+            System.out.println("File: "+ entry.getName());
             // Open the output file and get info from it
             String filename = entry.getName();
             long size = entry.getSize();
