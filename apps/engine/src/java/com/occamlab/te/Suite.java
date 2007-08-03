@@ -27,9 +27,14 @@ public class Suite {
     private String link;
 
     private String dataLink;
+    
+    private String version;
+
 
     public Suite(Element suiteElement) {
         String name = suiteElement.getAttribute("name");
+        this.version = suiteElement.getAttribute("version");
+
         int colon = name.indexOf(":");
         prefix = name.substring(0, colon);
         localName = name.substring(colon + 1);
@@ -111,5 +116,9 @@ public class Suite {
 
     public String getStartingTestLocalName() {
         return startingTestLocalName;
+    }
+    
+    public String getVersion() {
+        return this.version;
     }
 }
