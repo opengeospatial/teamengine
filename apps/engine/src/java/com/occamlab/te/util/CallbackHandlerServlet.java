@@ -39,30 +39,36 @@ import com.occamlab.te.TECore;
  */
 public class CallbackHandlerServlet extends HttpServlet {
 
-	private int elaspedTime = 0;
-
+	/** Internal class to close down the server when the given timeout elapses with a response recieved */
 	private class TimeoutExit extends Thread {
+
+		private int timeout = 5;
+
+		public TimeoutExit(int timeout) {
+			super();
+			this.timeout = timeout;
+		}
+		
 	        public void run() {
-	        	// TODO: Get timeout from CTL element...
-			int timeout = 5;
-
 	        	// Convert s to ms
-			int timeInMs = Math.round(timeout * 1000);
-
+			int timeInMs = Math.round(this.timeout * 1000);
 	        	try {
 				Thread.sleep(timeInMs);
 				System.out.println("Timeout encountered, shutting down the servlet...");
-				System.exit(0);	
+				System.exit(0);
 			} catch (Exception e) {}
 	        }
     	}
 
 	
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
+	public void init() throws ServletException {
+		super.init();
+
+		// Get timeout from web.xml config
+		String timeout = getServletConfig().getInitParameter("timeout");
 
 		// Stop the server when the timeout is reached
-		Thread thread = new TimeoutExit();
+		Thread thread = new TimeoutExit(Integer.parseInt(timeout));
 		thread.start();
 	}
 

@@ -49,7 +49,7 @@ public class WebServer {
 			}
 		}));
 
-		// TODO: Pass on timeout to servlets or something...
+		// TODO: Pass on timeout to servlets via web.xml or another method... <getServlet(String)> and then <init(ServletConfig)>
 
 	}
 
