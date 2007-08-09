@@ -344,25 +344,24 @@ public class TECore {
     		System.out.println("ERROR: "+e.getMessage());
     	}
 
-    	// Start the web server to catch the response
+    	// Get the port and timeout values
     	NamedNodeMap nnm = xml.getAttributes();
     	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
     	int port = 7777;
     	if (portAttr != null) {
     		port = Integer.parseInt(portAttr.getValue());
     	}
-    	// TODO: Modify the callbackhandler to take a timeout and return null if the timeout exceeds
     	Attr timeoutAttr = ((Attr) nnm.getNamedItem("timeout"));
     	int timeout = 10;
     	if (timeoutAttr != null) {
     		timeout = Integer.parseInt(timeoutAttr.getValue());
     	}
     	// Create and start the web server
-	WebServer ws = new WebServer(port);
+	WebServer ws = new WebServer(port, timeout);
 	ws.addServlet("CallbackHandlerServlet", "com.occamlab.te.util.CallbackHandlerServlet");
 	ws.startServer();
 
-	// TODO: keep checking a variable until it is populated by the web server or something...
+	// TODO: Get the response from a saved variable (saved by the servlet somewhere)
 	BasicHttpResponse resp = null;
 
     	return new HttpResponse[] {ackResp, resp};

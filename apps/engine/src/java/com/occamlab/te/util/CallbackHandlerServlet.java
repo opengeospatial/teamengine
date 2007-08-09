@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +38,34 @@ import com.occamlab.te.TECore;
  * @author jparrpearson
  */
 public class CallbackHandlerServlet extends HttpServlet {
+
+	private int elaspedTime = 0;
+
+	private class TimeoutExit extends Thread {
+	        public void run() {
+	        	// TODO: Get timeout from CTL element...
+			int timeout = 5;
+
+	        	// Convert s to ms
+			int timeInMs = Math.round(timeout * 1000);
+
+	        	try {
+				Thread.sleep(timeInMs);
+				System.out.println("Timeout encountered, shutting down the servlet...");
+				System.exit(0);	
+			} catch (Exception e) {}
+	        }
+    	}
+
+	
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+
+		// Stop the server when the timeout is reached
+		Thread thread = new TimeoutExit();
+		thread.start();
+	}
+
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -70,7 +99,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 				HttpEntity entity = new ByteArrayEntity(respBytes);
 				resp.setEntity(entity);
 
-				// TODO: Return document to TECore...
+				// TODO: Save the response somewhere (TECore?)
 			}
 		} catch (Exception e){
 				System.out.println("Error reading XML response: "+e.getMessage());
@@ -84,5 +113,9 @@ public class CallbackHandlerServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.println("RESPONSE SENT!");
 		out.close();
+
+		// Stop the server when we get a response
+		System.out.println("Response sent, shutting down the servlet...");
+		System.exit(0);
 	}
 }

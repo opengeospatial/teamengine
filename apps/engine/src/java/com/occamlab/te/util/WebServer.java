@@ -27,7 +27,9 @@ public class WebServer {
 	// The web server instance
 	private PublicServe srv = new PublicServe();
 
-	public WebServer(int port) {
+	public WebServer(int port, int timeout) {
+		System.out.println("Starting server on port "+port+", timeout "+timeout+"s");
+
 		// Set server properties
 		Properties properties = new Properties();
 		properties.put("port", port);
@@ -43,12 +45,12 @@ public class WebServer {
 		// Add code to execute when the server is shut down
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
-				try {
-					srv.notifyStop();
-				} catch(IOException ioe) {}
-				srv.destroyAllServlets();
+				stopServer();
 			}
 		}));
+
+		// TODO: Pass on timeout to servlets or something...
+
 	}
 
 	/** Add additional servlets to the server */
@@ -72,14 +74,18 @@ public class WebServer {
 	public static void main(String[] args) {
 		// Get the user arguments (port)
 		int port = 80;
+		int timeout = 30; // seconds
 		if (args.length == 1) {
 			port = Integer.parseInt(args[0]);
 		}
+		if (args.length == 2) {
+			port = Integer.parseInt(args[0]);
+			timeout = Integer.parseInt(args[1]);
+		}
 
 		// Create and start the web server
-		WebServer ws = new WebServer(port);
+		WebServer ws = new WebServer(port, timeout);
 		ws.addServlet("/webapps/examples/HelloWorld", "examples.HelloWorld");
-		System.out.println("Starting server on port "+port);
 		ws.startServer();
 	}
 }
