@@ -85,7 +85,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-import com.occamlab.te.util.TcpListener;
+import com.occamlab.te.util.WebServer;
+import com.occamlab.te.util.CallbackHandlerServlet;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -343,45 +344,26 @@ public class TECore {
     		System.out.println("ERROR: "+e.getMessage());
     	}
 
-    	// Start the listener to catch the response
+    	// Start the web server to catch the response
     	NamedNodeMap nnm = xml.getAttributes();
     	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
     	int port = 7777;
     	if (portAttr != null) {
     		port = Integer.parseInt(portAttr.getValue());
     	}
+    	// TODO: Modify the callbackhandler to take a timeout and return null if the timeout exceeds
     	Attr timeoutAttr = ((Attr) nnm.getNamedItem("timeout"));
     	int timeout = 10;
     	if (timeoutAttr != null) {
     		timeout = Integer.parseInt(timeoutAttr.getValue());
     	}
-    	TcpListener tcpListener = new TcpListener(port, timeout);
-    	tcpListener.run();
+    	// Create and start the web server
+	WebServer ws = new WebServer(port);
+	ws.addServlet("CallbackHandlerServlet", "com.occamlab.te.util.CallbackHandlerServlet");
+	ws.startServer();
 
+	// TODO: keep checking a variable until it is populated by the web server or something...
 	BasicHttpResponse resp = null;
-	if (tcpListener.getBytes() != null) {
-	    	// Get socket response values
-	    	Map respHeaders = tcpListener.getHeaders();
-		byte[] respBytes = tcpListener.getBytes();
-		String[] status = tcpListener.getStatus().split(" ");
-
-		// Construct the message from the socket response values
-		String[] statusStr = (status[0].split("/"))[1].split(".");
-		if (statusStr[1].equals("x")) statusStr[1] = "1";
-		HttpVersion version = new HttpVersion(Integer.valueOf(statusStr[0]), Integer.valueOf(statusStr[1]));
-		BasicStatusLine statusLine = new BasicStatusLine(version, Integer.valueOf(status[1]), status[2]);
-		resp = new BasicHttpResponse(statusLine);
-		Set respHeadersSet = respHeaders.keySet();
-		for( Iterator it = respHeadersSet.iterator(); it.hasNext(); ) {
-			String name = (String) it.next();
-			List valueList = (List) respHeaders.get(name);
-			String value = (String) valueList.get(0);
-			if (name == null) continue;
-			resp.addHeader(name, value);
-		}
-		HttpEntity entity = new ByteArrayEntity(respBytes);
-		resp.setEntity(entity);
-	}
 
     	return new HttpResponse[] {ackResp, resp};
     }
