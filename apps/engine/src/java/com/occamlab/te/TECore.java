@@ -347,7 +347,7 @@ public class TECore {
     	// Get the port and timeout values
     	NamedNodeMap nnm = xml.getAttributes();
     	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
-    	int port = 7777;
+    	int port = 8090;
     	if (portAttr != null) {
     		port = Integer.parseInt(portAttr.getValue());
     	}

@@ -42,7 +42,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 	/** Internal class to close down the server when the given timeout elapses with a response recieved */
 	private class TimeoutExit extends Thread {
 
-		private int timeout = 5;
+		private int timeout = 10;
 
 		public TimeoutExit(int timeout) {
 			super();
@@ -60,18 +60,19 @@ public class CallbackHandlerServlet extends HttpServlet {
 	        }
     	}
 
-	
 	public void init() throws ServletException {
 		super.init();
 
 		// Get timeout from web.xml config
 		String timeout = getServletConfig().getInitParameter("timeout");
+		if (timeout == null) {
+			timeout = "10";
+		}
 
 		// Stop the server when the timeout is reached
 		Thread thread = new TimeoutExit(Integer.parseInt(timeout));
 		thread.start();
 	}
-
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -112,13 +113,13 @@ public class CallbackHandlerServlet extends HttpServlet {
 		}
 			
 		// 2) Send a simple acknowledgement response, status code 204 (No Content)
-		//response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+		response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
-		// TODO: Temp for debugging purposes (http://localhost:8080/CallbackHandlerServlet/http)
-		response.setContentType("text/html");
+		// Temp: for debugging purposes (http://localhost:PORT/CallbackHandlerServlet)
+		/*response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("RESPONSE SENT!");
-		out.close();
+		out.close();*/
 
 		// Stop the server when we get a response
 		System.out.println("Response sent, shutting down the servlet...");
