@@ -3,11 +3,11 @@
  The contents of this file are subject to the Mozilla Public License
  Version 1.1 (the "License"); you may not use this file except in
  compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/ 
+ http://www.mozilla.org/MPL/
 
  Software distributed under the License is distributed on an "AS IS" basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- the specific language governing rights and limitations under the License. 
+ the specific language governing rights and limitations under the License.
 
  The Original Code is TEAM Engine.
 
@@ -38,7 +38,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Reads the test harness configuration file. The file is structured as follows:
- * 
+ *
  * <pre>
  *    &lt;config&gt;
  *      &lt;home&gt;${base-url}&lt;/home&gt;
@@ -52,11 +52,11 @@ import org.w3c.dom.NodeList;
  * </pre>
  */
 public class Config {
-	private String home;
+	private static String home;
 
-	private File usersDir;
+	private static File usersDir;
 
-	private LinkedHashMap<String, List<File>> availableSuites;
+	private static LinkedHashMap<String, List<File>> availableSuites;
 
 	public Config() {
 		try {
@@ -109,15 +109,15 @@ public class Config {
 		}
 	}
 
-	public String getHome() {
+	public static String getHome() {
 		return home;
 	}
 
-	public File getUsersDir() {
+	public static File getUsersDir() {
 		return usersDir;
 	}
 
-	public LinkedHashMap<String, List<File>> getAvailableSuites() {
+	public static LinkedHashMap<String, List<File>> getAvailableSuites() {
 		return availableSuites;
 	}
 
@@ -130,20 +130,20 @@ public class Config {
 	 * <li>a classpath location.</li>
 	 * </ul>
 	 */
-	private File findFile(String path, ClassLoader loader) {
+	private static File findFile(String path, ClassLoader loader) {
 		File f = new File(path);
 		if (!f.exists()) {
 			f = new File(System.getProperty("catalina.base"), path);
 		}
-        if (!f.exists()) {
-            URL url = loader.getResource(path);
-            if (null != url) {
-                f = new File(url.getFile());
-            }
-			else {
-                System.out.println("Directory is not accessible: " + path);
-                // TODO: Use fallback at WEB-INF/users?
-            }
+	        if (!f.exists()) {
+	            URL url = loader.getResource(path);
+	            if (null != url) {
+	                f = new File(url.getFile());
+	            }
+				else {
+	                System.out.println("Directory is not accessible: " + path);
+	                // TODO: Use fallback at WEB-INF/users?
+	            }
 		}
 		return f;
 	}
