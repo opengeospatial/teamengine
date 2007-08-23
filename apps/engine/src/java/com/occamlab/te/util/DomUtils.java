@@ -15,19 +15,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Attr;
 
 /**
  * Allows for manipulating of a DOM Document by adding/removing/etc elements and attributes.
- * 
+ *
  * @author jparrpearson
  */
 public class DomUtils {
 
     /**
      * Adds the attribute to each node in the Document with the given name.
-     * 
+     *
      * @param doc
      *		the Document to add attributes to
      * @param tagName
@@ -38,7 +39,7 @@ public class DomUtils {
      *		the name of the attribute to add
      * @param attrValue
      *		the value of the attribute to add
-     * 
+     *
      * @return the original Document with the update attribute nodes
      */
     public static Node addDomAttr(Document doc, String tagName, String tagNamespaceURI, String attrName, String attrValue) {
@@ -56,14 +57,14 @@ public class DomUtils {
 	}
 
 	Transformer identity = null;
-	try {       	
+	try {
     	    	TransformerFactory TF = TransformerFactory.newInstance();
 		identity = TF.newTransformer();
 		identity.transform(new DOMSource(doc), new DOMResult(newDoc));
 	} catch (Exception ex) {
 		System.out.println("ERROR: "+ex.getMessage());
 	}
-	
+
 	// Get all named nodes in the doucment
 	NodeList namedTags = newDoc.getElementsByTagNameNS(tagNamespaceURI, tagName);
 	for (int i = 0; i < namedTags.getLength(); i++) {
@@ -71,11 +72,57 @@ public class DomUtils {
 		Element element = (Element)namedTags.item(i);
 		element.setAttribute(attrName, attrValue);
 	}
-	
+
 	//displayNode(newDoc);
 	return (Node)newDoc;
     }
-    
+
+    /**
+     * Determines if there is a comment Node that contains the given string.
+     *
+     * @param node
+     *		the Node to look in
+     * @param str
+     *		the string value to match in the comment nodes
+     *
+       CTL declaration, if we ever want to use it
+       <!--Sample Usage: ctl:checkCommentNodes($xml.resp, 'complexContent')-->
+       <ctl:function name="ctl:checkCommentNodes">
+	  <ctl:param name="node"/>
+	  <ctl:param name="string"/>
+	  <ctl:description>Checks a Node for comments that contain the given string.</ctl:description>
+	  <ctl:java class="com.occamlab.te.util.DomUtils" 
+					method="checkCommentNodes"/>
+  	</ctl:function>
+
+     * @return the original Document with the update attribute nodes
+     */
+    public static boolean checkCommentNodes(Node node, String str) {
+
+	// Get nodes of node and go through them
+	NodeList children = node.getChildNodes();
+	for (int i = 0; i < children.getLength(); i++) {
+		Node child = children.item(i);
+		NodeList childChildren = child.getChildNodes();
+		if (childChildren.getLength() > 0) {
+			// Recurse for all children
+			boolean okDownThere = checkCommentNodes(child, str);
+			if (okDownThere == true) {
+				return true;
+			}
+		}
+		// Investigate comments
+		if (child.getNodeType() == Node.COMMENT_NODE) {
+			// If we got a comment that contains the string we are happy
+			Comment comment = (Comment)child;
+			if (comment.getNodeValue().contains(str)) {
+				return true;
+			}
+		}
+	}
+	return false;
+    }
+
     /** HELPER METHOD TO PRINT A DOM TO STDOUT */
     static public void displayNode(Node node) {
 	try {
@@ -86,5 +133,5 @@ public class DomUtils {
 		System.out.println("ERROR: "+ex.getMessage());
 	}
     }
-    
+
 }
