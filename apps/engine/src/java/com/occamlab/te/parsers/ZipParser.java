@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHttpResponse;
 
+import com.occamlab.te.util.Utils;
 import com.occamlab.te.TECore;
 
 /**
@@ -115,7 +116,7 @@ public class ZipParser {
         } else {
             path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
         }
-        String randomStr = TECore.randomString(16, new Random());
+        String randomStr = Utils.randomString(16, new Random());
         path = path + "/work/" + randomStr;
         new File(path).mkdirs();
 
@@ -204,7 +205,7 @@ public class ZipParser {
         } else {
             path = System.getProperty("java.io.tmpdir") + "/zipparser.temp";
         }
-        String randomStr = TECore.randomString(16, new Random());
+        String randomStr = Utils.randomString(16, new Random());
         path = path + "/work/" + randomStr;
         new File(path).mkdirs();
 

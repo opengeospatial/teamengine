@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.net.ServerSocket;
 
+import com.occamlab.te.util.IOUtils;
 import com.occamlab.te.TECore;
 
 /**
@@ -87,7 +88,7 @@ public class TcpListener implements Runnable {
 
                 // Read in the data
                 InputStream is = clientSocket.getInputStream();
-		byte[] inputByte = TECore.inputStreamToBytes(is);
+		byte[] inputByte = IOUtils.inputStreamToBytes(is);
 		String inputStr = new String(inputByte, "UTF-8");
 
             	// Split on the \r\n\r\n sequence between headers and body

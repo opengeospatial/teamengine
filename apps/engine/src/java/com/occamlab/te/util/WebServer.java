@@ -17,6 +17,41 @@ import Acme.Serve.Serve.PathTreeDictionary;
  */
 public class WebServer {
 
+/** TECORE METHOD TO CREATE AND RUN THE CALLBACK HANDLER IN THE EMBEDDED WEB SERVER
+    // Build and send off the request, get the acknowledgement and final response
+    public static HttpResponse[] build_async_request(Node xml) {
+	// Retrieve the initial acknowledgement
+    	HttpResponse ackResp = null;
+    	try {
+    		ackResp = build_request(xml);
+    	} catch (Exception e){
+    		System.out.println("ERROR: "+e.getMessage());
+    	}
+
+    	// Get the port and timeout values
+    	NamedNodeMap nnm = xml.getAttributes();
+    	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
+    	int port = 8090;
+    	if (portAttr != null) {
+    		port = Integer.parseInt(portAttr.getValue());
+    	}
+    	Attr timeoutAttr = ((Attr) nnm.getNamedItem("timeout"));
+    	int timeout = 10;
+    	if (timeoutAttr != null) {
+    		timeout = Integer.parseInt(timeoutAttr.getValue());
+    	}
+    	// Create and start the web server
+	WebServer ws = new WebServer(port, timeout);
+	ws.addServlet("CallbackHandlerServlet", "com.occamlab.te.util.CallbackHandlerServlet");
+	ws.startServer();
+
+	// TODO: Get the response from a saved variable (saved by the servlet somewhere)
+	BasicHttpResponse resp = null;
+
+    	return new HttpResponse[] {ackResp, resp};
+    }
+*/
+
 	// Override the TJWS Serve to allow for public mappings
 	private class PublicServe extends Serve {
 	        public void setMappingTable(PathTreeDictionary mappingtable) {

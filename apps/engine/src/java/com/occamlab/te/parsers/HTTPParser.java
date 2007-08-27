@@ -51,7 +51,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 
-
+import com.occamlab.te.util.IOUtils;
 import com.occamlab.te.TECore;
 
 /**
@@ -227,7 +227,7 @@ public class HTTPParser {
 
                 // Get URLConnection values
 		InputStream pcIs = pc.getInputStream();
-		byte[] respBytes = TECore.inputStreamToBytes(pcIs);
+		byte[] respBytes = IOUtils.inputStreamToBytes(pcIs);
 
 		// Construct the HttpMessage (HttpBasicResponse) to send to parsers
 		HttpVersion version = new HttpVersion(1,1);
@@ -250,7 +250,7 @@ public class HTTPParser {
 
             // Get URLConnection values
             InputStream ucIs = resp.getEntity().getContent();
-            byte[] respBytes = TECore.inputStreamToBytes(ucIs);
+            byte[] respBytes = IOUtils.inputStreamToBytes(ucIs);
 
             // Construct the HttpMessage (HttpBasicResponse) to send to parsers
             HttpVersion version = new HttpVersion(1,1);

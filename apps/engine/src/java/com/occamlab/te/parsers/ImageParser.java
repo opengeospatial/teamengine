@@ -53,6 +53,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 
+import com.occamlab.te.util.IOUtils;
 import com.occamlab.te.TECore;
 
 /**
@@ -530,7 +531,7 @@ public class ImageParser {
         InputStream image_is = image_url.openConnection().getInputStream();
 
         // Get URLConnection values
-	byte[] respBytes = TECore.inputStreamToBytes(image_is);
+	byte[] respBytes = IOUtils.inputStreamToBytes(image_is);
 
 	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);

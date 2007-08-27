@@ -54,7 +54,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
@@ -87,6 +86,8 @@ import org.w3c.dom.Text;
 
 import com.occamlab.te.util.WebServer;
 import com.occamlab.te.util.CallbackHandlerServlet;
+import com.occamlab.te.util.Utils;
+import com.occamlab.te.util.IOUtils;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -334,7 +335,7 @@ public class TECore {
         return file;
     }
 
-    // Build and send off the request, get the acknowledgement and final response
+    // Build and send off the request, get the acknowledgement and final response (web context only at this time)
     public static HttpResponse[] build_async_request(Node xml) {
 	// Retrieve the initial acknowledgement
     	HttpResponse ackResp = null;
@@ -344,10 +345,10 @@ public class TECore {
     		System.out.println("ERROR: "+e.getMessage());
     	}
 
-    	// Get the port and timeout values
+    	// Get the port (ignored at this time) and timeout values
     	NamedNodeMap nnm = xml.getAttributes();
     	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
-    	int port = 8090;
+    	int port = 8080;
     	if (portAttr != null) {
     		port = Integer.parseInt(portAttr.getValue());
     	}
@@ -356,13 +357,19 @@ public class TECore {
     	if (timeoutAttr != null) {
     		timeout = Integer.parseInt(timeoutAttr.getValue());
     	}
-    	// Create and start the web server
-	WebServer ws = new WebServer(port, timeout);
-	ws.addServlet("CallbackHandlerServlet", "com.occamlab.te.util.CallbackHandlerServlet");
-	ws.startServer();
 
-	// TODO: Get the response from a saved variable (saved by the servlet somewhere)
-	BasicHttpResponse resp = null;
+	// Get the requestId
+	// TODO: Get the xpath from the async-request element and find the required element
+	//NodeList nodelist = org.apache.xpath.XPathAPI.selectNodeList(doc, xpath);
+	String reqId = "";
+
+	// TODO: Start a timeout thread, and continually check the file
+
+	// Get the response
+	String hash = Utils.generateMD5(reqId);
+	String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
+	File file = new File(path, "BasicHttpResponse.dat");
+	BasicHttpResponse resp = (BasicHttpResponse) IOUtils.readObjectFromFile(file);
 
     	return new HttpResponse[] {ackResp, resp};
     }
@@ -678,7 +685,7 @@ public class TECore {
 
     	// Get URLConnection values
 	InputStream is = uc.getInputStream();
-	byte[] respBytes = inputStreamToBytes(is);
+	byte[] respBytes = IOUtils.inputStreamToBytes(is);
 	int respCode = ((HttpURLConnection) uc).getResponseCode();
 	String respMess = ((HttpURLConnection) uc).getResponseMessage();
     	Map respHeaders = ((HttpURLConnection) uc).getHeaderFields();
@@ -778,7 +785,7 @@ public class TECore {
 
     	// Get URLConnection values
 	InputStream is = uc.getInputStream();
-	byte[] respBytes = inputStreamToBytes(is);
+	byte[] respBytes = IOUtils.inputStreamToBytes(is);
 
 	// Construct the HttpResponse (HttpBasicResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);
@@ -1074,7 +1081,7 @@ public class TECore {
             path = System.getProperty("java.io.tmpdir") + "/tecore.temp";
         }
 
-        String randomStr = TECore.randomString(16, new Random());
+        String randomStr = Utils.randomString(16, new Random());
         path = path + "/work/" + randomStr;
         File dir = new File(path);
         dir.mkdirs();
@@ -1129,70 +1136,5 @@ public class TECore {
         }
         return newDoc;
     }
-
-    /**
-     * Returns a random string of a certain length
-     *
-     */
-    public static String randomString(int len, Random random) {
-        if (len < 1) {
-            return "";
-        }
-
-        int start = ' ';
-        int end = 'z' + 1;
-
-        StringBuffer buffer = new StringBuffer();
-        int gap = end - start;
-
-        while (len-- != 0) {
-            char ch;
-            ch = (char) (random.nextInt(gap) + start);
-
-            if (Character.isLetterOrDigit(ch)) {
-                buffer.append(ch);
-            } else {
-                len++;
-            }
-        }
-        return buffer.toString();
-    }
-
-    /**
-     * Converts an InputStream to a String
-     *
-     */
-    public static String inputStreamToString(InputStream in) {
-    	StringBuffer buffer = new StringBuffer();
-    	try {
-		BufferedReader br = new BufferedReader(new InputStreamReader(in), 1024);
-		char[] cbuf = new char[1024];
-		int bytesRead;
-		while ((bytesRead = br.read(cbuf, 0, cbuf.length)) != -1) {
-			buffer.append(cbuf, 0, bytesRead);
-		}
-	} catch (Exception e) {
-		System.out.println("ERROR: "+e.getMessage());
-	}
-	return buffer.toString();
-   }
-
-    /**
-     * Converts an InputStream to a byte[]
-     *
-     */
-    public static byte[] inputStreamToBytes(InputStream in) {
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	try {
-		byte[] buffer = new byte[1024];
-		int len;
-		while((len = in.read(buffer)) != -1) {
-			out.write(buffer, 0, len);
-		}
-	} catch (Exception e) {
-		System.out.println("ERROR: "+e.getMessage());
-	}
-	return out.toByteArray();
-   }
 
 }
