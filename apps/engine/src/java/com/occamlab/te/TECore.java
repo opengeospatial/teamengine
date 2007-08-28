@@ -371,7 +371,6 @@ public class TECore {
 	} catch (Exception e){
 		System.err.println("ERROR: "+e.getMessage());
 	}
-
 	if (reqId.equals("")) {
 		System.err.println("ERROR:  No request id was found in the acknowledgement.");
 		return new HttpResponse[] {ackResp, null};
@@ -381,8 +380,8 @@ public class TECore {
 	String hash = Utils.generateMD5(reqId);
 	String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 	File file = new File(path, "BasicHttpResponse.dat");
-	// TODO: use a timer until it is there / or stop when timeout is reached
-	BasicHttpResponse resp = (BasicHttpResponse) IOUtils.readObjectFromFile(file);
+	Object respObj = IOUtils.pollFile(file, timeout);
+	BasicHttpResponse resp = (BasicHttpResponse) respObj;
 
     	return new HttpResponse[] {ackResp, resp};
     }
