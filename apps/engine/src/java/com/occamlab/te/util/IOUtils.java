@@ -66,7 +66,7 @@ public class IOUtils {
 	                            }
 	                    }
 	            }
-	    }, "MyClassName.DocumentToInputStream(org.w3c.dom.Document edoc)")).start();
+	    }, "IOUtils.DocumentToInputStream(Document edoc)")).start();
 
 	    return pis;
 	}

@@ -1,8 +1,14 @@
 package com.occamlab.te.util;
 
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.Random;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.List;
 import java.security.MessageDigest;
 
 import javax.xml.xpath.XPath;
@@ -13,6 +19,9 @@ import javax.xml.XMLConstants;
 import org.w3c.dom.Document;
 
 import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * Provides various utility methods (general collection).
@@ -95,7 +104,7 @@ public class Utils {
 	 */
 	public static String evaluateXPointer(String xpointer, InputStream is) {
 		String results = "";
-		// Parse the XPointer into usable namespaces and XPath expressions (assumes 1 only)
+		// Parse the XPointer into usable namespaces and XPath expressions
 		int xmlnsStart = xpointer.indexOf("xmlns(")+"xmlns(".length();
 		int xmlnsEnd = xpointer.indexOf(")", xmlnsStart);
 		int xpathStart = xpointer.indexOf("xpointer(")+"xpointer(".length();
@@ -105,10 +114,18 @@ public class Utils {
 		//System.out.println("xmlnsStr: "+xmlnsStr+" xpathStr: "+xpathStr);
 	        try {
 	        	XPath xpath = XPathFactory.newInstance().newXPath();
-	        	String[] xmlnsParts = xmlnsStr.split("=");
-	         	xpath.setNamespaceContext(new MyNamespaceContext(xmlnsParts[0], xmlnsParts[1]));
+	        	String[] namespaces = xmlnsStr.split(",");
+	        	System.out.println("namespaces.length: "+namespaces.length);
+	         	MyNamespaceContext context = new MyNamespaceContext();
+	        	for (int i = 0; i < namespaces.length; i++) {
+	        		System.out.println("namespace: "+namespaces[i]);
+	        		String[] xmlnsParts = namespaces[i].split("=");
+	         		context.setNamespace(xmlnsParts[0], xmlnsParts[1]);
+	         		xpath.setNamespaceContext(context);
+	        	}
 	         	InputSource src = new InputSource(is);
 	         	results = (String) xpath.evaluate(xpathStr, src);
+	         	//System.out.println("results: "+results);
 	        } catch (Exception e) {
 	        	System.out.println("ERROR in evaluating XPointer.  "+e.getMessage());
 	        } 
@@ -124,46 +141,58 @@ public class Utils {
 		return evaluateXPointer(xpointer, is);
 	}
 
+	public static String evaluateXPointer(String xpointer, byte[] bytes) {
+		Document doc = null;
+		try {
+			ByteArrayInputStream baip = new ByteArrayInputStream(bytes);
+			System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			doc = db.parse(baip);
+		} catch (Exception e) {}
+
+		return evaluateXPointer(xpointer, doc);
+	}
+
 	/**
 	 * Custom namespace class for adding additional namespaces for XPath evaluation
 	 *
 	 */
 	public static class MyNamespaceContext implements NamespaceContext {
+		private Map map;
 
-		protected String currentPrefix = null;
-		protected String currentUri = null;
-
-		public void setCurrentNamespace(String prefix, String uri) {
-			this.currentPrefix = prefix;
-			this.currentUri = uri;
+		public MyNamespaceContext() {
+			map = new HashMap();
 		}
 
-		public MyNamespaceContext(String prefix, String uri) {
-			super();
-			this.currentPrefix = prefix;
-			this.currentUri = uri;
+		public void setNamespace(String prefix, String namespaceURI) {
+			map.put(prefix, namespaceURI);
 		}
 
 		public String getNamespaceURI(String prefix) {
-		    if (prefix.equals(currentPrefix)) {
-		        return currentUri;
-		    }
-		    else {
-		        return XMLConstants.NULL_NS_URI;
-		    }
+			return (String) map.get(prefix);
 		}
 
-		public String getPrefix(String namespace) {
-		    if (namespace.equals(currentUri)) {
-		        return currentPrefix;
-		    }
-		    else {
-		        return null;
-		    }
+		public String getPrefix(String namespaceURI) {
+			Set keys = map.keySet();
+			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				String prefix = (String) iterator.next();
+				String uri = (String) map.get(prefix);
+				if (uri.equals(namespaceURI)) return prefix;
+			}
+			return null;
 		}
 
-		public Iterator getPrefixes(String namespace) {
-		    return null;
+		public Iterator getPrefixes(String namespaceURI) {
+			List prefixes = new ArrayList();
+			Set keys = map.keySet();
+			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+				String prefix = (String) iterator.next();
+				String uri = (String) map.get(prefix);
+				if (uri.equals(namespaceURI)) prefixes.add(prefix);
+			}
+			return prefixes.iterator();
 		}
 	}
 

@@ -21,16 +21,6 @@
  ****************************************************************************/
 package com.occamlab.te;
 
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URL;
@@ -61,6 +51,16 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
+
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.dom.DocumentBuilderImpl;
@@ -367,7 +367,10 @@ public class TECore {
 	String reqId = "";
 	try {
 		InputStream is = ackResp.getEntity().getContent();
-		reqId = Utils.evaluateXPointer(xpointerId, is);
+		byte[] copyBytes = IOUtils.inputStreamToBytes(is);
+		HttpEntity entity = new ByteArrayEntity(copyBytes);
+		ackResp.setEntity(entity);
+		reqId = Utils.evaluateXPointer(xpointerId, copyBytes);
 	} catch (Exception e){
 		System.err.println("ERROR: "+e.getMessage());
 	}
