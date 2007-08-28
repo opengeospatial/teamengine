@@ -115,10 +115,9 @@ public class Utils {
 	        try {
 	        	XPath xpath = XPathFactory.newInstance().newXPath();
 	        	String[] namespaces = xmlnsStr.split(",");
-	        	System.out.println("namespaces.length: "+namespaces.length);
+	        	// Add namespaces to XPath element
 	         	MyNamespaceContext context = new MyNamespaceContext();
 	        	for (int i = 0; i < namespaces.length; i++) {
-	        		System.out.println("namespace: "+namespaces[i]);
 	        		String[] xmlnsParts = namespaces[i].split("=");
 	         		context.setNamespace(xmlnsParts[0], xmlnsParts[1]);
 	         		xpath.setNamespaceContext(context);
