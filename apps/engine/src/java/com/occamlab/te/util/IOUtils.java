@@ -142,19 +142,18 @@ public class IOUtils {
 	}
 
 	/**
-	 * Polls a file until it 1) exists or 2) the timeout is exceeded (returns null)
-	 * Reads the file as an object
+	 * Polls a file periodically until it 1) exists or 2) the timeout is exceeded (returns null)
+	 * Reads the file as a java Object
 	 */
-	public static Object pollFile(File file, int timeout) throws InterruptedException {
+	public static Object pollFile(File file, int timeout, int interval) throws InterruptedException {
 		// Convert time from s to ms for Thread
 		int fullTimeout = Math.round(timeout*1000);
 
 		// Split up the timeout to poll every x amount of time
-		int divisor = 10;
-		int timeoutShard = Math.round(timeout/divisor);
+		int timeoutShard = Math.round(fullTimeout/interval);
 
 		// Poll until file exists, return if it exists
-		for (int i = 0; i < divisor+1; i++) {
+		for (int i = 0; i < interval; i++) {
 			Thread.sleep(timeoutShard);
 			if (file.exists()) {
 				return readObjectFromFile(file);
@@ -163,6 +162,10 @@ public class IOUtils {
 
 		// Return null if time is up and still no file
 		return null;
+	}
+
+	public static Object pollFile(File file, int timeout) throws InterruptedException {
+		return pollFile(file, timeout, 25);
 	}
 
 }

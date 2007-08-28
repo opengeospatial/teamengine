@@ -380,7 +380,12 @@ public class TECore {
 	String hash = Utils.generateMD5(reqId);
 	String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 	File file = new File(path, "BasicHttpResponse.dat");
-	Object respObj = IOUtils.pollFile(file, timeout);
+	Object respObj = null;
+	try {
+		respObj = IOUtils.pollFile(file, timeout);
+	} catch (Exception e) {
+		System.err.println("ERROR: "+e.getMessage());
+	}
 	BasicHttpResponse resp = (BasicHttpResponse) respObj;
 
     	return new HttpResponse[] {ackResp, resp};
