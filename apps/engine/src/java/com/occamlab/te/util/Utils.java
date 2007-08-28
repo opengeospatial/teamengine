@@ -1,8 +1,18 @@
 package com.occamlab.te.util;
 
+import java.io.InputStream;
 import java.util.Random;
-
+import java.util.Iterator;
 import java.security.MessageDigest;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.XMLConstants;
+
+import org.w3c.dom.Document;
+
+import org.xml.sax.InputSource;
 
 /**
  * Provides various utility methods (general collection).
@@ -77,6 +87,84 @@ public class Utils {
 			} while(two_halfs++ < 1);
 		}
 		return buf.toString();
+	}
+
+	/**
+	 * Converts an XPointer to XPath and evaulates the result (JAXP)
+	 *
+	 */
+	public static String evaluateXPointer(String xpointer, InputStream is) {
+		String results = "";
+		// Parse the XPointer into usable namespaces and XPath expressions (assumes 1 only)
+		int xmlnsStart = xpointer.indexOf("xmlns(")+"xmlns(".length();
+		int xmlnsEnd = xpointer.indexOf(")", xmlnsStart);
+		int xpathStart = xpointer.indexOf("xpointer(")+"xpointer(".length();
+		int xpathEnd = xpointer.indexOf(")", xpathStart);
+		String xmlnsStr = xpointer.substring(xmlnsStart, xmlnsEnd);
+		String xpathStr = xpointer.substring(xpathStart, xpathEnd);
+		//System.out.println("xmlnsStr: "+xmlnsStr+" xpathStr: "+xpathStr);
+	        try {
+	        	XPath xpath = XPathFactory.newInstance().newXPath();
+	        	String[] xmlnsParts = xmlnsStr.split("=");
+	         	xpath.setNamespaceContext(new MyNamespaceContext(xmlnsParts[0], xmlnsParts[1]));
+	         	InputSource src = new InputSource(is);
+	         	results = (String) xpath.evaluate(xpathStr, src);
+	        } catch (Exception e) {
+	        	System.out.println("ERROR in evaluating XPointer.  "+e.getMessage());
+	        } 
+		return results;
+	}
+
+	public static String evaluateXPointer(String xpointer, Document doc) {
+		InputStream is = null;
+		try {
+			is = IOUtils.DocumentToInputStream(doc);
+		} catch (Exception e) {}
+
+		return evaluateXPointer(xpointer, is);
+	}
+
+	/**
+	 * Custom namespace class for adding additional namespaces for XPath evaluation
+	 *
+	 */
+	public static class MyNamespaceContext implements NamespaceContext {
+
+		protected String currentPrefix = null;
+		protected String currentUri = null;
+
+		public void setCurrentNamespace(String prefix, String uri) {
+			this.currentPrefix = prefix;
+			this.currentUri = uri;
+		}
+
+		public MyNamespaceContext(String prefix, String uri) {
+			super();
+			this.currentPrefix = prefix;
+			this.currentUri = uri;
+		}
+
+		public String getNamespaceURI(String prefix) {
+		    if (prefix.equals(currentPrefix)) {
+		        return currentUri;
+		    }
+		    else {
+		        return XMLConstants.NULL_NS_URI;
+		    }
+		}
+
+		public String getPrefix(String namespace) {
+		    if (namespace.equals(currentUri)) {
+		        return currentPrefix;
+		    }
+		    else {
+		        return null;
+		    }
+		}
+
+		public Iterator getPrefixes(String namespace) {
+		    return null;
+		}
 	}
 
 }

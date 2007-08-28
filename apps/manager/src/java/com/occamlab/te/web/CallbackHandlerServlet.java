@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.HashMap;
@@ -25,6 +26,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
@@ -64,7 +69,6 @@ public class CallbackHandlerServlet extends HttpServlet {
 			String value = config.getInitParameter(name);
 			xpointerParams.put(name, value);
 		}
-
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -72,7 +76,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		logger.info("Callback request recieved.");
+		logger.info("Callback response recieved.");
 
 		// 1) Process the request (response from a previous request)
 		try {
@@ -100,18 +104,22 @@ public class CallbackHandlerServlet extends HttpServlet {
 				HttpEntity entity = new ByteArrayEntity(respBytes);
 				resp.setEntity(entity);
 
-				// TODO: Get the correlation id from the response (xpath)
-				/*
+				// Determine the document element for the given response
 				ByteArrayInputStream baip = new ByteArrayInputStream(respBytes);
-				dbf = DocumentBuilderFactory.newInstance();
+				System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);
-				dbf.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
-				db = dbf.newDocumentBuilder();
+				DocumentBuilder db = dbf.newDocumentBuilder();
 				Document doc = db.parse(baip);
-				// See if the document element matches any of the given Pointers and call it
-				doc.getDocumentElement();
-				*/
-				String reqId = "";
+				String rootName = doc.getDocumentElement().getLocalName();
+
+				// See if the document element matches any of the given XPointers and call it
+				String xpointer = xpointerParams.get(rootName);
+				if (xpointer == null) {
+					logger.info("Document not supported ("+rootName+"); will not save the response.");
+					return;
+				}
+				String reqId = Utils.evaluateXPointer(xpointer, doc);
 
 				// Save the response to file, for use by the engine
 				String hash = Utils.generateMD5(reqId);
@@ -121,13 +129,12 @@ public class CallbackHandlerServlet extends HttpServlet {
 				IOUtils.writeObjectToFile(resp, file);
 			}
 		} catch (Exception e){
-			System.out.println("Error reading XML response: "+e.getMessage());
+			logger.severe("Error while reading XML response: "+e.getMessage());
 		}
+		
 		// 2) Send a simple acknowledgement response, status code 204 (No Content)
 		response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-
-		// Stop the server when we get a response
-		logger.info("Callback response, status code 204, sent.");
+		logger.info("Sent response, status code 204.");
 	}
 
 }

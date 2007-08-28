@@ -342,13 +342,13 @@ public class TECore {
     	try {
     		ackResp = build_request(xml);
     	} catch (Exception e){
-    		System.out.println("ERROR: "+e.getMessage());
+    		System.err.println("ERROR: "+e.getMessage());
     	}
 
-    	// Get the port (ignored at this time) and timeout values
+    	// Get the port (ignored at this time), timeout, and xpointer-id values
     	NamedNodeMap nnm = xml.getAttributes();
     	Attr portAttr = ((Attr) nnm.getNamedItem("port"));
-    	int port = 8080;
+    	int port = 80;
     	if (portAttr != null) {
     		port = Integer.parseInt(portAttr.getValue());
     	}
@@ -357,18 +357,31 @@ public class TECore {
     	if (timeoutAttr != null) {
     		timeout = Integer.parseInt(timeoutAttr.getValue());
     	}
+	Attr xpointerIdAttr = ((Attr) nnm.getNamedItem("xpointer-id"));
+	String xpointerId = "//@requestId";
+    	if (xpointerIdAttr != null) {
+    		xpointerId = xpointerIdAttr.getValue();
+    	}
 
-	// Get the requestId
-	// TODO: Get the xpath from the async-request element and find the required element
-	//NodeList nodelist = org.apache.xpath.XPathAPI.selectNodeList(doc, xpath);
+	// Retrieve the requestId from the acknowledgement
 	String reqId = "";
+	try {
+		InputStream is = ackResp.getEntity().getContent();
+		reqId = Utils.evaluateXPointer(xpointerId, is);
+	} catch (Exception e){
+		System.err.println("ERROR: "+e.getMessage());
+	}
 
-	// TODO: Start a timeout thread, and continually check the file
+	if (reqId.equals("")) {
+		System.err.println("ERROR:  No request id was found in the acknowledgement.");
+		return new HttpResponse[] {ackResp, null};
+	}
 
-	// Get the response
+	// Check for the response until it is available, then retrieve it
 	String hash = Utils.generateMD5(reqId);
 	String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 	File file = new File(path, "BasicHttpResponse.dat");
+	// TODO: use a timer until it is there / or stop when timeout is reached
 	BasicHttpResponse resp = (BasicHttpResponse) IOUtils.readObjectFromFile(file);
 
     	return new HttpResponse[] {ackResp, resp};

@@ -24,12 +24,12 @@
       <servlet-class>com.occamlab.te.web.CallbackHandlerServlet</servlet-class>
       <!-- XPointer expressions, which the CallbackHandler can use to determine where to store each response -->
       <init-param>
-            <param-name>xmlns(csw=http://www.opengis/net/cat/csw) xpointer(csw:HarvestResponse)</param-name>
-            <param-value>xmlns(csw=http://www.opengis/net/cat/csw) xpointer(csw:HarvestResponse/csw:requestId)</param-value>
+            <param-name>HarvestResponse</param-name>
+            <param-value>xmlns(csw=http://www.opengis.net/cat/csw)xpointer(/csw:HarvestResponse/csw:TransactionResponse/csw:TransactionSummary/@requestId)</param-value>
       </init-param>
       <init-param>
-            <param-name>xmlns(csw=http://www.opengis/net/cat/csw) xpointer(csw:GetRecordsResponse)</param-name>
-            <param-value>xmlns(csw=http://www.opengis/net/cat/csw) xpointer(csw:GetRecordsResponse/csw:requestId)</param-value>
+            <param-name>GetRecordsResponse</param-name>
+            <param-value>xmlns(csw=http://www.opengis.net/cat/csw)xpointer(/csw:GetRecordsResponse/csw:RequestId)</param-value>
       </init-param>
     </servlet>	
     <servlet-mapping>

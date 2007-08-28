@@ -9,6 +9,16 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
 
 /**
  * Provides various utility methods to read/write from files and streams.
@@ -16,6 +26,50 @@ import java.io.InputStreamReader;
  * @author jparrpearson
  */
 public class IOUtils {
+
+	/**
+	* Converts an org.w3c.dom.Document element to an java.io.InputStream.
+	*
+	* @param edoc
+	*      the org.w3c.dom.Document to be converted
+	* @return InputStream
+	*      the InputStream value of the passed doument
+	*/
+	public static InputStream DocumentToInputStream(Document edoc) throws IOException {
+
+	    // Create the input and output for use in the transformation
+	    final org.w3c.dom.Document doc = edoc;
+	    final PipedOutputStream pos = new PipedOutputStream();
+	    PipedInputStream pis = new PipedInputStream();
+	    pis.connect(pos);
+
+	    (new Thread(new Runnable() {
+
+	            public void run() {
+	                    // Use the Transformer.transform() method to save the Document to a StreamResult
+	                    try {
+	                            TransformerFactory tFactory = TransformerFactory.newInstance();
+	                            Transformer transformer = tFactory.newTransformer();
+	                            transformer.setOutputProperty("encoding", "UTF-8");
+	                            transformer.setOutputProperty("indent", "yes");
+	                            transformer.transform(new DOMSource(doc), new StreamResult(pos));
+	                    }
+	                    catch (Exception e) {
+	                            throw new RuntimeException("Error converting Document to InputStream.  "+ e.getMessage());
+	                    }
+	                    finally {
+	                            try {
+	                                    pos.close();
+	                            }
+	                            catch (IOException e) {
+
+	                            }
+	                    }
+	            }
+	    }, "MyClassName.DocumentToInputStream(org.w3c.dom.Document edoc)")).start();
+
+	    return pis;
+	}
 
 	/**
 	 * Converts an InputStream to a String
