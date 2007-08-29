@@ -222,7 +222,7 @@ public class HTTPParser {
                 }
                 temp = create_part_file(in, boundary, "text/plain");
                 URLConnection pc = temp.toURL().openConnection();
-                pc.setRequestProperty("Content-type", mime);
+                pc.setRequestProperty("Content-Type", mime);
                 Node parser = select_parser(num, contentType, instruction);
 
                 // Get URLConnection values

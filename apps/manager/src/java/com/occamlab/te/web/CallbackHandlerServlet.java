@@ -87,7 +87,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 				InputStream is = request.getInputStream();
 				byte[] respBytes = IOUtils.inputStreamToBytes(is);
 
-				// Construct the HttpResponse (HttpBasicResponse) to send to parsers
+				// Construct the HttpResponse (BasicHttpResponse) to send to parsers
 				// TODO: Get actual status from servlet request, don't assumed HTTP/1.1, 200 OK
 				HttpVersion version = new HttpVersion(1,1);
 				BasicStatusLine statusLine = new BasicStatusLine(version, 200, "OK");
@@ -105,12 +105,12 @@ public class CallbackHandlerServlet extends HttpServlet {
 				resp.setEntity(entity);
 
 				// Determine the document element for the given response
-				ByteArrayInputStream baip = new ByteArrayInputStream(respBytes);
+				ByteArrayInputStream bais = new ByteArrayInputStream(respBytes);
 				System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse(baip);
+				Document doc = db.parse(bais);
 				String rootName = doc.getDocumentElement().getLocalName();
 
 				// See if the document element matches any of the given XPointers and call it
@@ -126,8 +126,8 @@ public class CallbackHandlerServlet extends HttpServlet {
 				String hash = Utils.generateMD5(reqId);
 				String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 				new File(path).mkdirs();
-				File file = new File(path, "BasicHttpResponse.dat");
-				IOUtils.writeBasicHttpResponseToFile(resp, file);
+				File file = new File(path, "HttpResponse.dat");
+				IOUtils.writeHttpResponseToFile(resp, file);
 			}
 		} catch (Exception e){
 			logger.severe("Error while reading XML response.  "+e.getMessage());

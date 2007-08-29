@@ -382,10 +382,10 @@ public class TECore {
 	// Check for the response until it is available, then retrieve it
 	String hash = Utils.generateMD5(reqId);
 	String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
-	File file = new File(path, "BasicHttpResponse.dat");
+	File file = new File(path, "HttpResponse.dat");
 	BasicHttpResponse resp = null;
 	try {
-		resp = IOUtils.pollBasicHttpResponseFile(file, timeout);
+		resp = (BasicHttpResponse) IOUtils.pollHttpResponseFile(file, timeout);
 	} catch (Exception e) {
 		System.err.println("Error polling and retrieving file.  "+e.getMessage());
 	}
@@ -709,7 +709,7 @@ public class TECore {
 	String respMess = ((HttpURLConnection) uc).getResponseMessage();
     	Map respHeaders = ((HttpURLConnection) uc).getHeaderFields();
 
-	// Construct the HttpResponse (HttpBasicResponse) to send to parsers
+	// Construct the HttpResponse (BasicHttpResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);
 	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
 	BasicHttpResponse resp = new BasicHttpResponse(statusLine);
@@ -806,7 +806,7 @@ public class TECore {
 	InputStream is = uc.getInputStream();
 	byte[] respBytes = IOUtils.inputStreamToBytes(is);
 
-	// Construct the HttpResponse (HttpBasicResponse) to send to parsers
+	// Construct the HttpResponse (BasicHttpResponse) to send to parsers
 	HttpVersion version = new HttpVersion(1,1);
 	int respCode = 200;
 	String respMess = "OK";

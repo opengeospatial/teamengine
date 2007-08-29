@@ -2,10 +2,14 @@ package com.occamlab.te.util;
 
 import java.io.InputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.DataInputStream;
@@ -18,7 +22,9 @@ import java.io.PipedOutputStream;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -192,34 +198,35 @@ public class IOUtils {
 	}
 
 	/**
-	 * Writes a BasicHttpResponseToFile object to a file
+	 * Writes a HttpResponseToFile object to a file
 	 */
-	public static boolean writeBasicHttpResponseToFile(BasicHttpResponse resp, File f) {
+	public static boolean writeHttpResponseToFile(HttpResponse resp, File f) {
 		try {
-			FileWriter fw = new FileWriter(f);
+			OutputStreamWriter fw = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(f)), "UTF-8");
+			//FileWriter fw = new FileWriter(f);
 
-			//fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			fw.write("<BasicHttpResponse>");
-			fw.write("<StatusLine>");
+			fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			fw.write("<httpresponse>\n");
+			fw.write("<status>\n");
 			BasicStatusLine statusLine = (BasicStatusLine)resp.getStatusLine();
 			HttpVersion version = statusLine.getHttpVersion();
 			int major = version.getMajor();
 			int minor = version.getMinor();
 			String reasonPhase = statusLine.getReasonPhrase();
 			int statusCode = statusLine.getStatusCode();
-			fw.write("<HttpVersion>"+major+","+minor+"</HttpVersion>");
-			fw.write("<ReasonPhase>"+reasonPhase+"</ReasonPhase>");
-			fw.write("<StatusCode>"+statusCode+"</StatusCode>");
-			fw.write("</StatusLine>");
-			fw.write("<Headers>");
+			fw.write("<version>"+major+","+minor+"</version>\n");
+			fw.write("<reason>"+reasonPhase+"</reason>\n");
+			fw.write("<code>"+statusCode+"</code>\n");
+			fw.write("</status>\n");
+			fw.write("<headers>\n");
 			Header[] headers = resp.getAllHeaders();
 			for (int i = 0; i < headers.length; i++) {
 				String name = headers[i].getName();
 				String value = headers[i].getValue();
-				fw.write("<Header name=\""+name+"\">"+value+"</Header>");
+				fw.write("<header name=\""+name+"\">"+value+"</header>\n");
 			}
-			fw.write("</Headers>");
-			fw.write("<Body>");
+			fw.write("</headers>\n");
+			fw.write("<content>");
 			InputStream is = resp.getEntity().getContent();
 			String entityStr = inputStreamToString(is);
 			// Strip XML declaration
@@ -228,34 +235,34 @@ public class IOUtils {
 				entityStr = entityStr.substring(endOfXmlDecl).trim();
 			}
 			fw.write(entityStr);
-			fw.write("</Body>");
-			fw.write("</BasicHttpResponse>");
+			fw.write("</content>\n");
+			fw.write("</httpresponse>");
 
 			fw.flush();
 			fw.close();
 		} catch (Exception e) {
-	   		System.out.println("Error writing BasicHttpResponse to file: "+e.getMessage());
+	   		System.out.println("Error writing HttpResponse to file: "+e.getMessage());
 	   		return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Reads a BasicHttpResponseToFile object from a file
+	 * Reads a HttpResponseToFile object from a file
 	 */
-	public static BasicHttpResponse readBasicHttpResponseFromFile(File f) {
+	public static HttpResponse readHttpResponseFromFile(File f) {
 		BasicHttpResponse resp = null;
 		try {
 			System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			dbf.setNamespaceAware(false);
+			dbf.setNamespaceAware(true);
 			dbf.setValidating(false);
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(f);
 
-			NodeList versionNodes = doc.getElementsByTagName("HttpVersion");
-			NodeList reasonNodes = doc.getElementsByTagName("ReasonPhase");
-			NodeList codeNodes = doc.getElementsByTagName("StatusCode");
+			NodeList versionNodes = doc.getElementsByTagName("version");
+			NodeList reasonNodes = doc.getElementsByTagName("reason");
+			NodeList codeNodes = doc.getElementsByTagName("code");
 			String[] versionStr = versionNodes.item(0).getTextContent().split(",");
 			int major = Integer.parseInt(versionStr[0]);
 			int minor = Integer.parseInt(versionStr[1]);
@@ -265,20 +272,20 @@ public class IOUtils {
 			BasicStatusLine statusLine = new BasicStatusLine(version, statusCode, reasonPhase);
 			resp = new BasicHttpResponse(statusLine);
 
-			NodeList headers = doc.getElementsByTagName("Header");
+			NodeList headers = doc.getElementsByTagName("header");
 			for (int i = 0; i < headers.getLength(); i++) {
 				String name = ((Element)headers.item(i)).getAttribute("name");
 				String value = ((Element)headers.item(i)).getTextContent();
 				resp.addHeader(name, value);
 			}
 
-			NodeList bodies = doc.getElementsByTagName("Body");
-			String bodyStr = bodies.item(0).getTextContent();
+			NodeList contentNodes = doc.getElementsByTagName("content");
+			String bodyStr = contentNodes.item(0).getTextContent();
 			StringEntity entity = new StringEntity(bodyStr);
 			resp.setEntity(entity);
-			//System.out.println("BasicHttpResponse elements: "+versionStr+"|"+reasonPhase+"|"+statusCode+"|\n\n"+bodyStr+"\n\n|"+headers.getLength()+" headers");
+			//System.out.println("HttpResponse elements: "+versionStr+"|"+reasonPhase+"|"+statusCode+"|\n\n"+bodyStr+"\n\n|"+headers.getLength()+" headers");
 		} catch (Exception e) {
-	   		System.out.println("Error reading BasicHttpResponse from file: "+e.getMessage());
+	   		System.out.println("Error reading HttpResponse from file: "+e.getMessage());
 	   		return null;
 		}
 		return resp;
@@ -286,9 +293,9 @@ public class IOUtils {
 
 	/**
 	 * Polls a file periodically until it 1) exists or 2) the timeout is exceeded (returns null)
-	 * Reads the file as a BasicHttpResponse object
+	 * Reads the file as a HttpResponse object
 	 */
-	public static BasicHttpResponse pollBasicHttpResponseFile(File file, int timeout, int interval) throws InterruptedException {
+	public static HttpResponse pollHttpResponseFile(File file, int timeout, int interval) throws InterruptedException {
 		// Convert time from s to ms for Thread
 		int fullTimeout = Math.round(timeout*1000);
 
@@ -300,7 +307,7 @@ public class IOUtils {
 			Thread.sleep(timeoutShard);
 			if (file.exists() && file.canRead()) {
 				//Thread.sleep(timeoutShard);
-				return readBasicHttpResponseFromFile(file);
+				return readHttpResponseFromFile(file);
 			}
 		}
 
@@ -308,8 +315,8 @@ public class IOUtils {
 		return null;
 	}
 
-	public static BasicHttpResponse pollBasicHttpResponseFile(File file, int timeout) throws InterruptedException {
-		return pollBasicHttpResponseFile(file, timeout, 20);
+	public static HttpResponse pollHttpResponseFile(File file, int timeout) throws InterruptedException {
+		return pollHttpResponseFile(file, timeout, 20);
 	}
 
 	/**

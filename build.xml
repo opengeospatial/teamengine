@@ -168,7 +168,9 @@
       <fileset dir="apps/manager/resources"/>
     </copy>
     <copy todir="webapps/teamengine/WEB-INF/lib">
-      <fileset dir="apps/engine/lib"/>
+      <fileset dir="apps/engine/lib">
+		  <exclude name="servlet-api.jar"/>
+      </fileset>
       <fileset dir="apps/engine/dist"/>
       <fileset dir="apps/manager/lib"/>
     </copy>
