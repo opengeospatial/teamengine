@@ -120,16 +120,17 @@ public class CallbackHandlerServlet extends HttpServlet {
 					return;
 				}
 				String reqId = Utils.evaluateXPointer(xpointer, doc);
+				//System.out.println("reqId: "+reqId);
 
 				// Save the response to file, for use by the engine
 				String hash = Utils.generateMD5(reqId);
 				String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 				new File(path).mkdirs();
 				File file = new File(path, "BasicHttpResponse.dat");
-				IOUtils.writeObjectToFile(resp, file);
+				IOUtils.writeBasicHttpResponseToFile(resp, file);
 			}
 		} catch (Exception e){
-			logger.severe("Error while reading XML response: "+e.getMessage());
+			logger.severe("Error while reading XML response.  "+e.getMessage());
 		}
 		
 		// 2) Send a simple acknowledgement response, status code 204 (No Content)

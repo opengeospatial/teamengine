@@ -342,7 +342,7 @@ public class TECore {
     	try {
     		ackResp = build_request(xml);
     	} catch (Exception e){
-    		System.err.println("ERROR: "+e.getMessage());
+    		System.err.println("Error retrieving acknowledgement.  "+e.getMessage());
     	}
 
     	// Get the port (ignored at this time), timeout, and xpointer-id values
@@ -372,10 +372,10 @@ public class TECore {
 		ackResp.setEntity(entity);
 		reqId = Utils.evaluateXPointer(xpointerId, copyBytes);
 	} catch (Exception e){
-		System.err.println("ERROR: "+e.getMessage());
+		System.err.println("Error determining request id.  "+e.getMessage());
 	}
 	if (reqId.equals("")) {
-		System.err.println("ERROR:  No request id was found in the acknowledgement.");
+		System.err.println("Error, no request id was found in the acknowledgement.");
 		return new HttpResponse[] {ackResp, null};
 	}
 
@@ -383,13 +383,12 @@ public class TECore {
 	String hash = Utils.generateMD5(reqId);
 	String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 	File file = new File(path, "BasicHttpResponse.dat");
-	Object respObj = null;
+	BasicHttpResponse resp = null;
 	try {
-		respObj = IOUtils.pollFile(file, timeout);
+		resp = IOUtils.pollBasicHttpResponseFile(file, timeout);
 	} catch (Exception e) {
-		System.err.println("ERROR: "+e.getMessage());
+		System.err.println("Error polling and retrieving file.  "+e.getMessage());
 	}
-	BasicHttpResponse resp = (BasicHttpResponse) respObj;
 
     	return new HttpResponse[] {ackResp, resp};
     }

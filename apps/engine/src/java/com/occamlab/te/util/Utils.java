@@ -70,7 +70,7 @@ public class Utils {
 			md.update(text.getBytes("iso-8859-1"), 0, text.length());
 			md5hash = md.digest();
 		} catch (Exception e) {
-			System.out.println("ERROR: "+e.getMessage());
+			System.out.println("Error generating MD5: "+e.getMessage());
 			return "";
 		}
 		return convertToHex(md5hash);
@@ -126,7 +126,7 @@ public class Utils {
 	         	results = (String) xpath.evaluate(xpathStr, src);
 	         	//System.out.println("results: "+results);
 	        } catch (Exception e) {
-	        	System.out.println("ERROR in evaluating XPointer.  "+e.getMessage());
+	        	System.out.println("Error in evaluating XPointer.  "+e.getMessage());
 	        } 
 		return results;
 	}
