@@ -355,9 +355,9 @@
 
     <p>In some cases, the assertion text may be vague if read in isolation,
     but its meaning should be clear when viewed in the context of the assertion
-    of the calling test. For example, the assertion “A summary is present” is
-    vague, but if the assertion of the parent test is “HTML tables are properly
-    formatted”, then it is clear that the test looks for a summary on an HTML
+    of the calling test. For example, the assertion "A summary is present" is
+    vague, but if the assertion of the parent test is "HTML tables are properly
+    formatted", then it is clear that the test looks for a summary on an HTML
     table.</p>
 
     <h5 id="test.comments">3.2.3.4 comment</h5>
@@ -689,7 +689,7 @@
     <p>The &lt;part&gt; element is used to send a multipart/form-data request.
     The parts will be added in the order they are received.  Each part requires
     a name, and an optional content-type (default of "application/octet-stream").
-    The value of the parameter can be inline XML or text (including xinclude) or a
+    The value of the parameter can be inline XML or text (including XInclude) or a
     &lt;file&gt; element.  The  &lt;file&gt; element is used to reference a file by
     URL, file (absolute path), or resource (classpath) and the file is then loaded
     as an attachment for the part.</p>
@@ -865,7 +865,7 @@
 
     <h4 id="message.example">4.5.5 Sample usage</h4>
     <pre class="example">
-&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="concat(’Table ’, caption)" />
+&lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl" select="concat("Table", caption)" />
 
 &lt;ctl:message xmlns:ctl="http://www.occamlab.com/ctl">Table &lt;xsl:value-of select="caption"/>&lt;/ctl:message>
 </pre>
@@ -977,7 +977,7 @@
     of the response asynchronously (the client must still wait synchronously, just not over the
     HTTP connection). This element is nearly identical with the request element, with the addition
     of the port and timeout attributes.  The response is also slightly different returning both the
-    acknowledgement and the final reponse.</p>
+    acknowledgement and the final response.</p>
 
     <h4 id="async-request.encoding">4.10.2 Syntax</h4>
     <p>The aync-request instruction may contain a combination of literal XML elements
@@ -1008,11 +1008,11 @@
 
     <h5 id="async-request.timeout">4.10.3.2 timeout</h5>
     <p>The &lt;timeout&gt; attribute indicates the timeout (time in seconds) that the
-    engine will wait for the the requested service to return a response before it times out.
+    engine will wait for the requested service to return a response before it times out.
     If no timeout is given the default of 10 seconds is used.</p>
 
     <h5 id="async-request.xpointerid">4.10.3.3 xpointer-id</h5>
-    <p>The &lt;xpointer-id&gt; attribute is a wrapper to container both xmlns and xpath
+    <p>The &lt;xpointer-id&gt; attribute is a wrapper to container both xmlns and XPath
     expressions for finding the unique request id associated with the response.  This id must
     be present in both the acknowledgement and final response so that the callback handler can
     properly store the file and the engine can find it.</p>
@@ -1091,7 +1091,7 @@ xpointer-id="'xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)xpointer(//csw:Requ
 &lt;/ctl:async-request></pre>
 
     <p>With no parser, the above example would give an output such as below. The acknowledgement
-    and final response can be accessed via "$response/content[1]/*" and "$response/contetn[2]/*"
+    and final response can be accessed via "$response/content[1]/*" and "$response/content[2]/*"
     respectively.</p>
 
     <pre class="example">
@@ -1569,8 +1569,8 @@ ctl:addDomAttr($kml.doc, 'kml', 'http://earth.google.com/kml/2.1', 'xml:base', '
         </tr>
         <tr>
           <th>Returns</th>
-          <td>The path to the file (minus the filename).  Bascially, takes the substring
-          before the last occurance of either "/" or "\".</td>
+          <td>The path to the file (minus the filename).  Basically, takes the substring
+          before the last occurence of either "/" or "\".</td>
         </tr>
       </tbody>
     </table>
