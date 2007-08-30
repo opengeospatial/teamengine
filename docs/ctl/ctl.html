@@ -985,7 +985,7 @@
     been evaluated, the resulting XML shall conform to the following encoding.</p>
     <pre>
 &lt;ctl:async-request xmlns:ctl="http://www.occamlab.com/ctl"
-  port="xsd:integer" timeout="xsd:integer" xpointer-id="xsd:string">
+  port="xsd:integer" timeout="xsd:integer" <strong>xpointer-id</strong>="xsd:string">
   &lt;ctl:url><em>xsd:anyURI</em>&lt;/ctl:url>
   &lt;ctl:method>[GET | POST | HEAD]&lt;/ctl:method>
   &lt;ctl:param <strong>name</strong>="xsd:string"><em>xsd:string</em>&lt;/ctl:param> *
@@ -1003,13 +1003,12 @@
     <h5 id="async-request.port">4.10.3.1 port</h5>
     <p>The &lt;port&gt; attribute indicates the port in which the response from
     the requested service will be returned to.  If no port is given the default of "80"
-    is used. (Note: the port is not used at this time, the callback handler is always deployed
-    with the engine in the web context)</p>
+    is used. (Note: the port is not used in the web context at this time)</p>
 
     <h5 id="async-request.timeout">4.10.3.2 timeout</h5>
     <p>The &lt;timeout&gt; attribute indicates the timeout (time in seconds) that the
     engine will wait for the requested service to return a response before it times out.
-    If no timeout is given the default of 10 seconds is used.</p>
+    If no timeout is given the default of "10" seconds is used.</p>
 
     <h5 id="async-request.xpointerid">4.10.3.3 xpointer-id</h5>
     <p>The &lt;xpointer-id&gt; attribute is a wrapper to container both xmlns and XPath

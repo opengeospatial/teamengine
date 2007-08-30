@@ -13,8 +13,26 @@
 
 	<xsl:template match="ctl:async-request">
 		<xsl:variable name="request-id" select="generate-id()"/>
-		<xsl:variable name="port" select="@port"/>
-		<xsl:variable name="timeout" select="@timeout"/>
+		<xsl:variable name="port">
+			<xsl:choose>
+			<xsl:when test="@port">
+				<xsl:value-of select="@port"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="'80'"/>
+			</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="timeout">
+			<xsl:choose>
+			<xsl:when test="@timeout">
+				<xsl:value-of select="@timeout"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="'10'"/>
+			</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		<xsl:variable name="xpointer-id" select="@xpointer-id"/>
 		<txsl:variable name="te:web-call-id">
 			<xsl:call-template name="loc"/>
