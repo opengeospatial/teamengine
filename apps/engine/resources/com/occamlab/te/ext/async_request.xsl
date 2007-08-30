@@ -64,10 +64,10 @@
 			<xsl:copy-of select="$parser"/>
 		</txsl:variable>
 		<xsl:call-template name="loc-element"/>
-		<txsl:variable name="te:response">
+		<txsl:variable name="te:responses">
 			<txsl:choose>
-				<txsl:when test="$te:mode='2' and boolean($te:log/log/response[@id = $te:web-call-id])">
-					<txsl:copy-of select="$te:log/log/response[@id = $te:web-call-id]"/>
+				<txsl:when test="$te:mode='2' and boolean($te:log/log/responses[@id = $te:web-call-id])">
+					<txsl:copy-of select="$te:log/log/responses[@id = $te:web-call-id]"/>
 				</txsl:when>
 				<txsl:otherwise>
 					<xsl:choose>
@@ -84,12 +84,14 @@
 				</txsl:otherwise>
 			</txsl:choose>
 		</txsl:variable>
-		<txsl:if test="string-length($te:response/response/parser) &gt; 0">
-			<txsl:value-of select="te:message($te:core, $te:call-depth + 1, $te:response/response/parser)"/>
+		<txsl:if test="string-length($te:responses/responses/parser) &gt; 0">
+			<txsl:value-of select="te:message($te:core, $te:call-depth + 1, $te:responses/responses/parser)"/>
 		</txsl:if>
-		<txsl:value-of select="te:log_xml($te:core, $te:response)"/>
-		<txsl:for-each select="$te:response/response/content">
-			<txsl:copy-of select="*|text()"/>
+		<txsl:value-of select="te:log_xml($te:core, $te:responses)"/>
+		<txsl:for-each select="$te:responses/responses/content">
+			<content>
+				<txsl:copy-of select="*|text()"/>
+			</content>
 		</txsl:for-each>
 	</xsl:template>
 	

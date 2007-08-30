@@ -202,30 +202,30 @@ public class IOUtils {
 	 */
 	public static boolean writeHttpResponseToFile(HttpResponse resp, File f) {
 		try {
-			OutputStreamWriter fw = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(f)), "UTF-8");
+			OutputStreamWriter fw = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(f)), "UTF8");
 			//FileWriter fw = new FileWriter(f);
 
-			fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			fw.write("<httpresponse>\n");
-			fw.write("<status>\n");
+			fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+			fw.write("<httpresponse>\r\n");
+			fw.write("<status>\r\n");
 			BasicStatusLine statusLine = (BasicStatusLine)resp.getStatusLine();
 			HttpVersion version = statusLine.getHttpVersion();
 			int major = version.getMajor();
 			int minor = version.getMinor();
 			String reasonPhase = statusLine.getReasonPhrase();
 			int statusCode = statusLine.getStatusCode();
-			fw.write("<version>"+major+","+minor+"</version>\n");
-			fw.write("<reason>"+reasonPhase+"</reason>\n");
-			fw.write("<code>"+statusCode+"</code>\n");
-			fw.write("</status>\n");
-			fw.write("<headers>\n");
+			fw.write("<version>"+major+","+minor+"</version>\r\n");
+			fw.write("<reason>"+reasonPhase+"</reason>\r\n");
+			fw.write("<code>"+statusCode+"</code>\r\n");
+			fw.write("</status>\r\n");
+			fw.write("<headers>\r\n");
 			Header[] headers = resp.getAllHeaders();
 			for (int i = 0; i < headers.length; i++) {
 				String name = headers[i].getName();
 				String value = headers[i].getValue();
-				fw.write("<header name=\""+name+"\">"+value+"</header>\n");
+				fw.write("<header name=\""+name+"\">"+value+"</header>\r\n");
 			}
-			fw.write("</headers>\n");
+			fw.write("</headers>\r\n");
 			fw.write("<content>");
 			InputStream is = resp.getEntity().getContent();
 			String entityStr = inputStreamToString(is);
@@ -235,8 +235,8 @@ public class IOUtils {
 				entityStr = entityStr.substring(endOfXmlDecl).trim();
 			}
 			fw.write(entityStr);
-			fw.write("</content>\n");
-			fw.write("</httpresponse>");
+			fw.write("</content>\r\n");
+			fw.write("</httpresponse>\r\n");
 
 			fw.flush();
 			fw.close();
@@ -280,10 +280,11 @@ public class IOUtils {
 			}
 
 			NodeList contentNodes = doc.getElementsByTagName("content");
-			String bodyStr = contentNodes.item(0).getTextContent();
+			Node bodyNode = (Node)contentNodes.item(0).getFirstChild();
+			String bodyStr = DomUtils.serializeNode(bodyNode);
 			StringEntity entity = new StringEntity(bodyStr);
 			resp.setEntity(entity);
-			//System.out.println("HttpResponse elements: "+versionStr+"|"+reasonPhase+"|"+statusCode+"|\n\n"+bodyStr+"\n\n|"+headers.getLength()+" headers");
+			//System.out.println("HttpResponse elements: "+major+","+minor+"|"+reasonPhase+"|"+statusCode+"|\n\n"+bodyStr+"\n\n|"+headers.getLength()+" headers");
 		} catch (Exception e) {
 	   		System.out.println("Error reading HttpResponse from file: "+e.getMessage());
 	   		return null;

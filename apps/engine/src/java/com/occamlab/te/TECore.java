@@ -409,7 +409,7 @@ public class TECore {
         Transformer t = TransformerFactory.newInstance().newTransformer();
         Document response_doc = db.newDocument();
         Element parser_e = response_doc.createElement("parser");
-        Element response_e = response_doc.createElement("response");
+        Element response_e = response_doc.createElement("responses");
         if (response_id != null) {
             response_e.setAttribute("id", response_id);
         }

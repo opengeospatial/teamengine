@@ -12,12 +12,16 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Attr;
+
+import org.apache.xml.serialize.XMLSerializer;
+import org.apache.xml.serialize.OutputFormat;
 
 /**
  * Allows for manipulating of a DOM Document by adding/removing/etc elements and attributes.
@@ -122,6 +126,35 @@ public class DomUtils {
 	}
 	return false;
     }
+
+    /**
+     * Serializes a Node to a String
+     */
+    public static String serializeNode(Node node) {
+        
+        try {
+	        OutputFormat format = new OutputFormat();
+	        StringWriter result = new StringWriter();   
+	        XMLSerializer serializer = new XMLSerializer(result, format);         
+	        switch (node.getNodeType()) {
+		        case Node.DOCUMENT_NODE:               
+		        	serializer.serialize((Document) node);
+		        	break;
+		        case Node.ELEMENT_NODE:
+		        	serializer.serialize((Element) node);
+		        	break;
+		        case Node.DOCUMENT_FRAGMENT_NODE:
+		        	serializer.serialize((DocumentFragment) node);
+		        	break;
+		}
+		return result.toString();
+        } catch (Exception e) {
+        	System.out.println("Error serializing DOM Node.  "+e.getMessage());
+        }
+        
+        return null;
+    }
+
 
     /** HELPER METHOD TO PRINT A DOM TO STDOUT */
     static public void displayNode(Node node) {
