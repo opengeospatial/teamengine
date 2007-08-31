@@ -54,6 +54,9 @@ public class WebServer {
 
 	// Override the TJWS Serve to allow for public mappings
 	private class PublicServe extends Serve {
+
+		private static final long serialVersionUID = 7433575227512756901L;
+
 	        public void setMappingTable(PathTreeDictionary mappingtable) {
                       super.setMappingTable(mappingtable);
                 }

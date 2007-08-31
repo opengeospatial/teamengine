@@ -159,10 +159,10 @@ public class Utils {
 	 *
 	 */
 	public static class MyNamespaceContext implements NamespaceContext {
-		private Map map;
+		private Map<String,String> map;
 
 		public MyNamespaceContext() {
-			map = new HashMap();
+			map = new HashMap<String,String>();
 		}
 
 		public void setNamespace(String prefix, String namespaceURI) {
@@ -184,7 +184,7 @@ public class Utils {
 		}
 
 		public Iterator getPrefixes(String namespaceURI) {
-			List prefixes = new ArrayList();
+			List<String> prefixes = new ArrayList<String>();
 			Set keys = map.keySet();
 			for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
 				String prefix = (String) iterator.next();

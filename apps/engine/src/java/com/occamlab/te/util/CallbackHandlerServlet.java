@@ -40,6 +40,8 @@ import com.occamlab.te.TECore;
  */
 public class CallbackHandlerServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 2144575227068756158L;
+
 	/** Internal class to close down the server when the given timeout elapses with a response recieved */
 	private class TimeoutExit extends Thread {
 

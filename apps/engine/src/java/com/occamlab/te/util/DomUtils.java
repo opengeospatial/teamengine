@@ -1,6 +1,7 @@
 package com.occamlab.te.util;
 
 import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,9 +20,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Attr;
-
-import org.apache.xml.serialize.XMLSerializer;
-import org.apache.xml.serialize.OutputFormat;
 
 /**
  * Allows for manipulating of a DOM Document by adding/removing/etc elements and attributes.
@@ -131,30 +129,20 @@ public class DomUtils {
      * Serializes a Node to a String
      */
     public static String serializeNode(Node node) {
-        
-        try {
-	        OutputFormat format = new OutputFormat();
-	        StringWriter result = new StringWriter();   
-	        XMLSerializer serializer = new XMLSerializer(result, format);         
-	        switch (node.getNodeType()) {
-		        case Node.DOCUMENT_NODE:               
-		        	serializer.serialize((Document) node);
-		        	break;
-		        case Node.ELEMENT_NODE:
-		        	serializer.serialize((Element) node);
-		        	break;
-		        case Node.DOCUMENT_FRAGMENT_NODE:
-		        	serializer.serialize((DocumentFragment) node);
-		        	break;
-		}
-		return result.toString();
-        } catch (Exception e) {
-        	System.out.println("Error serializing DOM Node.  "+e.getMessage());
-        }
-        
-        return null;
-    }
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	try {
+		TransformerFactory factory = TransformerFactory.newInstance();
+		Transformer transformer = factory.newTransformer();
 
+		DOMSource src = new DOMSource(node);
+		StreamResult dest = new StreamResult(baos);
+		transformer.transform(src, dest);
+	} catch (Exception e) {
+		System.out.println("Error serializing node.  "+e.getMessage());
+	}
+
+	return baos.toString();
+    }
 
     /** HELPER METHOD TO PRINT A DOM TO STDOUT */
     static public void displayNode(Node node) {

@@ -53,6 +53,8 @@ import com.occamlab.te.util.IOUtils;
  */
 public class CallbackHandlerServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 2833575227560756956L;
+
 	private Logger logger;
 	private Map<String, String> xpointerParams;
 	
@@ -63,7 +65,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 
 		// Get all XPointer expressions from config (web.xml)
 		Enumeration paramNames = config.getInitParameterNames();
-		xpointerParams = new HashMap();
+		xpointerParams = new HashMap<String,String>();
 		while (paramNames.hasMoreElements()) {
 			String name = (String) paramNames.nextElement();
 			String value = config.getInitParameter(name);
