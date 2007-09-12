@@ -80,15 +80,22 @@ public class Config {
 			File script_dir = new File(URLDecoder.decode(cl.getResource(
 					"com/occamlab/te/scripts/parsers.ctl").getFile(), "UTF-8"))
 					.getParentFile();
+
 			// automatically load extension modules
-			File modulesDir = new File(cl.getResource("modules/").getFile());
+			URL modulesURL = cl.getResource("modules/");
+			File modulesDir = null;
+			if (modulesURL != null) {
+				modulesDir = new File(modulesURL.getFile());
+			}
 
 			availableSuites = new LinkedHashMap<String, List<File>>();
 			NodeList sourcesList = configElem.getElementsByTagName("sources");
 			for (int i = 0; i < sourcesList.getLength(); i++) {
 				ArrayList<File> ctlLocations = new ArrayList<File>();
 				ctlLocations.add(script_dir);
-				ctlLocations.add(modulesDir);
+				if (modulesDir != null) {
+					ctlLocations.add(modulesDir);
+				}
 				Element sources = (Element) sourcesList.item(i);
 				String id = sources.getAttribute("id");
 				NodeList sourceList = sources.getElementsByTagName("source");
