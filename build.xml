@@ -180,8 +180,16 @@
     <if>
       <available file="${component}/setup"/>
       <then>
-        <copy todir="webapps/teamengine/WEB-INF/classes">
+        <copy todir="webapps/teamengine/WEB-INF/classes" overwrite="yes">
           <fileset dir="${component}/setup" excludes="**/*README*"/>
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${component}/resources"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/classes" overwrite="yes">
+          <fileset dir="${component}/resources"/>
         </copy>
       </then>
     </if>
@@ -190,6 +198,14 @@
       <then>
         <copy todir="webapps/teamengine/WEB-INF/lib" overwrite="yes">
           <fileset dir="${component}/dist" />
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${component}/lib"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/lib" overwrite="yes">
+          <fileset dir="${component}/lib" />
         </copy>
       </then>
     </if>
