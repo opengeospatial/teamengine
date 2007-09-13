@@ -134,7 +134,7 @@ public class ZipParser {
                 subdir = filename.substring(0, filename.lastIndexOf("/"));
             else if (filename.lastIndexOf("\\") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("\\"));
-            new File(path + "/" + subdir).mkdir();
+            new File(path + "/" + subdir).mkdirs();
             File outFile = new File(path, filename);
             if (outFile.isDirectory())
                 continue;
@@ -224,7 +224,7 @@ public class ZipParser {
                 subdir = filename.substring(0, filename.lastIndexOf("/"));
             else if (filename.lastIndexOf("\\") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("\\"));
-            new File(path + "/" + subdir).mkdir();
+            new File(path + "/" + subdir).mkdirs();
             File outFile = new File(path, filename);
             if (outFile.isDirectory())
                 continue;
