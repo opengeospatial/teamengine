@@ -420,13 +420,13 @@ public class ImageParser {
         }
 
         try {
-            ImageProducer producer;
+            byte[] imgBytes;
             try {
             	InputStream is = resp.getEntity().getContent();
-                producer = (ImageProducer) ((ObjectInputStream) is).readObject();
+            	imgBytes = IOUtils.inputStreamToBytes(is);
             } catch (Exception e) {
                 logger
-                        .println("ImageParser Error: Not a recognized image format");
+                        .println("ImageParser Error: Could not get the image");
                 return null;
             }
 
@@ -443,8 +443,7 @@ public class ImageParser {
                     "http://www.occamlab.com/te/parsers", "ImageParser")
                     .item(0);
 
-            Image image = java.awt.Toolkit.getDefaultToolkit().createImage(
-                    producer);
+            Image image = java.awt.Toolkit.getDefaultToolkit().createImage(imgBytes);
             ImageTracker tracker = new ImageTracker(image);
             String type = tracker.getImageType();
             int height = image.getHeight(tracker);
