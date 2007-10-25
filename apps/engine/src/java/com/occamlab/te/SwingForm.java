@@ -3,6 +3,8 @@ package com.occamlab.te;
 import java.awt.BorderLayout;
 import java.net.URLDecoder;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -10,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.html.FormView;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
@@ -36,7 +40,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
         }
 
         protected void submitData(String data) {
-            //System.out.println("data: "+data);
+//            System.out.println("data: "+data);
             try {
                 String kvps = data + "&=";
                 int start = 0;
@@ -64,9 +68,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                     Element valueElement = doc.createElement("value");
                     valueElement.setAttribute("key", key);
                     // Special case for file inputs
-                    // TODO: Fix this, it is not a very good method at the moment, it
-                    // just looks for the string "file" in the name of the input object.
-                    if (key.contains("file")) {
+                    if (fileFields.contains(key)) {
                     	File temp = new File(value);
                     	if (temp != null) {
                     		value = Core.saveFileToWorkingDir(value);
@@ -94,14 +96,33 @@ public class SwingForm extends JFrame implements HyperlinkListener {
 
     class CustomViewFactory extends HTMLEditorKit.HTMLFactory {
         public javax.swing.text.View create(javax.swing.text.Element elem) {
-            HTML.Tag kind = (HTML.Tag) (elem.getAttributes()
-                    .getAttribute(javax.swing.text.StyleConstants.NameAttribute));
-            if ((kind == HTML.Tag.INPUT) || (kind == HTML.Tag.SELECT)
-                    || (kind == HTML.Tag.TEXTAREA)) {
-                return new CustomFormView(elem);
-            } else {
-                return super.create(elem);
+            AttributeSet as = elem.getAttributes();
+            HTML.Tag tag = (HTML.Tag)(as.getAttribute(StyleConstants.NameAttribute));
+      
+            if (tag==HTML.Tag.INPUT) {
+                String type = "";
+                String name = "";
+                Enumeration e = as.getAttributeNames();
+                while (e.hasMoreElements()) {
+                    Object key = e.nextElement();
+                    if (key == HTML.Attribute.TYPE) {
+                        type = as.getAttribute(key).toString();
+                    }
+                    if (key == HTML.Attribute.NAME) {
+                        name = as.getAttribute(key).toString();
+                    }
+                }
+
+                if (type.equalsIgnoreCase("submit")) {
+                    return new CustomFormView(elem);
+                }
+
+                if (type.equalsIgnoreCase("file")) {
+                    fileFields.add(name);
+                }
             }
+
+            return super.create(elem);
         }
     }
 
@@ -116,6 +137,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
     JEditorPane Jedit;
     TECore Core;
     SwingForm Form;
+    ArrayList<String> fileFields = new ArrayList<String>();  
 
     SwingForm(String name, int width, int height, TECore core) {
         Core = core;
