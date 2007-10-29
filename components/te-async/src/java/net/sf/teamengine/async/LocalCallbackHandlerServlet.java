@@ -1,4 +1,4 @@
-package com.occamlab.te.util;
+package net.sf.teamengine.async;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +38,8 @@ import com.occamlab.te.TECore;
  *
  * @author jparrpearson
  */
-public class CallbackHandlerServlet extends HttpServlet {
-
+public class LocalCallbackHandlerServlet extends HttpServlet {
+	
 	private static final long serialVersionUID = 2144575227068756158L;
 
 	/** Internal class to close down the server when the given timeout elapses with a response recieved */
@@ -52,7 +52,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 			this.timeout = timeout;
 		}
 		
-	        public void run() {
+		public void run() {
 	        	// Convert s to ms
 			int timeInMs = Math.round(this.timeout * 1000);
 	        	try {
@@ -60,23 +60,21 @@ public class CallbackHandlerServlet extends HttpServlet {
 				System.out.println("Timeout encountered, shutting down the servlet...");
 				System.exit(0);
 			} catch (Exception e) {}
-	        }
-    	}
+		}
+	}
 
 	public void init() throws ServletException {
 		super.init();
-
 		// Get timeout from web.xml config
 		String timeout = getServletConfig().getInitParameter("timeout");
 		if (timeout == null) {
 			timeout = "10";
 		}
-
 		// Stop the server when the timeout is reached
 		Thread thread = new TimeoutExit(Integer.parseInt(timeout));
 		thread.start();
 	}
-
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
 	}
@@ -112,13 +110,13 @@ public class CallbackHandlerServlet extends HttpServlet {
 				// TODO: Save the response somewhere (TECore?)
 			}
 		} catch (Exception e){
-				System.out.println("Error reading XML response: "+e.getMessage());
+			System.out.println("Error reading XML response: "+e.getMessage());
 		}
-			
+		
 		// 2) Send a simple acknowledgement response, status code 204 (No Content)
 		response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 
-		// Temp: for debugging purposes (http://localhost:PORT/CallbackHandlerServlet)
+		// Temp: for debugging purposes (http://localhost:PORT/LocalCallbackHandlerServlet)
 		/*response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("RESPONSE SENT!");

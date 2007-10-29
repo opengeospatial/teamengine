@@ -1,4 +1,4 @@
-package com.occamlab.te.util;
+package net.sf.teamengine.async;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -64,8 +64,7 @@ public class TcpListener implements Runnable {
             this.serverSocket = new ServerSocket(this.port);
             this.serverSocket.setSoTimeout(this.timeout);	// Set timeout in ms
         } catch (IOException iox) {
-            System.err
-                    .println("Could not start listener on port: " + this.port);
+            System.err.println("Could not start listener on port: " + this.port);
             iox.printStackTrace();
         }
         System.out.println("Started TCP listener on port " + this.port
@@ -103,12 +102,11 @@ public class TcpListener implements Runnable {
 			    continue;
 			}
 			int firstSpace = headerStr[i].indexOf(" ");
-   			String key = headerStr[i].substring(0,firstSpace-1);
+			String key = headerStr[i].substring(0,firstSpace-1);
    			String value = headerStr[i].substring(firstSpace+1);
    			//System.out.println("Header: "+key+": "+value);
    			this.headers.put(key, value);
 		}
-
 		// Save the body
 		this.bytes = message[1].getBytes("UTF-8");
 
@@ -132,7 +130,7 @@ public class TcpListener implements Runnable {
 	} catch (Exception e) {
 		System.out.println("ERROR: "+e.getMessage());
 	}
-   }
+}
 
     public String getStatus() {
     	return this.status;

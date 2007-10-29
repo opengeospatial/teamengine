@@ -197,7 +197,6 @@
             <li><a href="#call-func">call-function</a></li>
             <li><a href="#get-session">get-session-info</a></li>
             <li><a href="#warning">warning</a></li>
-            <li><a href="#async-request">async-request</a></li>
             <li><a href="#get-home">get-home</a></li>
             <li><a href="#get-users-dir">get-users-dir</a></li>
             <li><a href="#get-available-suites">get-available-suites</a></li>
@@ -970,188 +969,46 @@
   &lt;ctl:warning />
 &lt;/xsl:if></pre>
 
-    <h3 id="async-request">4.10 Async-request</h3>
-    <h4 id="async-request.intro">4.10.1 Introduction</h4>
-    <p>The &lt;async-request&gt; element submits an HTTP request to a web service or
-    other resource, and returns both the initial acknowledgement and the XML representation
-    of the response asynchronously (the client must still wait synchronously, just not over the
-    HTTP connection). This element is nearly identical with the request element, with the addition
-    of the port and timeout attributes.  The response is also slightly different returning both the
-    acknowledgement and the final response.</p>
-
-    <h4 id="async-request.encoding">4.10.2 Syntax</h4>
-    <p>The aync-request instruction may contain a combination of literal XML elements
-    and/or other CTL or XSL instructions. When any enclosed instructions have
-    been evaluated, the resulting XML shall conform to the following encoding.</p>
-    <pre>
-&lt;ctl:async-request xmlns:ctl="http://www.occamlab.com/ctl"
-  port="xsd:integer" timeout="xsd:integer" <strong>xpointer-id</strong>="xsd:string">
-  &lt;ctl:url><em>xsd:anyURI</em>&lt;/ctl:url>
-  &lt;ctl:method>[GET | POST | HEAD]&lt;/ctl:method>
-  &lt;ctl:param <strong>name</strong>="xsd:string"><em>xsd:string</em>&lt;/ctl:param> *
-  &lt;ctl:header <strong>name</strong>="xsd:string"><em>xsd:string</em>&lt;/ctl:header> *
-  &lt;ctl:body> ?
-    <span style="color: blue;">&lt;!-- text/plain or application/xml entity (POST only) --></span>
-  &lt;/ctl:body>
-  &lt;ctl:part <strong>name</strong>="xsd:string" content-type="xsd:string"> *
-	[&lt;ctl:file type="[resource | url | file]">$filename&lt;/ctl:file> | xsd:string]
-  &lt;/ctl:part>
-  &lt;ctl:parser /> ?
-&lt;/ctl:async-request></pre>
-
-    <h4 id="async-request.descriptions">4.10.3 Element and attribute descriptions</h4>
-    <h5 id="async-request.port">4.10.3.1 port</h5>
-    <p>The &lt;port&gt; attribute indicates the port in which the response from
-    the requested service will be returned to.  If no port is given the default of "80"
-    is used. (Note: the port is not used in the web context at this time)</p>
-
-    <h5 id="async-request.timeout">4.10.3.2 timeout</h5>
-    <p>The &lt;timeout&gt; attribute indicates the timeout (time in seconds) that the
-    engine will wait for the requested service to return a response before it times out.
-    If no timeout is given the default of "10" seconds is used.</p>
-
-    <h5 id="async-request.xpointerid">4.10.3.3 xpointer-id</h5>
-    <p>The &lt;xpointer-id&gt; attribute is a wrapper to container both xmlns and XPath
-    expressions for finding the unique request id associated with the response.  This id must
-    be present in both the acknowledgement and final response so that the callback handler can
-    properly store the file and the engine can find it.</p>
-
-    <h5 id="async-request.url">4.10.3.4 url</h5>
-    <p>The required &lt;timeout&gt; element indicates the web service or other HTTP
-    resource where the async-request will be submitted.</p>
-
-    <h5 id="async-request.method">4.10.3.5 method</h5>
-    <p>The required &lt;method&gt; element indicates the HTTP method that will
-    be used to make the async-request. Supported method types are get, post, and head.</p>
-
-    <h5 id="async-request.param">4.10.3.6 param</h5>
-    <p>Optional &lt;param&gt; elements may be included to supply CGI parameters
-    for the async-request. The CGI parameters are added to the URL before the async-request
-    is sent.</p>
-
-    <h5 id="async-request.header">4.10.3.7 header</h5>
-    <p>Optional &lt;header&gt; elements may be included to set the HTTP headers
-    on the async-request.</p>
-
-    <h5 id="async-request.body">4.10.3.8 body</h5>
-    <p>The &lt;body&gt; element is used only for async-requests where the method is
-    set to "POST". It contains the data to post when the async-request is sent. The
-    element may contain character data (text/plain media type), which is passed
-    on directly, or XML (application/xml media type) which is serialized and
-    then passed on.</p>
-
-    <h5 id="async-request.parser">4.10.3.9 parser</h5>
-    <p>A parser may be used to instruct the engine how to convert the response
-    from the async-request into an XML representation. If present, the name of this
-    element should correspond to the name attribute of a parser element (see
-    <a href="#parser">section 3.4</a>). Parsers may contain various required or
-    optional attributes or elements, depending on the parser implementation.  A parser
-    in the async-request will be applied to both acknowledgement and final response.
-    See <a href="#fixme">section FIXME</a> for the correct encoding for built-in
-    parsers.</p>
-
-    <h5 id="async-request.part">4.10.3.10 part</h5>
-    <p>The &lt;part&gt; element is used to send a multipart/form-data async-request.
-    The parts will be added in the order they are received.  Each part requires
-    a name, and an optional content-type (default of "application/octet-stream").
-    The value of the parameter can be inline XML or text (including xinclude) or a
-    &lt;file&gt; element.  The  &lt;file&gt; element is used to reference a file by
-    URL, file (absolute path), or resource (classpath) and the file is then loaded
-    as an attachment for the part.</p>
-
-    <h4 id="async-request.results">4.10.4 Results</h4>
-    <p>The async-async-request element returns an XML representation of the responses,
-    first the acknowledgement and second the final service response as generated by the
-    parser. If no parser element is present and the response is well-formed XML, the XML
-    is returned with both the acknowledgement and the final response wrapped in a
-    &lt;content> tag. Otherwise, nothing is returned if errors were found.</p>
-
-    <h4 id="async-request.example">4.10.5 Sample usage</h4>
-    <p>Note the callback.url would be the value of the home value in the config.xml file (see
-     <a href="#get-home">get-home</a>) appended with "/callback/html".</p>
-    <pre class="example">
-&lt;ctl:async-request
-port="80"
-timeout="30"
-xpointer-id="'xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)xpointer(//csw:RequestId)'">
-  &lt;ctl:url>&lt;xsl:value-of select="$harvest.url"/>&lt;/ctl:url>
-  &lt;ctl:method>POST&lt;/ctl:method>
-  &lt;ctl:body>
-    &lt;csw:Harvest
-    xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    service="WRS" version="1.0.0">
-      &lt;Source>&lt;xsl:value-of select="$source.url"/>&lt;/Source>
-      &lt;ResourceType>urn:x-ogc:specification:csw-ebrim:Document&lt;/ResourceType>
-      &lt;ResourceFormat>application/xml&lt;/ResourceFormat>
-      &lt;ResponseHandler>&lt;xsl:value-of select="$callback.url"/>&lt;/ResponseHandler>  
-    &lt;/csw:Harvest>			   
-  &lt;/ctl:body>
-&lt;/ctl:async-request></pre>
-
-    <p>With no parser, the above example would give an output such as below. The acknowledgement
-    and final response can be accessed via "$response/content[1]/*" and "$response/content[2]/*"
-    respectively.</p>
-
-    <pre class="example">
-&lt;content>
-&lt;csw:HarvestResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
- &lt;csw:Acknowledgement timeStamp="2007-08-05T17:12:42-07:00">
-    &lt;csw:EchoedRequest/>
-    &lt;csw:RequestId>mid:acknowledgement-1@galdosinc.com&lt;/csw:RequestId>
- &lt;/csw:Acknowledgement>
-&lt;/csw:HarvestResponse>
-&lt;/content>
-&lt;content>
-&lt;csw:HarvestResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2">
- &lt;csw:TransactionResponse>
-    &lt;csw:TransactionSummary requestId="mid:acknowledgement-1@galdosinc.com">
-       &lt;csw:totalInserted>1&lt;/csw:totalInserted>
-    &lt;/csw:TransactionSummary>
- &lt;/csw:TransactionResponse>
-&lt;/csw:HarvestResponse>
-&lt;/content></pre>
-
-    <h3 id="get-home">4.11 Get-home</h3>
-    <h4 id="get-home.intro">4.11.1 Introduction</h4>
+    <h3 id="get-home">4.10 Get-home</h3>
+    <h4 id="get-home.intro">4.10.1 Introduction</h4>
     <p>The &lt;get-home&gt; element allows the user to get the home URL of the web service,
     the current web context of the TEAM engine.   This value is defined in the config.xml file.</p>
 
-    <h4 id="get-home.encoding">4.11.2 Syntax</h4>
+    <h4 id="get-home.encoding">4.10.2 Syntax</h4>
     <p>The get-home instruction does not take any parameters.</p>
     <pre>
 &lt;ctl:get-home></pre>
 
-    <h4 id="get-home.results">4.11.3 Results</h4>
+    <h4 id="get-home.results">4.10.3 Results</h4>
     <p>The get-home element simply returns the string value for the home path as defined
     in the config.xml web configuration file.</p>
 
-    <h3 id="get-users-dir">4.12 Get-users-dir</h3>
-    <h4 id="get-users-dir.intro">4.12.1 Introduction</h4>
+    <h3 id="get-users-dir">4.11 Get-users-dir</h3>
+    <h4 id="get-users-dir.intro">4.11.1 Introduction</h4>
     <p>The &lt;get-users-dir&gt; element allows the user to get the local path to the users directory,
     where the logs and other working files are saved for each user.</p>
 
-    <h4 id="get-users-dir.encoding">4.12.2 Syntax</h4>
+    <h4 id="get-users-dir.encoding">4.11.2 Syntax</h4>
     <p>The get-users-dir instruction does not take any parameters.</p>
     <pre>
 &lt;ctl:get-users-dir></pre>
 
-    <h4 id="get-users-dir.results">4.12.3 Results</h4>
+    <h4 id="get-users-dir.results">4.11.3 Results</h4>
     <p>The get-users-dir element simply returns the string value for the usersdir as defined
     in the config.xml web configuration file.</p>
 
-    <h3 id="get-available-suites">4.13 Get-available-suites</h3>
-    <h4 id="get-available-suites.intro">4.13.1 Introduction</h4>
+    <h3 id="get-available-suites">4.12 Get-available-suites</h3>
+    <h4 id="get-available-suites.intro">4.12.1 Introduction</h4>
     <p>The &lt;get-available-suites&gt; element allows the user to determine which test suites have
     been loaded by the engine (including all globally included parsers and functions for each suite)
     and their location.</p>
 
-    <h4 id="get-available-suites.encoding">4.13.2 Syntax</h4>
+    <h4 id="get-available-suites.encoding">4.12.2 Syntax</h4>
     <p>The get-available-suites instruction does not take any parameters.</p>
     <pre>
 &lt;ctl:get-available-suites></pre>
 
-    <h4 id="get-available-suites.results">4.13.3 Results</h4>
+    <h4 id="get-available-suites.results">4.12.3 Results</h4>
     <p>The get-available-suites element returns a list of suites, including the name of each and a list
     of CTL files that each suite uses.  For example, the following string is what is returned when a
     single test suite is available.</p>

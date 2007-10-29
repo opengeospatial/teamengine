@@ -37,7 +37,6 @@
 	<xsl:variable name="apos">'</xsl:variable>
 
 	<xsl:include href="ext/session_info.xsl"/>
-	<xsl:include href="ext/async_request.xsl"/>
 	<xsl:include href="ext/config.xsl"/>
 
 	<xsl:template name="namespace-attribute">

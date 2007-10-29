@@ -1,4 +1,4 @@
-package com.occamlab.te.web;
+package net.sf.teamengine.async;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,7 +59,6 @@ public class CallbackHandlerServlet extends HttpServlet {
 	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-
 		this.logger = Logger.getLogger(this.getClass().getName());
 
 		// Get all XPointer expressions from config (web.xml)
