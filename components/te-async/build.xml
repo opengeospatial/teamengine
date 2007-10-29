@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="te-spatial" default="jar" basedir=".">
+<project name="te-async" default="jar" basedir=".">
   
   <!-- Load property overrides from user home -->
   <property file="${user.home}/${ant.project.name}.properties"/>
@@ -35,7 +35,7 @@
     <javadoc
       destdir="${javadoc.dir}"
       sourcepath="${src.java.dir}"
-      packagenames="net.sf.teamengine.spatial.*"
+      packagenames="net.sf.teamengine.async.*"
       source="1.5"
       overview="${docs.dir}/overview.html"
       author="true"
