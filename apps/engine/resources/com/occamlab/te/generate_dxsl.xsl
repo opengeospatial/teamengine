@@ -86,6 +86,11 @@
 				</starttest>
 			</txsl:variable>
 			<txsl:value-of select="te:message($te:core, $te:call-depth, concat('{$local-name}: ', $te:start-test/starttest/assertion))"/>
+<!--
+			<txsl:value-of select="te:message($te:core, 1, '&lt;test&gt;')"/>
+			<txsl:value-of select="te:message($te:core, 1, saxon:serialize(., ''))" xmlns:saxon="http://saxon.sf.net/"/>
+			<txsl:value-of select="te:message($te:core, 1, '&lt;/test&gt;')"/>
+-->
 			<xsl:apply-templates select="ctl:code/*"/>
 		</txsl:template>
 	</xsl:template>
