@@ -28,12 +28,13 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.net.URLConnection;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.InputStream;
+
+import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -45,9 +46,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicHttpResponse;
-
 import com.occamlab.te.ErrorHandlerImpl;
 
 /**
@@ -57,12 +55,12 @@ import com.occamlab.te.ErrorHandlerImpl;
 public class XMLValidatingParser {
     SchemaFactory SF;
 
-    ArrayList<File> schemaList = new ArrayList<File>();
+    ArrayList schemaList = new ArrayList();
 
     /**
-     * Holds the File pointer for each schema, used to create a collection of schemas to validate with
+     * Holds a File or URL object for each schema, used to create a collection of schemas to validate with
      */
-    void loadSchemaList(Node schemaLinks, ArrayList<File> schemas)
+    void loadSchemaList(Node schemaLinks, ArrayList schemas)
             throws Exception {
 
         // Parse Document for schema elements
@@ -73,21 +71,19 @@ public class XMLValidatingParser {
         // Add schema information to ArrayList for loading
         for (int i = 0; i < nodes.getLength(); i++) {
             Element e = (Element) nodes.item(i);
-            File schema = null;
+            Object schema = null;
             String type = e.getAttribute("type");
 
             // URL, File, or Resource
             if (type.equals("url")) {
-                URL url = new URL(e.getTextContent());
-                schema = new File(url.toURI());
+                schema = new URL(e.getTextContent());
             } else if (type.equals("file")) {
                 schema = new File(e.getTextContent());
             } else if (type.equals("resource")) {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 schema = new File(cl.getResource(e.getTextContent()).getFile());
             } else {
-                System.out
-                        .println("Incorrect schema resource file:  Unknown type!");
+                System.out.println("Incorrect schema resource:  Unknown type!");
             }
 
             schemas.add(schema);
@@ -116,11 +112,22 @@ public class XMLValidatingParser {
         loadSchemaList(schema_links, schemaList);
     }
 
+    public Document parse(URLConnection uc, Element instruction,
+            PrintWriter logger) throws Exception {
+        return parse(uc.getInputStream(), instruction, logger);
+    }
+/*
+    public Document parse(HttpResponse resp, Element instruction,
+            PrintWriter logger) throws Exception {
+        return parse(resp.getEntity().getContent(), instruction, logger);
+    }
+*/
     /**
      * A method to validate a pool of schemas within the ctl:request element.
      *
-     * @param resp
-     *            the HttpResponse do parse and validate
+     * @param xml
+     *            the xml to parse and validate.  May be an InputStream object
+     *            or a Document object.
      * @param instruction
      *            the xml encapsulated schema information (file locations)
      * @param logger
@@ -129,125 +136,66 @@ public class XMLValidatingParser {
      *
      * @author jparrpearson
      */
-    public Document parse(HttpResponse resp, Element instruction,
+    private Document parse(Object xml, Element instruction,
             PrintWriter logger) throws Exception {
 
-	InputStream is = resp.getEntity().getContent();
-
-        ArrayList<File> schemas = new ArrayList<File>();
+        ArrayList schemas = new ArrayList();
         schemas.addAll(schemaList);
         loadSchemaList(instruction, schemas);
 
-        String property_name = "javax.xml.parsers.DocumentBuilderFactory";
-        String oldprop = System.getProperty(property_name);
-        System.setProperty(property_name,
-                "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        if (oldprop == null) {
-            System.clearProperty(property_name);
-        } else {
-            System.setProperty(property_name, oldprop);
-        }
-
-        dbf.setNamespaceAware(true);
-        ErrorHandlerImpl eh = new ErrorHandlerImpl("Parsing", logger);
-        if (schemas.size() == 0) {
-            eh.setRole("ValidatingParser");
-            dbf.setValidating(true);
-            dbf.setAttribute(
-                    "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-                    "http://www.w3.org/2001/XMLSchema");
-        }
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        db.setErrorHandler(eh);
-
         Document doc = null;
-        try {
-            doc = db.parse(is);
-        } catch (Exception e) {
-            logger.println(e.getMessage());
-        }
 
-        if (doc != null) {
-            // Get all the schemas and make them into one
-            Source[] schemaSources = new Source[schemas.size()];
-            for (int i = 0; i < schemas.size(); i++) {
-                schemaSources[i] = new StreamSource((File) schemas.get(i));
-            }
-            Schema schema = SF.newSchema(schemaSources);
-            // Validate with the combined schema
-            Validator validator = schema.newValidator();
-            eh.setRole("Validation");
-            validator.setErrorHandler(eh);
-            validator.validate(new DOMSource(doc));
-        }
-
-        int error_count = eh.getErrorCount();
-        int warning_count = eh.getWarningCount();
-        if (error_count > 0 || warning_count > 0) {
-            String msg = "";
-            if (error_count > 0) {
-                msg += error_count + " validation error"
-                        + (error_count == 1 ? "" : "s");
-                if (warning_count > 0)
-                    msg += " and ";
-            }
-            if (warning_count > 0) {
-                msg += warning_count + " warning"
-                        + (warning_count == 1 ? "" : "s");
-            }
-            msg += " detected.";
-            logger.println(msg);
-        }
-
-        boolean b_ignore_errors = false;
-        String s_ignore_errors = instruction.getAttribute("ignoreErrors");
-        if (s_ignore_errors.length() > 0)
-            b_ignore_errors = Boolean.parseBoolean(s_ignore_errors);
-        if (error_count > 0 && !b_ignore_errors)
-            doc = null;
-
-        boolean b_ignore_warnings = true;
-        String s_ignore_warnings = instruction.getAttribute("ignoreWarnings");
-        if (s_ignore_warnings.length() > 0)
-            b_ignore_warnings = Boolean.parseBoolean(s_ignore_warnings);
-        if (warning_count > 0 && !b_ignore_warnings)
-            doc = null;
-
-        return doc;
-    }
-
-    /**
-     * A method to validate a pool of schemas outside of the request element.
-     *
-     * @param Document
-     *            doc The file document to validate
-     * @param Document
-     *            instruction The xml encapsulated schema information (file
-     *            locations)
-     * @return false if there were errors, true if none
-     *
-     * @author jparrpearson
-     */
-    public boolean checkXMLRules(Document doc, Document instruction)
-            throws Exception {
-
-        boolean isValid = true;
-
-        // Load schemas
-        ArrayList<File> schemas = new ArrayList<File>();
-        schemas.addAll(schemaList);
-        loadSchemaList(instruction.getDocumentElement(), schemas);
-
-        PrintWriter logger = new PrintWriter(System.out);
         ErrorHandlerImpl eh = new ErrorHandlerImpl("Parsing", logger);
+
+        if (xml instanceof InputStream) {
+            String property_name = "javax.xml.parsers.DocumentBuilderFactory";
+            String oldprop = System.getProperty(property_name);
+            System.setProperty(property_name,
+                    "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            if (oldprop == null) {
+                System.clearProperty(property_name);
+            } else {
+                System.setProperty(property_name, oldprop);
+            }
+    
+            dbf.setNamespaceAware(true);
+    
+            // if no schemas were supplied, let the parser do the validating.
+            // I.e. use the schemaLocation attribute
+            if (schemas.size() == 0) {
+                eh.setRole("ValidatingParser");
+                dbf.setValidating(true);
+                dbf.setAttribute(
+                        "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+                        "http://www.w3.org/2001/XMLSchema");
+            }
+    
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            db.setErrorHandler(eh);
+    
+            try {
+                doc = db.parse((InputStream)xml);
+            } catch (Exception e) {
+                logger.println(e.getMessage());
+            }
+        } else if (xml instanceof Document) {
+            doc = (Document)xml;
+        } else {
+            throw new Exception("Error: Invalid xml object");
+        }
 
         // Validate against loaded schemas
-        if (doc != null) {
+        if (doc != null && schemas.size() > 0) {
             // Get all the schemas and make them into one
             Source[] schemaSources = new Source[schemas.size()];
             for (int i = 0; i < schemas.size(); i++) {
-                schemaSources[i] = new StreamSource((File) schemas.get(i));
+                Object o = schemas.get(i);
+                if (o instanceof File) {
+                    schemaSources[i] = new StreamSource((File) o);
+                } else {
+                    schemaSources[i] = new StreamSource(o.toString());
+                }
             }
             Schema schema = SF.newSchema(schemaSources);
             // Validate with the combined schema
@@ -276,23 +224,43 @@ public class XMLValidatingParser {
             logger.println(msg);
         }
 
-        // If there were errors return null, otherwise the repsonse document
-        boolean b_ignore_errors = false;
-        String s_ignore_errors = instruction.getDocumentElement().getAttribute(
-                "ignoreErrors");
-        if (s_ignore_errors.length() > 0)
-            b_ignore_errors = Boolean.parseBoolean(s_ignore_errors);
-        if (error_count > 0 && !b_ignore_errors)
-            isValid = false;
+        if (error_count > 0) {
+            String s = instruction.getAttribute("ignoreErrors");
+            if (s.length() > 0 && Boolean.parseBoolean(s) == true) {
+                doc = null;
+            }
+        }
 
-        boolean b_ignore_warnings = true;
-        String s_ignore_warnings = instruction.getDocumentElement()
-                .getAttribute("ignoreWarnings");
-        if (s_ignore_warnings.length() > 0)
-            b_ignore_warnings = Boolean.parseBoolean(s_ignore_warnings);
-        if (warning_count > 0 && !b_ignore_warnings)
-            isValid = false;
+        if (warning_count > 0) {
+            String s = instruction.getAttribute("ignoreWarnings");
+            if (s.length() == 0 || Boolean.parseBoolean(s) == true) {
+                doc = null;
+            }
+        }
 
-        return isValid;
+        return doc;
     }
+
+    /**
+     * A method to validate a pool of schemas outside of the request element.
+     *
+     * @param Document
+     *            doc The file document to validate
+     * @param Document
+     *            instruction The xml encapsulated schema information (file
+     *            locations)
+     * @return false if there were errors, true if none
+     *
+     * @author jparrpearson
+     */
+    public boolean checkXMLRules(Document doc, Document instruction)
+            throws Exception {
+
+        Element e = instruction.getDocumentElement();
+        PrintWriter logger = new PrintWriter(System.out);
+        Document parsedDoc = parse(doc, e, logger);
+
+        return (parsedDoc != null);
+    }
+
 }
