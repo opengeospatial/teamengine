@@ -33,7 +33,7 @@
 	<xsl:param name="prev"><none/></xsl:param>
  
 	<xsl:template match="/">
-		<txsl:transform version="2.0">
+		<txsl:transform version="1.0">
 			<xsl:for-each select="$prev/xsl:transform/xsl:include">
 				<txsl:import href="{@href}"/>
 			</xsl:for-each>
