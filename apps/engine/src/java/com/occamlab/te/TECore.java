@@ -28,10 +28,6 @@ import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.Random;
 
@@ -66,13 +62,6 @@ import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.dom.DocumentBuilderImpl;
 import net.sf.saxon.Configuration;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpVersion;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -85,7 +74,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.occamlab.te.util.Utils;
-import com.occamlab.te.util.IOUtils;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -334,7 +322,7 @@ public class TECore {
     }
 
     // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
-    public static HttpResponse build_request(Node xml) throws Exception {
+    public static URLConnection build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -388,6 +376,7 @@ public class TECore {
         if (uc instanceof HttpURLConnection) {
             ((HttpURLConnection) uc).setRequestMethod(method);
         }
+
         // POST setup (XML payload and header information)
         if (method.equals("POST") || method.equals("PUT")) {
             uc.setDoOutput(true);
@@ -528,7 +517,7 @@ public class TECore {
             OutputStream os = uc.getOutputStream();
             os.write(bytes);
         }
-
+/*
     	// Get URLConnection values
 	InputStream is = uc.getInputStream();
 	byte[] respBytes = IOUtils.inputStreamToBytes(is);
@@ -552,6 +541,8 @@ public class TECore {
 	resp.setEntity(entity);
 
         return resp;
+*/
+        return uc;
     }
 
     public Document serialize_and_parse(Node parse_instruction)
@@ -628,7 +619,7 @@ public class TECore {
             t.transform(new DOMSource((Node) content), new StreamResult(temp));
         }
         URLConnection uc = temp.toURL().openConnection();
-
+/*
     	// Get URLConnection values
 	InputStream is = uc.getInputStream();
 	byte[] respBytes = IOUtils.inputStreamToBytes(is);
@@ -643,6 +634,8 @@ public class TECore {
 	resp.setEntity(entity);
 
         Document doc = parse(resp, null, parser_instruction);
+*/
+        Document doc = parse(uc, null, parser_instruction);
         temp.delete();
         return doc;
     }
@@ -673,14 +666,14 @@ public class TECore {
         Method method = null;
         try {
             Class[] types = new Class[4];
-            types[0] = HttpResponse.class;
+            types[0] = URLConnection.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             types[3] = TECore.class;
             method = parser_class.getMethod(method_name, types);
         } catch (java.lang.NoSuchMethodException e) {
             Class[] types = new Class[3];
-            types[0] = HttpResponse.class;
+            types[0] = URLConnection.class;
             types[1] = Element.class;
             types[2] = PrintWriter.class;
             method = parser_class.getMethod(method_name, types);
@@ -688,7 +681,7 @@ public class TECore {
         return method;
     }
 
-    public Document parse(HttpResponse resp, String response_id, Node instruction)
+    public Document parse(URLConnection uc, String response_id, Node instruction)
             throws Throwable {
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
@@ -710,8 +703,8 @@ public class TECore {
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
             try {
-                t.transform(new StreamSource(resp.getEntity().getContent()),
-                        new DOMResult(content_e));
+                InputStream is = uc.getInputStream();
+                t.transform(new StreamSource(is), new DOMResult(content_e));
             } catch (Exception e) {
                 parser_e.setTextContent(e.getMessage());
             }
@@ -730,7 +723,7 @@ public class TECore {
             PrintWriter pwLogger = new PrintWriter(swLogger);
             int arg_count = method.getParameterTypes().length;
             Object[] args = new Object[arg_count];
-            args[0] = resp;
+            args[0] = uc;
             args[1] = instruction_e;
             args[2] = pwLogger;
             if (arg_count > 3) {
@@ -763,9 +756,9 @@ public class TECore {
         return response_doc;
     }
 
-    public Document parse(HttpResponse resp, String response_id)
+    public Document parse(URLConnection uc, String response_id)
             throws Throwable {
-        return parse(resp, response_id, null);
+        return parse(uc, response_id, null);
     }
 
     public Node message(int depth, String message) {

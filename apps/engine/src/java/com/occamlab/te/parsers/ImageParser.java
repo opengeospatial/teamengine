@@ -24,9 +24,9 @@ package com.occamlab.te.parsers;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.ArrayList;
 
@@ -46,15 +46,7 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.w3c.dom.*;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpVersion;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
-
 import com.occamlab.te.util.IOUtils;
-import com.occamlab.te.TECore;
 
 /**
  * Extracts the body of a response message and treats it as an image resource.
@@ -413,20 +405,33 @@ public class ImageParser {
         return str.substring(0, str.lastIndexOf(","));
     }
 
+    public static Document parse(URLConnection uc, Element instruction,
+            PrintWriter logger) throws Exception {
+        return parse(uc.getContent(), instruction, logger);
+    }
+/*
     public static Document parse(HttpResponse resp, Element instruction,
+            PrintWriter logger) throws Exception {
+        return parse(IOUtils.inputStreamToBytes(resp.getEntity().getContent()), instruction, logger);
+    }
+*/
+    private static Document parse(Object source, Element instruction,
             PrintWriter logger) throws Exception {
         if (System.getProperty("java.awt.headless") == null) {
             System.setProperty("java.awt.headless", "true");
         }
 
         try {
-            byte[] imgBytes;
+            Image image;
             try {
-            	InputStream is = resp.getEntity().getContent();
-            	imgBytes = IOUtils.inputStreamToBytes(is);
+                if (source instanceof InputStream) {
+                    byte[] imgBytes = IOUtils.inputStreamToBytes((InputStream)source);
+                    image = java.awt.Toolkit.getDefaultToolkit().createImage(imgBytes);
+                } else {
+                    image = java.awt.Toolkit.getDefaultToolkit().createImage((ImageProducer)source);
+                }
             } catch (Exception e) {
-                logger
-                        .println("ImageParser Error: Could not get the image");
+                logger.println("ImageParser Error: Could not get the image");
                 return null;
             }
 
@@ -443,7 +448,6 @@ public class ImageParser {
                     "http://www.occamlab.com/te/parsers", "ImageParser")
                     .item(0);
 
-            Image image = java.awt.Toolkit.getDefaultToolkit().createImage(imgBytes);
             ImageTracker tracker = new ImageTracker(image);
             String type = tracker.getImageType();
             int height = image.getHeight(tracker);
@@ -529,19 +533,7 @@ public class ImageParser {
         PrintWriter logger = new PrintWriter(System.out);
         InputStream image_is = image_url.openConnection().getInputStream();
 
-        // Get URLConnection values
-	byte[] respBytes = IOUtils.inputStreamToBytes(image_is);
-
-	// Construct the HttpMessage (HttpBasicResponse) to send to parsers
-	HttpVersion version = new HttpVersion(1,1);
-	int respCode = 200;
-	String respMess = "OK";
-	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
-	BasicHttpResponse respMessage = new BasicHttpResponse(statusLine);
-	HttpEntity entity = new ByteArrayEntity(respBytes);
-	respMessage.setEntity(entity);
-
-        Document result = parse(respMessage, instruction, logger);
+        Document result = parse(image_is, instruction, logger);
         logger.flush();
 
         TransformerFactory tf = TransformerFactory.newInstance();

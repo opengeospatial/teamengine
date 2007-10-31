@@ -127,7 +127,7 @@ public class CallbackHandlerServlet extends HttpServlet {
 				String path = System.getProperty("java.io.tmpdir") + "/async/" + hash;
 				new File(path).mkdirs();
 				File file = new File(path, "HttpResponse.dat");
-				IOUtils.writeHttpResponseToFile(resp, file);
+				NetUtils.writeHttpResponseToFile(resp, file);
 			}
 		} catch (Exception e){
 			logger.severe("Error while reading XML response.  "+e.getMessage());

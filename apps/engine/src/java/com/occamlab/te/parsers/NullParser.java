@@ -21,8 +21,8 @@
  ****************************************************************************/
 package com.occamlab.te.parsers;
 
+import java.net.URLConnection;
 import java.io.PrintWriter;
-import org.apache.http.HttpResponse;
 
 import org.w3c.dom.Element;
 
@@ -32,8 +32,13 @@ import org.w3c.dom.Element;
  *
  */
 public class NullParser {
-
+/*
     public static String parse(HttpResponse resp, Element instruction,
+            PrintWriter logger) throws Exception {
+        return null;
+    }
+*/
+    public static String parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
         return null;
     }

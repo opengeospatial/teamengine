@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.InputStream;
 
+import java.net.URLConnection;
+
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.Random;
@@ -17,11 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicHttpResponse;
-
 import com.occamlab.te.util.Utils;
-import com.occamlab.te.TECore;
 
 /**
  * Parses a zip file input by extracting the contents into the directory
@@ -85,15 +83,22 @@ public class ZipParser {
      *            this parser
      * @param logger
      *            the test logger
-     * @param core
-     *            the test harness
      * @return a DOM Document representing the manifest of items in the archive.
      * @throws Throwable
      */
+/*
     public static Document parse(HttpResponse resp, Element instruction,
-            PrintWriter logger, TECore core) throws Throwable {
+            PrintWriter logger) throws Throwable {
+        return parse(resp.getEntity().getContent(), instruction, logger);
+    }
+*/
+    public static Document parse(URLConnection uc, Element instruction,
+            PrintWriter logger) throws Throwable {
+        return parse(uc.getInputStream(), instruction, logger);
+    }
 
-	InputStream is = resp.getEntity().getContent();
+    private static Document parse(InputStream is, Element instruction,
+            PrintWriter logger) throws Throwable {
 
         // Create the response element, <ctl:manifest>
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

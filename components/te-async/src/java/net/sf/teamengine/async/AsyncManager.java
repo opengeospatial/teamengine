@@ -3,6 +3,9 @@ package net.sf.teamengine.async;
 import java.io.File;
 import java.io.InputStream;
 
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
+
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
@@ -45,7 +48,8 @@ public class AsyncManager {
 		// Retrieve the initial acknowledgement
 		HttpResponse ackResp = null;
 		try {
-			ackResp = TECore.build_request(xml);
+			URLConnection uc = TECore.build_request(xml);
+			ackResp = NetUtils.getHttpResponse((HttpURLConnection)uc);
 		} catch (Exception e){
 			System.err.println("ERROR: Could not retrieve acknowledgement. "+e.getMessage());
 		}
@@ -90,7 +94,7 @@ public class AsyncManager {
 		File file = new File(path, "HttpResponse.dat");
 		BasicHttpResponse resp = null;
 		try {
-			resp = (BasicHttpResponse) IOUtils.pollHttpResponseFile(file, timeout);
+			resp = (BasicHttpResponse) NetUtils.pollHttpResponseFile(file, timeout);
 		} catch (Exception e) {
 			System.err.println("ERROR: Could not poll and retrieve file. "+e.getMessage());
 		}
