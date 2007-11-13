@@ -414,27 +414,36 @@ public class TECore {
                     String prefix = "--";
                     String boundary = "7bdc3bba-e2c9-11db-8314-0800200c9a66";
                     String newline = "\r\n";
+		    String cid = ((Element) body).getAttribute("cid");
+
+		    // Default cid for main body
+		    if (cid == null || cid.equals("")) {
+		        cid = "body@teamengine.sourceforge.net";
+		    }
+
+                    // Global Content-Type and Length to be added after the
+                    // parts have been parsed
+                    String oldMime = mime;
+                    mime = "multipart/related; type=\""+ oldMime +"\"; boundary=\""
+                            + boundary + "\"";
 
                     // Set main body
                     String contents = "";
                     contents += prefix + boundary + newline;
-                    contents += "Content-Disposition: form-data; name=\"Transaction\""
-                            + "; filename=\"\"" + newline;
+                    contents += "Content-ID: " + cid + newline;
                     contents += "Content-Type: " + mime + newline + newline;
                     contents += bodyContent;
-
-                    // Global Content-Type and Length to be added after the
-                    // parts have been parsed
-                    mime = "multipart/form-data; boundary=" + boundary;
 
                     // Append all parts to the original body, seperated by the
                     // boundary sequence
                     for (int i = 0; i < parts.size(); i++) {
                         String content = "";
                         Element currentPart = (Element) parts.get(i);
-                        String partName = currentPart.getAttribute("name");
-                        String contentType = currentPart
-                                .getAttribute("content-type");
+                        cid = currentPart.getAttribute("cid");
+                        String contentType = currentPart.getAttribute("content-type");
+
+			// TODO: create a default numbering scheme for part Content-ID
+			// if not given in the CTL request: "partXXX@teamengine.sourceforge.net"
 
                         // Default encodings and content-type
                         if (contentType.equals("application/xml")) {
@@ -454,9 +463,7 @@ public class TECore {
                         }
 
                         // Set headers for each part
-                        content += "Content-Disposition: form-data; name=\""
-                                + partName + "\"" + "; filename=\"" + fileName
-                                + "\"" + newline;
+                        contents += "Content-ID: " + cid + newline;
                         content += "Content-Type: " + contentType + newline
                                 + newline;
 
