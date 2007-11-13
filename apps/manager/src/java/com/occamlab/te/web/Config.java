@@ -85,7 +85,7 @@ public class Config {
 			URL modulesURL = cl.getResource("modules/");
 			File modulesDir = null;
 			if (modulesURL != null) {
-				modulesDir = new File(modulesURL.getFile());
+				modulesDir = new File(URLDecoder.decode(modulesURL.getFile(), "UTF-8"));
 			}
 
 			availableSuites = new LinkedHashMap<String, List<File>>();
