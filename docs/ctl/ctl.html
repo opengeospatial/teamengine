@@ -636,7 +636,8 @@
     and/or other CTL or XSL instructions. When any enclosed instructions have
     been evaluated, the resulting XML shall conform to the following encoding.</p>
     <pre>
-&lt;ctl:request xmlns:ctl="http://www.occamlab.com/ctl">
+&lt;ctl:request xmlns:ctl="http://www.occamlab.com/ctl"
+  mid="&lt;970701.32784@VIers.none.com>">
   &lt;ctl:url><em>xsd:anyURI</em>&lt;/ctl:url>
   &lt;ctl:method>[GET | POST | HEAD]&lt;/ctl:method>
   &lt;ctl:param <strong>name</strong>="xsd:string"><em>xsd:string</em>&lt;/ctl:param> *
@@ -644,7 +645,7 @@
   &lt;ctl:body> ?
     <span style="color: blue;">&lt;!-- text/plain or application/xml entity (POST only) --></span>
   &lt;/ctl:body>
-  &lt;ctl:part <strong>name</strong>="xsd:string" content-type="xsd:string"> *
+  &lt;ctl:part <strong>cid</strong>="xsd:string" content-type="xsd:string"> *
 	[&lt;ctl:file type="[resource | url | file]">$filename&lt;/ctl:file> | xsd:string]
   &lt;/ctl:part>
   &lt;ctl:parser /> ?
@@ -685,13 +686,15 @@
     parsers.</p>
 
     <h5 id="request.part">4.2.3.7 part</h5>
-    <p>The &lt;part&gt; element is used to send a multipart/form-data request.
+    <p>The &lt;part&gt; element is used to send a multipart/related request.
     The parts will be added in the order they are received.  Each part requires
-    a name, and an optional content-type (default of "application/octet-stream").
-    The value of the parameter can be inline XML or text (including XInclude) or a
-    &lt;file&gt; element.  The  &lt;file&gt; element is used to reference a file by
-    URL, file (absolute path), or resource (classpath) and the file is then loaded
-    as an attachment for the part.</p>
+    a cid (Content-ID header), and an optional content-type (default of 
+    "application/octet-stream"). The value of the parameter can be inline XML or 
+    text (including XInclude) or a &lt;file&gt; element.  The &lt;file&gt; element 
+    is used to reference a file by URL, file (absolute path), or resource (classpath) 
+    and the file is then loaded as an attachment for the part. A mid (Message-ID header)
+    can optionally be put on the request element as a whole. <strong>Note: </strong>
+    characters need to be properly escaped in parameter values.</p>
 
     <h4 id="request.results">4.2.4 Results</h4>
     <p>The request element returns an XML representation of the response, as
@@ -719,13 +722,13 @@
   &lt;ctl:header name="Authorization">
 	&lt;xsl:value-of select="$authentication.token"/>
   &lt;/ctl:header>
-  &lt;ctl:part name="item1" content-type="application/xml">
+  &lt;ctl:part cid="&lt;item1@myurl.com>" content-type="application/xml">
 	&lt;xi:include href="./Transaction-tc1.1.item1.xml"/>
   &lt;/ctl:part>
-  &lt;ctl:part name="item2" content-type="image/png">
+  &lt;ctl:part cid="&lt;item2@myurl.com>" content-type="image/png">
 	&lt;ctl:file type="resource">ctl/Transaction-tc1.1.item2.png&lt;/ctl:file>
   &lt;/ctl:part>
-  &lt;ctl:part name="item3" content-type="text/plain">my text&lt;/ctl:part>
+  &lt;ctl:part cid="&lt;item3@myurl.com>" content-type="text/plain">my text&lt;/ctl:part>
 &lt;/request></pre>
 
     <h3 id="call-test">4.3 Call-Test</h3>
