@@ -414,23 +414,10 @@ public class TECore {
                     String prefix = "--";
                     String boundary = "7bdc3bba-e2c9-11db-8314-0800200c9a66";
                     String newline = "\r\n";
-		    String cid = ((Element) body).getAttribute("cid");
 
-		    // Default cid for main body
-		    if (cid == null || cid.equals("")) {
-		        cid = "body@teamengine.sourceforge.net";
-		    }
-
-                    // Global Content-Type and Length to be added after the
-                    // parts have been parsed
-                    String oldMime = mime;
-                    mime = "multipart/related; type=\""+ oldMime +"\"; boundary=\""
-                            + boundary + "\"";
-
-                    // Set main body
+                    // Set main body and related headers
                     String contents = "";
                     contents += prefix + boundary + newline;
-                    contents += "Content-ID: " + cid + newline;
                     contents += "Content-Type: " + mime + newline + newline;
                     contents += bodyContent;
 
@@ -439,11 +426,8 @@ public class TECore {
                     for (int i = 0; i < parts.size(); i++) {
                         String content = "";
                         Element currentPart = (Element) parts.get(i);
-                        cid = currentPart.getAttribute("cid");
+                        String cid = currentPart.getAttribute("cid");
                         String contentType = currentPart.getAttribute("content-type");
-
-			// TODO: create a default numbering scheme for part Content-ID
-			// if not given in the CTL request: "partXXX@teamengine.sourceforge.net"
 
                         // Default encodings and content-type
                         if (contentType.equals("application/xml")) {
@@ -466,6 +450,7 @@ public class TECore {
                         contents += "Content-ID: " + cid + newline;
                         content += "Content-Type: " + contentType + newline
                                 + newline;
+			// TODO: add Content-Transfer-Encoding: BASE64 for binary files?
 
                         // Get part for a specified file
                         if (files.getLength() > 0) {
@@ -507,10 +492,19 @@ public class TECore {
 
                     // System.out.println("Contents:\n"+contents);
                     bytes = contents.getBytes(charset);
+
+                    // Global Content-Type and Length to be added after the
+                    // parts have been parsed
+                    mime = "multipart/related; type=\""+ mime
+                    	    + "\"; boundary=\"" + boundary + "\"";
                 }
             }
 
             // Set headers
+	    String mid = ((Element) body).getAttribute("mid");
+            if (mid != "" && mid != null) {
+                uc.setRequestProperty("Message-ID", mid);
+            }
             uc.setRequestProperty("Content-Type", mime);
             uc.setRequestProperty("Content-Length", Integer
                     .toString(bytes.length));
