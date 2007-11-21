@@ -441,7 +441,9 @@
 			<xsl:apply-templates/>
 		</xsl:copy>
 		<txsl:variable name="te:variable">
-			<txsl:copy-of select="${@name}"/>
+			<content>
+				<txsl:copy-of select="${@name}"/>
+			</content>
 		</txsl:variable>
 		<txsl:for-each select="$te:variable//te:fail">
 			<txsl:if test="@message">
