@@ -447,7 +447,7 @@ public class TECore {
                         }
 
                         // Set headers for each part
-                        contents += "Content-ID: " + cid + newline;
+                        contents += "Content-ID: <" + cid + ">" + newline;
                         content += "Content-Type: " + contentType + newline
                                 + newline;
 			// TODO: add Content-Transfer-Encoding: BASE64 for binary files?
@@ -503,7 +503,7 @@ public class TECore {
             // Set headers
 	    String mid = ((Element) body).getAttribute("mid");
             if (mid != "" && mid != null) {
-                uc.setRequestProperty("Message-ID", mid);
+                uc.setRequestProperty("Message-ID", "<" + mid + ">");
             }
             uc.setRequestProperty("Content-Type", mime);
             uc.setRequestProperty("Content-Length", Integer
