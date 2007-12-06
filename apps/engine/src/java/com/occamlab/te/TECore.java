@@ -399,7 +399,7 @@ public class TECore {
                                 new StreamResult(baos));
                         bodyContent = baos.toString();
                         bytes = baos.toByteArray();
-                        // Determine if we need to set a different Content-Type value
+                        // Determine if we need to set a different Content-Type value (SOAP)
 			for (int j = 0; j < headers.size(); j++) {
 				String[] header = (String[]) headers.get(j);
 				if (header[0].toLowerCase().equals("content-type")) {
@@ -436,6 +436,7 @@ public class TECore {
                     for (int i = 0; i < parts.size(); i++) {
                         Element currentPart = (Element) parts.get(i);
                         String cid = currentPart.getAttribute("cid");
+                        if (cid.indexOf("cid:") != -1) cid = cid.substring(cid.indexOf("cid:")+"cid:".length());
                         String contentType = currentPart.getAttribute("content-type");
 
                         // Default encodings and content-type
@@ -502,8 +503,9 @@ public class TECore {
             }
 
             // Set headers
-	    String mid = ((Element) xml).getAttribute("mid");
-            if (mid != "" && mid != null) {
+	    String mid = ((Element) body).getAttribute("mid");
+            if (!mid.equals("") && mid != null) {
+	    	if (mid.indexOf("mid:") != -1) mid = mid.substring(mid.indexOf("mid:")+"mid:".length());
                 uc.setRequestProperty("Message-ID", "<" + mid + ">");
             }
             uc.setRequestProperty("Content-Type", mime);
