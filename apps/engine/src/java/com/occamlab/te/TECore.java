@@ -306,16 +306,14 @@ public class TECore {
                 } else if (type.equals("file")) {
                     file = new File(e.getTextContent());
                 } else if (type.equals("resource")) {
-                    ClassLoader cl = Thread.currentThread()
-                            .getContextClassLoader();
-                    file = new File(cl.getResource(e.getTextContent())
-                            .getFile());
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    file = new File(cl.getResource(e.getTextContent()).getFile());
                 } else {
-                    System.out
-                            .println("Incorrect file reference:  Unknown type!");
+                    System.out.println("Incorrect file reference:  Unknown type!");
                 }
             } catch (Exception exception) {
-                exception.printStackTrace();
+            	System.err.println("Error getting file. " + exception.getMessage());
+            	return null;
             }
         }
         return file;
@@ -330,6 +328,7 @@ public class TECore {
         String sParams = "";
         String method = "GET";
         String charset = "UTF-8";
+	boolean multipart = false;
 
         // Read in the test information (from CTL)
         NodeList nl = xml.getChildNodes();
@@ -400,7 +399,16 @@ public class TECore {
                                 new StreamResult(baos));
                         bodyContent = baos.toString();
                         bytes = baos.toByteArray();
-                        mime = "application/xml; charset=" + charset;
+                        // Determine if we need to set a different Content-Type value
+			for (int j = 0; j < headers.size(); j++) {
+				String[] header = (String[]) headers.get(j);
+				if (header[0].toLowerCase().equals("content-type")) {
+					mime = header[1];
+				}
+			}
+                        if (mime == null) {
+                        	mime = "application/xml; charset=" + charset;
+                	}
                         break;
                     }
                 }
@@ -409,11 +417,12 @@ public class TECore {
                     mime = "text/plain";
                 }
 
-                // Add parts if present (ebrim specific)
+                // Add parts if present
                 if (parts.size() > 0) {
                     String prefix = "--";
                     String boundary = "7bdc3bba-e2c9-11db-8314-0800200c9a66";
                     String newline = "\r\n";
+		    multipart = true;
 
                     // Set main body and related headers
                     String contents = "";
@@ -424,7 +433,7 @@ public class TECore {
                     // Append all parts to the original body, seperated by the
                     // boundary sequence
                     for (int i = 0; i < parts.size(); i++) {
-                        String content = "";
+                        String partContents = "";
                         Element currentPart = (Element) parts.get(i);
                         String cid = currentPart.getAttribute("cid");
                         String contentType = currentPart.getAttribute("content-type");
@@ -437,71 +446,62 @@ public class TECore {
                             contentType = "application/octet-stream";
                         }
 
+                        // Set headers for each part
+                        partContents += "Content-Type: " + contentType + newline;
+                        partContents += "Content-ID: <" + cid + ">" + newline + newline;
+
                         // Get the fileName, if it exists
                         NodeList files = currentPart.getElementsByTagNameNS(
                                 CTL_NS, "file");
-                        String fileName = "";
-                        if (files.getLength() > 0) {
-                            Element e = (Element) files.item(0);
-                            fileName = e.getTextContent();
-                        }
-
-                        // Set headers for each part
-                        contents += "Content-ID: <" + cid + ">" + newline;
-                        content += "Content-Type: " + contentType + newline
-                                + newline;
-			// TODO: add Content-Transfer-Encoding: BASE64 for binary files?
 
                         // Get part for a specified file
                         if (files.getLength() > 0) {
                             File contentFile = getFile(files);
 
-                            StringBuffer buff = new StringBuffer();
-                            try {
-                                BufferedReader rd = new BufferedReader(
-                                        new FileReader(contentFile));
-                                String line;
-                                while ((line = rd.readLine()) != null) {
-                                    buff.append(line + "\n");
-                                }
-                                rd.close();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
+			    InputStream is = new FileInputStream(contentFile);
+			    long length = contentFile.length();
+			    byte[] contentBytes = new byte[(int)length];
+			    int offset = 0;
+			    int numRead = 0;
+			    while (offset < contentBytes.length && (numRead=is.read(contentBytes, offset, contentBytes.length-offset)) >= 0) {
+			    	offset += numRead;
+			    }
+			    is.close();
 
-                            content += buff.toString();
+			    partContents += new String(contentBytes, charset);
                         }
                         // Get part from inline data (or xi:include)
                         else {
                             // Text
                             if (currentPart.getFirstChild() instanceof Text) {
-                                content += currentPart.getTextContent();
+                                partContents += currentPart.getTextContent();
                             }
                             // XML
                             else {
-                                content += documentToString(currentPart
+                                partContents += documentToString(currentPart
                                         .getFirstChild());
                             }
                         }
 
                         contents += newline + prefix + boundary + newline
-                                + content;
+                                + partContents;
                     }
 
                     contents += newline + prefix + boundary + prefix + newline;
 
-                    // System.out.println("Contents:\n"+contents);
                     bytes = contents.getBytes(charset);
 
                     // Global Content-Type and Length to be added after the
                     // parts have been parsed
                     mime = "multipart/related; type=\""+ mime
                     	    + "\"; boundary=\"" + boundary + "\"";
+
+                    //System.out.println("Content-Type: "+mime+"\n"+contents);
                 }
             }
 
             // Set headers
-	    String mid = ((Element) body).getAttribute("mid");
+	    String mid = ((Element) xml).getAttribute("mid");
             if (mid != "" && mid != null) {
                 uc.setRequestProperty("Message-ID", "<" + mid + ">");
             }
@@ -512,7 +512,11 @@ public class TECore {
             // Enter the custom headers (overwrites the defaults if present)
             for (int i = 0; i < headers.size(); i++) {
                 String[] header = (String[]) headers.get(i);
-                uc.setRequestProperty(header[0], header[1]);
+		if (multipart && header[0].toLowerCase().equals("content-type")) {
+		}
+		else {
+                	uc.setRequestProperty(header[0], header[1]);
+        	}
             }
 
             OutputStream os = uc.getOutputStream();
@@ -874,7 +878,7 @@ public class TECore {
     	try {
     		origFilepath = URLDecoder.decode(origFilepath, "UTF-8");
 	} catch (Exception e) {
-            System.err.print("Error decoding path.  "
+            System.err.println("Error decoding path.  "
                     + e.getMessage());
             return "";
 	}
@@ -900,7 +904,7 @@ public class TECore {
 			out.write(buf, 0, len);
 		}
 	} catch (Exception e) {
-            System.err.print("Error creating and writing to file.  "
+            System.err.println("Error creating and writing to file.  "
                     + e.getMessage());
             return "";
 	}
@@ -946,7 +950,7 @@ public class TECore {
             transformer.transform(domSource, result);
             return writer.toString();
         } catch (Exception e) {
-            System.err.print("Error coverting Document to String.  "
+            System.err.println("Error coverting Document to String.  "
                     + e.getMessage());
             return null;
         }
