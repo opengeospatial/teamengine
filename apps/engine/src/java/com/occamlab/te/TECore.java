@@ -425,15 +425,15 @@ public class TECore {
 		    multipart = true;
 
                     // Set main body and related headers
-                    String contents = "";
-                    contents += prefix + boundary + newline;
-                    contents += "Content-Type: " + mime + newline + newline;
-                    contents += bodyContent;
+                    ByteArrayOutputStream contentBytes = new ByteArrayOutputStream();
+                    String bodyPart = prefix + boundary + newline;
+                    bodyPart += "Content-Type: " + mime + newline + newline;
+                    bodyPart += bodyContent;
+		    writeBytes(contentBytes, bodyPart.getBytes(charset));
 
                     // Append all parts to the original body, seperated by the
                     // boundary sequence
                     for (int i = 0; i < parts.size(); i++) {
-                        String partContents = "";
                         Element currentPart = (Element) parts.get(i);
                         String cid = currentPart.getAttribute("cid");
                         String contentType = currentPart.getAttribute("content-type");
@@ -447,8 +447,11 @@ public class TECore {
                         }
 
                         // Set headers for each part
-                        partContents += "Content-Type: " + contentType + newline;
-                        partContents += "Content-ID: <" + cid + ">" + newline + newline;
+                    	ByteArrayOutputStream partBytes = new ByteArrayOutputStream();
+                        String partHeaders = newline + prefix + boundary + newline;
+                        partHeaders += "Content-Type: " + contentType + newline;
+                        partHeaders += "Content-ID: <" + cid + ">" + newline + newline;
+			writeBytes(contentBytes, partHeaders.getBytes(charset));
 
                         // Get the fileName, if it exists
                         NodeList files = currentPart.getElementsByTagNameNS(
@@ -460,43 +463,41 @@ public class TECore {
 
 			    InputStream is = new FileInputStream(contentFile);
 			    long length = contentFile.length();
-			    byte[] contentBytes = new byte[(int)length];
+			    byte[] fileBytes = new byte[(int)length];
 			    int offset = 0;
 			    int numRead = 0;
-			    while (offset < contentBytes.length && (numRead=is.read(contentBytes, offset, contentBytes.length-offset)) >= 0) {
+			    while (offset < fileBytes.length && (numRead=is.read(fileBytes, offset, fileBytes.length-offset)) >= 0) {
 			    	offset += numRead;
 			    }
 			    is.close();
 
-			    partContents += new String(contentBytes, charset);
+			    writeBytes(contentBytes, fileBytes);
                         }
                         // Get part from inline data (or xi:include)
                         else {
                             // Text
                             if (currentPart.getFirstChild() instanceof Text) {
-                                partContents += currentPart.getTextContent();
+				writeBytes(contentBytes, currentPart.getTextContent().getBytes(charset));
                             }
                             // XML
                             else {
-                                partContents += documentToString(currentPart
-                                        .getFirstChild());
+                                writeBytes(contentBytes, documentToString(currentPart.getFirstChild()).getBytes(charset));
                             }
                         }
-
-                        contents += newline + prefix + boundary + newline
-                                + partContents;
                     }
 
-                    contents += newline + prefix + boundary + prefix + newline;
+                    String endingBoundary = newline + prefix + boundary + prefix + newline;
+		    writeBytes(contentBytes, endingBoundary.getBytes(charset));
 
-                    bytes = contents.getBytes(charset);
+                    bytes = contentBytes.toByteArray();
 
                     // Global Content-Type and Length to be added after the
                     // parts have been parsed
                     mime = "multipart/related; type=\""+ mime
                     	    + "\"; boundary=\"" + boundary + "\"";
 
-                    //System.out.println("Content-Type: "+mime+"\n"+contents);
+		    //String contentsString = new String(bytes, charset);
+                    //System.out.println("Content-Type: "+mime+"\n"+contentsString);
                 }
             }
 
@@ -548,6 +549,10 @@ public class TECore {
         return resp;
 */
         return uc;
+    }
+
+    public static void writeBytes(ByteArrayOutputStream baos, byte[] bytes) {
+        baos.write(bytes, 0, bytes.length);
     }
 
     public Document serialize_and_parse(Node parse_instruction)
