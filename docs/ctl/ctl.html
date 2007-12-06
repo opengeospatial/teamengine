@@ -717,19 +717,19 @@
   xmlns:xi="http://www.w3.org/2001/XInclude">
   &lt;url>http://some.host.org/wms&lt;/url>
   &lt;method>POST&lt;/method>
-  &lt;ctl:body>
+  &lt;ctl:body mid="mid:message1@myurl.com">
     &lt;xi:include href="./Transaction-tc1.1.body.xml"/>
   &lt;/ctl:body>
   &lt;ctl:header name="Authorization">
 	&lt;xsl:value-of select="$authentication.token"/>
   &lt;/ctl:header>
-  &lt;ctl:part cid="item1@myurl.com" content-type="application/xml">
+  &lt;ctl:part cid="cid:item1@myurl.com" content-type="application/xml">
 	&lt;xi:include href="./Transaction-tc1.1.item1.xml"/>
   &lt;/ctl:part>
-  &lt;ctl:part cid="item2@myurl.com" content-type="image/png">
+  &lt;ctl:part cid="cid:item2@myurl.com" content-type="image/png">
 	&lt;ctl:file type="resource">ctl/Transaction-tc1.1.item2.png&lt;/ctl:file>
   &lt;/ctl:part>
-  &lt;ctl:part cid="item3@myurl.com" content-type="text/plain">my text&lt;/ctl:part>
+  &lt;ctl:part cid="cid:item3@myurl.com" content-type="text/plain">my text&lt;/ctl:part>
 &lt;/request></pre>
 
     <h3 id="call-test">4.3 Call-Test</h3>
