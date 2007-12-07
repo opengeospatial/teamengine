@@ -158,9 +158,9 @@ public class XMLValidatingParser {
             } else {
                 System.setProperty(property_name, oldprop);
             }
-    
+
             dbf.setNamespaceAware(true);
-    
+
             // if no schemas were supplied, let the parser do the validating.
             // I.e. use the schemaLocation attribute
             if (schemas.size() == 0) {
@@ -170,10 +170,10 @@ public class XMLValidatingParser {
                         "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
                         "http://www.w3.org/2001/XMLSchema");
             }
-    
+
             DocumentBuilder db = dbf.newDocumentBuilder();
             db.setErrorHandler(eh);
-    
+
             try {
                 doc = db.parse((InputStream)xml);
             } catch (Exception e) {
@@ -255,6 +255,8 @@ public class XMLValidatingParser {
      */
     public boolean checkXMLRules(Document doc, Document instruction)
             throws Exception {
+
+	if (doc == null || doc.getDocumentElement() == null) return false;
 
         Element e = instruction.getDocumentElement();
         PrintWriter logger = new PrintWriter(System.out);

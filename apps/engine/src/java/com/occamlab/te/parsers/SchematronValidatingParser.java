@@ -132,6 +132,8 @@ public class SchematronValidatingParser {
         // The validation state (true = no validation errors)
         boolean isValid = false;
 
+	if (doc == null || doc.getDocumentElement() == null) return isValid;
+
         // Convert doc to InputSource
         InputSource xmlInputSource = null;
         try {
