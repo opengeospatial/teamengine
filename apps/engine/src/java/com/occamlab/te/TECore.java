@@ -344,8 +344,7 @@ public class TECore {
                             ((Element) n).getAttribute("name"),
                             n.getTextContent() });
                 } else if (n.getLocalName().equals("param")) {
-                    if (sParams.length() > 0)
-                        sParams += "&";
+                    if (sParams.length() > 0) sParams += "&";
                     sParams += ((Element) n).getAttribute("name") + "="
                             + n.getTextContent();
                 } else if (n.getLocalName().equals("body")) {
@@ -358,10 +357,14 @@ public class TECore {
 
         // Complete GET KVP syntax
         if (method.equals("GET") && sParams.length() > 0) {
-            if (sUrl.indexOf("?") < 0) {
+            if (sUrl.indexOf("?") == -1) {
                 sUrl += "?";
-            } else if (!sUrl.endsWith("&")) {
+            }
+            else if (!sUrl.endsWith("?") && !sUrl.endsWith("&")) {
                 sUrl += "&";
+            }
+            if (!sParams.endsWith("&")) {
+                sParams += "&";
             }
             sUrl += sParams;
         }
