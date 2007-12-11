@@ -777,7 +777,7 @@
  	<xsl:template match="node()" mode="fn-code">
 		<xsl:copy>
 			<xsl:apply-templates select="@*"/>
-			<xsl:apply-templates/>
+			<xsl:apply-templates mode="fn-code"/>
 		</xsl:copy>
 	</xsl:template>
 
