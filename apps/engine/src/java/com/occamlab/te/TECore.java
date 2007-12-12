@@ -363,9 +363,6 @@ public class TECore {
             else if (!sUrl.endsWith("?") && !sUrl.endsWith("&")) {
                 sUrl += "&";
             }
-            if (!sParams.endsWith("&")) {
-                sParams += "&";
-            }
             sUrl += sParams;
         }
 
@@ -402,6 +399,8 @@ public class TECore {
                                 new StreamResult(baos));
                         bodyContent = baos.toString();
                         bytes = baos.toByteArray();
+
+/*
                         // Determine if we need to set a different Content-Type value (SOAP)
 			for (int j = 0; j < headers.size(); j++) {
 				String[] header = (String[]) headers.get(j);
@@ -409,6 +408,8 @@ public class TECore {
 					mime = header[1];
 				}
 			}
+*/
+
                         if (mime == null) {
                         	mime = "application/xml; charset=" + charset;
                 	}
@@ -506,10 +507,12 @@ public class TECore {
             }
 
             // Set headers
-	    String mid = ((Element) body).getAttribute("mid");
-            if (!mid.equals("") && mid != null) {
-	    	if (mid.indexOf("mid:") != -1) mid = mid.substring(mid.indexOf("mid:")+"mid:".length());
-                uc.setRequestProperty("Message-ID", "<" + mid + ">");
+            if (body != null) {
+	        String mid = ((Element) body).getAttribute("mid");
+                if (mid != null && !mid.equals("")) {
+	    	    if (mid.indexOf("mid:") != -1) mid = mid.substring(mid.indexOf("mid:")+"mid:".length());
+                    uc.setRequestProperty("Message-ID", "<" + mid + ">");
+                }
             }
             uc.setRequestProperty("Content-Type", mime);
             uc.setRequestProperty("Content-Length", Integer
