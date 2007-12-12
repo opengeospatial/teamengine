@@ -30,6 +30,8 @@ import org.w3c.dom.Element;
 
 import java.net.URLConnection;
 
+import java.io.CharArrayReader;
+import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.InputStream;
@@ -43,6 +45,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 
@@ -65,10 +70,10 @@ public class XMLValidatingParser {
 
         // Parse Document for schema elements
         Document d = schemaLinks.getOwnerDocument();
+        
+        // If instruction body is in ctlp:schemas form, add each schema to the ArrayList
         NodeList nodes = d.getElementsByTagNameNS(
                 "http://www.occamlab.com/te/parsers", "schema");
-
-        // Add schema information to ArrayList for loading
         for (int i = 0; i < nodes.getLength(); i++) {
             Element e = (Element) nodes.item(i);
             Object schema = null;
@@ -86,6 +91,18 @@ public class XMLValidatingParser {
                 System.out.println("Incorrect schema resource:  Unknown type!");
             }
 
+            schemas.add(schema);
+        }
+
+        // If instruction body is an embedded xsd:schema, add it to the ArrayList
+        nodes = d.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "schema");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element e = (Element)nodes.item(i);
+            CharArrayWriter caw = new CharArrayWriter();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(e), new StreamResult(caw));
+            CharArrayReader car = new CharArrayReader(caw.toCharArray());
+            Schema schema = SF.newSchema(new StreamSource(car));
             schemas.add(schema);
         }
     }
@@ -226,14 +243,14 @@ public class XMLValidatingParser {
 
         if (error_count > 0) {
             String s = instruction.getAttribute("ignoreErrors");
-            if (s.length() > 0 && Boolean.parseBoolean(s) == true) {
+            if (s.length() == 0 || Boolean.parseBoolean(s) == false) {
                 doc = null;
             }
         }
 
         if (warning_count > 0) {
             String s = instruction.getAttribute("ignoreWarnings");
-            if (s.length() == 0 || Boolean.parseBoolean(s) == true) {
+            if (s.length() > 0 && Boolean.parseBoolean(s) == false) {
                 doc = null;
             }
         }
