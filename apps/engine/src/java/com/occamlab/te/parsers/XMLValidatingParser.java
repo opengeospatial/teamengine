@@ -60,12 +60,12 @@ import com.occamlab.te.ErrorHandlerImpl;
 public class XMLValidatingParser {
     SchemaFactory SF;
 
-    ArrayList schemaList = new ArrayList();
+    ArrayList<Object> schemaList = new ArrayList<Object>();
 
     /**
      * Holds a File or URL object for each schema, used to create a collection of schemas to validate with
      */
-    void loadSchemaList(Node schemaLinks, ArrayList schemas)
+    void loadSchemaList(Node schemaLinks, ArrayList<Object> schemas)
             throws Exception {
 
         // Parse Document for schema elements
@@ -101,9 +101,7 @@ public class XMLValidatingParser {
             CharArrayWriter caw = new CharArrayWriter();
             Transformer t = TransformerFactory.newInstance().newTransformer();
             t.transform(new DOMSource(e), new StreamResult(caw));
-            CharArrayReader car = new CharArrayReader(caw.toCharArray());
-            Schema schema = SF.newSchema(new StreamSource(car));
-            schemas.add(schema);
+            schemas.add(caw.toCharArray());
         }
     }
 
@@ -156,7 +154,7 @@ public class XMLValidatingParser {
     private Document parse(Object xml, Element instruction,
             PrintWriter logger) throws Exception {
 
-        ArrayList schemas = new ArrayList();
+        ArrayList<Object> schemas = new ArrayList<Object>();
         schemas.addAll(schemaList);
         loadSchemaList(instruction, schemas);
 
@@ -210,8 +208,12 @@ public class XMLValidatingParser {
                 Object o = schemas.get(i);
                 if (o instanceof File) {
                     schemaSources[i] = new StreamSource((File) o);
-                } else {
+                } else if (o instanceof URL) {
                     schemaSources[i] = new StreamSource(o.toString());
+                } else if (o instanceof char[]) {
+                    schemaSources[i] = new StreamSource(new CharArrayReader((char[])o));
+                } else {
+                    throw new Exception("Illegal object in schemas list");
                 }
             }
             Schema schema = SF.newSchema(schemaSources);
