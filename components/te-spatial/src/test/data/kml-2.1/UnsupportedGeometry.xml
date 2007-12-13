@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<kml:kml xmlns:kml="http://earth.google.com/kml/2.1">
-  <kml:Placemark>
-    <kml:Box>
-      <kml:coordinates>-124.0,46.0 -118.0,50.0</kml:coordinates>
-    </kml:Box>
-  </kml:Placemark>
-</kml:kml>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!-- LinearRing is not simple (self-intersects) -->
-<kml:kml xmlns:kml="http://earth.google.com/kml/2.1">
-  <kml:Placemark id="Placemark-3">
-    <kml:LinearRing id="LinearRing-3">
-      <kml:coordinates>-122.08,49.42 -122.08,47.42 -120.08,48.42 -124.08,48.42 -122.08,49.42</kml:coordinates>
-    </kml:LinearRing>
-  </kml:Placemark>
-</kml:kml>
