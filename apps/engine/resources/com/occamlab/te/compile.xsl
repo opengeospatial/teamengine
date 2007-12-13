@@ -244,11 +244,33 @@
 		<txsl:value-of select="te:log_xml($te:core, $te:formresults)"/>
 	</xsl:template>
 
-	<xsl:template match="ctl:request">
+	<xsl:template name="request" match="ctl:request">
+		<xsl:param name="mode"/>
+		<xsl:if test="$mode = 'fn-code'">
+			<txsl:variable name="te:call-depth" select="0"/>
+			<txsl:variable name="te:log">
+				<log/>
+			</txsl:variable>
+		</xsl:if>
 		<xsl:variable name="request-id" select="generate-id()"/>
 		<txsl:variable name="te:web-call-id">
 			<xsl:call-template name="loc"/>
-			<xsl:attribute name="select"><xsl:value-of select="concat('concat(', $apos, $request-id, '_', $apos, ', position())')"/></xsl:attribute>
+<!-- 			<xsl:attribute name="select"><xsl:value-of select="concat('concat(', $apos, $request-id, '_', $apos, ', position())')"/></xsl:attribute> -->
+			<xsl:attribute name="select">
+				<xsl:text>concat('</xsl:text>
+				<xsl:value-of select="$request-id"/>
+				<xsl:text>_', </xsl:text>
+				<xsl:choose>
+					<xsl:when test="$mode = 'fn-code'">
+						<xsl:value-of select="math:random()"/>
+					</xsl:when>
+					<xsl:otherwise>position()</xsl:otherwise>
+				</xsl:choose>
+				<xsl:text>)</xsl:text>
+			</xsl:attribute>
+		</txsl:variable>
+		<txsl:variable name="te:processed-request">
+			<xsl:apply-templates select="*"/>
 		</txsl:variable>
 		<txsl:variable name="te:request">
 			<txsl:choose>
@@ -258,12 +280,14 @@
 				<txsl:otherwise>
 					<request>
 						<txsl:attribute name="id"><txsl:value-of select="$te:web-call-id"/></txsl:attribute>
-						<xsl:apply-templates select="ctl:url" mode="drop-namespace"/>
-						<xsl:apply-templates select="ctl:method" mode="drop-namespace"/>
-						<xsl:apply-templates select="ctl:header" mode="drop-namespace"/>
-						<xsl:apply-templates select="ctl:param" mode="drop-namespace"/>
-						<xsl:apply-templates select="ctl:body" mode="drop-namespace"/>
-						<xsl:apply-templates select="ctl:part" mode="drop-namespace"/>
+						<!-- Just the elements in the CTL namespace are part of the request.  Anything else is a parser -->
+						<txsl:for-each select="$te:processed-request/ctl:*">
+							<txsl:element>
+								<xsl:attribute name="name">{local-name()}</xsl:attribute>
+								<txsl:copy-of select="@*"/>
+								<txsl:copy-of select="node()"/>
+							</txsl:element>
+						</txsl:for-each>
 					</request>
 				</txsl:otherwise>
 			</txsl:choose>
@@ -272,23 +296,8 @@
 		<txsl:variable name="te:request-response" select="te:build_request($te:request/request)">
 			<xsl:call-template name="loc"/>
 		</txsl:variable>					
-		<xsl:variable name="parser">
-			<xsl:for-each select="*">
-				<xsl:choose>
-					<xsl:when test="self::ctl:url"/>
-					<xsl:when test="self::ctl:method"/>
-					<xsl:when test="self::ctl:header"/>
-					<xsl:when test="self::ctl:param"/>
-					<xsl:when test="self::ctl:body"/>
-					<xsl:when test="self::ctl:part"/>
-					<xsl:otherwise>
-						<xsl:apply-templates select="."/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:for-each>
-		</xsl:variable>
 		<txsl:variable name="te:parser">
-			<xsl:copy-of select="$parser"/>
+			<txsl:copy-of select="$te:processed-request/*[not(namespace-uri() = 'http://www.occamlab.com/ctl')]"/>
 		</txsl:variable>
 		<xsl:call-template name="loc-element"/>
 		<txsl:variable name="te:response">
@@ -296,18 +305,11 @@
 				<txsl:when test="$te:mode='2' and boolean($te:log/log/response[@id = $te:web-call-id])">
 					<txsl:copy-of select="$te:log/log/response[@id = $te:web-call-id]"/>
 				</txsl:when>
+				<txsl:when test="boolean($te:parser/*)">
+					<txsl:copy-of select="te:parse($te:core, $te:request-response, $te:web-call-id, $te:parser)"/>
+				</txsl:when>
 				<txsl:otherwise>
-					<xsl:choose>
-						<xsl:when test="boolean($parser/*)">
-							<xsl:variable name="parser-prefix" select="substring-before(name($parser/*), ':')"/>
-							<txsl:copy-of select="te:parse($te:core, $te:request-response, $te:web-call-id, $te:parser)">
-								<xsl:copy-of select="namespace::*[name()=$parser-prefix]"/>
-							</txsl:copy-of>
-						</xsl:when>
-						<xsl:otherwise>
-							<txsl:copy-of select="te:parse($te:core, $te:request-response, $te:web-call-id)"/>
-						</xsl:otherwise>
-					</xsl:choose>
+					<txsl:copy-of select="te:parse($te:core, $te:request-response, $te:web-call-id)"/>
 				</txsl:otherwise>
 			</txsl:choose>
 		</txsl:variable>
@@ -320,67 +322,11 @@
 		</txsl:for-each>
 	</xsl:template>
 
+	<!-- Warning: If ctl:request is used inside a function, it will be resubmitted even in resume mode.  Not recommended. -->
 	<xsl:template match="ctl:request" mode="fn-code">
-		<xsl:variable name="request-id" select="generate-id()"/>
-		<txsl:variable name="te:call-depth" select="0"/>
-		<txsl:variable name="te:web-call-id">
-			<xsl:call-template name="loc"/>
-			<xsl:attribute name="select"><xsl:value-of select="concat('concat(', $apos, $request-id, '_', $apos, ',', math:random(), ')')"/></xsl:attribute>
-		</txsl:variable>		
-		<txsl:variable name="te:request">
-			<request>
-				<txsl:attribute name="id"><txsl:value-of select="$te:web-call-id"/></txsl:attribute>
-				<xsl:apply-templates select="ctl:url" mode="drop-namespace"/>
-				<xsl:apply-templates select="ctl:method" mode="drop-namespace"/>
-				<xsl:apply-templates select="ctl:header" mode="drop-namespace"/>
-				<xsl:apply-templates select="ctl:param" mode="drop-namespace"/>
-				<xsl:apply-templates select="ctl:body" mode="drop-namespace"/>
-				<xsl:apply-templates select="ctl:part" mode="drop-namespace"/>
-			</request>
-		</txsl:variable>
-		<txsl:value-of select="te:log_xml($te:core, $te:request)"/>
-		<txsl:variable name="te:request-response" select="te:build_request($te:request/request)">
-			<xsl:call-template name="loc"/>
-		</txsl:variable>					
-		<xsl:variable name="parser">
-			<xsl:for-each select="*">
-				<xsl:choose>
-					<xsl:when test="self::ctl:url"/>
-					<xsl:when test="self::ctl:method"/>
-					<xsl:when test="self::ctl:header"/>
-					<xsl:when test="self::ctl:param"/>
-					<xsl:when test="self::ctl:body"/>
-					<xsl:when test="self::ctl:part"/>
-					<xsl:otherwise>
-						<xsl:apply-templates select="."/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:for-each>
-		</xsl:variable>
-		<txsl:variable name="te:parser">
-			<xsl:copy-of select="$parser"/>
-		</txsl:variable>
-		<xsl:call-template name="loc-element"/>
-		<txsl:variable name="te:response">
-			<xsl:choose>
-				<xsl:when test="boolean($parser/*)">
-					<xsl:variable name="parser-prefix" select="substring-before(name($parser/*), ':')"/>
-					<txsl:copy-of select="te:parse($te:core, $te:request-response, $te:web-call-id, $te:parser)">
-						<xsl:copy-of select="namespace::*[name()=$parser-prefix]"/>
-					</txsl:copy-of>
-				</xsl:when>
-				<xsl:otherwise>
-					<txsl:copy-of select="te:parse($te:core, $te:request-response, $te:web-call-id)"/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</txsl:variable>
-		<txsl:if test="string-length($te:response/response/parser) &gt; 0">
-			<txsl:value-of select="te:message($te:core, $te:call-depth + 1, $te:response/response/parser)"/>
-		</txsl:if>
-		<txsl:value-of select="te:log_xml($te:core, $te:response)"/>
-		<txsl:for-each select="$te:response/response/content">
-			<txsl:copy-of select="*|text()"/>
-		</txsl:for-each>
+		<xsl:call-template name="request">
+			<xsl:with-param name="mode" select="'fn-code'"/>
+		</xsl:call-template>
 	</xsl:template>
 
 	<xsl:template match="ctl:parse">
@@ -780,14 +726,14 @@
 			<xsl:apply-templates mode="fn-code"/>
 		</xsl:copy>
 	</xsl:template>
-
+<!--
  	<xsl:template match="node()" mode="drop-namespace">
 		<xsl:element name="{local-name()}">
 			<xsl:apply-templates select="@*"/>
 			<xsl:apply-templates/>
 		</xsl:element>
 	</xsl:template>
-
+-->
 	<xsl:template match="/">
 		<txsl:transform version="1.0" exclude-result-prefixes="ctl saxon">
 			<xsl:for-each select="//ctl:function|//ctl:parser">
