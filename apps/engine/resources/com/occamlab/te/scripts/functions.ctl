@@ -40,4 +40,15 @@
 					method="getPathFromString"/>
   </ctl:function>     
    
+        <ctl:function name="ctl:getResourceURL">
+                <ctl:param name="resourcepath"/>
+                <ctl:description>Returns the URL for the resource at a given resource path.</ctl:description>
+                <ctl:java class="com.occamlab.te.util.Misc" method="getResourceURL"/>
+        </ctl:function>
+
+    <ctl:function name="ctl:encode">
+        <ctl:param name="s">String to encode</ctl:param>
+                <ctl:description>Returns the URL encoded form of a string.</ctl:description>
+        <ctl:java class="java.net.URLEncoder" method="encode"/>
+    </ctl:function>
 </ctl:package>
