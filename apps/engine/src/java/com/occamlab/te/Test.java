@@ -67,6 +67,8 @@ public class Test {
 
     public static final int RESUME_MODE = 2;
 
+    public static final int RECOVER_MODE = 3;
+
     public static final int DOC_MODE = 4;
 
     public static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
@@ -466,21 +468,27 @@ public class Test {
                     .getMode()));
             t.setParameter("{" + TE_NS + "}starting-test-path", path);
             t.setParameter("{" + TE_NS + "}core", core);
-            try {
-                t.transform(new DOMSource(doc), new StreamResult(
-                        new ByteArrayOutputStream(16)));
-            } catch (TransformerException e) {
-                PrintWriter logger = core.getLogger();
-                if (logger != null) {
-                    logger.println("<exception><![CDATA["
-                            + e.getMessageAndLocation() + "]]></exception>");
-                    logger.println("<endtest result=\"3\"/>");
-                    core.close_log();
-                    while (core.getLogger() != null) {
+            boolean done = false;
+            while (!done) {
+                try {
+                    t.transform(new DOMSource(doc), new StreamResult(
+                            new ByteArrayOutputStream(16)));
+                    done = true;
+                } catch (TransformerException e) {
+                    PrintWriter logger = core.getLogger();
+                    if (logger != null) {
+                        logger.println("<exception><![CDATA["
+                                + e.getMessageAndLocation() + "]]></exception>");
+                        logger.println("<endtest result=\"3\"/>");
                         core.close_log();
+                        while (core.getLogger() != null) {
+                            core.close_log();
+                        }
                     }
+//                    this.appLogger.warning(e.getMessageAndLocation());
+                    System.out.println("Recovering...");
+                    t.setParameter("{" + TE_NS + "}mode", Integer.toString(RECOVER_MODE));
                 }
-                this.appLogger.warning(e.getMessageAndLocation());
             }
         }
     }

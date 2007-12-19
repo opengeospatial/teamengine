@@ -169,9 +169,10 @@
 				</starttest>
 			</txsl:variable>
 			<txsl:value-of select="te:log_xml($te:core, $te:start-test)"/>
-			<txsl:value-of select="te:message($te:core, $te:call-depth, concat('Testing {@name} (', $te:call-path, ')...'))"/>
-
-			<txsl:value-of select="te:message($te:core, $te:call-depth + 1, concat('Assertion: ', $te:start-test/starttest/assertion))"/>
+			<txsl:if test="$te:mode &lt; 3 or not($te:log/log/starttest)">
+				<txsl:value-of select="te:message($te:core, $te:call-depth, concat('Testing {@name} (', $te:call-path, ')...'))"/>
+				<txsl:value-of select="te:message($te:core, $te:call-depth + 1, concat('Assertion: ', $te:start-test/starttest/assertion))"/>
+			</txsl:if>
 
 			<txsl:variable name="te:test-results">
 				<txsl:value-of select="''"/>	<!-- This prevents error in case the code element is empty -->
@@ -229,7 +230,7 @@
 		</txsl:variable>
 		<txsl:variable name="te:formresults">
 			<txsl:choose>
-				<txsl:when test="$te:mode='2' and boolean($te:log/log/formresults[@id = $te:form-call-id])">
+				<txsl:when test="$te:mode&gt;=2 and boolean($te:log/log/formresults[@id = $te:form-call-id])">
 					<txsl:copy-of select="$te:log/log/formresults[@id = $te:form-call-id]"/>
 				</txsl:when>
 				<txsl:otherwise>
@@ -274,7 +275,7 @@
 		</txsl:variable>
 		<txsl:variable name="te:request">
 			<txsl:choose>
-				<txsl:when test="$te:mode='2' and boolean($te:log/log/request[@id = $te:web-call-id])">
+				<txsl:when test="$te:mode&gt;=2 and boolean($te:log/log/request[@id = $te:web-call-id])">
 					<txsl:copy-of select="$te:log/log/request[@id = $te:web-call-id]"/>
 				</txsl:when>
 				<txsl:otherwise>
@@ -302,7 +303,7 @@
 		<xsl:call-template name="loc-element"/>
 		<txsl:variable name="te:response">
 			<txsl:choose>
-				<txsl:when test="$te:mode='2' and boolean($te:log/log/response[@id = $te:web-call-id])">
+				<txsl:when test="$te:mode&gt;=2 and boolean($te:log/log/response[@id = $te:web-call-id])">
 					<txsl:copy-of select="$te:log/log/response[@id = $te:web-call-id]"/>
 				</txsl:when>
 				<txsl:when test="boolean($te:parser/*)">
@@ -394,14 +395,20 @@
 				<txsl:choose>
 					<txsl:when test="$te:new-log/log/endtest/@result = 3">
 						<te:fail code="2"/>
-						<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} Failed')"/>
+						<txsl:if test="$te:mode &lt; 3">
+							<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} Failed')"/>
+						</txsl:if>
 					</txsl:when>
 					<txsl:when test="$te:new-log/log/endtest/@result = 1">
 						<te:warning/>
-						<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} generated a Warning')"/>
+						<txsl:if test="$te:mode &lt; 3">
+							<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} generated a Warning')"/>
+						</txsl:if>
 					</txsl:when>
 					<txsl:otherwise>
-						<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} Passed')"/>
+						<txsl:if test="$te:mode &lt; 3">
+							<txsl:value-of select="te:message($te:core, $te:call-depth + 1, 'Test {$test-title} Passed')"/>
+						</txsl:if>
 					</txsl:otherwise>
 				</txsl:choose>
 			</txsl:when>
