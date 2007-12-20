@@ -476,18 +476,24 @@ public class Test {
                     done = true;
                 } catch (TransformerException e) {
                     PrintWriter logger = core.getLogger();
+                    boolean root = true;
                     if (logger != null) {
                         logger.println("<exception><![CDATA["
                                 + e.getMessageAndLocation() + "]]></exception>");
                         logger.println("<endtest result=\"3\"/>");
                         core.close_log();
                         while (core.getLogger() != null) {
+                            root = false;
                             core.close_log();
                         }
                     }
-//                    this.appLogger.warning(e.getMessageAndLocation());
-                    System.out.println("Recovering...");
-                    t.setParameter("{" + TE_NS + "}mode", Integer.toString(RECOVER_MODE));
+                    this.appLogger.warning(e.getMessageAndLocation());
+                    if (root) {
+                        done = true;
+                    } else {
+                        System.out.println("Recovering...");
+                        t.setParameter("{" + TE_NS + "}mode", Integer.toString(RECOVER_MODE));
+                    }
                 }
             }
         }
