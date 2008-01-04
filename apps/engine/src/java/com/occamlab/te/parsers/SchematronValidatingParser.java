@@ -28,6 +28,7 @@ import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.SchemaReaderLoader;
 import com.thaiopensource.validate.ValidationDriver;
 import com.thaiopensource.validate.schematron.SchematronProperty;
+import com.thaiopensource.validate.ValidateProperty;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.TransformerFactory;
@@ -242,6 +243,9 @@ public class SchematronValidatingParser {
         initSchematronReader();
 
         PropertyMapBuilder schematronConfig = this.propMapBuilder;
+	// add error handler
+        eh = new ErrorHandlerImpl("Schematron", outputLogger);
+        ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
         // validate using default phase
         SchematronProperty.PHASE.put(schematronConfig, "Default");
         if (null != phase && phase.length() > 0) {
@@ -258,6 +262,10 @@ public class SchematronValidatingParser {
     private static String phase = null;
 
     private static String type = null;
+
+    private static ErrorHandlerImpl eh = null;
+
+    private static PrintWriter outputLogger = null;
 
     /** Default constructor required for init */
     public SchematronValidatingParser() throws Exception {
@@ -318,6 +326,7 @@ public class SchematronValidatingParser {
     private Document parse(InputStream is, Element instruction,
             PrintWriter logger) throws Exception {
 
+	outputLogger = logger;
         // Get schematron schema information from ctl file
         String localType = getFileType(instruction);
 
@@ -346,8 +355,6 @@ public class SchematronValidatingParser {
         }
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-        ErrorHandlerImpl eh = new ErrorHandlerImpl("Parsing", logger);
-        db.setErrorHandler(eh);
 
         // Gets the response document
         Document doc = null;
