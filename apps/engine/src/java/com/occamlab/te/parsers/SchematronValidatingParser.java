@@ -244,6 +244,9 @@ public class SchematronValidatingParser {
 
         PropertyMapBuilder schematronConfig = this.propMapBuilder;
 	// add error handler
+	if (outputLogger == null) {
+		outputLogger = new PrintWriter(System.out);
+	}
         eh = new ErrorHandlerImpl("Schematron", outputLogger);
         ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
         // validate using default phase
