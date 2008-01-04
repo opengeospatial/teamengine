@@ -48,12 +48,50 @@ public class SchematronValidatingParser {
 
     /** Configuration info for Schematron validation. */
     private PropertyMapBuilder propMapBuilder = null;
-
     /** Schema reader for Schematron validation. */
     private SchemaReader schematronReader = null;
+    private static String schemaLocation = null;
+    private static File schemaFile = null;
+    private static String phase = null;
+    private static String type = null;
+    private static ErrorHandlerImpl eh = null;
+    private static PrintWriter outputLogger = null;
 
     /** Namespace URI for the Schematron assertion language (v 1.5). */
     public static final String SCHEMATRON_NS_URI = "http://www.ascc.net/xml/schematron";
+
+    /** Default constructor required for init */
+    public SchematronValidatingParser() throws Exception {
+    }
+
+    /** Overloaded constructor required for init */
+    public SchematronValidatingParser(Document schema_link) throws Exception {
+        getFileType(schema_link.getDocumentElement());
+    }
+
+    /**
+     * Parses the parser element to get the schematron file location and type of
+     * resource (from ctl file).
+     *
+     * @param schema_links
+     *            Gets the location of the scehma (and type of resource) and
+     * saves to global parameter @ return The type of resource (URL, File,
+     *            Resource)
+     */
+    public String getFileType(Element schema_links) throws Exception {
+        Document d = schema_links.getOwnerDocument();
+        NodeList nodes = d.getElementsByTagNameNS(
+                "http://www.occamlab.com/te/parsers", "schema");
+        String localType = null;
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element e = (Element) nodes.item(i);
+            localType = e.getAttribute("type");
+            this.type = e.getAttribute("type");
+            this.phase = e.getAttribute("phase");
+            this.schemaLocation = e.getTextContent();
+        }
+        return localType;
+    }
 
     /**
      * Creates and initializes the schematron reader used in the validation
@@ -128,58 +166,28 @@ public class SchematronValidatingParser {
      * @return Whether there were validation errors or not (boolean)
      */
     public boolean checkSchematronRules(Document doc, String schemaFile,
-            String phase) {
+            String phase) throws Exception {
 
         // The validation state (true = no validation errors)
         boolean isValid = false;
 
 	if (doc == null || doc.getDocumentElement() == null) return isValid;
 
-        // Convert doc to InputSource
-        InputSource xmlInputSource = null;
-        try {
-            InputStream inputStream = DocumentToInputStream(doc);
-            xmlInputSource = new InputSource(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // Load schematron file
-        File f = null;
-        InputSource schema = null;
-        FileInputStream fileInputStream = null;
         try {
             // Use ClassLoader to load schematron off classpath
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL url = loader.getResource(schemaFile);
-            f = new File(url.getFile());
-            // f = new File(schemaFile);
-            fileInputStream = new FileInputStream(f);
-            schema = new InputSource(fileInputStream);
-        } catch (FileNotFoundException e) {
+            this.schemaFile = new File(url.getFile());
+        } catch (Exception e) {
             assert false : "Entity body not found. " + e.toString();
         }
-        ValidationDriver driver = createSchematronDriver(phase);
-        assert null != driver : "Unable to create Schematron ValidationDriver";
-        try {
-            // Validate using the thaiopensource validation method
-            if (driver.loadSchema(schema)) {
-                isValid = driver.validate(xmlInputSource);
-            } else {
-                assert false : ("Failed to load Schematron schema: "
-                        + schemaFile + "\nIs the schema valid? Is the phase defined?");
-            }
-        } catch (SAXException e) {
-            assert false : e.toString();
-        } catch (IOException e) {
-            assert false : e.toString();
-        } finally {
-            try {
-                fileInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+	this.phase = phase;
+
+	Document returnDoc = parse(doc, null, null);
+	if (returnDoc != null) {
+		isValid = true;
+	}
 
         return isValid;
     }
@@ -198,6 +206,28 @@ public class SchematronValidatingParser {
      * @return Whether there were validation errors or not (boolean)
      */
     public boolean checkSchematronRulesAdv(InputSource inputDoc,
+            File schemaFile, String phase) throws Exception {
+
+        // The validation state (true = no validation errors)
+        boolean isValid = false;
+
+	if (inputDoc == null) return isValid;
+
+	this.schemaFile = schemaFile;
+	this.phase = phase;
+
+	Document returnDoc = parse(inputDoc, null, null);
+	if (returnDoc != null) {
+		isValid = true;
+	}
+
+        return isValid;
+    }
+
+    /**
+    * Runs the schematron file against the input source.
+    */
+    public boolean executeSchematronDriver(InputSource inputDoc,
             File schemaFile, String phase) {
 
         // The validation state (true = no validation errors)
@@ -244,8 +274,8 @@ public class SchematronValidatingParser {
 
         PropertyMapBuilder schematronConfig = this.propMapBuilder;
 	// add error handler
-	if (outputLogger == null) {
-		outputLogger = new PrintWriter(System.out);
+	if (this.outputLogger == null) {
+		this.outputLogger = new PrintWriter(System.out);
 	}
         eh = new ErrorHandlerImpl("Schematron", outputLogger);
         ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
@@ -258,49 +288,6 @@ public class SchematronValidatingParser {
         ValidationDriver validator = new ValidationDriver(schematronConfig
                 .toPropertyMap(), reader);
         return validator;
-    }
-
-    private static String schemaLocation = null;
-
-    private static String phase = null;
-
-    private static String type = null;
-
-    private static ErrorHandlerImpl eh = null;
-
-    private static PrintWriter outputLogger = null;
-
-    /** Default constructor required for init */
-    public SchematronValidatingParser() throws Exception {
-    }
-
-    /** Overloaded constructor required for init */
-    public SchematronValidatingParser(Document schema_link) throws Exception {
-        String localType = getFileType(schema_link.getDocumentElement());
-    }
-
-    /**
-     * Parses the parser element to get the schematron file location and type of
-     * resource (from ctl file).
-     *
-     * @param schema_links
-     *            Gets the location of the scehma (and type of resource) and
-     * saves to global parameter @ return The type of resource (URL, File,
-     *            Resource)
-     */
-    public String getFileType(Element schema_links) throws Exception {
-        Document d = schema_links.getOwnerDocument();
-        NodeList nodes = d.getElementsByTagNameNS(
-                "http://www.occamlab.com/te/parsers", "schema");
-        String localType = null;
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Element e = (Element) nodes.item(i);
-            localType = e.getAttribute("type");
-            this.type = e.getAttribute("type");
-            this.phase = e.getAttribute("phase");
-            this.schemaLocation = e.getTextContent();
-        }
-        return localType;
     }
 
     /**
@@ -329,20 +316,34 @@ public class SchematronValidatingParser {
     private Document parse(InputStream is, Element instruction,
             PrintWriter logger) throws Exception {
 
-	outputLogger = logger;
-        // Get schematron schema information from ctl file
-        String localType = getFileType(instruction);
-
-        URL schemaURL = null;
-        File schemaFile = null;
-        if (type.equals("url")) {
-            schemaURL = new URL(schemaLocation);
-        } else if (type.equals("file")) {
-            schemaFile = new File(schemaLocation);
-        } else if (type.equals("resource")) {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            schemaFile = new File(cl.getResource(schemaLocation).getFile());
+        // Creates and sets document builder, to recieve response document from
+        // request
+        String property_name = "javax.xml.parsers.DocumentBuilderFactory";
+        String oldprop = System.getProperty(property_name);
+        System.setProperty(property_name,
+                "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        if (oldprop == null) {
+            System.clearProperty(property_name);
+        } else {
+            System.setProperty(property_name, oldprop);
         }
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+
+        // Gets the response document
+        Document doc = null;
+        try {
+            doc = db.parse(is);
+        } catch (Exception e) {
+            logger.println(e.getMessage());
+        }
+
+        return parse(doc, instruction, logger);
+    }
+
+    private Document parse(InputSource is, Element instruction,
+            PrintWriter logger) throws Exception {
 
         // Creates and sets document builder, to recieve response document from
         // request
@@ -367,6 +368,28 @@ public class SchematronValidatingParser {
             logger.println(e.getMessage());
         }
 
+        return parse(doc, instruction, logger);
+    }
+
+    private Document parse(Document doc, Element instruction,
+            PrintWriter logger) throws Exception {
+
+	this.outputLogger = logger;
+
+	if (instruction != null) {
+	        // Get schematron schema information from ctl file
+	        getFileType(instruction);
+	        if (type.equals("url")) {
+	            URL schemaURL = new URL(schemaLocation);
+	            this.schemaFile = new File(schemaURL.toURI());
+	        } else if (type.equals("file")) {
+	            this.schemaFile = new File(schemaLocation);
+	        } else if (type.equals("resource")) {
+	            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+	            this.schemaFile = new File(cl.getResource(schemaLocation).getFile());
+	        }
+	}
+
         boolean isValid = false;
         if (doc != null) {
             InputSource xmlInputSource = null;
@@ -376,7 +399,7 @@ public class SchematronValidatingParser {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            isValid = checkSchematronRulesAdv(xmlInputSource, schemaFile,
+            isValid = executeSchematronDriver(xmlInputSource, this.schemaFile,
                     this.phase);
         }
 
@@ -396,22 +419,24 @@ public class SchematronValidatingParser {
                         + (warning_count == 1 ? "" : "s");
             }
             msg += " detected.";
-            logger.println(msg);
+            this.outputLogger.println(msg);
         }
 
-        boolean b_ignore_errors = false;
-        String s_ignore_errors = instruction.getAttribute("ignoreErrors");
-        if (s_ignore_errors.length() > 0)
-            b_ignore_errors = Boolean.parseBoolean(s_ignore_errors);
-        if (error_count > 0 && !b_ignore_errors)
-            return null;
+	if (instruction != null) {
+	        boolean b_ignore_errors = false;
+	        String s_ignore_errors = instruction.getAttribute("ignoreErrors");
+	        if (s_ignore_errors.length() > 0)
+	            b_ignore_errors = Boolean.parseBoolean(s_ignore_errors);
+	        if (error_count > 0 && !b_ignore_errors)
+	            return null;
 
-        boolean b_ignore_warnings = true;
-        String s_ignore_warnings = instruction.getAttribute("ignoreWarnings");
-        if (s_ignore_warnings.length() > 0)
-            b_ignore_warnings = Boolean.parseBoolean(s_ignore_warnings);
-        if (warning_count > 0 && !b_ignore_warnings)
-            return null;
+	        boolean b_ignore_warnings = true;
+	        String s_ignore_warnings = instruction.getAttribute("ignoreWarnings");
+	        if (s_ignore_warnings.length() > 0)
+	            b_ignore_warnings = Boolean.parseBoolean(s_ignore_warnings);
+	        if (warning_count > 0 && !b_ignore_warnings)
+	            return null;
+	}
 
         // Return null if the schematron found an error, else return the valid
         // document
