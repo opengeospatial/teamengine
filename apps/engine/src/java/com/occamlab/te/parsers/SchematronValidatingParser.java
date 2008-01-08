@@ -15,6 +15,9 @@ import java.lang.Thread;
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.NodeList;
@@ -445,6 +448,83 @@ public class SchematronValidatingParser {
         } else {
             return doc;
         }
+    }
+
+    public NodeList validate(Document doc, String schemaFile,
+            String phase) throws Exception {
+
+	if (doc == null || doc.getDocumentElement() == null) return null;
+
+	// Create an empty list to store the errors in
+	NodeList errorStrings = null;
+	XmlErrorHandler eh = new XmlErrorHandler();
+
+	PrintWriter logger = new PrintWriter(System.out);
+
+        // Get schematron file
+        File schema = null;
+        try {
+            // Use ClassLoader to load schematron off classpath
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            URL url = loader.getResource(schemaFile);
+            schema = new File(url.getFile());
+        } catch (Exception e) {
+            assert false : "Entity body not found. " + e.toString();
+        }
+
+	// Get stream to input document
+	InputSource xmlInputSource = null;
+	try {
+		InputStream inputStream = DocumentToInputStream(doc);
+		xmlInputSource = new InputSource(inputStream);
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+
+	// Create schematron validator
+	ValidationDriver driver = createSchematronDriver(phase);
+        PropertyMapBuilder schematronConfig = this.propMapBuilder;
+        ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
+        // validate using default phase
+        SchematronProperty.PHASE.put(schematronConfig, "Default");
+        if (null != phase && phase.length() > 0) {
+            SchematronProperty.PHASE.put(schematronConfig, phase);
+        }
+        SchemaReader reader = this.schematronReader;
+        driver = new ValidationDriver(schematronConfig.toPropertyMap(), reader);
+	assert null != driver : "Unable to create Schematron ValidationDriver";
+	InputSource is = null;
+	try {
+		FileInputStream fis = new FileInputStream(schema);
+		is = new InputSource(fis);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+
+	try {
+		// Validate using the thaiopensource validation method
+		if (driver.loadSchema(is)) {
+			driver.validate(xmlInputSource);
+			errorStrings = eh.toNodeList();
+		} else {
+			assert false : ("Failed to load Schematron schema: "
+			  + schemaFile + "\nIs the schema valid? Is the phase defined?");
+		}
+	} catch (SAXException e) {
+		assert false : e.toString();
+	} catch (IOException e) {
+		assert false : e.toString();
+	}
+
+        // Print error summary
+	/*boolean isEmpty = eh.isEmpty();
+	if (!isEmpty) {
+		int error_count = errorStrings.getLength();
+		logger.println(error_count +  " validation error" + (error_count == 1 ? "" : "s") + " detected.");
+		logger.flush();
+	}*/
+
+        return errorStrings;
     }
 
 }

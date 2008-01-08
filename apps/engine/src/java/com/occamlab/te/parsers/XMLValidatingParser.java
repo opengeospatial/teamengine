@@ -37,6 +37,7 @@ import java.io.PrintWriter;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -50,6 +51,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
+
+import org.w3c.dom.NodeList;
 
 import com.occamlab.te.ErrorHandlerImpl;
 
@@ -70,7 +73,7 @@ public class XMLValidatingParser {
 
         // Parse Document for schema elements
         Document d = schemaLinks.getOwnerDocument();
-        
+
         // If instruction body is in ctlp:schemas form, add each schema to the ArrayList
         NodeList nodes = d.getElementsByTagNameNS(
                 "http://www.occamlab.com/te/parsers", "schema");
@@ -282,6 +285,58 @@ public class XMLValidatingParser {
         Document parsedDoc = parse(doc, e, logger);
 
         return (parsedDoc != null);
+    }
+
+    public NodeList validate(Document doc, Document instruction)
+            throws Exception {
+
+	if (doc == null || doc.getDocumentElement() == null) return null;
+
+	// Create an empty list to store the errors in
+	NodeList errorStrings = null;
+	XmlErrorHandler eh = new XmlErrorHandler();
+
+	PrintWriter logger = new PrintWriter(System.out);
+        Element e = instruction.getDocumentElement();
+
+	// Load the schemas declared in the XML element
+        ArrayList<Object> schemas = new ArrayList<Object>();
+        schemas.addAll(schemaList);
+        loadSchemaList(e, schemas);
+
+        // Validate against loaded schemas
+        if (doc != null && schemas.size() > 0) {
+            // Get all the schemas and make them into one
+            Source[] schemaSources = new Source[schemas.size()];
+            for (int i = 0; i < schemas.size(); i++) {
+                Object o = schemas.get(i);
+                if (o instanceof File) {
+                    schemaSources[i] = new StreamSource((File) o);
+                } else if (o instanceof URL) {
+                    schemaSources[i] = new StreamSource(o.toString());
+                } else if (o instanceof char[]) {
+                    schemaSources[i] = new StreamSource(new CharArrayReader((char[])o));
+                } else {
+                    throw new Exception("Illegal object in schemas list");
+                }
+            }
+            Schema schema = SF.newSchema(schemaSources);
+            // Validate with the combined schema
+            Validator validator = schema.newValidator();
+            validator.setErrorHandler(eh);
+            validator.validate(new DOMSource(doc));
+            errorStrings = eh.toNodeList();
+        }
+
+        // Print error summary
+	/*boolean isEmpty = eh.isEmpty();
+	if (!isEmpty) {
+		int error_count = errorStrings.getLength();
+		logger.println(error_count +  " validation error" + (error_count == 1 ? "" : "s") + " detected.");
+		logger.flush();
+	}*/
+
+        return errorStrings;
     }
 
 }

@@ -1144,6 +1144,39 @@
   &lt;ctl:message>[FAILURE] Parsing or validation errors.&lt;/ctl:message>
 &lt;/xsl:if></pre>
 
+  <pre class="example">
+  &lt;!-- This test would be called outside the ctl:request element to validate a given XML document -->
+  &lt;ctl:test name="ctl:XMLValidatorTest">
+    &lt;ctl:param name="doc"/>
+    &lt;ctl:param name="instruction"/>
+    &lt;ctl:assertion>
+	Validates the XML instance against the set of XML schemas specified (within the given instruction parameter).
+    &lt;/ctl:assertion>
+    &lt;ctl:code>
+		&lt;xsl:variable name="results">
+			&lt;ctl:call-function name="ctl:XMLValidator">
+                &lt;ctl:with-param name="doc">&lt;xsl:copy-of select="$doc"/>&lt;/ctl:with-param>
+                &lt;ctl:with-param name="instruction">&lt;xsl:copy-of select="$instruction"/>&lt;/ctl:with-param>
+			&lt;/ctl:call-function>
+		&lt;/xsl:variable>
+		&lt;xsl:if test="count($results/*) > 0">
+			&lt;ctl:message>Total number of errors detected: &lt;xsl:copy-of select="count($results/*)"/>&lt;/ctl:message>
+			&lt;xsl:for-each select="$results/*">
+				&lt;ctl:message>* &lt;xsl:copy-of select="."/>&lt;/ctl:message>
+			&lt;/xsl:for-each>
+			&lt;ctl:fail/>
+		&lt;/xsl:if>
+    &lt;/ctl:code>
+  &lt;/ctl:test>
+  &lt;ctl:function name="ctl:XMLValidator">
+		&lt;ctl:param name="doc"/>
+		&lt;ctl:param name="instruction"/>
+		&lt;ctl:description>Invokes the XML Schema validator and returns a list of errors (if any).&lt;/ctl:description>
+		&lt;ctl:java class="com.occamlab.te.parsers.XMLValidatingParser"
+                method="validate"
+                initialized="true"/>
+  &lt;/ctl:function></pre>
+
     <h3 id="sch-validator">5.5 SchematronValidatingParser</h3>
 
     <h4 id="sch-validator.intro">5.5.1 Introduction</h4>
