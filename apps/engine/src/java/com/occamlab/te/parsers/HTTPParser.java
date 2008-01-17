@@ -152,7 +152,8 @@ public class HTTPParser {
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
         uc.connect();
-        boolean multipart = uc.getContentType().startsWith("multipart");
+        String mime = uc.getContentType();
+        boolean multipart = (mime != null && mime.startsWith("multipart"));
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -175,15 +176,15 @@ public class HTTPParser {
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
         if (multipart) {
-            String mime = uc.getContentType() + ";";
-            int start = mime.indexOf("boundary=") + 9;
+            String mime2 = mime + ";";
+            int start = mime2.indexOf("boundary=") + 9;
             char endchar = ';';
-            if (mime.charAt(start) == '"') {
+            if (mime2.charAt(start) == '"') {
                 start++;
                 endchar = '"';
             }
-            int end = mime.indexOf(endchar, start);
-            String boundary = mime.substring(start, end);
+            int end = mime2.indexOf(endchar, start);
+            String boundary = mime2.substring(start, end);
             BufferedReader in = new BufferedReader(new InputStreamReader(uc
                     .getInputStream()));
             File temp = create_part_file(in, boundary, "text/plain");
