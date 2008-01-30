@@ -89,7 +89,6 @@ public class TECore {
     static String SessionDir;
 
     static public TransformerFactory TF = TransformerFactory.newInstance();
-    Transformer FormTransformer;
     DocumentBuilder DB;
 
     PrintStream Out;
@@ -117,13 +116,12 @@ public class TECore {
         TF = TransformerFactory.newInstance();
         TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
         Out = out;
-        System.setOut(Out); // sets the stdout to go to the appropriate place
-        System.setErr(Out);
+// TODO: Figure out what to do with messages sent to System.Out and System.Err.
+// Simply redirecting them to Out does not work for the web app since they are unique per VM, not per thread.
+// All output ends up going to the last session created.
+//        System.setOut(Out); // sets the stdout to go to the appropriate place
+//        System.setErr(Out);
         Web = web;
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
-        StreamSource xsl_source = new StreamSource(is);
-        FormTransformer = TF.newTransformer(xsl_source);
     }
 
     public static String getSessionId() {
@@ -847,6 +845,13 @@ public class TECore {
 			}
 		}
 	}
+
+        // Note: The system seems to have problems with rebuildDocument when multiple sessions are active
+        //       if a global FormTransformer is used, so rebuild a local one here
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
+        StreamSource xsl_source = new StreamSource(is);
+        Transformer FormTransformer = TF.newTransformer(xsl_source);
 
         // Set parameters for use by formfn.xsl
         FormTransformer.setParameter("title", name);
