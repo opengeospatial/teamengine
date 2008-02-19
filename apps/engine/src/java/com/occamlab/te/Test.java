@@ -673,6 +673,12 @@ public class Test {
                 sessionId, sources, logDir, validate, mode);
         Thread.currentThread().setName("CTL Test Engine");
         Test t = new Test(driverConfig);
+        
+        // Hack: must reset DOC_MODE to TEST_MODE after creating Test t, but before running it with t.test 
+        if (mode == DOC_MODE) {
+            driverConfig.setMode(TEST_MODE);
+        }
+        
         TECore core = new TECore(System.out, false);
         t.test(tests, core);
     }

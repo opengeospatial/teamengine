@@ -85,13 +85,59 @@
 					</xsl:for-each>
 				</starttest>
 			</txsl:variable>
-			<txsl:value-of select="te:message($te:core, $te:call-depth, concat('{$local-name}: ', $te:start-test/starttest/assertion))"/>
+<!--			<txsl:value-of select="te:message($te:core, $te:call-depth, concat('{$local-name}: ', $te:start-test/starttest/assertion))"/> -->
+			<txsl:variable name="te:first-line">
+				<xsl:text>&lt;test local-name="</xsl:text>
+				<xsl:value-of select="$local-name"/>
+				<xsl:text>" prefix="</xsl:text>
+				<xsl:value-of select="$prefix"/>
+				<xsl:text>" namespace-uri="</xsl:text>
+				<xsl:value-of select="$namespace-uri"/>
+				<xsl:text>"&gt;</xsl:text>
+			</txsl:variable>
+			<txsl:variable name="te:body">
+				<xsl:text>&lt;assertion&gt;</xsl:text>
+				<txsl:copy-of select="$te:start-test/starttest/assertion"/>
+				<xsl:text>&lt;/assertion&gt;&#xa;</xsl:text>
+				<xsl:for-each select="ctl:comment">
+					<xsl:text>&lt;comment&gt;</xsl:text>
+					<xsl:value-of select="."/>
+					<xsl:text>&lt;/comment&gt;&#xa;</xsl:text>
+				</xsl:for-each>
+				<xsl:for-each select="ctl:link">
+					<xsl:if test="position() != 1">&#xa;</xsl:if>
+					<xsl:text>&lt;link</xsl:text>
+					<xsl:if test="@title">
+						<xsl:text> title="</xsl:text>
+						<xsl:value-of select="@title"/>
+						<xsl:text>"</xsl:text>
+					</xsl:if>
+					<xsl:text>&gt;</xsl:text>
+					<xsl:value-of select="."/>
+					<xsl:text>&lt;/link&gt;</xsl:text>
+				</xsl:for-each>
+			</txsl:variable>
+			<txsl:variable name="te:last-line">&lt;/test&gt;</txsl:variable>
 <!--
+			<txsl:variable name="te:info">
+				<info>
+					<txsl:copy-of select="$te:start-test/starttest/@*"/>
+					<txsl:copy-of select="$te:start-test/starttest/assertion"/>
+					<xsl:for-each select="ctl:comment">
+						<comment><xsl:copy-of select="@*|*|text()"/></comment>
+					</xsl:for-each>
+					<xsl:for-each select="ctl:link">
+						<link><xsl:copy-of select="@*|*|text()"/></link>
+					</xsl:for-each>
+				</info>
+			</txsl:variable>
 			<txsl:value-of select="te:message($te:core, 1, '&lt;test&gt;')"/>
-			<txsl:value-of select="te:message($te:core, 1, saxon:serialize(., ''))" xmlns:saxon="http://saxon.sf.net/"/>
-			<txsl:value-of select="te:message($te:core, 1, '&lt;/test&gt;')"/>
+			<txsl:value-of select="te:message($te:core, 1, saxon:serialize($te:info/info, 'xml'))" xmlns:saxon="http://saxon.sf.net/"/>
 -->
+			<txsl:value-of select="te:message($te:core, $te:call-depth, $te:first-line)"/>
+			<txsl:value-of select="te:message($te:core, $te:call-depth+1, $te:body)"/>
 			<xsl:apply-templates select="ctl:code/*"/>
+			<txsl:value-of select="te:message($te:core, $te:call-depth, $te:last-line)"/>
 		</txsl:template>
 	</xsl:template>
 
@@ -194,6 +240,7 @@
 -->
 	<xsl:template match="/">
 		<txsl:transform version="2.0" exclude-result-prefixes="ctl saxon">
+			<txsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
 			<txsl:template name="file:te-initialize">
 				<xsl:call-template name="namespace-attribute">
 					<xsl:with-param name="prefix" select="'file'"/>
