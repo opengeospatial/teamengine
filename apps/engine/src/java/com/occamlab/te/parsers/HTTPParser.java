@@ -51,6 +51,7 @@ import com.occamlab.te.TECore;
  */
 public class HTTPParser {
     public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
+    public static final String EOS_ERR = "Error in multipart stream.  End of stream reached and with no closing boundary delimiter line";
 
     private static void append_headers(URLConnection uc, Element e) {
         Document doc = e.getOwnerDocument();
@@ -122,10 +123,10 @@ public class HTTPParser {
         return true;
     }
 
-    private static File create_part_file(Reader in, String boundary, String mime)
+    private static File create_part_file(Reader in, String boundary)
             throws Exception {
         File temp = File.createTempFile("$te_", ".tmp");
-        RandomAccessFile raf = new RandomAccessFile(temp, "w");
+        RandomAccessFile raf = new RandomAccessFile(temp, "rw");
         int qLen = boundary.length() + 4;
         int[] boundary_queue = new int[qLen];
         boundary_queue[0] = '\r';
@@ -138,11 +139,17 @@ public class HTTPParser {
         int[] queue = new int[qLen];
         for (int i = 0; i < qLen; i++) {
             queue[i] = in.read();
+            if (queue[i] == -1) {
+                throw new Exception(EOS_ERR);
+            }
         }
         int qPos = 0;
         while (!queue_equals(queue, qPos, qLen, boundary_queue)) {
             raf.write(queue[qPos]);
             queue[qPos] = in.read();
+            if (queue[qPos] == -1) {
+                throw new Exception(EOS_ERR);
+            }
             qPos = (qPos + 1) % qLen;
         }
         raf.close();
@@ -185,9 +192,10 @@ public class HTTPParser {
             }
             int end = mime2.indexOf(endchar, start);
             String boundary = mime2.substring(start, end);
-            BufferedReader in = new BufferedReader(new InputStreamReader(uc
-                    .getInputStream()));
-            File temp = create_part_file(in, boundary, "text/plain");
+            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+//System.out.println(boundary);            
+//in = new BufferedReader(new InputStreamReader(new java.io.FileInputStream(new File("c:\\work\\multipart.txt"))));          
+            File temp = create_part_file(in, boundary);
             temp.delete();
             String line = in.readLine();
             int num = 1;
@@ -199,9 +207,9 @@ public class HTTPParser {
                 line = in.readLine();
                 while (line.length() > 0) {
                     Element header = doc.createElement("header");
-                    int eq = line.indexOf("=");
-                    String name = line.substring(0, eq);
-                    String value = line.substring(eq + 1);
+                    int colon = line.indexOf(":");
+                    String name = line.substring(0, colon);
+                    String value = line.substring(colon + 1).trim();
                     if (name.toLowerCase().equals("content-type")) {
                         contentType = value;
                     }
@@ -210,13 +218,21 @@ public class HTTPParser {
                     headers.appendChild(header);
                     line = in.readLine();
                 }
-                temp = create_part_file(in, boundary, "text/plain");
+                part.appendChild(headers);
+                temp = create_part_file(in, boundary);
                 URLConnection pc = temp.toURL().openConnection();
                 pc.setRequestProperty("Content-type", mime);
                 Node parser = select_parser(num, contentType, instruction);
                 Document doc2 = core.parse(pc, null, parser);
                 temp.delete();
-                t.transform(new DOMSource(doc2), new DOMResult(part));
+                Element parser_e = (Element) (doc2.getDocumentElement()
+                        .getElementsByTagName("parser").item(0));
+                if (parser_e != null) {
+                    logger.print(parser_e.getTextContent());
+                }
+                Element content = (Element) (doc2.getDocumentElement()
+                        .getElementsByTagName("content").item(0));
+                t.transform(new DOMSource(content), new DOMResult(part));
                 root.appendChild(part);
                 line = in.readLine();
                 num++;
