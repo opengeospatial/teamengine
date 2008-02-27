@@ -172,9 +172,15 @@ public class HTTPParser {
             String status_line = uc.getHeaderField(0);
             String status_array[] = status_line.split("\\s");
             Element status = doc.createElement("status");
-            status.setAttribute("protocol", status_array[0]);
-            status.setAttribute("code", status_array[1]);
-            status.appendChild(doc.createTextNode(status_array[2]));
+            if (status_array.length > 0) {
+                status.setAttribute("protocol", status_array[0]);
+            }
+            if (status_array.length > 1) {
+                status.setAttribute("code", status_array[1]);
+            }
+            if (status_array.length > 2) {
+                status.appendChild(doc.createTextNode(status_array[2]));
+            }
             root.appendChild(status);
         }
 
