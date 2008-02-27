@@ -81,7 +81,7 @@ public class HTTPParser {
             Element parse = (Element) instructions.item(i);
             if (partnum != 0) {
                 String part_i = parse.getAttribute("part");
-                if (part_i != null) {
+                if (part_i.length() > 0) {
                     int n = Integer.parseInt(part_i);
                     if (n != partnum)
                         continue;
@@ -89,7 +89,7 @@ public class HTTPParser {
             }
             if (mime != null) {
                 String mime_i = parse.getAttribute("mime");
-                if (mime_i != null) {
+                if (mime_i.length() > 0) {
                     String[] mime_parts = mime_i.split(";\\s*");
                     if (!mime.startsWith(mime_parts[0]))
                         continue;
@@ -127,20 +127,18 @@ public class HTTPParser {
             throws Exception {
         File temp = File.createTempFile("$te_", ".tmp");
         RandomAccessFile raf = new RandomAccessFile(temp, "rw");
-        int qLen = boundary.length() + 4;
+        int qLen = boundary.length() + 2;
         int[] boundary_queue = new int[qLen];
-        boundary_queue[0] = '\r';
-        boundary_queue[1] = '\n';
-        boundary_queue[2] = '-';
-        boundary_queue[3] = '-';
+        boundary_queue[0] = '-';
+        boundary_queue[1] = '-';
         for (int i = 0; i < boundary.length(); i++) {
-            boundary_queue[i + 4] = boundary.charAt(i);
+            boundary_queue[i + 2] = boundary.charAt(i);
         }
         int[] queue = new int[qLen];
         for (int i = 0; i < qLen; i++) {
             queue[i] = in.read();
             if (queue[i] == -1) {
-                throw new Exception(EOS_ERR);
+                break;
             }
         }
         int qPos = 0;
@@ -199,8 +197,6 @@ public class HTTPParser {
             int end = mime2.indexOf(endchar, start);
             String boundary = mime2.substring(start, end);
             BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-//System.out.println(boundary);            
-//in = new BufferedReader(new InputStreamReader(new java.io.FileInputStream(new File("c:\\work\\multipart.txt"))));          
             File temp = create_part_file(in, boundary);
             temp.delete();
             String line = in.readLine();
