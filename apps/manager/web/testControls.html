@@ -23,18 +23,15 @@
 	<head>
 		<title>Test Controls</title>
 	</head>
-	<body>
-		<div style="position: absolute; background-color: black; top: 10px; left: 10px; width: 100%; height:100px; overflow:hidden">
-			<img style="position: absolute" src="images/banner.jpg" alt="TEAM Engine Banner"/>
-			<div style="position: absolute">
-				<span style="font-size: 30px">TEAM<br/>Engine<br/></span>
-				<span style="font-size: 12px">(Test, Evaluation, And Measurement Engine)</span>
-			</div>
-			<div style="position: absolute; right:20px; top:25px; background-color: white; padding: 3px; border-style: inset">
-				Executing Tests...<br/>
-				<a href="javascript:parent.stop()">Stop</a>
-<!--				<input type="button" value="Stop" onclick="parent.stop()"> -->
-			</div>
+	<body bgcolor="#000000" onload="if (window.innerHeight) document.images['banner'].height = window.innerHeight">
+		<img name="banner" style="position: absolute; top: 0px; left: 0px" src="banner.jpg" alt="TEAM Engine Banner"/>
+		<div style="position: absolute; top: 8px; left: 8px">
+			<span style="font-size: 30px">TEAM<br/>Engine<br/></span>
+			<span style="font-size: 12px">(Test, Evaluation, And Measurement Engine)</span>
+		</div>
+		<div style="position: absolute; right:20px; top:25px; background-color: white; padding: 3px; border-style: inset">
+			Executing Tests...<br/>
+			<a href="javascript:parent.stop()">Stop</a>
 		</div>
 	</body>
 </html>

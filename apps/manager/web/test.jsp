@@ -153,7 +153,7 @@ if (mode.equals("retest") || mode.equals("resume")) {
 			}
 		</script>
 	</head>
-	<frameset onload="start()" rows="120,*">
+	<frameset onload="start()" rows="102,*">
 	    <frame name="te_test_controls" src="testControls.html">
     	<frame name="te_test_panel" src="executing.html">
 	</frameset>
