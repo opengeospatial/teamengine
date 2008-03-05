@@ -36,24 +36,56 @@
 	<xsl:template name="viewtest">
 		<h2>Test <xsl:value-of select="@name"/></h2>
 		<h3>Assertion:</h3>
-		<xsl:value-of select="./ctl:assertion"/><br/>
+		<xsl:value-of select="./ctl:assertion"/>
+		<br/>
+		<xsl:if test="ctl:comment">
+			<h3>Comments:</h3>
+			<xsl:for-each select="ctl:comment">
+				<xsl:value-of select="."/>
+				<br/>
+			</xsl:for-each>
+		</xsl:if>
 		<h3>Links:</h3>
 		<xsl:if test="count(./ctl:link) gt 0">
 			<ul>
 			<xsl:for-each select="./ctl:link">
-				<xsl:variable name="title" select="./@title"/>
-				<xsl:variable name="content" select="."/>
 				<xsl:choose>
-					<xsl:when test="not($title = '')">
-						<li><a href="{$content}"><xsl:value-of select="$title"/></a></li>
+					<xsl:when test="@title">
+						<li><a href="{.}"><xsl:value-of select="@title"/></a></li>
+					</xsl:when>
+					<xsl:when test="starts-with(., 'http')">
+						<li><a href="{.}"><xsl:value-of select="."/></a></li>
 					</xsl:when>
 					<xsl:otherwise>
-						<li><a href="{$content}"><xsl:value-of select="$content"/></a></li>
+						<li><xsl:value-of select="."/></li>
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
 			</ul>
 		</xsl:if>
+		<xsl:if test="ctl:param">
+			<h3>Parameters:</h3>
+			<ul>
+			<xsl:for-each select="ctl:param">
+				<li>
+					<b><xsl:value-of select="@name"/></b>
+					<xsl:if test="string(.) != ''">
+						<xsl:value-of select="concat(': ',.)"/>
+					</xsl:if>
+				</li>
+			</xsl:for-each>
+			</ul>
+			<br/>
+		</xsl:if>
+		<xsl:if test="ctl:context">
+			<h3>Context:</h3>
+			<xsl:value-of select="ctl:context"/>
+			<br/>
+		</xsl:if>
+		<h3>Code:</h3>
+		<pre>
+			<xsl:value-of select="saxon:serialize(ctl:code, 'xml')"/>
+		</pre>
 	</xsl:template>
 	
 	<xsl:template match="/">

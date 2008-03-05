@@ -1,14 +1,16 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.stream.*, java.io.File, com.occamlab.te.Test"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.stream.*, java.io.File, com.occamlab.te.Test, net.sf.saxon.FeatureKeys"
 %><%!
 Templates ViewTestTemplates;
 
 public void jspInit() {
 	try {
 		File stylesheet = Test.getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
-		ViewTestTemplates = TransformerFactory.newInstance().newTemplates(new StreamSource(stylesheet));
+		TransformerFactory tf = TransformerFactory.newInstance();
+		tf.setAttribute(FeatureKeys.XINCLUDE, Boolean.TRUE);
+		ViewTestTemplates = tf.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
 	}
