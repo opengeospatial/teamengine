@@ -93,7 +93,7 @@
 	
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="test">
-			<img src="images/plus.png" name="image{$testnum}" onclick="javascript:toggle('{$testnum}')"/>
+			<img src="images/minus.png" name="image{$testnum}" onclick="toggle('{$testnum}', event)" title="Click to toggle.  Ctrl+Click for a deep toggle."/>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:if>
 		<img src="images/{$result}.png"/>
@@ -133,7 +133,7 @@
 		</xsl:choose>
 		<br/>
 		<xsl:if test="test">
-			<div style="display:none; margin-left:30px" id="test{$testnum}">
+			<div style="display:block; margin-left:30px" id="test{$testnum}">
 				<xsl:for-each select="test">
 					<xsl:call-template name="test">
 						<xsl:with-param name="testnum" select="concat($testnum, '.', position())"/>

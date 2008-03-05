@@ -45,15 +45,38 @@ public void jspInit() {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>			
 		<title>Test Session Results</title>
 		<script>
-			function toggle(testnum) {
-			  if (document.images['image' + testnum].src.indexOf('minus') > 0) {
-			    document.images['image' + testnum].src = 'images/plus.png';
-			    document.getElementById('test' + testnum).style.display = "none";
-			  } else {
-			    document.images['image' + testnum].src = 'images/minus.png';
-			    document.getElementById('test' + testnum).style.display = "block";
+			function toggleAll(testnum, state) {
+			  for (key in document.images) {
+			    var image = document.images[key];
+                            if (image.name) {
+			      if (image.name.substring(0, 5 + testnum.length) == "image" + testnum) {
+			        image.src = state ? "minus.png" : "plus.png";
+                                var div = document.getElementById('test' + image.name.substring(5));
+			        div.style.display = state ? "block" : "none";
+			      }
+			    }
 			  }
 			}
+
+			function toggle(testnum, e) {
+			  var evt = e || window.event;
+			  if (document.images['image' + testnum].src.indexOf('minus') > 0) {
+			    if (evt.ctrlKey) {
+			      toggleAll(testnum, false);
+			    } else {
+			      document.images['image' + testnum].src = 'plus.png';
+			      document.getElementById('test' + testnum).style.display = "none";
+			    }
+			  } else {
+			    if (evt.ctrlKey) {
+			      toggleAll(testnum, true);
+			    } else {
+			      document.images['image' + testnum].src = 'minus.png';
+			      document.getElementById('test' + testnum).style.display = "block";
+			    }
+			  }
+			}
+
 
 			function deleteSession() {
 				if (confirm("Are you sure you want to delete session <%=request.getParameter("session")%>?")) {
