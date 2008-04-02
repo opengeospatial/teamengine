@@ -104,6 +104,11 @@ public class Test {
         appLogger.entering(this.getClass().getName(), "ctor",
                 new Object[] { driverConfig });
 
+        File logDir = driverConfig.getLogDir();
+        if (logDir != null) {
+            appLogger.log(Level.INFO, "Using logdir " + logDir.getAbsolutePath());
+        }
+
         // configure parser to resolve XIncludes
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
