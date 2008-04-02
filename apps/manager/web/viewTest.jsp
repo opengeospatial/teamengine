@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.stream.*, java.io.File, com.occamlab.te.Test, net.sf.saxon.FeatureKeys"
+ import="org.w3c.dom.*, javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.File, com.occamlab.te.Test, net.sf.saxon.FeatureKeys"
 %><%!
 Templates ViewTestTemplates;
 
@@ -9,7 +9,7 @@ public void jspInit() {
 	try {
 		File stylesheet = Test.getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
 		TransformerFactory tf = TransformerFactory.newInstance();
-		tf.setAttribute(FeatureKeys.XINCLUDE, Boolean.TRUE);
+//		tf.setAttribute(FeatureKeys.XINCLUDE, Boolean.TRUE);
 		ViewTestTemplates = tf.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
@@ -51,7 +51,13 @@ public void jspInit() {
       t.setParameter("namespace-uri", request.getParameter("namespace"));
       t.setParameter("local-name", request.getParameter("name"));
       t.setParameter("sesion-id", request.getParameter("sessionid"));
-      t.transform(new StreamSource(file), new StreamResult(out));
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setNamespaceAware(true);
+      dbf.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse(file);
+      t.transform(new DOMSource(doc), new StreamResult(out));
+//      t.transform(new StreamSource(file), new StreamResult(out));
 %>
 		<br/>
 		<br/>

@@ -50,7 +50,7 @@ public void jspInit() {
 			    var image = document.images[key];
                             if (image.name) {
 			      if (image.name.substring(0, 5 + testnum.length) == "image" + testnum) {
-			        image.src = state ? "minus.png" : "plus.png";
+			        image.src = "images/" + (state ? "minus.png" : "plus.png");
                                 var div = document.getElementById('test' + image.name.substring(5));
 			        div.style.display = state ? "block" : "none";
 			      }
@@ -64,14 +64,14 @@ public void jspInit() {
 			    if (evt.ctrlKey) {
 			      toggleAll(testnum, false);
 			    } else {
-			      document.images['image' + testnum].src = 'plus.png';
+			      document.images['image' + testnum].src = 'images/plus.png';
 			      document.getElementById('test' + testnum).style.display = "none";
 			    }
 			  } else {
 			    if (evt.ctrlKey) {
 			      toggleAll(testnum, true);
 			    } else {
-			      document.images['image' + testnum].src = 'minus.png';
+			      document.images['image' + testnum].src = 'images/minus.png';
 			      document.getElementById('test' + testnum).style.display = "block";
 			    }
 			  }
