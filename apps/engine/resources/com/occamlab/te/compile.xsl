@@ -35,6 +35,7 @@
 	
 	<xsl:param name="filename"/>
 	<xsl:param name="txsl_filename" select="'memory:txsl'"/>
+	<xsl:param name="params"></xsl:param>
 
 	<xsl:variable name="apos">'</xsl:variable>
 
@@ -499,6 +500,11 @@
 				<xsl:variable name="test-prefix" select="substring-before(., ':')"/>
 				<txsl:call-template name="{.}">
 					<xsl:copy-of select="namespace::*[name()=$test-prefix]"/>
+					<xsl:for-each select="$params/params/param">
+						<txsl:with-param name="{@name}">
+							<xsl:value-of select="."/>
+						</txsl:with-param>
+					</xsl:for-each>
 				</txsl:call-template>
 			</xsl:for-each>
 		</xsl:variable>
