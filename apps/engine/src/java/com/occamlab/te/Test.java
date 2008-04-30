@@ -31,30 +31,51 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
-import javax.xml.transform.OutputKeys;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import javax.xml.parsers.*;
-import java.lang.ClassLoader;
-import java.net.URLDecoder;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import net.sf.saxon.FeatureKeys;
-import org.w3c.dom.*;
-import java.util.*;
-import javax.xml.validation.*;
-import javax.xml.XMLConstants;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 /**
  * The main test driver for a given executable test suite.
@@ -96,8 +117,10 @@ public class Test {
      * 
      * @param driverConfig
      *            test driver configuration.
+     *  @param params
+     *  			parameters passed through command line.
      */
-    public Test(TestDriverConfig driverConfig) throws Exception {
+    public Test(TestDriverConfig driverConfig, ArrayList<String> params) throws Exception {
         this.driverConfig = driverConfig;
         initAppLogger(driverConfig.getSessionDir());
         appLogger.log(Level.INFO, "Initializing main test driver");
@@ -130,12 +153,16 @@ public class Test {
         ctl_validator.setErrorHandler(validation_eh);
 
         // create transformer to generate executable script from CTL sources
+        Processor processor = new Processor(false);
+        XsltCompiler generatorCompiler = processor.newXsltCompiler();
+        XsltCompiler composerCompiler = processor.newXsltCompiler();
+
+        // create transformer to generate executable script from CTL sources
         TF = TransformerFactory.newInstance();
         TF.setAttribute(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
         TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
         CL = Thread.currentThread().getContextClassLoader();
-        Transformer identityTransformer = TF.newTransformer();
-        identityTransformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
         File generatorStylesheet;
         String extension;
         // Transform the test file into a document (dxsl) or for actually
@@ -148,16 +175,24 @@ public class Test {
             extension = "txsl";
         }
         // Prepare the XSLT transformers
-        Transformer generator = TF.newTransformer(new StreamSource(
-                generatorStylesheet));
+        XsltExecutable generatorXsltExecutable = generatorCompiler.compile(new StreamSource(generatorStylesheet));
+        XsltTransformer generatorTransformer = generatorXsltExecutable.load();
+
         InputStream main_is = CL
                 .getResourceAsStream("com/occamlab/te/main.xsl");
-        Transformer composer = TF.newTransformer(new StreamSource(main_is));
+
+        XsltExecutable composerXsltExecutable = composerCompiler.compile(new StreamSource(main_is));
+        XsltTransformer composerTransformer = composerXsltExecutable.load();
 
         char[] script_chars = null; // container for final stylesheet module
         Document scriptDoc = DB.newDocument();
         Element scriptElem = scriptDoc.createElement("script");
         scriptDoc.appendChild(scriptElem);
+
+        //Build node of parameters passed from command line
+        net.sf.saxon.s9api.DocumentBuilder documentBuilder = null;
+		documentBuilder = processor.newDocumentBuilder();
+		XdmNode paramsNode = documentBuilder.build(new StreamSource(new StringReader(buildParamsXML(params))));
 
         // Goes through each test source file and compiles it together to run
         // later (txsl file)
@@ -169,8 +204,7 @@ public class Test {
             Document generatedDoc = DB.newDocument();
             DocumentBuilder inputDB = DBF.newDocumentBuilder();
             Document inputCtl = null;
-            generator.clearParameters();
-            composer.clearParameters();
+
             // Get all test source files in a directory
             if (sourcefile.isDirectory()) {
                 Element transformElem = generatedDoc.createElementNS(XSL_NS,
@@ -207,11 +241,13 @@ public class Test {
                                                 .validate(new StreamSource(
                                                         ctl_file));
                                     if (validation_eh.getErrorCount() == old_count) {
-                                        generator.setParameter("filename",
-                                                ctl_file.getAbsolutePath());
-                                        generator.setParameter("txsl_filename",
-                                                txsl_file.toURL().toString());
-                                        inputCtl = inputDB.parse(ctl_file);
+                                    	generatorTransformer.setParameter(new QName("filename"),
+                                    			new XdmAtomicValue(ctl_file.getAbsolutePath()));
+                                    	generatorTransformer.setParameter(new QName("txsl_filename"),
+                                        		new XdmAtomicValue(txsl_file.toURL().toString()));
+                                    	generatorTransformer.setParameter(new QName("params"), paramsNode);
+
+                                    	inputCtl = inputDB.parse(ctl_file);
                                         this.appLogger
                                                 .fine("Stage 1 (generator) transformation parameters:"
                                                         + "\n filename (source): "
@@ -220,18 +256,15 @@ public class Test {
                                                         + "\n txsl_filename (result): "
                                                         + txsl_file
                                                                 .getAbsolutePath());
-                                        generator.transform(new DOMSource(
-                                                inputCtl), new StreamResult(
-                                                txsl_file));
+                                        generatorTransformer.setSource(new StreamSource(ctl_file));
+                                        Serializer generatorSerializer = new Serializer();
+                                        generatorSerializer.setOutputFile(txsl_file);
+                                        generatorTransformer.setDestination(generatorSerializer);
+                                        generatorTransformer.transform();
                                     }
                                 } catch (org.xml.sax.SAXException e) {
                                     appLogger.severe(e.getMessage());
                                     throw e;
-                                } catch (TransformerException e) {
-                                    appLogger.severe(e.getMessageAndLocation());
-                                    throw e;
-                                } finally {
-                                    generator.reset();
                                 }
                             }
                             Element include = generatedDoc.createElementNS(
@@ -246,45 +279,51 @@ public class Test {
 
             else { // process CTL file
                 try {
+                	StringWriter generatedXML = new StringWriter();
                     int old_count = validation_eh.getErrorCount();
                     if (driverConfig.hasValidationFlag())
                         ctl_validator.validate(new StreamSource(sourcefile));
                     if (validation_eh.getErrorCount() == old_count) {
-                        generator.setParameter("filename", sourcefile
-                                .getAbsolutePath());
-                        generator.setParameter("txsl_filename", sourcefile
-                                .toURL().toString());
+                    	generatorTransformer.setParameter(new QName("filename"), new XdmAtomicValue(sourcefile
+                                .getAbsolutePath()));
+                    	generatorTransformer.setParameter(new QName("txsl_filename"),new XdmAtomicValue( sourcefile
+                                .toURL().toString()));
+                    	generatorTransformer.setParameter(new QName("params"), paramsNode);
                         inputCtl = inputDB.parse(sourcefile);
-                        generator.transform(new DOMSource(inputCtl),
-                                new DOMResult(generatedDoc));
+                        generatorTransformer.setSource(new StreamSource(sourcefile));
+                        Serializer generatorSerializer = new Serializer();
+                        generatorSerializer.setOutputWriter(generatedXML);
+                        generatorTransformer.setDestination(generatorSerializer);                       
+                        generatorTransformer.transform();
+//System.out.println("generatedXML: "+generatedXML);
+                        generatedDoc = DB.parse(new InputSource(new StringReader(generatedXML.toString())));
                     }
                 } catch (org.xml.sax.SAXException e) {
                     appLogger.severe(e.getMessage());
                     throw e;
-                } catch (TransformerException e) {
-                    appLogger.severe(e.getMessageAndLocation());
-                    throw e;
-                } finally {
-                    generator.reset();
                 }
             }
 
             if (script_chars != null) { // when processing second and subsequent
                 // sources
-                CharArrayReader car = new CharArrayReader(script_chars);
-                identityTransformer.transform(new StreamSource(car),
-                        new DOMResult(scriptElem));
-                if (this.appLogger.isLoggable(Level.FINE)) {
+    			documentBuilder = processor.newDocumentBuilder();
+    			XdmNode scriptElemNode = documentBuilder.build(new StreamSource(new CharArrayReader(script_chars)));
+    			if (this.appLogger.isLoggable(Level.FINE)) {
                     this.appLogger
                             .fine("Saving previously generated output (script_chars) to scriptDoc/script");
-                    writeNodeToLog(this.appLogger, scriptElem);
+                    writeNodeToLog(this.appLogger, DB.parse(new InputSource(new CharArrayReader(script_chars))));
                 }
-                composer.setParameter("prev", scriptElem);
+                composerTransformer.setParameter(new QName("prev"), scriptElemNode);
             }
             CharArrayWriter caw = new CharArrayWriter();
-            composer.transform(new DOMSource(generatedDoc), new StreamResult(
-                    caw));
+            composerTransformer.setSource(new DOMSource(generatedDoc));
+            Serializer composerSerializer = new Serializer();
+            composerSerializer.setOutputWriter(caw);
+            composerTransformer.setDestination(composerSerializer);
+            composerTransformer.transform();
+
             script_chars = caw.toCharArray();
+//System.out.println("script_chars: "+new String(script_chars));
             if (this.appLogger.isLoggable(Level.FINE)) {
                 this.appLogger.fine("Content of script_chars variable:\n"
                         + new String(script_chars));
@@ -577,6 +616,25 @@ public class Test {
         }
         return;
     }
+    /**
+     * Builds Xml of parameters
+     * @param params
+     * 			parameters passed from command line
+     * @return String
+     * 			parameters converted to XmlString
+     */
+    protected String buildParamsXML(ArrayList<String> params){
+		String paramsXML = "<params>";
+        for(int i = 0; i < params.size(); i++){
+        	if(params.get(i).indexOf('=')!= 0){
+            	paramsXML = paramsXML + "<param name=\""+ params.get(i).substring(0, params.get(i).indexOf('='))+ "\">" +
+            				params.get(i).substring(params.get(i).indexOf('=')+1) + "</param>";        		
+        	}
+        }
+        paramsXML = paramsXML + "</params>";
+//System.out.println("paramsXML: "+paramsXML);
+		return paramsXML;
+    }
 
     public static void main(String[] args) throws Exception {
         int mode = TEST_MODE;
@@ -586,6 +644,7 @@ public class Test {
         String suiteName = null;
         ArrayList<File> sources = new ArrayList<File>();
         ArrayList<String> tests = new ArrayList<String>();
+        ArrayList<String> params = new ArrayList<String>();
         String cmd = "java com.occamlab.te.Test";
 
         File f = getResourceAsFile("com/occamlab/te/compile.xsl");
@@ -616,6 +675,8 @@ public class Test {
                 sessionId = args[i].substring(9);
             } else if (args[i].startsWith("-suite=")) {
                 suiteName = args[i].substring(7);
+            }else if(args[i].startsWith("@")){
+                	params.add(args[i].substring(1));
             } else if (args[i].equals("-mode=test")) {
                 mode = TEST_MODE;
             } else if (args[i].equals("-mode=retest")) {
@@ -647,7 +708,7 @@ public class Test {
                             + cmd
                             + " [-mode=test] -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
             System.out
-                    .println("    [-suite=[{namespace_uri,|prefix:}]suite_name] [-logdir=dir] [-session=session]\n");
+                    .println("    [-suite=[{namespace_uri,|prefix:}]suite_name] [-logdir=dir] [-session=session] [@param-name=value]\n");
             System.out.println("Resume mode:");
             System.out
                     .println("  Use to resume a test session that was interrupted before completion.\n");
@@ -655,14 +716,14 @@ public class Test {
                     .println("  "
                             + cmd
                             + " -mode=resume -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
-            System.out.println("    -logdir=dir -session=session\n");
+            System.out.println("    -logdir=dir -session=session [@param-name=value]\n");
             System.out.println("Retest mode:");
             System.out.println("  Use to reexecute individual tests.\n");
             System.out
                     .println("  "
                             + cmd
                             + " -mode=retest -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
-            System.out.println("    -logdir=dir test1 [test2] ...\n");
+            System.out.println("    -logdir=dir [@param-name=value] test1 [test2] ...\n");
             System.out.println("Doc mode:");
             System.out.println("  Use to generate a list of assertions.\n");
             System.out
@@ -677,7 +738,7 @@ public class Test {
         TestDriverConfig driverConfig = new TestDriverConfig(suiteName,
                 sessionId, sources, logDir, validate, mode);
         Thread.currentThread().setName("CTL Test Engine");
-        Test t = new Test(driverConfig);
+        Test t = new Test(driverConfig, params);
         
         // Hack: must reset DOC_MODE to TEST_MODE after creating Test t, but before running it with t.test 
         if (mode == DOC_MODE) {
