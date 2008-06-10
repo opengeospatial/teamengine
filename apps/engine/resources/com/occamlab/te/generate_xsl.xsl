@@ -1,0 +1,532 @@
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  The contents of this file are subject to the Mozilla Public License
+  Version 1.1 (the "License"); you may not use this file except in
+  compliance with the License. You may obtain a copy of the License at
+  http://www.mozilla.org/MPL/ 
+
+  Software distributed under the License is distributed on an "AS IS" basis,
+  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+  the specific language governing rights and limitations under the License. 
+
+  The Original Code is TEAM Engine.
+
+  The Initial Developer of the Original Code is Northrop Grumman Corporation
+  jointly with The National Technology Alliance.  Portions created by
+  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
+  Grumman Corporation. All Rights Reserved.
+
+  Contributor(s): No additional contributors to date
+
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<xsl:transform
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+ xmlns:txsl="http://www.w3.org/1999/XSL/Transform/target"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:te="http://www.occamlab.com/te"
+ xmlns:tec="java:com.occamlab.te.TECore"
+ xmlns:saxon="http://saxon.sf.net/"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:stack="java:java.util.ArrayDeque"
+ version="2.0">
+ 
+ 	<!--
+         The input XML for this stylesheet should be a CTL source file.
+ 	     An outdir parameter must also be supplied.
+ 	     The stylesheet generates executable XSL stylesheets for each
+ 	     test and CTL function, and writes them to files in outdir.
+ 	     The output XML is an index of meta-information about each
+ 	     suite, test, function, and parser objects in the CTL file,
+ 	     including the name of the file that was generated for
+ 	     test and CTL function objects.
+ 	     Includes are supported.  The source filename and any included
+ 	     filenames are also written to the index as dependecies.
+ 	-->
+
+	<xsl:strip-space elements="*"/>
+	<xsl:output indent="yes"/>
+	<xsl:namespace-alias stylesheet-prefix="txsl" result-prefix="xsl"/>
+	
+	<xsl:param name="outdir"/>
+	<xsl:param name="xsl-ver">1.0</xsl:param>
+
+	<xsl:variable name="filename-stack" select="stack:new()"/>
+
+
+	<!-- Supporting functions/templates -->
+	
+	<!-- Returns a string containing the destination filename for a test or function. -->
+	<xsl:function name="te:get-filename" xmlns:file="java:java.io.File" xmlns:uri="java:java.net.URI">
+		<xsl:param name="file-type"/>      <!-- "tst" or "fn" -->
+		<xsl:param name="prefix"/>
+		<xsl:param name="local-name"/>
+		<xsl:param name="namespace-uri"/>
+		<xsl:param name="seqno"/>          <!-- For recursive calls only -->
+
+		<xsl:variable name="file" select="file:new(concat($outdir, '/', $prefix, $seqno, '$', $local-name, '.', $file-type))"/>
+		<xsl:choose>
+			<xsl:when test="file:exists($file)">
+				<xsl:variable name="qname">
+					<xsl:for-each select="saxon:discard-document(document(uri:toString(file:toURI($file))))/xsl:transform/xsl:template">
+						<xsl:call-template name="parse-qname"/>
+					</xsl:for-each>
+				</xsl:variable>
+				<xsl:choose>
+					<xsl:when test="$qname/namespace-uri = $namespace-uri">
+						<xsl:message>Warning: Overwriting <xsl:value-of select="uri:toString(file:toURI($file))"/></xsl:message>
+						<xsl:value-of select="uri:toString(file:toURI($file))"/>
+					</xsl:when>
+					<xsl:when test="$prefix = ''">
+						<xsl:value-of select="te:get-filename($file-type, 'ns', $local-name, $namespace-uri, '')"/>
+					</xsl:when>
+					<xsl:when test="string($seqno) = ''">
+						<xsl:value-of select="te:get-filename($file-type, $prefix, $local-name, $namespace-uri, 1)"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="te:get-filename($file-type, $prefix, $local-name, $namespace-uri, $seqno + 1)"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="uri:toString(file:toURI($file))"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:function>
+
+	<!-- Creates a marker loc attribute to tie the generated code to the line number in the source CTL file -->
+	<xsl:template name="loc">
+		<xsl:attribute name="loc" namespace="http://www.occamlab.com/te">
+			<xsl:value-of select="concat(saxon:line-number(.), ',', stack:peek($filename-stack))"/>
+		</xsl:attribute>
+	</xsl:template>
+
+	<!-- Contains a dummy instruction with a marker loc attribute -->
+	<xsl:template name="loc-element">
+		<txsl:if test="false()">
+			<xsl:call-template name="loc"/>
+		</txsl:if>
+	</xsl:template>
+
+	<!-- parses a qname string (the @name attribute of the context node, by default)
+	     into name, local-name, prefix, and namespace-uri elements -->
+	<xsl:template name="parse-qname">
+		<xsl:param name="qname" select="@name"/>
+		<name>
+			<xsl:value-of select="$qname"/>
+		</name>
+		<xsl:choose>
+			<xsl:when test="contains($qname, ':')">
+				<xsl:variable name="prefix" select="substring-before($qname, ':')"/>
+				<local-name>
+					<xsl:value-of select="substring-after($qname, ':')"/>
+				</local-name>
+				<prefix>
+					<xsl:value-of select="$prefix"/>
+				</prefix>
+				<namespace-uri>
+					<xsl:value-of select="namespace::*[name()=$prefix]"/>
+				</namespace-uri>
+			</xsl:when>
+			<xsl:otherwise>
+				<local-name>
+					<xsl:value-of select="$qname"/>
+				</local-name>
+				<prefix/>
+				<namespace-uri>
+					<xsl:value-of select="namespace::*[name()='']"/>
+				</namespace-uri>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<!-- Generates an XSLT stylesheet for the test or ctl function body.
+	     The context node should be a ctl:test or ctl:function element -->
+	<xsl:template name="make-sub-stylesheet">
+		<xsl:param name="qname"/>
+		<xsl:param name="filename"/>
+
+		<xsl:result-document href="{$filename}">
+			<txsl:transform
+			 xmlns:te="http://www.occamlab.com/te"
+			 xmlns:saxon="http://saxon.sf.net/"
+			 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			 version="{$xsl-ver}">
+				<xsl:copy-of select="namespace::*"/>
+				<txsl:param name="te:core"/>
+				<txsl:param name="te:params"/>
+				<xsl:if test="ctl:param">
+					<txsl:function name="te:param-value">
+						<txsl:param name="local-name"/>
+						<txsl:param name="namespace-uri"/>
+						<txsl:for-each select="$te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri]">
+							<txsl:choose>
+								<txsl:when test="value/@*">
+									<txsl:copy-of select="value/@*"/>
+								</txsl:when>
+
+								<txsl:when test="starts-with(@type, 'xs:')">
+									<txsl:copy-of select="saxon:evaluate(concat('$p1 cast as ', @type), value/node())"/>
+								</txsl:when>
+								<txsl:otherwise>
+									<txsl:copy-of select="value/node()"/>
+								</txsl:otherwise>
+							</txsl:choose>
+						</txsl:for-each>
+						<xsl:if test="ctl:code/xsl:param">
+							<txsl:if test="not($te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri])">
+								<txsl:choose>
+									<xsl:for-each select="ctl:code/xsl:param">
+										<xsl:variable name="param-qname">
+											<xsl:call-template name="parse-qname"/>
+										</xsl:variable>
+										<txsl:when test="$local-name=$param-qname/local-name and $namespace-uri=$param-qname/namespace-uri">
+											<xsl:choose>
+												<xsl:when test="@select">
+													<txsl:copy-of>
+														<xsl:apply-templates select="@select"/>
+													</txsl:copy-of>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:apply-templates select="*"/>
+												</xsl:otherwise>
+											</xsl:choose>
+										</txsl:when>
+									</xsl:for-each>
+								</txsl:choose>
+							</txsl:if>
+						</xsl:if>
+					</txsl:function>
+				</xsl:if>
+
+				<txsl:template match="/" name="{@name}">
+					<xsl:if test="$qname/prefix != ''">
+						<xsl:namespace name="{$qname/prefix}" select="$qname/namespace-uri"/>
+					</xsl:if>
+					<xsl:call-template name="loc"/>
+
+					<xsl:for-each select="ctl:param">
+						<xsl:variable name="param-qname">
+							<xsl:call-template name="parse-qname"/>
+						</xsl:variable>
+						<txsl:param name="{@name}" select="te:param-value('{$param-qname/local-name}', '{$param-qname/namespace-uri}')"/>
+					</xsl:for-each>
+
+					<!-- Handle all the code nodes except any xsl:param elements which we already handled -->
+					<xsl:apply-templates select="ctl:code/node()[not(self::xsl:param)]"/>
+				</txsl:template>
+			</txsl:transform>
+		</xsl:result-document>
+	</xsl:template>
+
+	<!-- Generates code to make a variable containing an xml representation of parameters.
+	     The context node is a ctl:call-test or ctl:call-function element -->
+	<xsl:template name="make-params-var">
+		<txsl:variable name="te:params">
+			<params>
+				<xsl:for-each select="ctl:with-param|xsl:with-param">
+					<xsl:variable name="qname">
+						<xsl:call-template name="parse-qname"/>
+					</xsl:variable>
+					<txsl:variable name="te:param-value">
+						<xsl:choose>
+							<xsl:when test="@select">
+								<xsl:apply-templates select="@select"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:apply-templates/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</txsl:variable>
+					<param local-name="{$qname/local-name}" namespace-uri="{$qname/namespace-uri}" prefix="{$qname/prefix}" type="{{te:get-type($te:param-value)}}">
+						<xsl:choose>
+							<xsl:when test="@label-expr">
+								<txsl:attribute name="label">
+									<txsl:value-of select="{@label-expr}"/>
+								</txsl:attribute>
+							</xsl:when>
+							<xsl:when test="@label">
+								<txsl:attribute name="label">
+									<xsl:value-of select="@label"/>
+								</txsl:attribute>
+							</xsl:when>
+						</xsl:choose>
+						<value>
+							<txsl:copy-of select="$te:param-value"/>
+						</value>
+					</param>
+				</xsl:for-each>
+				<xsl:if test="ctl:context">
+					<context>
+						<txsl:copy-of select="."/>
+					</context>
+				</xsl:if>
+			</params>
+		</txsl:variable>
+	</xsl:template>
+
+
+	<!-- Handle package object -->
+
+	<xsl:template match="ctl:package">
+		<xsl:apply-templates select="*"/>
+	</xsl:template>
+
+
+	<!-- Handle includes -->
+
+	<xsl:template match="ctl:include|xi:include">
+		<xsl:apply-templates select="document(@href)" mode="include"/>
+	</xsl:template>
+
+
+	<!-- Handle package level objects -->
+
+	<xsl:template match="ctl:suite">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+		<xsl:variable name="starting-test">
+			<xsl:for-each select="ctl:starting-test">
+				<xsl:call-template name="parse-qname">
+					<xsl:with-param name="qname" select="."/>
+				</xsl:call-template>
+			</xsl:for-each>
+		</xsl:variable>
+		<suite prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
+			<starting-test prefix="{$starting-test/prefix}" namespace-uri="{$starting-test/namespace-uri}" local-name="{$starting-test/local-name}"/>
+		</suite>
+	</xsl:template>
+
+	<xsl:template match="ctl:test">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+		<xsl:variable name="filename" select="te:get-filename('test', $qname/prefix, $qname/local-name, $qname/namespace-uri, '')"/>
+		<test prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}" file="{$filename}">
+			<xsl:attribute name="uses-context">
+				<xsl:value-of select="boolean(ctl:context)"/>
+			</xsl:attribute>
+			<xsl:for-each select="ctl:param">
+				<xsl:variable name="param-qname">
+					<xsl:call-template name="parse-qname"/>
+				</xsl:variable>
+				<param prefix="{$param-qname/prefix}" namespace-uri="{$param-qname/namespace-uri}" local-name="{$param-qname/local-name}"/>
+			</xsl:for-each>
+			<assertion>
+				<xsl:value-of select="ctl:assertion"/>
+			</assertion>
+		</test>
+		<xsl:call-template name="make-sub-stylesheet">
+			<xsl:with-param name="qname" select="$qname"/>
+			<xsl:with-param name="filename" select="$filename"/>
+		</xsl:call-template>
+	</xsl:template>
+
+	<xsl:template match="ctl:function">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+
+		<function prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
+			<xsl:choose>
+				<xsl:when test="ctl:code">
+					<xsl:variable name="filename" select="te:get-filename('fn', $qname/prefix, $qname/local-name, $qname/namespace-uri, '')"/>
+					<xsl:call-template name="make-sub-stylesheet">
+						<xsl:with-param name="qname" select="$qname"/>
+						<xsl:with-param name="filename" select="$filename"/>
+					</xsl:call-template>
+					<xsl:attribute name="type">xsl</xsl:attribute>
+					<xsl:attribute name="file">
+						<xsl:value-of select="$filename"/>
+					</xsl:attribute>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:attribute name="type">java</xsl:attribute>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:attribute name="uses-context">
+				<xsl:value-of select="boolean(ctl:context)"/>
+			</xsl:attribute>
+			<xsl:for-each select="ctl:param">
+				<xsl:variable name="param-qname">
+					<xsl:call-template name="parse-qname"/>
+				</xsl:variable>
+				<param prefix="{$param-qname/prefix}" namespace-uri="{$param-qname/namespace-uri}" local-name="{$param-qname/local-name}"/>
+			</xsl:for-each>
+			<xsl:copy-of select="ctl:java"/>
+		</function>
+	</xsl:template>
+
+ 	<xsl:template match="ctl:parser">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+		<parser prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
+			<xsl:copy-of select="*"/>
+		</parser>
+	</xsl:template>
+
+
+	<!-- Handle CTL instructions -->
+
+	<xsl:template match="ctl:call-test">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+
+		<!-- TODO: possibly add code to raise error unless this is inside a test -->
+
+		<xsl:call-template name="make-params-var"/>
+
+		<txsl:value-of select="tec:callTest($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params, concat('{generate-id()}_', position()))"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:call-function">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+
+		<xsl:call-template name="make-params-var"/>
+
+		<txsl:value-of select="tec:callFunction($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params)"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:fail">
+		<txsl:value-of select="tec:fail($te:core)"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:warning">
+		<txsl:value-of select="tec:warning($te:core)"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:form">
+		<txsl:variable name="te:form-xhtml">
+			<xsl:copy>
+				<xsl:apply-templates select="@*"/>
+				<xsl:apply-templates/>
+			</xsl:copy>
+		</txsl:variable>
+		<txsl:copy-of select="tec:form($te:core, $te:form-xhtml)"/>
+	</xsl:template>
+
+	<xsl:template name="request" match="ctl:request">
+		<txsl:variable name="te:request-xml">
+			<xsl:copy>
+				<xsl:apply-templates select="@*"/>
+				<xsl:apply-templates/>
+			</xsl:copy>
+		</txsl:variable>
+		<txsl:copy-of select="tec:request($te:core, $te:request-xml)"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:parse">
+		<txsl:variable name="te:parse-xml">
+			<xsl:copy>
+				<xsl:apply-templates select="@*"/>
+				<xsl:apply-templates/>
+			</xsl:copy>
+		</txsl:variable>
+		<txsl:copy-of select="tec:parse($te:core, $te:parse-xml)"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:for-each">
+		<txsl:for-each>
+			<xsl:call-template name="loc"/>
+			<xsl:apply-templates select="@select"/>
+			<xsl:choose>
+				<xsl:when test="@label-expr">
+					<txsl:copy-of select="tec:setContextLabel($te:core, {@label-expr})"/>
+				</xsl:when>
+				<xsl:when test="@label">
+					<txsl:copy-of select="tec:setContextLabel($te:core, '{@label}')"/>
+				</xsl:when>
+			</xsl:choose>
+			<xsl:apply-templates/>
+		</txsl:for-each>
+	</xsl:template>
+
+	<xsl:template match="ctl:message">
+		<txsl:variable name="te:message-var">
+			<xsl:call-template name="loc"/>
+			<xsl:choose>
+				<xsl:when test="@select">
+					<xsl:copy-of select="@select"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:apply-templates/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</txsl:variable>
+		<txsl:value-of select="tec:message($te:core, $te:message-var))"/>
+	</xsl:template>
+
+	<!-- Currently undocumented -->
+	<xsl:template match="ctl:out">
+		<xsl:choose>
+			<xsl:when test="@select">
+				<txsl:value-of select="tec:copy($te:core, {@select})">
+					<xsl:call-template name="loc"/>
+				</txsl:value-of>
+			</xsl:when>
+			<xsl:otherwise>
+				<txsl:variable name="te:output">
+					<xsl:call-template name="loc"/>
+					<xsl:apply-templates/>
+				</txsl:variable>
+				<txsl:value-of select="tec:copy($te:core, $te:output)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+
+	<!-- Handle generic xsl instructions -->
+
+	<xsl:template match="xsl:*">
+		<xsl:copy>
+			<xsl:call-template name="loc"/>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates/>
+		</xsl:copy>
+	</xsl:template>
+
+
+	<!-- Handle other nodes and attributes -->
+
+	<xsl:template match="node()">
+		<xsl:copy>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates/>
+		</xsl:copy>
+	</xsl:template>
+
+	<xsl:template match="@*">
+		<xsl:copy-of select="."/>
+	</xsl:template>
+
+
+	<!-- Main templates -->
+
+	<xsl:template match="/">
+		<xsl:choose>
+			<xsl:when test="$outdir=''">
+				<xsl:message terminate="yes">Error: no outdir parameter</xsl:message>
+			</xsl:when>
+			<xsl:when test="not(file:isDirectory(file:new(string($outdir))))" xmlns:file="java:java.io.File">
+				<xsl:message terminate="yes">Error: outdir parameter is not a valid directory</xsl:message>
+			</xsl:when>
+			<xsl:otherwise>
+				<index>
+					<xsl:call-template name="main"/>
+				</index>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="main" match="/" mode="include">
+		<xsl:value-of select="substring(stack:push($filename-stack, document-uri(.)), 1, 0)"/>
+		<dependency file="{stack:peek($filename-stack)}"/>
+		<xsl:apply-templates/>
+		<xsl:value-of select="substring(stack:pop($filename-stack), 1, 0)"/>
+	</xsl:template>
+</xsl:transform>

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -136,6 +137,7 @@ public class DomUtils {
 
 		DOMSource src = new DOMSource(node);
 		StreamResult dest = new StreamResult(baos);
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(src, dest);
 	} catch (Exception e) {
 		System.out.println("Error serializing node.  "+e.getMessage());
@@ -155,4 +157,12 @@ public class DomUtils {
 	}
     }
 
+    static public Element getElement(Node node) {
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            return ((Document)node).getDocumentElement();
+        } else if (node.getNodeType() == Node.ELEMENT_NODE){
+            return (Element)node;
+        }
+        return null;
+    }
 }

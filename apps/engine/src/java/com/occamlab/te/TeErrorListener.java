@@ -36,11 +36,13 @@ import javax.xml.transform.TransformerException;
  * 
  */
 public class TeErrorListener implements ErrorListener {
-    private char[] scriptChars;
-
+    private char[] scriptChars = null;
     private int ErrorCount = 0;
-
     private int WarningCount = 0;
+    private boolean active = true;
+
+    public TeErrorListener() {
+    }
 
     public TeErrorListener(char[] script_chars) {
         scriptChars = script_chars;
@@ -55,6 +57,13 @@ public class TeErrorListener implements ErrorListener {
     }
 
     private void error(String type, TransformerException exception) {
+        if (scriptChars == null) {
+            if (active) {
+                System.err.println(type + ": " + exception.getMessageAndLocation());
+            }
+            return;
+        }
+        
         try {
             String systemId = exception.getLocator().getSystemId();
             BufferedReader in;
@@ -109,5 +118,13 @@ public class TeErrorListener implements ErrorListener {
     public void warning(TransformerException exception) {
         error("Warning Error", exception);
         WarningCount++;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

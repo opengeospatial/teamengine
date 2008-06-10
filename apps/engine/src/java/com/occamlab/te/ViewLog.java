@@ -45,6 +45,8 @@ import org.xml.sax.SAXException;
 
 import org.w3c.dom.*;
 
+import com.occamlab.te.util.Misc;
+
 /**
  * Presents a test log for display.
  * 
@@ -223,8 +225,7 @@ public class ViewLog {
             return;
         }
 
-        File stylesheet = Test
-                .getResourceAsFile("com/occamlab/te/logstyles/default.xsl");
+        File stylesheet = Misc.getResourceAsFile("com/occamlab/te/logstyles/default.xsl");
         if (style != null) {
             stylesheet = new File(stylesheet.getParent(), style + ".xsl");
             if (!stylesheet.exists()) {
