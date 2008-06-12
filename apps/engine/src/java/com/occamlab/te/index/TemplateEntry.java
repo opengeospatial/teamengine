@@ -10,6 +10,6 @@ public interface TemplateEntry extends NamedEntry {
     public void setTemplateFile(File templateFile);
     public List<QName> getParams();
     public void setParams(List<QName> params);
-    public boolean isUsesContext();
+    public boolean usesContext();
     public void setUsesContext(boolean usesContext);
 }

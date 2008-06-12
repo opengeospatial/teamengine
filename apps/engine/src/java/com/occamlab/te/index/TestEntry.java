@@ -66,7 +66,7 @@ public class TestEntry extends IndexEntry implements TemplateEntry {
         this.params = params;
     }
 
-    public boolean isUsesContext() {
+    public boolean usesContext() {
         return usesContext;
     }
 

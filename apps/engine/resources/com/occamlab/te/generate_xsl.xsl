@@ -354,7 +354,37 @@
 				</xsl:variable>
 				<param prefix="{$param-qname/prefix}" namespace-uri="{$param-qname/namespace-uri}" local-name="{$param-qname/local-name}"/>
 			</xsl:for-each>
-			<xsl:copy-of select="ctl:java"/>
+			<xsl:for-each select="ctl:java">
+				<java>
+					<xsl:copy-of select="@*"/>
+					<xsl:for-each select="ctl:with-param">
+						<with-param>
+<!--
+							<xsl:attribute name="name">
+								<xsl:choose>
+									<xsl:when test="@name">
+										<xsl:value-of select="@name"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:text>param</xsl:text>
+										<xsl:value-of select="position()"/>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:attribute>
+-->
+							<xsl:choose>
+								<xsl:when test="@select">
+									<!-- This form should probably be considered deprecated -->
+									<xsl:value-of select="saxon:evaluate(@select)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="."/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</with-param>
+					</xsl:for-each>
+				</java>
+			</xsl:for-each>
 		</function>
 	</xsl:template>
 

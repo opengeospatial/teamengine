@@ -33,49 +33,45 @@
 				<title><xsl:value-of select="$title"/></title>
 			</head>
 			<body>
-				<xsl:choose>
-					<xsl:when test="$method = 'post'">
-						<xsl:choose>
-							<xsl:when test="$files = 'yes'">
-								<form method="post" enctype="multipart/form-data">
-								<xsl:if test="$web = 'yes'">
-									<xsl:attribute name="action">test</xsl:attribute>
-									<input type="hidden" name="te-operation" value="SubmitPostForm"/>
-									<input type="hidden" name="te-thread" value="{$thread}"/>
-								</xsl:if>
-								<xsl:for-each select="form">
-									<xsl:copy-of select="*|text()"/>
-								</xsl:for-each>
-								</form>								
-							</xsl:when>
-							<xsl:otherwise>
-								<form method="post">
-								<xsl:if test="$web = 'yes'">
-									<xsl:attribute name="action">test</xsl:attribute>
-									<input type="hidden" name="te-operation" value="SubmitPostForm"/>
-									<input type="hidden" name="te-thread" value="{$thread}"/>
-								</xsl:if>
-								<xsl:for-each select="form">
-									<xsl:copy-of select="*|text()"/>
-								</xsl:for-each>
-								</form>								
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:when>
-					<xsl:otherwise>
-						<form method="get">
-							<xsl:if test="$web = 'yes'">
-								<xsl:attribute name="action">test</xsl:attribute>
-								<input type="hidden" name="te-operation" value="SubmitForm"/>
-								<input type="hidden" name="te-thread" value="{$thread}"/>
-							</xsl:if>
-							<xsl:for-each select="form">
-								<xsl:copy-of select="*|text()"/>
-							</xsl:for-each>
-						</form>					
-					</xsl:otherwise>
-				</xsl:choose>
+				<xsl:for-each select="*[local-name()='form']">
+					<form method="{method}">
+						<xsl:if test="$files = 'yes'">
+							<xsl:attribute name="enctype">multipart/form-data</xsl:attribute>
+						</xsl:if>
+						<xsl:if test="$web = 'yes'">
+							<xsl:attribute name="action">test</xsl:attribute>
+							<input type="hidden" name="te-operation">
+								<xsl:attribute name="value">
+									<xsl:choose>
+										<xsl:when test="$method = 'post'">SubmitPostForm</xsl:when>
+										<xsl:otherwise>SubmitForm</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+							</input>
+							<input type="hidden" name="te-thread" value="{$thread}"/>
+						</xsl:if>
+						<xsl:apply-templates select="node()"/>
+					</form>
+				</xsl:for-each>
 			</body>
 		</html>
+	</xsl:template>
+
+	<xsl:template match="xhtml:*" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+		<xsl:element name="{local-name()}">
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates/>
+		</xsl:element>
+	</xsl:template>
+
+	<xsl:template match="node()">
+		<xsl:copy>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates/>
+		</xsl:copy>
+	</xsl:template>
+
+	<xsl:template match="@*">
+		<xsl:copy-of select="."/>
 	</xsl:template>
 </xsl:transform>

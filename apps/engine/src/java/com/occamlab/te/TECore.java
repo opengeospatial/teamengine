@@ -70,11 +70,13 @@ import net.sf.saxon.dom.DocumentBuilderImpl;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Axis;
+import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.S9APIUtils;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -120,15 +122,15 @@ public class TECore {
     long memThreshhold;
     int result;
     Document prevLog;
+    String formHtml;
+    Document formResults;
+    Map<String, Object>functionInstances = new HashMap<String, Object>();
+    Map<String, Method>functionMethods = new HashMap<String, Method>();
     
     // Map of loaded executables, ordered by access order
     static Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
             new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true)); 
 
-//    // Maps active executables to a usage counter 
-//    static Map<String, Integer> activeExecutables = Collections.synchronizedMap(
-//            new HashMap<String, Integer>());
-    
     static final int PASS = 0;
     static final int WARNING = 1;
     static final int INHERITED_FAILURE = 2;
@@ -150,9 +152,6 @@ public class TECore {
     DocumentBuilder DB;
 
     PrintStream Out;
-    String formHtml;
-    Document formResults;
-    boolean Web;
     URLConnection urlConnection;
 
     public HashMap<Object, Object> parserInstances = new HashMap<Object, Object>();
@@ -184,13 +183,6 @@ public class TECore {
                 loadedExecutables.remove(it.next());
                 return true;
             }
-//            while (it.hasNext()) {
-//                String key = it.next();
-//                if (! activeExecutables.containsKey(key)) {
-//                    loadedExecutables.remove(key);
-//                    return;
-//                }
-//            }
         }
         return false;
     }
@@ -220,24 +212,9 @@ public class TECore {
             }
         }
 
-//        synchronized(activeExecutables) {
-//            Integer useCount = activeExecutables.get(key);
-//            if (useCount == null) {
-//                activeExecutables.put(key, new Integer(1));
-//            } else {
-//                activeExecutables.put(key, new Integer(useCount.intValue() + 1));
-//            }
-//        }
-//
         XsltTransformer xt = executable.load();
-//        Serializer serializer = new Serializer();
-//        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
-//        serializer.setOutputStream(baos);
-//        xt.setDestination(serializer);
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
-//        xt.setInitialTemplate(new QName(template.getPrefix(), template.getNamespaceURI(), template.getLocalName()));
         xt.setSource(new StreamSource(new java.io.CharArrayReader("<nil/>".toCharArray())));
         xt.setParameter(TECORE_QNAME, new ObjValue(this));
         if (params != null) {
@@ -250,48 +227,6 @@ public class TECore {
         } else {
             return ret.getTypedValue();
         }
-        
-//        synchronized(activeExecutables) {
-//            Integer useCount = activeExecutables.get(key);
-//            if (useCount.intValue() == 1) {
-//                activeExecutables.remove(key);
-//            } else {
-//                activeExecutables.put(key, new Integer(useCount.intValue() - 1));
-//            }
-//        }
-//        if (template instanceof TestEntry) {
-//            return null;
-//        } else {
-////            System.out.println(dest.getXdmNode().toString());
-//            return dest.getXdmNode().getTypedValue();
-//            byte[] buf = baos.toByteArray();
-////            System.out.println(new String(buf));
-////            try {
-//                Source src = new StreamSource(new ByteArrayInputStream(buf));
-////                Globals.errorListener.setActive(false);
-//                XdmNode n = Globals.builder.build(src);
-//                System.out.println(n.getNodeKind());
-//                System.out.println(n.toString());
-//                String type = n.getAttributeValue(new QName("type"));
-//                XdmNode n2 = (XdmNode)n.axisIterator(Axis.DESCENDANT).next();
-//                type = n2.getAttributeValue(new QName("type"));
-//                net.sf.saxon.s9api.XPathCompiler compiler = Globals.processor.newXPathCompiler();
-//                net.sf.saxon.s9api.XPathExecutable xpe = compiler.compile("/output/@type");
-//                if (type == null) {
-//                    xpe = compiler.compile("/output/value/node()|@*");
-//                } else {
-//                    xpe = compiler.compile("/output/value/node() as " + type);
-//                }
-//                net.sf.saxon.s9api.XPathSelector selector = xpe.load();
-//                selector.setContextItem(n);
-//                XdmItem value = selector.evaluateSingle();
-//                return value.getUnderlyingValue();
-////                return Value.asValue(n.getUnderlyingValue());
-////            } catch (Exception e) {
-////                String s = new String(buf);
-////                return s;
-////            }
-//        }
     }
     
     static String getAssertionValue(String text, XdmNode params) {
@@ -425,32 +360,32 @@ public class TECore {
         prevLog = oldPrevLog;
     }
     
-    public Object callFunction(String localName, String NamespaceURI, NodeInfo params) throws Exception {
+    public XdmValue callFunction(String localName, String NamespaceURI, NodeInfo params) throws Exception {
 //        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
         String key = "{" + NamespaceURI + "}" + localName;
         FunctionEntry entry = Globals.masterIndex.getFunction(key);
 
         if (entry.isJava()) {
-            Object instance = entry.getInstance();
+//            Object instance = entry.getInstance();
             return null;
         } else {
             return executeTemplate(entry, S9APIUtils.makeNode(params));
         }
     }
   
-    void warning() {
+    public void warning() {
         if (result < WARNING) {
             result = WARNING;
         }
     }
 
-    void inheritedFailure() {
+    public void inheritedFailure() {
         if (result < INHERITED_FAILURE) {
             result = INHERITED_FAILURE;
         }
     }
     
-    void fail() {
+    public void fail() {
         if (result < FAIL) {
             result = FAIL;
         }
@@ -475,7 +410,7 @@ public class TECore {
 // All output ends up going to the last session created.
 //        System.setOut(Out); // sets the stdout to go to the appropriate place
 //        System.setErr(Out);
-        Web = web;
+//        Web = web;
     }
 
     public static String getSessionId() {
@@ -1191,17 +1126,19 @@ public class TECore {
      */
     public Document form(Document ctlForm) throws Exception {
         String name = Thread.currentThread().getName();
-        NamedNodeMap attrs = ctlForm.getElementsByTagName("form").item(0)
-                .getAttributes();
+        Element form = (Element)ctlForm.getElementsByTagNameNS(Test.CTL_NS, "form").item(0);
+        NamedNodeMap attrs = form.getAttributes();
         Attr attr = (Attr) attrs.getNamedItem("name");
-        if (attr != null)
+        if (attr != null) {
             name = attr.getValue();
+        }
 
         // Get "method" attribute - "post" or "get"
         attr = (Attr) attrs.getNamedItem("method");
         String method = "";
-        if (attr != null)
+        if (attr != null) {
             method = attr.getValue();
+        }
 
 	// Determine if there are file widgets or not
 	boolean hasFiles = false;
@@ -1215,29 +1152,24 @@ public class TECore {
 			}
 		}
 	}
-
-        // Note: The system seems to have problems with rebuildDocument when multiple sessions are active
-        //       if a global FormTransformer is used, so rebuild a local one here
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
-        StreamSource xsl_source = new StreamSource(is);
-        Transformer FormTransformer = TF.newTransformer(xsl_source);
-
-        // Set parameters for use by formfn.xsl
-        FormTransformer.setParameter("title", name);
-        FormTransformer.setParameter("web", Web ? "yes" : "no");
-        FormTransformer.setParameter("files", hasFiles ? "yes" : "no");
-        FormTransformer.setParameter("thread", Long.toString(Thread
-                .currentThread().getId()));
-        FormTransformer.setParameter("method", method.toLowerCase().equals(
-                "post") ? "post" : "get");
-
+        
+        XsltTransformer xt = Globals.formExecutable.load();
+        xt.setSource(new DOMSource(ctlForm));
+        xt.setParameter(new QName("title"), new XdmAtomicValue(name));
+        xt.setParameter(new QName("web"), new XdmAtomicValue(web ? "yes" : "no"));
+        xt.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes" : "no"));
+        xt.setParameter(new QName("thread"), new XdmAtomicValue(Long.toString(Thread.currentThread().getId())));
+        xt.setParameter(new QName("method"), new XdmAtomicValue(method.toLowerCase().equals("post") ? "post" : "get"));
         StringWriter sw = new StringWriter();
-        Document formDoc = rebuildDocument(ctlForm);
-        FormTransformer.transform(new DOMSource(formDoc), new StreamResult(sw));
-        this.formHtml = sw.toString();
+        Serializer serializer = new Serializer();
+        serializer.setOutputWriter(sw);
+        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+        xt.setDestination(serializer);
+        xt.transform();
+        formHtml = sw.toString();
+//        System.out.println(this.formHtml);
 
-        if (!Web) {
+        if (!web) {
             int width = 700;
             int height = 500;
             attr = (Attr) attrs.getNamedItem("width");
@@ -1249,12 +1181,13 @@ public class TECore {
             new SwingForm(name, width, height, this);
         }
 
-        while (this.formResults == null) {
+        while (formResults == null) {
             Thread.sleep(250);
         }
 
-        Document doc = this.formResults;
-        this.formResults = null;
+        Document doc = formResults;
+//        System.out.println(DomUtils.serializeNode(doc));
+        formResults = null;
         return doc;
     }
 
@@ -1407,5 +1340,13 @@ public class TECore {
 
     public void setWeb(boolean web) {
         this.web = web;
+    }
+    
+    public Object getFunctionInstance(String key) {
+        return functionInstances.get(key);
+    }
+
+    public Object putFunctionInstance(String key, Object instance) {
+        return functionInstances.put(key, instance);
     }
 }

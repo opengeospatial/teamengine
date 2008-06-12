@@ -34,34 +34,19 @@ public class TEFunctionLibrary implements FunctionLibrary {
         String key = functionName.getClarkName();
         FunctionEntry fe = index.getFunction(key);
         if (fe == null) {
+            // Just return null rather than throw an exception, because there may be
+            // another function library that supports this function
             return null;
         }
 
         int argCount = staticArgs.length;
-        if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
+        if (argCount < fe.getMinArgs() || argCount > fe.getMaxArgs()) {
             return null;
         }
 
         if (fe.isJava()) {
-            TEJavaFunctionCall fc = new TEJavaFunctionCall(functionName, staticArgs, env);
-            Class c;
-            try {
-                c = Class.forName(fe.getClassName());
-            } catch (ClassNotFoundException e) {
-                throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because class " + fe.getClassName() + " was not found.");
-            }
-            Method[] methods = c.getMethods();
-            for (int i = 0; i < methods.length; i++) {
-                Method m = methods[i];
-                if (m.getName().equals(fe.getMethod()) && m.getParameterTypes().length == argCount) {
-                    fc.setMethod(m);
-                    if (fe.isInitialized()) {
-                        fc.setInstance(fe.getInstance());
-                    }
-                    return fc;
-                }
-            }
-            throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because method" + fe.getMethod() + " with " + Integer.toString(argCount) + " argument(s) was not found in class " + fe.getClassName());
+            TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env);
+            return fc;
         } else {
             TEXSLFunctionCall fc = new TEXSLFunctionCall(fe, functionName, staticArgs, env);
             return fc;

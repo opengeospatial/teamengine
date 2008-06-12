@@ -21,6 +21,7 @@
 package com.occamlab.te;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
@@ -194,7 +195,7 @@ public class Test {
         }
     }
     
-    public static void initSaxonGlobals() {
+    public static void initSaxonGlobals() throws Exception {
         Globals.processor = new Processor(false);
         Configuration config = Globals.processor.getUnderlyingConfiguration();
         TEFunctionLibrary telib = new TEFunctionLibrary(config, Globals.masterIndex);
@@ -208,6 +209,10 @@ public class Test {
 
         Globals.compiler = Globals.processor.newXsltCompiler();
         Globals.builder = Globals.processor.newDocumentBuilder();
+        
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
+        Globals.formExecutable = Globals.compiler.compile(new StreamSource(is));
     }
 
     public static void preload() {
@@ -486,7 +491,7 @@ public class Test {
         
         generateXsl(setupOpts);
         
-        Globals.masterIndex.initClasses();
+//        Globals.masterIndex.initClasses();
         
         initSaxonGlobals();
         

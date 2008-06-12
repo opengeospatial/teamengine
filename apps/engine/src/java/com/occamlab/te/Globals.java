@@ -20,9 +20,9 @@ public class Globals {
     public static XsltCompiler compiler = null;
     public static DocumentBuilder builder = null;
     public static TeErrorListener errorListener = null;
+    public static XsltExecutable formExecutable = null;
 
     // Map of loaded executables, ordered by access order
     public static Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
             new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true)); 
-
 }

@@ -27,4 +27,12 @@ public class S9APIUtils {
   public static XdmNode makeNode(NodeInfo node) {
     return new XdmNode(node);
   }
+  
+  public static void setTransformerParam(XsltTransformer xt, String param, String value) throws SaxonApiException {
+      setTransformerParam(xt, new QName(param), value);
+  }
+
+  public static void setTransformerParam(XsltTransformer xt, QName param, String value) throws SaxonApiException {
+      xt.setParameter(param, XdmItem.newAtomicValue(value, ItemType.ANY_ATOMIC_VALUE));
+  }
 }
