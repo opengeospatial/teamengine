@@ -71,6 +71,10 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
                 }
             }
             setUsesContext(Boolean.parseBoolean(function.getAttribute("uses-context")));
+            if (usesContext()) {
+                minArgs++;
+                maxArgs++;
+            }
             Element e = (Element)function.getElementsByTagName("java").item(0);
             if (e != null) {
                 setClassName(e.getAttribute("class"));

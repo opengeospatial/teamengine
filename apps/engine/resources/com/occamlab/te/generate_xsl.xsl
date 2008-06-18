@@ -265,6 +265,42 @@
 		</txsl:variable>
 	</xsl:template>
 
+	<!-- Generates a child java element for function and parser index entries -->
+	<!-- Called by match="ctl:function" and match="ctl:parser" -->
+	<xsl:template name="java-entry">
+		<xsl:for-each select="ctl:java">
+			<java>
+				<xsl:copy-of select="@*"/>
+				<xsl:for-each select="ctl:with-param">
+					<with-param>
+<!--
+						<xsl:attribute name="name">
+							<xsl:choose>
+								<xsl:when test="@name">
+									<xsl:value-of select="@name"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>param</xsl:text>
+									<xsl:value-of select="position()"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+-->
+						<xsl:choose>
+							<xsl:when test="@select">
+								<!-- This form should probably be considered deprecated -->
+								<xsl:value-of select="saxon:evaluate(@select)"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="."/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</with-param>
+				</xsl:for-each>
+			</java>
+		</xsl:for-each>
+	</xsl:template>
+
 
 	<!-- Handle package object -->
 
@@ -354,37 +390,7 @@
 				</xsl:variable>
 				<param prefix="{$param-qname/prefix}" namespace-uri="{$param-qname/namespace-uri}" local-name="{$param-qname/local-name}"/>
 			</xsl:for-each>
-			<xsl:for-each select="ctl:java">
-				<java>
-					<xsl:copy-of select="@*"/>
-					<xsl:for-each select="ctl:with-param">
-						<with-param>
-<!--
-							<xsl:attribute name="name">
-								<xsl:choose>
-									<xsl:when test="@name">
-										<xsl:value-of select="@name"/>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:text>param</xsl:text>
-										<xsl:value-of select="position()"/>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:attribute>
--->
-							<xsl:choose>
-								<xsl:when test="@select">
-									<!-- This form should probably be considered deprecated -->
-									<xsl:value-of select="saxon:evaluate(@select)"/>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:value-of select="."/>
-								</xsl:otherwise>
-							</xsl:choose>
-						</with-param>
-					</xsl:for-each>
-				</java>
-			</xsl:for-each>
+			<xsl:call-template name="java-entry"/>
 		</function>
 	</xsl:template>
 
@@ -393,7 +399,7 @@
 			<xsl:call-template name="parse-qname"/>
 		</xsl:variable>
 		<parser prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
-			<xsl:copy-of select="*"/>
+			<xsl:call-template name="java-entry"/>
 		</parser>
 	</xsl:template>
 
@@ -447,7 +453,7 @@
 				<xsl:apply-templates/>
 			</xsl:copy>
 		</txsl:variable>
-		<txsl:copy-of select="tec:request($te:core, $te:request-xml)"/>
+		<txsl:copy-of select="tec:request($te:core, $te:request-xml, concat('{generate-id()}_', position()))"/>
 	</xsl:template>
 
 	<xsl:template match="ctl:parse">

@@ -40,6 +40,7 @@ import org.w3c.dom.NodeList;
 public class Index {
     List<File> dependencies = new ArrayList<File>();
     Map<String, FunctionEntry> functionMap = new HashMap<String, FunctionEntry>();
+    Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
     Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
     Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
     
@@ -70,6 +71,9 @@ public class Index {
                 } else if (name.equals("function")) {
                     FunctionEntry fe = new FunctionEntry(el);
                     functionMap.put(fe.getId(), fe);
+                } else if (name.equals("parser")) {
+                    ParserEntry pe = new ParserEntry(el);
+                    parserMap.put(pe.getId(), pe);
                 }
             }
         }
@@ -84,6 +88,7 @@ public class Index {
         functionMap.putAll(index.functionMap);
         suiteMap.putAll(index.suiteMap);
         testMap.putAll(index.testMap);
+        parserMap.putAll(index.parserMap);
     }
     
     public FunctionEntry getFunction(String name) {
@@ -102,6 +107,14 @@ public class Index {
         return (TestEntry)getEntry(testMap, qname);
     }
 
+    public ParserEntry getParser(String name) {
+        return (ParserEntry)getEntry(parserMap, name);
+    }
+
+    public ParserEntry getParser(QName qname) {
+        return (ParserEntry)getEntry(parserMap, qname);
+    }
+    
     public SuiteEntry getSuite(String name) {
         return (SuiteEntry)getEntry(suiteMap, name);
     }
@@ -156,9 +169,5 @@ public class Index {
         }
 
         return null;
-    }
-
-    // Initialize the classes for each initialized function and parser
-    public void initClasses() {
     }
 }

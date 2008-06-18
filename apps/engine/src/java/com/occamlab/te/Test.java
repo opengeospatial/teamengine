@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
@@ -59,6 +60,7 @@ import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.TEFunctionLibrary;
 import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.Utils;
 
 import com.occamlab.te.Globals;
 
@@ -412,8 +414,8 @@ public class Test {
 
         boolean sourcesSupplied = false;
         String cmd = "java com.occamlab.te.Test";
-        
-        setupOpts.setWorkDir(new File("c:\\team_work"));
+        File workDir = null;
+        int mode = TEST_MODE;
 
         // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
@@ -428,6 +430,8 @@ public class Test {
                     System.out.println("Error: Can't find source \"" + args[i].substring(8) + "\".");
                     return;
                 }
+            } else if (args[i].startsWith("-workdir=")) {
+                workDir = new File(args[i].substring(9));
             } else if (args[i].startsWith("-logdir=")) {
                 runOpts.setLogDir(new File(args[i].substring(8)));
             } else if (args[i].startsWith("-session=")) {
@@ -439,20 +443,20 @@ public class Test {
             } else if(args[i].startsWith("@")){
                 runOpts.addParam(args[i].substring(1));
             } else if (args[i].equals("-mode=test")) {
-                setupOpts.setMode(TEST_MODE);
+                mode = TEST_MODE;
             } else if (args[i].equals("-mode=retest")) {
-                setupOpts.setMode(RETEST_MODE);
+                mode = RETEST_MODE;
             } else if (args[i].equals("-mode=resume")) {
-                setupOpts.setMode(RESUME_MODE);
+                mode = RESUME_MODE;
             } else if (args[i].equals("-mode=doc")) {
-                setupOpts.setMode(DOC_MODE);
+                mode = DOC_MODE;
             } else if (args[i].startsWith("-mode=")) {
                 System.out.println("Error: Invalid mode.");
                 return;
             } else if (args[i].equals("-validate=no")) {
                 setupOpts.setValidate(false);
             } else if (!args[i].startsWith("-")) {
-                if (setupOpts.getMode() == RETEST_MODE) {
+                if (mode == RETEST_MODE) {
                     runOpts.addTestPath(args[i]);
                 } else {
                     System.out.println("Unrecognized parameter \"" + args[i] + "\"");
@@ -462,8 +466,21 @@ public class Test {
             }
         }
         
-        runOpts.setMode(setupOpts.getMode());
-        runOpts.setWorkDir(setupOpts.getWorkDir());
+        if (workDir == null) {
+            workDir = new File(System.getProperty("java.io.tmpdir"), "te_work");
+            workDir.mkdirs();
+        } else {
+            if (!workDir.isDirectory()) {
+                System.out.println("Error: Working directory " + workDir + " does not exist.");
+                return;
+            }
+        }
+
+        setupOpts.setWorkDir(workDir);
+        runOpts.setWorkDir(workDir);
+
+        setupOpts.setMode(mode);
+        runOpts.setMode(mode);
 
         if (!sourcesSupplied) {
             System.out.println();
@@ -495,11 +512,11 @@ public class Test {
         
         initSaxonGlobals();
         
-        if (setupOpts.isPreload() || setupOpts.getMode() == CHECK_MODE) {
+        if (setupOpts.isPreload() || mode == CHECK_MODE) {
             preload();
         }
         
-        if (setupOpts.getMode() != CHECK_MODE) {
+        if (mode != CHECK_MODE) {
             execute(runOpts, System.out, false);
         }
     }

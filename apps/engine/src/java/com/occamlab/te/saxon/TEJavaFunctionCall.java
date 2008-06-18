@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 import com.occamlab.te.TECore;
 import com.occamlab.te.Test;
 import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.util.Misc;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.Expression;
@@ -28,30 +29,38 @@ import net.sf.saxon.value.Value;
 
 public class TEJavaFunctionCall extends TEFunctionCall {
     FunctionEntry fe;
-    Method method;
+    Method[] methods;
     
     public TEJavaFunctionCall(FunctionEntry fe, StructuredQName functionName, Expression[] staticArgs, StaticContext env) throws XPathException {
         super(functionName, staticArgs, env);
         this.fe = fe;
-        Class c;
-        try {
-            c = Class.forName(fe.getClassName());
-        } catch (ClassNotFoundException e) {
-            throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because class " + fe.getClassName() + " was not found.");
-        }
-        int argCount = staticArgs.length;
-        if (fe.usesContext()) {
-            argCount++;
-        }
-        Method[] methods = c.getMethods();
-        for (int i = 0; i < methods.length; i++) {
-            Method m = methods[i];
-            if (m.getName().equals(fe.getMethod()) && m.getParameterTypes().length == argCount) {
-                method = m;
-                return;
+        methods = new Method[fe.getMaxArgs() + 1];
+        for (int i = fe.getMinArgs(); i <= fe.getMaxArgs(); i++) {
+            try {
+                methods[i] = Misc.getMethod(fe.getClassName(), fe.getMethod(), i);
+            } catch (Exception e) {
+                throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName(), e);
             }
         }
-        throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because method" + fe.getMethod() + " with " + Integer.toString(argCount) + " argument(s) was not found in class " + fe.getClassName());
+//        Class c;
+//        try {
+//            c = Class.forName(fe.getClassName());
+//        } catch (ClassNotFoundException e) {
+//            throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because class " + fe.getClassName() + " was not found.");
+//        }
+//        int argCount = staticArgs.length;
+//        if (fe.usesContext()) {
+//            argCount++;
+//        }
+//        Method[] methods = c.getMethods();
+//        for (int i = 0; i < methods.length; i++) {
+//            Method m = methods[i];
+//            if (m.getName().equals(fe.getMethod()) && m.getParameterTypes().length == argCount) {
+//                method = m;
+//                return;
+//            }
+//        }
+//        throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because method" + fe.getMethod() + " with " + Integer.toString(argCount) + " argument(s) was not found in class " + fe.getClassName());
     }
     
     public SequenceIterator iterate(XPathContext context) throws XPathException {
@@ -63,59 +72,72 @@ public class TEJavaFunctionCall extends TEFunctionCall {
         if (fe.isInitialized()) {
             instance = core.getFunctionInstance(fe.getId());
             if (instance == null) {
-                List<Node> classParams = fe.getClassParams();
-                Object[] classParamObjects = new Object[classParams.size()];
-                Constructor[] constructors = method.getDeclaringClass().getConstructors();
-                for (int i = 0; i < constructors.length; i++) {
-                    Class<?>[] types = constructors[i].getParameterTypes();
-                    if (types.length == classParams.size()) {
-                        boolean constructorCorrect = true;
-                        for (int j = 0; j < types.length; j++) {
-                            Node n = classParams.get(j);
-                            if (types[j].isAssignableFrom(Node.class)) {
-                                classParamObjects[j] = n;
-                            } else if (types[j] == String.class) {
-                                classParamObjects[j] = n.getTextContent();
-                            } else if (types[j] == Character.class) {
-                                classParamObjects[j] = n.getTextContent().charAt(0);
-                            } else if (types[j] == Boolean.class) {
-                                classParamObjects[j] = Boolean.parseBoolean(n.getTextContent());
-                            } else if (types[j] == Byte.class) {
-                                classParamObjects[j] = Byte.parseByte(n.getTextContent());
-                            } else if (types[j] == Short.class) {
-                                classParamObjects[j] = Short.parseShort(n.getTextContent());
-                            } else if (types[j] == Integer.class) {
-                                classParamObjects[j] = Integer.parseInt(n.getTextContent());
-                            } else if (types[j] == Float.class) {
-                                classParamObjects[j] = Float.parseFloat(n.getTextContent());
-                            } else if (types[j] == Double.class) {
-                                classParamObjects[j] = Double.parseDouble(n.getTextContent());
-                            } else {
-                                constructorCorrect = false;
-                                break;
-                            }
-                        }
-                        if (constructorCorrect) {
-                            try {
-                                instance = constructors[i].newInstance(classParamObjects);
-                                core.putFunctionInstance(fe.getId(), instance);
-                            } catch (Exception e) {
-                                throw new XPathException(e);
-                            }
-                            break;
-                        }
-                    }
+                try {
+                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams());
+                    core.putFunctionInstance(fe.getId(), instance);
+                } catch (Exception e) {
+                    throw new XPathException(e);
                 }
+//                List<Node> classParams = fe.getClassParams();
+//                Object[] classParamObjects = new Object[classParams.size()];
+//                Constructor[] constructors = method.getDeclaringClass().getConstructors();
+//                for (int i = 0; i < constructors.length; i++) {
+//                    Class<?>[] types = constructors[i].getParameterTypes();
+//                    if (types.length == classParams.size()) {
+//                        boolean constructorCorrect = true;
+//                        for (int j = 0; j < types.length; j++) {
+//                            Node n = classParams.get(j);
+//                            if (types[j].isAssignableFrom(Node.class)) {
+//                                classParamObjects[j] = n;
+//                            } else if (types[j] == String.class) {
+//                                classParamObjects[j] = n.getTextContent();
+//                            } else if (types[j] == Character.class) {
+//                                classParamObjects[j] = n.getTextContent().charAt(0);
+//                            } else if (types[j] == Boolean.class) {
+//                                classParamObjects[j] = Boolean.parseBoolean(n.getTextContent());
+//                            } else if (types[j] == Byte.class) {
+//                                classParamObjects[j] = Byte.parseByte(n.getTextContent());
+//                            } else if (types[j] == Short.class) {
+//                                classParamObjects[j] = Short.parseShort(n.getTextContent());
+//                            } else if (types[j] == Integer.class) {
+//                                classParamObjects[j] = Integer.parseInt(n.getTextContent());
+//                            } else if (types[j] == Float.class) {
+//                                classParamObjects[j] = Float.parseFloat(n.getTextContent());
+//                            } else if (types[j] == Double.class) {
+//                                classParamObjects[j] = Double.parseDouble(n.getTextContent());
+//                            } else {
+//                                constructorCorrect = false;
+//                                break;
+//                            }
+//                        }
+//                        if (constructorCorrect) {
+//                            try {
+//                                instance = constructors[i].newInstance(classParamObjects);
+//                                core.putFunctionInstance(fe.getId(), instance);
+//                            } catch (Exception e) {
+//                                throw new XPathException(e);
+//                            }
+//                            break;
+//                        }
+//                    }
+//                }
             }
         }
         Expression[] argExpressions = getArguments();
         Object[] javaArgs = new Object[argExpressions.length];
-        Class[] types = method.getParameterTypes();
-        int argsIndex = 0;
+        Method m;
+        Class[] types;
+        int argsIndex;
         if (fe.usesContext()) {
+            m = methods[argExpressions.length + 1];
+            types = m.getParameterTypes();
             ValueRepresentation vr = context.getContextItem();
-            javaArgs[argsIndex] = Value.asValue(vr).convertToJava(types[argsIndex], context);
-            argsIndex++;
+            javaArgs[0] = Value.asValue(vr).convertToJava(types[0], context);
+            argsIndex = 1;
+        } else {
+            m = methods[argExpressions.length];
+            types = m.getParameterTypes();
+            argsIndex = 0;
         }
         for (int i = 0; i < argExpressions.length; i++) {
             ValueRepresentation vr = ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
@@ -124,7 +146,7 @@ public class TEJavaFunctionCall extends TEFunctionCall {
         }
         Object result;
         try {
-            result = method.invoke(instance, javaArgs);
+            result = m.invoke(instance, javaArgs);
         } catch (Exception e) {
             throw new XPathException(e);
         }

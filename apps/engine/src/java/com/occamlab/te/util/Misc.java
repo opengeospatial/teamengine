@@ -23,7 +23,10 @@ package com.occamlab.te.util;
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +35,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.trans.XPathException;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class Misc {
 
@@ -92,5 +98,83 @@ public class Misc {
     public static String getResourceURL(String resource) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         return cl.getResource(resource).toString();
+    }
+    
+    public static Method getMethod(String className, String methodName, int minArgs, int maxArgs) throws Exception {
+        Class c = Class.forName(className);
+        Method[] methods = c.getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method m = methods[i];
+            int count = m.getParameterTypes().length;
+            if (m.getName().equals(methodName) && count >= minArgs && count <= maxArgs) {
+                return m;
+            }
+        }
+        String argsDesc = Integer.toString(minArgs);
+        if (maxArgs > minArgs) {
+            argsDesc += " to " + Integer.toString(maxArgs) + " argument";
+        }
+        if (minArgs > 1 || maxArgs > 1) {
+            argsDesc += "s";
+        }
+        throw new Exception("Error: Method " + methodName + " with " + argsDesc + " was not found in class " + className);
+    }
+
+    public static Method getMethod(String className, String methodName, int argCount) throws Exception {
+        return getMethod(className, methodName, argCount, argCount);
+    }
+    
+//    public static Method getMethod(String className, String methodName, int argCount) throws Exception {
+//        Class c = Class.forName(className);
+//        Method[] methods = c.getMethods();
+//        for (int i = 0; i < methods.length; i++) {
+//            Method m = methods[i];
+//            int count = m.getParameterTypes().length;
+//            if (m.getName().equals(methodName) && count == argCount) {
+//                return m;
+//            }
+//        }
+//        throw new Exception("Error: Method " + methodName + " with " + Integer.toString(argCount) + " arguments was not found in class " + className);
+//    }
+    
+    public static Object makeInstance(String className, List<Node> classParams) throws Exception {
+        Class c = Class.forName(className);
+        Constructor[] constructors = c.getConstructors();
+        Object[] classParamObjects = new Object[classParams.size()];
+        for (int i = 0; i < constructors.length; i++) {
+            Class<?>[] types = constructors[i].getParameterTypes();
+            if (types.length == classParams.size()) {
+                boolean constructorCorrect = true;
+                for (int j = 0; j < types.length; j++) {
+                    Node n = classParams.get(j);
+                    if (types[j].isAssignableFrom(Node.class)) {
+                        classParamObjects[j] = n;
+                    } else if (types[j] == String.class) {
+                        classParamObjects[j] = n.getTextContent();
+                    } else if (types[j] == Character.class) {
+                        classParamObjects[j] = n.getTextContent().charAt(0);
+                    } else if (types[j] == Boolean.class) {
+                        classParamObjects[j] = Boolean.parseBoolean(n.getTextContent());
+                    } else if (types[j] == Byte.class) {
+                        classParamObjects[j] = Byte.parseByte(n.getTextContent());
+                    } else if (types[j] == Short.class) {
+                        classParamObjects[j] = Short.parseShort(n.getTextContent());
+                    } else if (types[j] == Integer.class) {
+                        classParamObjects[j] = Integer.parseInt(n.getTextContent());
+                    } else if (types[j] == Float.class) {
+                        classParamObjects[j] = Float.parseFloat(n.getTextContent());
+                    } else if (types[j] == Double.class) {
+                        classParamObjects[j] = Double.parseDouble(n.getTextContent());
+                    } else {
+                        constructorCorrect = false;
+                        break;
+                    }
+                }
+                if (constructorCorrect) {
+                    return constructors[i].newInstance(classParamObjects);
+                }
+            }
+        }
+        return null;
     }
 }

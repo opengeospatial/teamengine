@@ -40,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -84,6 +85,7 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.Value;
 import net.sf.saxon.Configuration;
 
@@ -100,10 +102,12 @@ import org.w3c.dom.Text;
 
 import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.index.Index;
+import com.occamlab.te.index.ParserEntry;
 import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.ObjValue;
 import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.Utils;
 
 /**
@@ -118,14 +122,15 @@ public class TECore {
     int mode = Test.TEST_MODE;
     String testPath;
     String indent = "";
-    Serializer serializer = new Serializer();
     long memThreshhold;
     int result;
-    Document prevLog;
+    Document prevLog = null;
+    PrintWriter logger = null;
     String formHtml;
     Document formResults;
     Map<String, Object>functionInstances = new HashMap<String, Object>();
-    Map<String, Method>functionMethods = new HashMap<String, Method>();
+    Map<String, Object>parserInstances = new HashMap<String, Object>();
+    Map<String, Method>parserMethods = new HashMap<String, Method>();
     
     // Map of loaded executables, ordered by access order
     static Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
@@ -154,18 +159,18 @@ public class TECore {
     PrintStream Out;
     URLConnection urlConnection;
 
-    public HashMap<Object, Object> parserInstances = new HashMap<Object, Object>();
-    public HashMap<Object, Object> parserMethods = new HashMap<Object, Object>();
+//    public HashMap<Object, Object> parserInstances = new HashMap<Object, Object>();
+//    public HashMap<Object, Object> parserMethods = new HashMap<Object, Object>();
 
-    Stack<PrintWriter> loggers = new Stack<PrintWriter>();
+//    Stack<PrintWriter> loggers = new Stack<PrintWriter>();
 
     public TECore(String sessionId) {
         this.sessionId = sessionId;
         
         testPath = sessionId;
         out = System.out;
-        serializer.setOutputStream(out);
-        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+//        serializer.setOutputStream(out);
+//        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
         
         long maxMemory = Runtime.getRuntime().maxMemory();
         if (maxMemory >= 32768*1024) {
@@ -215,7 +220,7 @@ public class TECore {
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
-        xt.setSource(new StreamSource(new java.io.CharArrayReader("<nil/>".toCharArray())));
+        xt.setSource(new StreamSource(new CharArrayReader("<nil/>".toCharArray())));
         xt.setParameter(TECORE_QNAME, new ObjValue(this));
         if (params != null) {
             xt.setParameter(TEPARAMS_QNAME, params);
@@ -260,18 +265,20 @@ public class TECore {
     
     public void executeTest(TestEntry test, XdmNode params) throws Exception {
         String assertion = getAssertionValue(test.getAssertion(), params);
+        out.println(indent + "Testing " + test.getName() + " (" + testPath + ")...");
+        out.println(indent + "   " + assertion);
 
+        Document oldPrevLog = prevLog;
         if (mode == Test.RESUME_MODE) {
             prevLog = readLog();
         } else {
             prevLog = null;
         }
         
-        out.println(indent + "Testing " + test.getName() + " (" + testPath + ")...");
-        out.println(indent + "   " + assertion);
-
-        PrintWriter logger = createLog();
-        if (logger != null) {
+        PrintWriter oldLogger = logger;
+        if (logDir != null) {
+            logger = createLog();
+            logger.println("<log>");
             logger.println("<starttest local-name=\"" + test.getLocalName() + "\" " + 
                                       "prefix=\"" + test.getPrefix() + "\" " +
                                       "namespace-uri=\"" + test.getNamespaceURI() + "\">");
@@ -281,6 +288,7 @@ public class TECore {
             }
             logger.println("</starttest>");
         }
+        
         result = PASS;
         try {
             executeTemplate(test, params);
@@ -291,10 +299,15 @@ public class TECore {
                 result = FAIL;
             }
         }
+
         if (logger != null) {
             logger.println("<endtest result=\"" + Integer.toString(result) + "\"/>");
+            logger.println("</log>");
+            logger.close();
         }
-        closeLog();
+        logger = oldLogger;
+
+        prevLog = oldPrevLog;
 
         out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
     }
@@ -305,7 +318,7 @@ public class TECore {
         String key = "{" + NamespaceURI + "}" + localName;
         TestEntry test = Globals.masterIndex.getTest(key);
 
-        PrintWriter logger = getLogger();
+//        PrintWriter logger = getLogger();
         if (logger != null) {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
         }
@@ -343,7 +356,6 @@ public class TECore {
 //            }
         }
 
-        Document oldPrevLog = prevLog;
         String oldIndent = indent;
         String oldTestPath = testPath;
         int oldResult = result;
@@ -353,11 +365,14 @@ public class TECore {
         testPath = oldTestPath;
         indent = oldIndent;
         if (result < oldResult) {
+            // Restore parent result if the child results aren't worse
             result = oldResult;
         } else if (result == FAIL && oldResult != FAIL) { 
+            // If the child result was FAIL and parent hasn't directly failed, set parent result to INHERITED_FAILURE
             result = INHERITED_FAILURE;
+        } else {
+            // Keep child result as parent result
         }
-        prevLog = oldPrevLog;
     }
     
     public XdmValue callFunction(String localName, String NamespaceURI, NodeInfo params) throws Exception {
@@ -509,7 +524,7 @@ public class TECore {
     }
 
     public PrintWriter createLog() throws Exception {
-        PrintWriter logger = null;
+//        PrintWriter logger = null;
         if (logDir != null) {
             File dir = new File(logDir, testPath);
             dir.mkdir();
@@ -518,67 +533,68 @@ public class TECore {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(f), "UTF-8"));
             logger = new PrintWriter(writer);
-            logger.println("<log>");
+//            logger.println("<log>");
         }
-        loggers.push(logger);
+//        loggers.push(logger);
         return logger;
     }
 
-    /**
-     * Creates a test log.
-     *
-     * @param logdir
-     * @param callpath
-     * @return
-     * @throws Exception
-     */
-    public Node create_log(String logdir, String callpath) throws Exception {
-        PrintWriter logger = null;
-        if (logdir.length() > 0) {
-            File dir = new File(logdir, callpath);
-            dir.mkdir();
-            File f = new File(dir, "log.xml");
-            f.delete();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(f), "UTF-8"));
-            logger = new PrintWriter(writer);
-            logger.println("<log>");
-        }
-        loggers.push(logger);
-        return null;
-    }
-
-    // Log additional information to the log file
-    public Node log_xml(Node xml) throws Exception {
-        PrintWriter logger = (PrintWriter) loggers.peek();
-        if (logger != null) {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer t = tf.newTransformer();
-            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            t.setOutputProperty(OutputKeys.INDENT, "yes");
-            t.transform(new DOMSource(xml), new StreamResult(logger));
-            logger.println();
-        }
-        return null;
-    }
-
-    // Close the log file
-    public Node closeLog() throws Exception {
-        PrintWriter logger = (PrintWriter) loggers.pop();
-        if (logger != null) {
-            logger.println("</log>");
-            logger.close();
-        }
-        return null;
-    }
-
-    public PrintWriter getLogger() {
-        if (loggers.empty()) {
-            return null;
-        } else {
-            return (PrintWriter) loggers.peek();
-        }
-    }
+//    /**
+//     * Creates a test log.
+//     *
+//     * @param logdir
+//     * @param callpath
+//     * @return
+//     * @throws Exception
+//     */
+//    public Node create_log(String logdir, String callpath) throws Exception {
+//        PrintWriter logger = null;
+//        if (logdir.length() > 0) {
+//            File dir = new File(logdir, callpath);
+//            dir.mkdir();
+//            File f = new File(dir, "log.xml");
+//            f.delete();
+//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+//                    new FileOutputStream(f), "UTF-8"));
+//            logger = new PrintWriter(writer);
+//            logger.println("<log>");
+//        }
+////        loggers.push(logger);
+//        return null;
+//    }
+//
+//    // Log additional information to the log file
+//    public Node log_xml(Node xml) throws Exception {
+////        PrintWriter logger = (PrintWriter) loggers.peek();
+//        if (logger != null) {
+//            TransformerFactory tf = TransformerFactory.newInstance();
+//            Transformer t = tf.newTransformer();
+//            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+//            t.setOutputProperty(OutputKeys.INDENT, "yes");
+//            t.transform(new DOMSource(xml), new StreamResult(logger));
+//            logger.println();
+//        }
+//        return null;
+//    }
+//
+//    // Close the log file
+//    public Node closeLog() throws Exception {
+////        PrintWriter logger = (PrintWriter) loggers.pop();
+//        if (logger != null) {
+//            logger.println("</log>");
+//            logger.close();
+//        }
+//        return null;
+//    }
+//
+//    public PrintWriter getLogger() {
+//        return logger;
+//        if (loggers.empty()) {
+//            return null;
+//        } else {
+//            return (PrintWriter) loggers.peek();
+//        }
+//    }
 
     public static Node reset_log(String logdir, String callpath)
             throws Exception {
@@ -621,9 +637,67 @@ public class TECore {
         }
         return file;
     }
+    
+    public Node request(Document ctlRequest, String id) throws Throwable {
+//        String id = Long.toString(System.currentTimeMillis()) + "_" + Integer.toString(seqno);
+        Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
+        if (mode == Test.RESUME_MODE) {
+            NodeList nl = prevLog.getElementsByTagName("request");
+            for (int i = 0; i < nl.getLength(); i++) {
+                Element e = (Element)nl.item(i);
+                if (e.getAttribute("id").equals(id)) {
+                    NodeList nl2 = e.getElementsByTagName("response"); 
+                    if (nl2.getLength() == 1) {
+                        logger.println(DomUtils.serializeNode(e));
+                        NodeList nl3 = nl2.item(0).getChildNodes();
+                        for (int j = 0; j < nl3.getLength(); j++) {
+                            Node n = nl3.item(j); 
+                            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                                return n;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (logger != null) {
+            logger.println("<request id=\"" + id + "\">");
+            logger.println(DomUtils.serializeNode(request));
+        }
+        Exception ex = null;
+        Element response = null;
+        Element parserInstruction = null;
+        NodeList nl = request.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = nl.item(i); 
+            if (n.getNodeType() == Node.ELEMENT_NODE && !n.getNamespaceURI().equals(CTL_NS)) {
+                parserInstruction = (Element)n;
+            }
+        }
+        try {
+            URLConnection uc = build_request(request);
+            response = parse(uc, parserInstruction);
+            if (logger != null) {
+                logger.println(DomUtils.serializeNode(response));
+            }
+        } catch (Exception e) {
+            ex = e;
+        }
+        if (logger != null) {
+            logger.println("</request>");
+        }
+        if (ex == null) {
+            Node n = response.getElementsByTagName("content").item(0);
+//            System.out.println(DomUtils.serializeNode(n.getFirstChild()));
+            return n.getFirstChild();
+        } else {
+            throw ex;
+        }
+    }
 
     // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
-    public static URLConnection build_request(Node xml) throws Exception {
+    static URLConnection build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -1002,6 +1076,83 @@ public class TECore {
         return method;
     }
 
+    public Element parse(URLConnection uc, Node instruction) throws Throwable {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+        Document response_doc = db.newDocument();
+        Element parser_e = response_doc.createElement("parser");
+        Element response_e = response_doc.createElement("response");
+        Element content_e = response_doc.createElement("content");
+        if (instruction == null) {
+            try {
+                InputStream is = uc.getInputStream();
+                t.transform(new StreamSource(is), new DOMResult(content_e));
+            } catch (Exception e) {
+                parser_e.setTextContent(e.getMessage());
+            }
+        } else {
+            Element instruction_e;
+            if (instruction instanceof Element) {
+                instruction_e = (Element) instruction;
+            } else {
+                instruction_e = ((Document) instruction).getDocumentElement();
+            }
+            String key = "{" + instruction_e.getNamespaceURI() + "}"
+                    + instruction_e.getLocalName();
+            ParserEntry pe = Globals.masterIndex.getParser(key);
+            Object instance = null;
+            if (pe.isInitialized()) {
+                instance = parserInstances.get(key);
+                if (instance == null) {
+                    instance = Misc.makeInstance(pe.getClassName(), pe.getClassParams());
+                    parserInstances.put(key, instance);
+                }
+            }
+            Method method = parserMethods.get(key);
+            if (method == null) {
+                method = Misc.getMethod(pe.getClassName(), pe.getMethod(), 3, 4);
+                parserMethods.put(key, method);
+            }
+            StringWriter swLogger = new StringWriter();
+            PrintWriter pwLogger = new PrintWriter(swLogger);
+            int arg_count = method.getParameterTypes().length;
+            Object[] args = new Object[arg_count];
+            args[0] = uc;
+            args[1] = instruction_e;
+            args[2] = pwLogger;
+            if (arg_count > 3) {
+                args[3] = this;
+            }
+            Object return_object;
+            try {
+                return_object = method.invoke(instance, args);
+            } catch (java.lang.reflect.InvocationTargetException e) {
+                throw e.getTargetException();
+            }
+            pwLogger.close();
+            if (return_object instanceof Node) {
+                t.transform(new DOMSource((Node) return_object), new DOMResult(
+                        content_e));
+            } else if (return_object != null) {
+                content_e.appendChild(response_doc.createTextNode(return_object
+                        .toString()));
+            }
+        
+            parser_e.setAttribute("prefix", instruction_e.getPrefix());
+            parser_e.setAttribute("local-name", instruction_e.getLocalName());
+            parser_e.setAttribute("namespace-uri", instruction_e
+                    .getNamespaceURI());
+            parser_e.setTextContent(swLogger.toString());
+        }
+        response_e.appendChild(parser_e);
+        response_e.appendChild(content_e);
+        response_doc.appendChild(response_e);
+        return response_e;
+    }
+
     public Document parse(URLConnection uc, String response_id, Node instruction)
             throws Throwable {
         System.setProperty(
@@ -1077,10 +1228,10 @@ public class TECore {
         return response_doc;
     }
 
-    public Document parse(URLConnection uc, String response_id)
-            throws Throwable {
-        return parse(uc, response_id, null);
-    }
+//    public Document parse(URLConnection uc, String response_id)
+//            throws Throwable {
+//        return parse(uc, response_id, null);
+//    }
 
     public Node message(int depth, String message) {
         String indent = "";

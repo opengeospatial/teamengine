@@ -73,26 +73,26 @@ public class HTTPParser {
         }
     }
 
-    private static Node select_parser(int partnum, String mime,
-            Element instruction) {
-        NodeList instructions = instruction.getElementsByTagNameNS(PARSERS_NS,
-                "parse");
+    private static Node select_parser(int partnum, String mime, Element instruction) {
+        NodeList instructions = instruction.getElementsByTagNameNS(PARSERS_NS, "parse");
         for (int i = 0; i < instructions.getLength(); i++) {
             Element parse = (Element) instructions.item(i);
             if (partnum != 0) {
                 String part_i = parse.getAttribute("part");
                 if (part_i.length() > 0) {
                     int n = Integer.parseInt(part_i);
-                    if (n != partnum)
+                    if (n != partnum) {
                         continue;
+                    }
                 }
             }
             if (mime != null) {
                 String mime_i = parse.getAttribute("mime");
                 if (mime_i.length() > 0) {
                     String[] mime_parts = mime_i.split(";\\s*");
-                    if (!mime.startsWith(mime_parts[0]))
+                    if (!mime.startsWith(mime_parts[0])) {
                         continue;
+                    }
                     boolean ok = true;
                     for (int j = 1; j < mime_parts.length; j++) {
                         if (mime.indexOf(mime_parts[j]) < 0) {
@@ -100,8 +100,9 @@ public class HTTPParser {
                             break;
                         }
                     }
-                    if (!ok)
+                    if (!ok) {
                         continue;
+                    }
                 }
             }
             NodeList children = parse.getChildNodes();
@@ -117,8 +118,9 @@ public class HTTPParser {
     private static boolean queue_equals(int[] queue, int qPos, int qLen,
             int[] value) {
         for (int i = 0; i < qLen; i++) {
-            if (queue[(i + qPos) % qLen] != value[i])
+            if (queue[(i + qPos) % qLen] != value[i]) {
                 return false;
+            }
         }
         return true;
     }
@@ -163,8 +165,7 @@ public class HTTPParser {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.newDocument();
-        Element root = doc.createElement(multipart ? "multipart-response"
-                : "response");
+        Element root = doc.createElement(multipart ? "multipart-response" : "response");
 
         if (uc.getHeaderFieldKey(0) == null) {
             String status_line = uc.getHeaderField(0);
@@ -222,18 +223,16 @@ public class HTTPParser {
                 }
                 part.appendChild(headers);
                 temp = create_part_file(in, boundary);
-                URLConnection pc = temp.toURL().openConnection();
+                URLConnection pc = temp.toURI().toURL().openConnection();
                 pc.setRequestProperty("Content-type", mime);
                 Node parser = select_parser(num, contentType, instruction);
-                Document doc2 = core.parse(pc, null, parser);
+                Element response_e = core.parse(pc, parser);
                 temp.delete();
-                Element parser_e = (Element) (doc2.getDocumentElement()
-                        .getElementsByTagName("parser").item(0));
+                Element parser_e = (Element) (response_e.getElementsByTagName("parser").item(0));
                 if (parser_e != null) {
                     logger.print(parser_e.getTextContent());
                 }
-                Element content = (Element) (doc2.getDocumentElement()
-                        .getElementsByTagName("content").item(0));
+                Element content = (Element) (response_e.getElementsByTagName("content").item(0));
                 t.transform(new DOMSource(content), new DOMResult(part));
                 root.appendChild(part);
                 line = in.readLine();
@@ -241,14 +240,12 @@ public class HTTPParser {
             }
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
-            Document doc2 = core.parse(uc, null, parser);
-            Element parser_e = (Element) (doc2.getDocumentElement()
-                    .getElementsByTagName("parser").item(0));
+            Element response_e = core.parse(uc, parser);
+            Element parser_e = (Element) (response_e.getElementsByTagName("parser").item(0));
             if (parser_e != null) {
                 logger.print(parser_e.getTextContent());
             }
-            Element content = (Element) (doc2.getDocumentElement()
-                    .getElementsByTagName("content").item(0));
+            Element content = (Element) (response_e.getElementsByTagName("content").item(0));
             t.transform(new DOMSource(content), new DOMResult(root));
         }
         doc.appendChild(root);
