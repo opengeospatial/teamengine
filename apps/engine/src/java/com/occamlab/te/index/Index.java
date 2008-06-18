@@ -80,6 +80,7 @@ public class Index {
     }
     
     public boolean outOfDate() {
+        //TODO: determine this by comparing file dates
         return true;
     }
     
@@ -99,14 +100,6 @@ public class Index {
         return (FunctionEntry)getEntry(functionMap, qname);
     }
     
-    public TestEntry getTest(String name) {
-        return (TestEntry)getEntry(testMap, name);
-    }
-
-    public TestEntry getTest(QName qname) {
-        return (TestEntry)getEntry(testMap, qname);
-    }
-
     public ParserEntry getParser(String name) {
         return (ParserEntry)getEntry(parserMap, name);
     }
@@ -125,6 +118,14 @@ public class Index {
     
     public Set<String> getSuiteKeys() {
         return suiteMap.keySet();
+    }
+
+    public TestEntry getTest(String name) {
+        return (TestEntry)getEntry(testMap, name);
+    }
+
+    public TestEntry getTest(QName qname) {
+        return (TestEntry)getEntry(testMap, qname);
     }
 
     private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, QName qname) {

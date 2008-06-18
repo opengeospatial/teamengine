@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.xml.transform.ErrorListener;
-
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XsltCompiler;
@@ -24,5 +22,6 @@ public class Globals {
 
     // Map of loaded executables, ordered by access order
     public static Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
-            new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true)); 
+            new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true));
+   
 }

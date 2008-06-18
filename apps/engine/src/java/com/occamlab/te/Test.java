@@ -23,16 +23,12 @@ package com.occamlab.te;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -42,27 +38,21 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.functions.FunctionLibraryList;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.TEFunctionLibrary;
+import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
-import com.occamlab.te.util.Utils;
-
-import com.occamlab.te.Globals;
 
 public class Test {
     public static final int TEST_MODE = 0;
@@ -75,36 +65,29 @@ public class Test {
     public static final String TE_NS = "http://www.occamlab.com/te";
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
 
-//    ClassLoader CL;
-//    DocumentBuilderFactory DBF;
-//    DocumentBuilder DB;
-//    TransformerFactory TF;
-//    Templates executableTestSuite;
-//    static Logger appLogger;
-
+    // Generates XSL template files from CTL sources and a master index
+    // of metadata about the CTL objects
     public static void generateXsl(SetupOptions opts) throws Exception {
-        // create CTL validator
+        // Create CTL validator
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema ctl_schema = sf.newSchema(Misc.getResourceAsFile("com/occamlab/te/schemas/ctl.xsd"));
         Validator ctl_validator = ctl_schema.newValidator();
         CtlErrorHandler validation_eh = new CtlErrorHandler();
         ctl_validator.setErrorHandler(validation_eh);
         
-        // create transformer to generate executable script from CTL sources
+        // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
-
         File generatorStylesheet;
         if (opts.getMode() == DOC_MODE) {
             generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_dxsl.xsl");
         } else {
             generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
         }
-
-        // Prepare the XSLT transformer
         XsltExecutable generatorXsltExecutable = generatorCompiler.compile(new StreamSource(generatorStylesheet));
         XsltTransformer generatorTransformer = generatorXsltExecutable.load();
 
+        // Create a list of CTL sources (may be files or dirs)
         ArrayList<File> sources = new ArrayList<File>();
         File f = Misc.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl");
         sources.add(f.getParentFile());
@@ -144,44 +127,58 @@ public class Test {
                 workDirs.add(workingDir);
             }
         }
-        
+
+        // Process each CTL source file
         for (int i = 0; i < sourceFiles.size(); i++) {
             File sourceFile = sourceFiles.get(i);
             File workingDir = workDirs.get(i);
 
+            // Read previous index for this file (if any), and determine whether the
+            // index and xsl need to be regenerated
             File indexFile = new File(workingDir, "index.xml");
             Index index = null;
-            boolean outOfDate = true;
+            boolean regenerate = true;
             if (indexFile.isFile()) {
                 try {
                     index = new Index(indexFile);
-                    outOfDate = index.outOfDate();
+                    regenerate = index.outOfDate();
                 } catch (Exception e) {
-                    // If there was an exception reading the index file, it is likely corrupt.  Regenerate it
-                    outOfDate = true;
+                    // If there was an exception reading the index file, it is likely corrupt.  Regenerate it.
+                    regenerate = true;
                 }
             }
             
-            boolean validationErrors = false;
-            if (opts.isValidate() && outOfDate) {
-                int old_count = validation_eh.getErrorCount();
-                ctl_validator.validate(new StreamSource(sourceFile));
-                validationErrors = (validation_eh.getErrorCount() > old_count);
-            }
-            
-            if (!validationErrors && outOfDate) {
-                generatorTransformer.setSource(new StreamSource(sourceFile));
-                Serializer generatorSerializer = new Serializer();
-                generatorSerializer.setOutputFile(indexFile);
-                generatorTransformer.setDestination(generatorSerializer);
-                XdmAtomicValue av = new XdmAtomicValue(workingDir.getAbsolutePath());
-                generatorTransformer.setParameter(new QName("outdir"), av);
-                generatorTransformer.transform();
-                index = new Index(indexFile);
-                Globals.masterIndex.add(index);
+            if (regenerate) {
+                // Validate the source CTL file 
+                boolean validationErrors = false;
+                if (opts.isValidate()) {
+                    int old_count = validation_eh.getErrorCount();
+                    ctl_validator.validate(new StreamSource(sourceFile));
+                    validationErrors = (validation_eh.getErrorCount() > old_count);
+                }
+                
+                if (!validationErrors) {
+                    // Clean up the working directory
+                    Misc.deleteDirContents(workingDir);
+                    
+                    // Run the generator transformation.  Output is an index file and is saved to disk.
+                    // The generator also creates XSL template files in the working dir.
+                    generatorTransformer.setSource(new StreamSource(sourceFile));
+                    Serializer generatorSerializer = new Serializer();
+                    generatorSerializer.setOutputFile(indexFile);
+                    generatorTransformer.setDestination(generatorSerializer);
+                    XdmAtomicValue av = new XdmAtomicValue(workingDir.getAbsolutePath());
+                    generatorTransformer.setParameter(new QName("outdir"), av);
+                    generatorTransformer.transform();
+                    
+                    // Read the generated index and add the entries to the master index
+                    index = new Index(indexFile);
+                    Globals.masterIndex.add(index);
+                }
             }
         }
-        
+            
+        // If there were any validation errors, display them and throw an exception
         int error_count = validation_eh.getErrorCount();
         if (error_count > 0) {
             String msg = error_count + " validation error"
@@ -196,71 +193,73 @@ public class Test {
             throw new Exception(msg);
         }
     }
-    
-    public static void initSaxonGlobals() throws Exception {
+
+    // Configures a saxon processor to be used globally and sets up
+    // other dependant saxon objects.
+    public static void prepareSaxon() throws Exception {
+        // Create processor
         Globals.processor = new Processor(false);
+
+        // Modify its configuration settings
         Configuration config = Globals.processor.getUnderlyingConfiguration();
-        TEFunctionLibrary telib = new TEFunctionLibrary(config, Globals.masterIndex);
+        config.setVersionWarning(false);
+
+        // Change the function library to a new library list that includes
+        // our custom java function library
         FunctionLibraryList liblist = new FunctionLibraryList();
+        TEFunctionLibrary telib = new TEFunctionLibrary(config, Globals.masterIndex);
         liblist.addFunctionLibrary(telib);
         liblist.addFunctionLibrary(config.getExtensionBinder("java"));
         config.setExtensionBinder("java", liblist);
-        config.setVersionWarning(false);
-        Globals.errorListener = new TeErrorListener();
-//        config.setErrorListener(Globals.errorListener);
 
+        // Use our custom error listener which reports line numbers in the CTL source file
+        Globals.errorListener = new TeErrorListener();
+        config.setErrorListener(Globals.errorListener);
+
+        // Create a compiler and document builder
         Globals.compiler = Globals.processor.newXsltCompiler();
         Globals.builder = Globals.processor.newDocumentBuilder();
-        
+
+        // Load an executable for the TECore.form method
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
         Globals.formExecutable = Globals.compiler.compile(new StreamSource(is));
     }
 
     public static void preload() {
+        //TODO: implement
     }
 
-    static String getTestIdFromLog(Document log) throws Exception {
-        Element starttest = (Element) log.getElementsByTagName("starttest").item(0);
-        String namespace = starttest.getAttribute("namespace-uri");
-        String localName = starttest.getAttribute("local-name");
-        return "{" + namespace + "}" + localName;
-    }
-
-    static XdmNode getParamsFromLog(Document log) throws Exception {
-        Element starttest = (Element) log.getElementsByTagName("starttest").item(0);
-        NodeList nl = starttest.getElementsByTagName("params");
-        if (nl == null) {
-            return null;
-        } else {
-            return Globals.builder.build(new DOMSource(nl.item(0)));
-        }
-    }
-
-    // Main test method
+    // Execute tests
     public static void execute(RuntimeOptions opts, PrintStream out, boolean web) throws Exception {
         String sessionId = opts.getSessionId();
         File logDir = opts.getLogDir();
         int mode = opts.getMode();
 
-        if (mode == TEST_MODE && logDir != null) {
-            File sessionDir = new File(logDir, sessionId);
-            if (sessionDir.isDirectory()) {
-                File f = new File(sessionDir, "log.xml");
-                if (f.exists()) {
-                    f.delete();
-                }
-                Misc.deleteSubDirs(sessionDir);
-            } else {
-                sessionDir.mkdir();
-            }
-        }
-        
+        // Create an array containing test(s) to execute, and corresponding
+        // arrays containing the test path and parameters for the tests
         List<TestEntry> tests = new ArrayList<TestEntry>();
         List<String> testPaths = new ArrayList<String>();
         List<XdmNode> params = new ArrayList<XdmNode>();
 
-        if (opts.getTestName() != null) {
+        // Fill the arrays
+        if (mode == RESUME_MODE) {
+            Document log = LogUtils.readLog(logDir, sessionId);
+            String testName = LogUtils.getTestIdFromLog(log);
+            tests.add(Globals.masterIndex.getTest(testName));
+            testPaths.add(sessionId);
+            params.add(LogUtils.getParamsFromLog(log));
+        } else if (mode == RETEST_MODE) {
+            Iterator<String> it = opts.getTestPaths().iterator();
+            while (it.hasNext()) {
+                String testPath = it.next();
+                Document log = LogUtils.readLog(logDir, testPath);
+                String testName = LogUtils.getTestIdFromLog(log);
+                tests.add(Globals.masterIndex.getTest(testName));
+                testPaths.add(testPath);
+                params.add(LogUtils.getParamsFromLog(log));
+            }
+        } else if (opts.getTestName() != null) {
             tests.add(Globals.masterIndex.getTest(opts.getTestName()));
             testPaths.add(sessionId);
             params.add(opts.getParamsNode());
@@ -269,22 +268,6 @@ public class Test {
             tests.add(Globals.masterIndex.getTest(suite.getStartingTest()));
             testPaths.add(sessionId);
             params.add(opts.getParamsNode());
-        } else if (mode == RESUME_MODE) {
-            Document log = TECore.readLog(logDir, sessionId);
-            String testName = getTestIdFromLog(log);
-            tests.add(Globals.masterIndex.getTest(testName));
-            testPaths.add(sessionId);
-            params.add(getParamsFromLog(log));
-        } else if (mode == RETEST_MODE) {
-            Iterator<String> it = opts.getTestPaths().iterator();
-            while (it.hasNext()) {
-                String testPath = it.next();
-                Document log = TECore.readLog(logDir, testPath);
-                String testName = getTestIdFromLog(log);
-                tests.add(Globals.masterIndex.getTest(testName));
-                testPaths.add(testPath);
-                params.add(getParamsFromLog(log));
-            }
         } else {
             Iterator<String> it = Globals.masterIndex.getSuiteKeys().iterator();
             if (!it.hasNext()) {
@@ -299,62 +282,35 @@ public class Test {
             params.add(opts.getParamsNode());
         }
         
+        // Instantiate a core object
         TECore core = new TECore(sessionId);
         core.setMode(mode);
         core.setLogDir(logDir);
+
+        // Process each test
         for (int i = 0; i < tests.size(); i++) {
-            if (mode == RETEST_MODE) {
-                File f = new File(logDir, testPaths.get(i));
-                Misc.deleteSubDirs(f);
+            if ((mode == TEST_MODE || mode == RETEST_MODE) && logDir != null) {
+                // Create log directory or clean up old log files 
+                File dir = new File(logDir, testPaths.get(i));
+                if (dir.isDirectory()) {
+                    File f = new File(dir, "log.xml");
+                    if (f.exists()) {
+                        f.delete();
+                    }
+                    Misc.deleteSubDirs(dir);
+                } else {
+                    dir.mkdir();
+                }
             }
+            
+            // Set the test path
             core.setTestPath(testPaths.get(i));
+
+            // Execute the test
             core.executeTest(tests.get(i), params.get(i));
-//
-//            boolean done = false;
-//            while (!done) {
-//                try {
-//                    core.executeTest(tests.get(i), params.get(i));
-//                    done = true;
-//                } catch (SaxonApiException e) {
-//                    PrintWriter logger = core.getLogger();
-//                    boolean root = true;
-//                    if (logger != null) {
-//                        logger.println("<exception><![CDATA[" + e.getMessage() + "]]></exception>");
-//                        logger.println("<endtest result=\"" + TECore.FAIL + "\"/>");
-//                        core.closeLog();
-//                        while (core.getLogger() != null) {
-//                            root = false;
-//                            core.closeLog();
-//                        }
-//                    }
-//                    out.println(e.getMessage());
-//                    if (root) {
-//                        done = true;
-//                    } else {
-//                        System.out.println("Recovering...");
-//                        core.setMode(RECOVER_MODE);
-//                    }
-//                }
-//            }
         }
     }
 
-//    private void writeNodeToLog(Logger logger, Node node) {
-//        StringWriter strWriter = new StringWriter();
-//        Transformer identity = null;
-//        try {
-//            identity = TF.newTransformer();
-//            identity
-//                    .transform(new DOMSource(node), new StreamResult(strWriter));
-//        } catch (TransformerConfigurationException ex) {
-//            logger.fine(ex.toString());
-//        } catch (TransformerException ex) {
-//            logger.fine(ex.toString());
-//        }
-//        logger.fine(strWriter.toString());
-//        return;
-//    }
-//
 //    /**
 //     * Initializes the main application logger. A log file (te.log) is created
 //     * in the test session directory.
@@ -382,30 +338,6 @@ public class Test {
 //            this.appLogger.addHandler(streamHandler);
 //        }
 //        return;
-//    }
-//    /**
-//     * Builds Xml of parameters
-//     * @param params
-//     * 			parameters passed from command line
-//     * @return String
-//     * 			parameters converted to XmlString
-//     */
-//    protected String buildParamsXML(ArrayList<String> params){
-//		String paramsXML = "<params>";
-//        for(int i = 0; i < params.size(); i++){
-//        	if(params.get(i).indexOf('=')!= 0){
-//            	paramsXML = paramsXML + "<param name=\""+ params.get(i).substring(0, params.get(i).indexOf('='))+ "\">" +
-//            				params.get(i).substring(params.get(i).indexOf('=')+1) + "</param>";        		
-//        	}
-//        }
-//        paramsXML = paramsXML + "</params>";
-////System.out.println("paramsXML: "+paramsXML);
-//
-////        net.sf.saxon.s9api.DocumentBuilder documentBuilder = null;
-////        documentBuilder = processor.newDocumentBuilder();
-////        XdmNode paramsNode = documentBuilder.build(new StreamSource(new StringReader(buildParamsXML(params))));
-//
-//        return paramsXML;
 //    }
 
     public static void main(String[] args) throws Exception {
@@ -491,12 +423,10 @@ public class Test {
             System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
             System.out.println("Resume mode:");
             System.out.println("  Use to resume a test session that was interrupted before completion.\n");
-            System.out.println("  " + cmd + " -mode=resume -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
-            System.out.println("    -logdir=dir -session=session\n");
+            System.out.println("  " + cmd + " -mode=resume -logdir=dir session\n");
             System.out.println("Retest mode:");
             System.out.println("  Use to reexecute individual tests.\n");
-            System.out.println("  " + cmd + " -mode=retest -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
-            System.out.println("    -logdir=dir [@param-name=value] test1 [test2] ...\n");
+            System.out.println("  " + cmd + " -mode=retest -logdir=dir testapth1 [testpath2] ...\n");
             System.out.println("Doc mode:");
             System.out.println("  Use to generate a list of assertions.\n");
             System.out.println("  " + cmd + " -mode=doc -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
@@ -508,9 +438,7 @@ public class Test {
         
         generateXsl(setupOpts);
         
-//        Globals.masterIndex.initClasses();
-        
-        initSaxonGlobals();
+        prepareSaxon();
         
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
             preload();

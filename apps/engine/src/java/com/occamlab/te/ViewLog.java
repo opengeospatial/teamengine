@@ -45,6 +45,7 @@ import org.xml.sax.SAXException;
 
 import org.w3c.dom.*;
 
+import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 
 /**
@@ -66,7 +67,7 @@ public class ViewLog {
     static Element parse_log(DocumentBuilder db, Document owner, File logdir,
             String path) throws Exception {
         File log = new File(new File(logdir, path), "log.xml");
-        Document logdoc = TECore.read_log(log.getParent(), ".");
+        Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
         Element test = owner.createElement("test");
         Element log_e = (Element) logdoc.getElementsByTagName("log").item(0);
         NodeList children = log_e.getChildNodes();
@@ -170,8 +171,7 @@ public class ViewLog {
                     t.setParameter("index", index);
                     // t.transform(new StreamSource(f), new
                     // StreamResult(System.out));
-                    Document log = TECore.read_log(logdir.getAbsolutePath(),
-                            test);
+                    Document log = LogUtils.readLog(logdir, test);
                     DocumentBuilderImpl db2 = new DocumentBuilderImpl();
                     db2.setConfiguration((Configuration) transformerFactory
                             .getAttribute(FeatureKeys.CONFIGURATION));

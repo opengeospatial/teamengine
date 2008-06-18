@@ -21,8 +21,11 @@
 package com.occamlab.te;
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.XdmNode;
 
@@ -94,8 +97,22 @@ public class RuntimeOptions {
         this.params.add(param);
     }
     
-    public XdmNode getParamsNode() {
-        return null;
+    public XdmNode getParamsNode() throws Exception {
+        String paramsXML = "<params>";
+        for (int i = 0; i < params.size(); i++){
+            String param = params.get(i);
+            String name = param.substring(0, param.indexOf('='));
+            String value = param.substring(param.indexOf('=') + 1);
+            if (params.get(i).indexOf('=') != 0) {
+                paramsXML += "<param local-name=\"" + name + "\" namespace-uri=\"\" prefix=\"\" type=\"xs:string\">";
+                paramsXML += "<value>" + value + "</value>";
+                paramsXML += "</param>";
+            }
+        }
+        paramsXML += "</params>";
+//System.out.println("paramsXML: "+paramsXML);
+
+        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
     }
 
     public String getTestName() {

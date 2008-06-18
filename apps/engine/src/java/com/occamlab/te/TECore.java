@@ -107,6 +107,7 @@ import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.ObjValue;
 import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.Utils;
 
@@ -174,8 +175,10 @@ public class TECore {
         
         long maxMemory = Runtime.getRuntime().maxMemory();
         if (maxMemory >= 32768*1024) {
+            // Set threshhold at 16K if there is 32K or more available
             memThreshhold = maxMemory - 16384*1024;
         } else {
+            // Otherwise, set it at half the memory available
             memThreshhold = maxMemory / 2;
         }
     }
@@ -220,7 +223,7 @@ public class TECore {
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
-        xt.setSource(new StreamSource(new CharArrayReader("<nil/>".toCharArray())));
+        xt.setSource(new StreamSource(new StringReader("<nil/>")));
         xt.setParameter(TECORE_QNAME, new ObjValue(this));
         if (params != null) {
             xt.setParameter(TEPARAMS_QNAME, params);
@@ -323,7 +326,7 @@ public class TECore {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
         }
         if (mode == Test.RESUME_MODE) {
-            Document doc = readLog(logDir, testPath + "/" + callId);
+            Document doc = LogUtils.readLog(logDir, testPath + "/" + callId);
             int result = getResultFromLog(doc);
             if (result >= 0) {
                 out.println(indent + "   " + "Test " + test.getName() + " " + getResultDescription(result));
@@ -405,6 +408,11 @@ public class TECore {
             result = FAIL;
         }
     }
+    
+    public void setContextLabel(String label) {
+        // TODO: implement
+        System.out.println("setcontextLabel(" + label + ")");
+    }
 
     public TECore(PrintStream out, boolean web) throws Exception {
         System.setProperty(
@@ -420,7 +428,7 @@ public class TECore {
         TF = TransformerFactory.newInstance();
         TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
         Out = out;
-// TODO: Figure out what to do with messages sent to System.Out and System.Err.
+// Need to figure out what to do with messages sent to System.Out and System.Err.
 // Simply redirecting them to Out does not work for the web app since they are unique per VM, not per thread.
 // All output ends up going to the last session created.
 //        System.setOut(Out); // sets the stdout to go to the appropriate place
@@ -476,51 +484,12 @@ public class TECore {
         throw new Exception(message);
     }
 
-    public static Document read_log(String logdir, String callpath) throws Exception {
-        return readLog(new File(logdir), callpath);
-    }
-
+//    public static Document read_log(String logdir, String callpath) throws Exception {
+//        return LogUtils.readLog(new File(logdir), callpath);
+//    }
+//
     public Document readLog() throws Exception {
-        return readLog(logDir, testPath);
-    }
-
-    public static Document readLog(File logDir, String callpath) throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        Document doc = db.newDocument();
-        File dir = new File(logDir, callpath);
-        File f = new File(dir, "log.xml");
-        if (f.exists()) {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer t = tf.newTransformer();
-            t.setErrorListener(new com.occamlab.te.NullErrorListener());
-            try {
-                t.transform(new StreamSource(f), new DOMResult(doc));
-            } catch (Exception e) {
-                RandomAccessFile raf = new RandomAccessFile(f, "r");
-                int l = new Long(raf.length()).intValue();
-                byte[] buf = new byte[l + 8];
-                raf.read(buf);
-                raf.close();
-                buf[l] = '\n';
-                buf[l + 1] = '<';
-                buf[l + 2] = '/';
-                buf[l + 3] = 'l';
-                buf[l + 4] = 'o';
-                buf[l + 5] = 'g';
-                buf[l + 6] = '>';
-                buf[l + 7] = '\n';
-                doc = db.newDocument();
-                tf.newTransformer().transform(
-                        new StreamSource(new ByteArrayInputStream(buf)),
-                        new DOMResult(doc));
-            }
-            return doc;
-        } else {
-            return null;
-        }
+        return LogUtils.readLog(logDir, testPath);
     }
 
     public PrintWriter createLog() throws Exception {
@@ -639,6 +608,7 @@ public class TECore {
     }
     
     public Node request(Document ctlRequest, String id) throws Throwable {
+        //TODO: ID won't necessarily be unique if called from a function
 //        String id = Long.toString(System.currentTimeMillis()) + "_" + Integer.toString(seqno);
         Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
         if (mode == Test.RESUME_MODE) {
@@ -940,8 +910,7 @@ public class TECore {
         baos.write(bytes, 0, bytes.length);
     }
 
-    public Document serialize_and_parse(Node parse_instruction)
-            throws Throwable {
+    public Document parse(Node parse_instruction) throws Throwable {
         System.setProperty(
                 "org.apache.xerces.xni.parser.XMLParserConfiguration",
                 "org.apache.xerces.parsers.XIncludeParserConfiguration");
@@ -1035,47 +1004,47 @@ public class TECore {
         return doc;
     }
 
-    public Node register_parser(String namespace_uri, String local_name,
-            String method_name, Object parser) throws Exception {
-        String key = namespace_uri + "," + local_name;
-
-        if (parser instanceof String || parser instanceof Node) {
-            parserInstances.put(key, null);
-        } else {
-            parserInstances.put(key, parser);
-        }
-        parserMethods.put(key, get_parser_method(method_name, parser));
-        return null;
-    }
-
-    public static Method get_parser_method(String method_name, Object parser)
-            throws Exception {
-        Class parser_class;
-        if (parser instanceof String) {
-            parser_class = Class.forName((String) parser);
-        } else if (parser instanceof Node) {
-            parser_class = Class.forName(((Node) parser).getTextContent());
-        } else {
-            parser_class = parser.getClass();
-        }
-        Method method = null;
-        try {
-            Class[] types = new Class[4];
-            types[0] = URLConnection.class;
-            types[1] = Element.class;
-            types[2] = PrintWriter.class;
-            types[3] = TECore.class;
-            method = parser_class.getMethod(method_name, types);
-        } catch (java.lang.NoSuchMethodException e) {
-            Class[] types = new Class[3];
-            types[0] = URLConnection.class;
-            types[1] = Element.class;
-            types[2] = PrintWriter.class;
-            method = parser_class.getMethod(method_name, types);
-        }
-        return method;
-    }
-
+//    public Node register_parser(String namespace_uri, String local_name,
+//            String method_name, Object parser) throws Exception {
+//        String key = namespace_uri + "," + local_name;
+//
+//        if (parser instanceof String || parser instanceof Node) {
+//            parserInstances.put(key, null);
+//        } else {
+//            parserInstances.put(key, parser);
+//        }
+//        parserMethods.put(key, get_parser_method(method_name, parser));
+//        return null;
+//    }
+//
+//    public static Method get_parser_method(String method_name, Object parser)
+//            throws Exception {
+//        Class parser_class;
+//        if (parser instanceof String) {
+//            parser_class = Class.forName((String) parser);
+//        } else if (parser instanceof Node) {
+//            parser_class = Class.forName(((Node) parser).getTextContent());
+//        } else {
+//            parser_class = parser.getClass();
+//        }
+//        Method method = null;
+//        try {
+//            Class[] types = new Class[4];
+//            types[0] = URLConnection.class;
+//            types[1] = Element.class;
+//            types[2] = PrintWriter.class;
+//            types[3] = TECore.class;
+//            method = parser_class.getMethod(method_name, types);
+//        } catch (java.lang.NoSuchMethodException e) {
+//            Class[] types = new Class[3];
+//            types[0] = URLConnection.class;
+//            types[1] = Element.class;
+//            types[2] = PrintWriter.class;
+//            method = parser_class.getMethod(method_name, types);
+//        }
+//        return method;
+//    }
+//
     public Element parse(URLConnection uc, Node instruction) throws Throwable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -1243,6 +1212,12 @@ public class TECore {
         synchronized (Out) {
             Out.println(formatted_message);
         }
+        return null;
+    }
+
+    public Node message(String message) {
+        String formatted_message = indent + message.trim().replaceAll("\n", "\n" + indent);
+        out.println(formatted_message);
         return null;
     }
 

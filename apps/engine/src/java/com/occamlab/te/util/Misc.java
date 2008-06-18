@@ -44,16 +44,22 @@ public class Misc {
 
     // Deletes a directory and its contents
     public static void deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            deleteDirContents(dir);
+            dir.delete();
+        }
+    }
+
+    // Deletes the contents of a directory
+    public static void deleteDirContents(File dir) {
         String[] children = dir.list();
         for (int i = 0; i < children.length; i++) {
             File f = new File(dir, children[i]);
             if (f.isDirectory()) {
-                deleteDir(f);
-            } else {
-                f.delete();
+                deleteDirContents(f);
             }
+            f.delete();
         }
-        dir.delete();
     }
 
     // Deletes just the sub directories for a certain directory

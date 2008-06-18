@@ -494,7 +494,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</txsl:variable>
-		<txsl:value-of select="tec:message($te:core, $te:message-var))"/>
+		<txsl:value-of select="tec:message($te:core, $te:message-var)"/>
 	</xsl:template>
 
 	<!-- Currently undocumented -->
