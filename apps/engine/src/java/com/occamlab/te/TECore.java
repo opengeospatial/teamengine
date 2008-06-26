@@ -21,6 +21,7 @@
  ****************************************************************************/
 package com.occamlab.te;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URL;
@@ -68,6 +69,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.dom.DocumentBuilderImpl;
+import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Axis;
@@ -81,6 +83,7 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
@@ -195,7 +198,7 @@ public class TECore {
         return false;
     }
     
-    public XdmValue executeTemplate(TemplateEntry template, XdmNode params) throws SaxonApiException {
+    public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws SaxonApiException {
         String key = template.getId();
         XsltExecutable executable = loadedExecutables.get(key);
         while (executable == null) {
@@ -223,18 +226,29 @@ public class TECore {
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
-        xt.setSource(new StreamSource(new StringReader("<nil/>")));
+        if (template.usesContext() && context != null) {
+//            XdmNode n = S9APIUtils.makeNode((NodeInfo)context.getContextItem());
+//            xt.setSource(n.asSource());
+            xt.setSource((NodeInfo)context.getContextItem());
+//            System.out.println(n);
+        } else {
+            xt.setSource(new StreamSource(new StringReader("<nil/>")));
+        }
         xt.setParameter(TECORE_QNAME, new ObjValue(this));
         if (params != null) {
             xt.setParameter(TEPARAMS_QNAME, params);
         }
         xt.transform();
         XdmNode ret = dest.getXdmNode();
-        if (ret == null) {
-            return null;
-        } else {
-            return ret.getTypedValue();
-        }
+//        if (ret != null) System.out.println(ret.toString());
+        return ret;
+//        XdmNode ret = dest.getXdmNode();
+//        if (ret == null) {
+//            return null;
+//        } else {
+//            System.out.println(ret.toString());
+//            return ret.getTypedValue();
+//        }
     }
     
     static String getAssertionValue(String text, XdmNode params) {
@@ -266,7 +280,7 @@ public class TECore {
     }
 
     
-    public void executeTest(TestEntry test, XdmNode params) throws Exception {
+    public void executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
         String assertion = getAssertionValue(test.getAssertion(), params);
         out.println(indent + "Testing " + test.getName() + " (" + testPath + ")...");
         out.println(indent + "   " + assertion);
@@ -294,7 +308,7 @@ public class TECore {
         
         result = PASS;
         try {
-            executeTemplate(test, params);
+            executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
             out.println(e.getMessage());
             if (logger != null) {
@@ -315,7 +329,7 @@ public class TECore {
         out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
     }
     
-    public void callTest(String localName, String NamespaceURI, NodeInfo params, String callId) throws Exception {
+    public void callTest(XPathContext context, String localName, String NamespaceURI, NodeInfo params, String callId) throws Exception {
 //        System.out.println("call_test");
 //        System.out.println(params.getClass().getName());
         String key = "{" + NamespaceURI + "}" + localName;
@@ -364,7 +378,7 @@ public class TECore {
         int oldResult = result;
         indent += "   ";
         testPath += "/" + callId;
-        executeTest(test, S9APIUtils.makeNode(params));
+        executeTest(test, S9APIUtils.makeNode(params), context);
         testPath = oldTestPath;
         indent = oldIndent;
         if (result < oldResult) {
@@ -378,19 +392,56 @@ public class TECore {
         }
     }
     
-    public XdmValue callFunction(String localName, String NamespaceURI, NodeInfo params) throws Exception {
+    public NodeInfo callFunction(XPathContext context, String localName, String NamespaceURI, NodeInfo params) throws Exception {
 //        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
         String key = "{" + NamespaceURI + "}" + localName;
         FunctionEntry entry = Globals.masterIndex.getFunction(key);
 
         if (entry.isJava()) {
-//            Object instance = entry.getInstance();
+            //TODO: implement
             return null;
         } else {
-            return executeTemplate(entry, S9APIUtils.makeNode(params));
+            XdmNode n = executeTemplate(entry, S9APIUtils.makeNode(params), context);
+            return n.getUnderlyingNode();
+//System.out.println(S9APIUtils.makeNode(params));
+//XdmValue v = executeTemplate(entry, S9APIUtils.makeNode(params), null);
+//XdmSequenceIterator it = v.iterator(); 
+//XdmItem item = it.next();
+//if (item == null) {
+//} else if (item.isAtomicValue()) {
+//boolean b = it.hasNext();
+//System.out.println(item.getStringValue());
+//} else {
+//XdmNode n = (XdmNode)item;
+//System.out.println(n.toString());
+//}
+//return v;
+//System.out.println(n.toString());
+//DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+//Document doc = db.newDocument();
+//Element root = doc.createElement("values");
+//doc.appendChild(root);
+//return doc;
+//            return Globals.builder.build(new StreamSource(new StringReader(n.toString()))).getUnderlyingNode();
+//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//            dbf.setNamespaceAware(true);
+//            Document doc = dbf.newDocumentBuilder().newDocument();
+//            doc.appendChild(doc.createElementNS("blah", "blah:test"));
+////            TransformerFactory.newInstance().newTransformer().transform(n.asSource(), new DOMResult(doc));
+//            return doc;
+//System.out.println(S9APIUtils.makeNode(n.getUnderlyingNode()).toString());            
         }
     }
   
+    public Document dummyFunction() throws Exception {
+DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+Document doc = db.newDocument();
+Element root = doc.createElement("values");
+root.appendChild(doc.createTextNode("x"));
+doc.appendChild(root);
+return doc;
+  }
+
     public void warning() {
         if (result < WARNING) {
             result = WARNING;
@@ -1099,7 +1150,12 @@ public class TECore {
             try {
                 return_object = method.invoke(instance, args);
             } catch (java.lang.reflect.InvocationTargetException e) {
-                throw e.getTargetException();
+                Throwable cause = e.getCause();
+                String msg = "Error invoking parser " + pe.getId() + "\n" + cause.getClass().getName();
+                if (cause.getMessage() != null) {
+                    msg += ": " + cause.getMessage();
+                }
+                throw new Exception(msg, cause);
             }
             pwLogger.close();
             if (return_object instanceof Node) {
@@ -1293,7 +1349,7 @@ public class TECore {
         xt.setDestination(serializer);
         xt.transform();
         formHtml = sw.toString();
-//        System.out.println(this.formHtml);
+//System.out.println(this.formHtml);
 
         if (!web) {
             int width = 700;

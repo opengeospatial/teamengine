@@ -123,7 +123,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         Source src = new StreamSource(new CharArrayReader(xml.toCharArray()));
         XdmValue result = null;
         try {
-            result = core.executeTemplate(fe, Globals.builder.build(src));
+            result = core.executeTemplate(fe, Globals.builder.build(src), context);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -146,10 +146,14 @@ public class Misc {
     public static Object makeInstance(String className, List<Node> classParams) throws Exception {
         Class c = Class.forName(className);
         Constructor[] constructors = c.getConstructors();
-        Object[] classParamObjects = new Object[classParams.size()];
+        int paramCount = 0;
+        if (classParams != null) {
+            paramCount = classParams.size();
+        }
+        Object[] classParamObjects = new Object[paramCount];
         for (int i = 0; i < constructors.length; i++) {
             Class<?>[] types = constructors[i].getParameterTypes();
-            if (types.length == classParams.size()) {
+            if (types.length == paramCount) {
                 boolean constructorCorrect = true;
                 for (int j = 0; j < types.length; j++) {
                     Node n = classParams.get(j);

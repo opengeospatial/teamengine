@@ -164,9 +164,11 @@
 								<txsl:when test="value/@*">
 									<txsl:copy-of select="value/@*"/>
 								</txsl:when>
-
-								<txsl:when test="starts-with(@type, 'xs:')">
+								<txsl:when test="value/node() and starts-with(@type, 'xs:')">
 									<txsl:copy-of select="saxon:evaluate(concat('$p1 cast as ', @type), value/node())"/>
+								</txsl:when>
+								<txsl:when test="starts-with(@type, 'xs:')">
+									<txsl:copy-of select="saxon:evaluate(concat('&quot;&quot; cast as ', @type))"/>
 								</txsl:when>
 								<txsl:otherwise>
 									<txsl:copy-of select="value/node()"/>
@@ -212,8 +214,10 @@
 						<txsl:param name="{@name}" select="te:param-value('{$param-qname/local-name}', '{$param-qname/namespace-uri}')"/>
 					</xsl:for-each>
 
-					<!-- Handle all the code nodes except any xsl:param elements which we already handled -->
-					<xsl:apply-templates select="ctl:code/node()[not(self::xsl:param)]"/>
+					<txsl:for-each select="node()|@*">
+						<!-- Handle all the code nodes except any xsl:param elements which we already handled -->
+						<xsl:apply-templates select="ctl:code/node()[not(self::xsl:param)]"/>
+					</txsl:for-each>
 				</txsl:template>
 			</txsl:transform>
 		</xsl:result-document>
@@ -425,7 +429,7 @@
 
 		<xsl:call-template name="make-params-var"/>
 
-		<txsl:value-of select="tec:callFunction($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params)"/>
+		<txsl:copy-of select="tec:callFunction($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params)"/>
 	</xsl:template>
 
 	<xsl:template match="ctl:fail">

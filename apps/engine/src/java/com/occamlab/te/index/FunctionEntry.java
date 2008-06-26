@@ -41,6 +41,7 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
                 setJava(false);
                 setTemplateFile(new File(new URI(function.getAttribute("file"))));
             } else if (type.equals("java")) {
+                System.out.println(this.getId());
                 setJava(true);
             } else {
                 throw new RuntimeException("Invalid function type");
@@ -48,8 +49,8 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
             NodeList nl = function.getElementsByTagName("param");
             minArgs = nl.getLength();
             maxArgs = minArgs;
+            params = new ArrayList<QName>();
             if (minArgs > 0) {
-                params = new ArrayList<QName>();
                 for (int i = 0; i < minArgs; i++) {
                     Element el = (Element)nl.item(i);
                     String prefix = el.getAttribute("prefix");

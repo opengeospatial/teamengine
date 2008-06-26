@@ -165,4 +165,15 @@ public class DomUtils {
         }
         return null;
     }
+
+    static public Document createDocument(Node node) throws Exception {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        Document doc = dbf.newDocumentBuilder().newDocument();
+        if (node != null) {
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(node), new DOMResult(doc));
+        }
+        return doc;
+    }
 }

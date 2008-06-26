@@ -100,6 +100,7 @@ public class Test {
         Iterator<File> it = sources.iterator();
         while (it.hasNext()) {
             File source = it.next();
+System.out.println("Processing source(s) at: " + source.getAbsolutePath());
 //          appLogger.log(Level.INFO, "Processing source(s) at: " + source.getAbsolutePath());
 
             String encodedName = URLEncoder.encode(source.getAbsolutePath(), "UTF-8");
@@ -307,7 +308,7 @@ public class Test {
             core.setTestPath(testPaths.get(i));
 
             // Execute the test
-            core.executeTest(tests.get(i), params.get(i));
+            core.executeTest(tests.get(i), params.get(i), null);
         }
     }
 

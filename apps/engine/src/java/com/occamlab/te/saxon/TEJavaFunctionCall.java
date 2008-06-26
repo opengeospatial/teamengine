@@ -1,6 +1,7 @@
 package com.occamlab.te.saxon;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -14,15 +15,19 @@ import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.util.Misc;
 
 import net.sf.saxon.Controller;
+import net.sf.saxon.expr.Atomizer;
+import net.sf.saxon.expr.AxisAtomizingIterator;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.EmptyIterator;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.ObjectValue;
 import net.sf.saxon.value.SequenceType;
 import net.sf.saxon.value.Value;
@@ -141,6 +146,14 @@ public class TEJavaFunctionCall extends TEFunctionCall {
         }
         for (int i = 0; i < argExpressions.length; i++) {
             ValueRepresentation vr = ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
+//            Value v = Value.asValue(vr);
+//            boolean b = (v instanceof AtomicValue);
+//            SequenceIterator it = Atomizer.getAtomizingIterator(v.iterate());
+//            if (it instanceof AxisIterator) {
+//                AxisAtomizingIterator aai = new AxisAtomizingIterator((AxisIterator)it);
+//            }
+//            Object o = it.next();
+//            javaArgs[argsIndex] = v.convertToJava(String.class, context);
             javaArgs[argsIndex] = Value.asValue(vr).convertToJava(types[argsIndex], context);
             argsIndex++;
         }
@@ -148,7 +161,15 @@ public class TEJavaFunctionCall extends TEFunctionCall {
         try {
             result = m.invoke(instance, javaArgs);
         } catch (Exception e) {
-            throw new XPathException(e);
+            Throwable cause = e;
+            if (e instanceof InvocationTargetException) {
+                cause = e.getCause();
+            }
+            String msg = "Error invoking " + fe.getId() + "\n" + cause.getClass().getName();
+            if (cause.getMessage() != null) {
+                msg += ": " + cause.getMessage();
+            }
+            throw new XPathException(msg, cause);
         }
         if (result == null) {
             return EmptyIterator.getInstance();

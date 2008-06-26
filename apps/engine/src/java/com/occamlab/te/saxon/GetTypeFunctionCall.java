@@ -31,7 +31,7 @@ public class GetTypeFunctionCall extends TEFunctionCall {
         if (it instanceof SchemaType) {
             return "xs:" + ((SchemaType)it).getName();
         }
-        return "xs:any";
+        return it.toString();
     }
     
     public SequenceIterator iterate(XPathContext context) throws XPathException {
