@@ -17,17 +17,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class FunctionEntry extends IndexEntry implements TemplateEntry {
+import com.occamlab.te.util.DomUtils;
+
+public class FunctionEntry extends TemplateEntry {
     boolean java;
     boolean initialized;
-    boolean usesContext;
     String className;
     String method;
     int minArgs;
     int maxArgs;
-    List<QName> params = null;
     List<Node> classParams = null;
-    File templateFile;
 
     FunctionEntry() {
         super();
@@ -35,31 +34,36 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
 
     FunctionEntry(Element function) {
         super(function);
-        try {
+//System.out.println(DomUtils.serializeNode(function));
+//        try {
             String type = function.getAttribute("type");
             if (type.equals("xsl")) {
                 setJava(false);
-                setTemplateFile(new File(new URI(function.getAttribute("file"))));
+//                setTemplateFile(new File(new URI(function.getAttribute("file"))));
             } else if (type.equals("java")) {
-                System.out.println(this.getId());
+//                System.out.println(this.getId());
                 setJava(true);
             } else {
                 throw new RuntimeException("Invalid function type");
             }
-            NodeList nl = function.getElementsByTagName("param");
-            minArgs = nl.getLength();
-            maxArgs = minArgs;
-            params = new ArrayList<QName>();
-            if (minArgs > 0) {
-                for (int i = 0; i < minArgs; i++) {
-                    Element el = (Element)nl.item(i);
-                    String prefix = el.getAttribute("prefix");
-                    String namespaceUri = el.getAttribute("namespace-uri");
-                    String localName = el.getAttribute("local-name");
-                    params.add(new QName(namespaceUri, localName, prefix));
-                }
+//            NodeList nl = function.getElementsByTagName("param");
+//            minArgs = nl.getLength();
+            minArgs = 0;
+            if (this.getParams() != null) {
+                minArgs = this.getParams().size();
             }
-            nl = function.getElementsByTagName("var-params");
+            maxArgs = minArgs;
+//            params = new ArrayList<QName>();
+//            if (minArgs > 0) {
+//                for (int i = 0; i < minArgs; i++) {
+//                    Element el = (Element)nl.item(i);
+//                    String prefix = el.getAttribute("prefix");
+//                    String namespaceUri = el.getAttribute("namespace-uri");
+//                    String localName = el.getAttribute("local-name");
+//                    params.add(new QName(namespaceUri, localName, prefix));
+//                }
+//            }
+            NodeList nl = function.getElementsByTagName("var-params");
             if (nl.getLength() > 0) {
                 Element varParams = (Element)nl.item(0);
                 String min = varParams.getAttribute("min");
@@ -71,7 +75,7 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
                     maxArgs += Integer.parseInt(max);
                 }
             }
-            setUsesContext(Boolean.parseBoolean(function.getAttribute("uses-context")));
+//            setUsesContext(Boolean.parseBoolean(function.getAttribute("uses-context")));
             if (usesContext()) {
                 minArgs++;
                 maxArgs++;
@@ -103,17 +107,11 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
                     }
                 }
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
-    public File getTemplateFile() {
-        return templateFile;
-    }
-    public void setTemplateFile(File templateFile) {
-        this.templateFile = templateFile;
-    }
     public String getClassName() {
         return className;
     }
@@ -155,18 +153,6 @@ public class FunctionEntry extends IndexEntry implements TemplateEntry {
     }
     public void setClassParams(List<Node> classParams) {
         this.classParams = classParams;
-    }
-    public List<QName> getParams() {
-        return params;
-    }
-    public void setParams(List<QName> params) {
-        this.params = params;
-    }
-    public boolean usesContext() {
-        return usesContext;
-    }
-    public void setUsesContext(boolean usesContext) {
-        this.usesContext = usesContext;
     }
 }
 

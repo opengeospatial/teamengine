@@ -71,7 +71,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                     if (fileFields.contains(key)) {
                     	File temp = new File(value);
                     	if (temp != null) {
-                    		value = Core.saveFileToWorkingDir(value);
+//                    		value = Core.saveFileToWorkingDir(value);  // What does copying the file to a new dir accomplish?
 		                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
 		                fileEntry.setAttribute("full-path", value.replace('\\','/'));
 		                valueElement.appendChild(fileEntry);

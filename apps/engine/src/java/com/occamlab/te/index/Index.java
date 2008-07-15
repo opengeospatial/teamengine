@@ -38,6 +38,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Index {
+    File indexFile = null;
     List<File> dependencies = new ArrayList<File>();
     Map<String, FunctionEntry> functionMap = new HashMap<String, FunctionEntry>();
     Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
@@ -48,6 +49,7 @@ public class Index {
     }
     
     public Index(File indexFile) throws Exception {
+        this.indexFile = indexFile;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -80,8 +82,15 @@ public class Index {
     }
     
     public boolean outOfDate() {
-        //TODO: determine this by comparing file dates
-        return true;
+        if (indexFile != null) {
+            long indexDate = indexFile.lastModified();
+            for (File file : dependencies) {
+                if (file.lastModified() > indexDate) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public void add(Index index) {

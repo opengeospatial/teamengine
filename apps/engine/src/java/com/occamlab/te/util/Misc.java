@@ -157,7 +157,7 @@ public class Misc {
                 boolean constructorCorrect = true;
                 for (int j = 0; j < types.length; j++) {
                     Node n = classParams.get(j);
-                    if (types[j].isAssignableFrom(Node.class)) {
+                    if (Node.class.isAssignableFrom(types[j])) {
                         classParamObjects[j] = n;
                     } else if (types[j] == String.class) {
                         classParamObjects[j] = n.getTextContent();

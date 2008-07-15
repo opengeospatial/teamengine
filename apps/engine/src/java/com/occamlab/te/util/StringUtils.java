@@ -56,4 +56,14 @@ public class StringUtils {
 	return newPath;
     }
 
+    // Replaces all occurences of match in str with replacement
+    public static String replaceAll(String str, String match, String replacement) {
+        String newStr = str;
+        int i = newStr.indexOf(match);
+        while (i >= 0) {
+            newStr = newStr.substring(0, i) + replacement + newStr.substring(i + match.length());
+            i = newStr.indexOf(match);
+        }
+        return newStr;
+    }
 }

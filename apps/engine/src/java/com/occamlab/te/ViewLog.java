@@ -45,6 +45,7 @@ import org.xml.sax.SAXException;
 
 import org.w3c.dom.*;
 
+import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 
@@ -252,8 +253,7 @@ public class ViewLog {
         domBuilder.setConfiguration((Configuration) transformerFactory
                 .getAttribute(FeatureKeys.CONFIGURATION));
         try {
-            newDoc = domBuilder.parse(new InputSource(new StringReader(TECore
-                    .documentToString(sourceDoc))));
+            newDoc = domBuilder.parse(new InputSource(new StringReader(DomUtils.serializeNode(sourceDoc))));
         } catch (SAXException ex) {
             ex.printStackTrace();
         }

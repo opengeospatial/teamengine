@@ -21,31 +21,11 @@
  ****************************************************************************/
 package com.occamlab.te;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Random;
-
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -54,46 +34,42 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.FeatureKeys;
-import net.sf.saxon.dom.DocumentBuilderImpl;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.om.NodeInfo;
-import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.s9api.Axis;
-import net.sf.saxon.s9api.ItemType;
-import net.sf.saxon.s9api.S9APIUtils;
-import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.S9APIUtils;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
-import net.sf.saxon.s9api.XdmValue;
-import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
-import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.value.Value;
-import net.sf.saxon.Configuration;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import net.sf.saxon.type.Type;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -104,7 +80,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.occamlab.te.index.FunctionEntry;
-import com.occamlab.te.index.Index;
 import com.occamlab.te.index.ParserEntry;
 import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
@@ -112,7 +87,7 @@ import com.occamlab.te.saxon.ObjValue;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
-import com.occamlab.te.util.Utils;
+import com.occamlab.te.util.StringUtils;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -126,7 +101,7 @@ public class TECore {
     int mode = Test.TEST_MODE;
     String testPath;
     String indent = "";
-    long memThreshhold;
+//    long memThreshhold;
     int result;
     Document prevLog = null;
     PrintWriter logger = null;
@@ -136,92 +111,64 @@ public class TECore {
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();
     
-    // Map of loaded executables, ordered by access order
-    static Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
-            new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true)); 
-
     static final int PASS = 0;
     static final int WARNING = 1;
     static final int INHERITED_FAILURE = 2;
     static final int FAIL = 3;
 
-    static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
-    static final String CTL_NS = "http://www.occamlab.com/ctl";
-    static final String TE_NS = "http://www.occamlab.com/te";
+    static final String XSL_NS = Test.XSL_NS;
+    static final String CTL_NS = Test.CTL_NS;
+    static final String TE_NS = Test.TE_NS;
     
     static final QName TECORE_QNAME = new QName("te", TE_NS, "core");
     static final QName TEPARAMS_QNAME = new QName("te", TE_NS, "params");
+    static final QName LOCALNAME_QNAME = new QName("local-name");
+    static final QName LABEL_QNAME = new QName("label");
     
-    static public DocumentBuilderFactory DBF;
-
-    static String SessionId;
-    static String SessionDir;
-
-    static public TransformerFactory TF = TransformerFactory.newInstance();
-    DocumentBuilder DB;
-
-    PrintStream Out;
-    URLConnection urlConnection;
-
-//    public HashMap<Object, Object> parserInstances = new HashMap<Object, Object>();
-//    public HashMap<Object, Object> parserMethods = new HashMap<Object, Object>();
-
-//    Stack<PrintWriter> loggers = new Stack<PrintWriter>();
-
     public TECore(String sessionId) {
         this.sessionId = sessionId;
         
         testPath = sessionId;
         out = System.out;
-//        serializer.setOutputStream(out);
-//        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
-        
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        if (maxMemory >= 32768*1024) {
-            // Set threshhold at 16K if there is 32K or more available
-            memThreshhold = maxMemory - 16384*1024;
-        } else {
-            // Otherwise, set it at half the memory available
-            memThreshhold = maxMemory / 2;
-        }
-    }
-    
-    static boolean freeExecutable() {
-        Set<String> keys = loadedExecutables.keySet();
-        synchronized(loadedExecutables) {
-            Iterator<String> it = keys.iterator();
-            if (it.hasNext()) {
-                loadedExecutables.remove(it.next());
-                return true;
             }
-        }
-        return false;
-    }
+    
+//    static boolean freeExecutable() {
+//        Set<String> keys = Globals.loadedExecutables.keySet();
+//        synchronized(Globals.loadedExecutables) {
+//            Iterator<String> it = keys.iterator();
+//            if (it.hasNext()) {
+//                Globals.loadedExecutables.remove(it.next());
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
     
     public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws SaxonApiException {
-        String key = template.getId();
-        XsltExecutable executable = loadedExecutables.get(key);
-        while (executable == null) {
-            try {
-//                System.out.println(template.getTemplateFile().getAbsolutePath());
-                Source source = new StreamSource(template.getTemplateFile());
-                executable = Globals.compiler.compile(source);
-                loadedExecutables.put(key, executable);
-            } catch (OutOfMemoryError e) {
-                boolean freed = freeExecutable();
-                if (!freed) {
-                    throw e;
-                }
-            }
-        }
-        
-        Runtime rt = Runtime.getRuntime();
-        while (rt.totalMemory() - rt.freeMemory() > memThreshhold) {
-            boolean freed = freeExecutable();
-            if (!freed) {
-                break;
-            }
-        }
+        XsltExecutable executable = template.loadExecutable();
+//        String key = template.getId();
+//        XsltExecutable executable = Globals.loadedExecutables.get(key);
+//        while (executable == null) {
+//            try {
+////                System.out.println(template.getTemplateFile().getAbsolutePath());
+//                Source source = new StreamSource(template.getTemplateFile());
+//                executable = Globals.compiler.compile(source);
+//                Globals.loadedExecutables.put(key, executable);
+//            } catch (OutOfMemoryError e) {
+//                boolean freed = freeExecutable();
+//                if (!freed) {
+//                    throw e;
+//                }
+//            }
+//        }
+//        
+//        Runtime rt = Runtime.getRuntime();
+//        while (rt.totalMemory() - rt.freeMemory() > memThreshhold) {
+//            boolean freed = freeExecutable();
+//            if (!freed) {
+//                break;
+//            }
+//        }
 
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
@@ -251,9 +198,54 @@ public class TECore {
 //        }
     }
     
-    static String getAssertionValue(String text, XdmNode params) {
-        // TODO: Substitute label values
-        return text;
+    static String getLabel(XdmNode n) {
+        String label = n.getAttributeValue(LABEL_QNAME);
+        if (label == null) {
+            XdmNode value = (XdmNode)n.axisIterator(Axis.CHILD).next();
+            XdmItem childItem = value.axisIterator(Axis.CHILD).next();
+            if (childItem == null) {
+                XdmSequenceIterator it = value.axisIterator(Axis.ATTRIBUTE);
+                if (it.hasNext()) {
+                    label = it.next().getStringValue();
+                } else {
+                    label = "";
+                }
+            } else if (childItem.isAtomicValue()) {
+                label = childItem.getStringValue();
+            } else if (childItem instanceof XdmNode) {
+                XdmNode n2 = (XdmNode)childItem;
+                if (n2.getNodeKind() == XdmNodeKind.ELEMENT ) {
+                    label = "<" + n2.getNodeName().toString() + ">";
+                } else {
+                    label = n2.toString();
+                }
+            }
+        }
+        return label;
+    }
+    
+    static String getAssertionValue(String text, XdmNode paramsVar) {
+        if (text.indexOf("$") < 0) {
+            return text;
+        }
+        
+        String newText = text;
+        XdmNode params = (XdmNode)paramsVar.axisIterator(Axis.CHILD).next();
+        XdmSequenceIterator it = params.axisIterator(Axis.CHILD);
+        while (it.hasNext()) {
+            XdmNode n = (XdmNode)it.next();
+            String tagname = n.getNodeName().getLocalName(); 
+            if (tagname.equals("param")) {
+                String name = n.getAttributeValue(LOCALNAME_QNAME);
+                String label = getLabel(n);
+                newText = StringUtils.replaceAll(newText, "{$" + name + "}", label);
+            }
+            if (tagname.equals("context")) {
+                String label = getLabel(n);
+                newText = StringUtils.replaceAll(newText, "{$context}", label);
+            }
+        }
+        return newText;
     }
     
     static String getResultDescription(int result) {
@@ -302,6 +294,23 @@ public class TECore {
             logger.println("<assertion>" + assertion + "</assertion>");
             if (params != null) {
                 logger.println(params.toString());
+            }
+            if (test.usesContext()) {
+                logger.println("<context>");
+                NodeInfo contextNode = (NodeInfo)context.getContextItem();
+                int kind = contextNode.getNodeKind(); 
+                if (kind == Type.ATTRIBUTE) {
+                    logger.print("<value " + contextNode.getDisplayName() + "=\""
+                                           + contextNode.getStringValue() + "\"");
+                    // TODO: set namespace
+                    logger.println("/>");
+                } else if (kind == Type.ELEMENT || kind == Type.DOCUMENT) {
+                    logger.println("<value>");
+                    logger.println(Globals.builder.build(contextNode).toString());
+                    logger.println("</value>");
+                }
+                logger.println("</context>");
+                
             }
             logger.println("</starttest>");
         }
@@ -399,6 +408,7 @@ public class TECore {
 
         if (entry.isJava()) {
             //TODO: implement
+            System.out.println("Attempt to call a java function with call-function");
             return null;
         } else {
             XdmNode n = executeTemplate(entry, S9APIUtils.makeNode(params), context);
@@ -433,14 +443,14 @@ public class TECore {
         }
     }
   
-    public Document dummyFunction() throws Exception {
-DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-Document doc = db.newDocument();
-Element root = doc.createElement("values");
-root.appendChild(doc.createTextNode("x"));
-doc.appendChild(root);
-return doc;
-  }
+//    public Document dummyFunction() throws Exception {
+//DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+//Document doc = db.newDocument();
+//Element root = doc.createElement("values");
+//root.appendChild(doc.createTextNode("x"));
+//doc.appendChild(root);
+//return doc;
+//  }
 
     public void warning() {
         if (result < WARNING) {
@@ -465,52 +475,6 @@ return doc;
         System.out.println("setcontextLabel(" + label + ")");
     }
 
-    public TECore(PrintStream out, boolean web) throws Exception {
-        System.setProperty(
-                "org.apache.xerces.xni.parser.XMLParserConfiguration",
-                "org.apache.xerces.parsers.XIncludeParserConfiguration");
-        DBF = DocumentBuilderFactory.newInstance();
-        DBF.setNamespaceAware(true);
-        DBF.setFeature(
-                "http://apache.org/xml/features/xinclude/fixup-base-uris",
-                false);
-        DB = DBF.newDocumentBuilder();
-
-        TF = TransformerFactory.newInstance();
-        TF.setAttribute(FeatureKeys.VERSION_WARNING, Boolean.FALSE);
-        Out = out;
-// Need to figure out what to do with messages sent to System.Out and System.Err.
-// Simply redirecting them to Out does not work for the web app since they are unique per VM, not per thread.
-// All output ends up going to the last session created.
-//        System.setOut(Out); // sets the stdout to go to the appropriate place
-//        System.setErr(Out);
-//        Web = web;
-    }
-
-    public static String getSessionId() {
-        return SessionId;
-    }
-
-    public static String getSessionDir() {
-        return SessionDir;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.SessionId = sessionId;
-    }
-
-    public void setSessionDir(String sessionDir) {
-        this.SessionDir = sessionDir;
-    }
-
-    public void setUrlConnection(URLConnection urlConn) {
-        this.urlConnection = urlConn;
-    }
-
-    public URLConnection getUrlConnection() {
-        return urlConnection;
-    }
-
     public String getFormHtml() {
         return formHtml;
     }
@@ -527,18 +491,6 @@ return doc;
         this.formResults = doc;
     }
 
-    public static short node_type(Node node) {
-        return node.getNodeType();
-    }
-
-    public static void exception(String message) throws Exception {
-        throw new Exception(message);
-    }
-
-//    public static Document read_log(String logdir, String callpath) throws Exception {
-//        return LogUtils.readLog(new File(logdir), callpath);
-//    }
-//
     public Document readLog() throws Exception {
         return LogUtils.readLog(logDir, testPath);
     }
@@ -558,63 +510,6 @@ return doc;
 //        loggers.push(logger);
         return logger;
     }
-
-//    /**
-//     * Creates a test log.
-//     *
-//     * @param logdir
-//     * @param callpath
-//     * @return
-//     * @throws Exception
-//     */
-//    public Node create_log(String logdir, String callpath) throws Exception {
-//        PrintWriter logger = null;
-//        if (logdir.length() > 0) {
-//            File dir = new File(logdir, callpath);
-//            dir.mkdir();
-//            File f = new File(dir, "log.xml");
-//            f.delete();
-//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-//                    new FileOutputStream(f), "UTF-8"));
-//            logger = new PrintWriter(writer);
-//            logger.println("<log>");
-//        }
-////        loggers.push(logger);
-//        return null;
-//    }
-//
-//    // Log additional information to the log file
-//    public Node log_xml(Node xml) throws Exception {
-////        PrintWriter logger = (PrintWriter) loggers.peek();
-//        if (logger != null) {
-//            TransformerFactory tf = TransformerFactory.newInstance();
-//            Transformer t = tf.newTransformer();
-//            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-//            t.setOutputProperty(OutputKeys.INDENT, "yes");
-//            t.transform(new DOMSource(xml), new StreamResult(logger));
-//            logger.println();
-//        }
-//        return null;
-//    }
-//
-//    // Close the log file
-//    public Node closeLog() throws Exception {
-////        PrintWriter logger = (PrintWriter) loggers.pop();
-//        if (logger != null) {
-//            logger.println("</log>");
-//            logger.close();
-//        }
-//        return null;
-//    }
-//
-//    public PrintWriter getLogger() {
-//        return logger;
-//        if (loggers.empty()) {
-//            return null;
-//        } else {
-//            return (PrintWriter) loggers.peek();
-//        }
-//    }
 
     public static Node reset_log(String logdir, String callpath)
             throws Exception {
@@ -884,7 +779,7 @@ return doc;
                             }
                             // XML
                             else {
-                                writeBytes(contentBytes, documentToString(currentPart.getFirstChild()).getBytes(charset));
+                                writeBytes(contentBytes, DomUtils.serializeNode(currentPart.getFirstChild()).getBytes(charset));
                             }
                         }
                     }
@@ -961,23 +856,19 @@ return doc;
         baos.write(bytes, 0, bytes.length);
     }
 
-    public Document parse(Node parse_instruction) throws Throwable {
-        System.setProperty(
-                "org.apache.xerces.xni.parser.XMLParserConfiguration",
-                "org.apache.xerces.parsers.XIncludeParserConfiguration");
+    public Element parse(Document parse_instruction, String xsl_version) throws Throwable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
-        dbf.setFeature(
-                "http://apache.org/xml/features/xinclude/fixup-base-uris",
-                false);
         DocumentBuilder db = dbf.newDocumentBuilder();
 
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = null;
         Node content = null;
         Document parser_instruction = null;
+        
+        Element parse_element = (Element)parse_instruction.getElementsByTagNameNS(CTL_NS, "parse").item(0);
 
-        NodeList children = parse_instruction.getChildNodes();
+        NodeList children = parse_element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element e = (Element) children.item(i);
@@ -986,7 +877,7 @@ return doc;
                     Document doc = db.newDocument();
                     Element transform = doc
                             .createElementNS(XSL_NS, "transform");
-                    transform.setAttribute("version", "1.0");
+                    transform.setAttribute("version", xsl_version);
                     doc.appendChild(transform);
                     Element output = doc.createElementNS(XSL_NS, "output");
                     NamedNodeMap atts = e.getAttributes();
@@ -1050,52 +941,12 @@ return doc;
 
         Document doc = parse(resp, null, parser_instruction);
 */
-        Document doc = parse(uc, null, parser_instruction);
+//        Document doc = parse(uc, parser_instruction);
+        Element result = parse(uc, parser_instruction);
         temp.delete();
-        return doc;
+        return result;
     }
 
-//    public Node register_parser(String namespace_uri, String local_name,
-//            String method_name, Object parser) throws Exception {
-//        String key = namespace_uri + "," + local_name;
-//
-//        if (parser instanceof String || parser instanceof Node) {
-//            parserInstances.put(key, null);
-//        } else {
-//            parserInstances.put(key, parser);
-//        }
-//        parserMethods.put(key, get_parser_method(method_name, parser));
-//        return null;
-//    }
-//
-//    public static Method get_parser_method(String method_name, Object parser)
-//            throws Exception {
-//        Class parser_class;
-//        if (parser instanceof String) {
-//            parser_class = Class.forName((String) parser);
-//        } else if (parser instanceof Node) {
-//            parser_class = Class.forName(((Node) parser).getTextContent());
-//        } else {
-//            parser_class = parser.getClass();
-//        }
-//        Method method = null;
-//        try {
-//            Class[] types = new Class[4];
-//            types[0] = URLConnection.class;
-//            types[1] = Element.class;
-//            types[2] = PrintWriter.class;
-//            types[3] = TECore.class;
-//            method = parser_class.getMethod(method_name, types);
-//        } catch (java.lang.NoSuchMethodException e) {
-//            Class[] types = new Class[3];
-//            types[0] = URLConnection.class;
-//            types[1] = Element.class;
-//            types[2] = PrintWriter.class;
-//            method = parser_class.getMethod(method_name, types);
-//        }
-//        return method;
-//    }
-//
     public Element parse(URLConnection uc, Node instruction) throws Throwable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -1178,121 +1029,28 @@ return doc;
         return response_e;
     }
 
-    public Document parse(URLConnection uc, String response_id, Node instruction)
-            throws Throwable {
-        System.setProperty(
-                "org.apache.xerces.xni.parser.XMLParserConfiguration",
-                "org.apache.xerces.parsers.XIncludeParserConfiguration");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setFeature(
-                "http://apache.org/xml/features/xinclude/fixup-base-uris",
-                false);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        Transformer t = TransformerFactory.newInstance().newTransformer();
-        Document response_doc = db.newDocument();
-        Element parser_e = response_doc.createElement("parser");
-        Element response_e = response_doc.createElement("response");
-        if (response_id != null) {
-            response_e.setAttribute("id", response_id);
-        }
-        Element content_e = response_doc.createElement("content");
-        if (instruction == null) {
-            try {
-                InputStream is = uc.getInputStream();
-                t.transform(new StreamSource(is), new DOMResult(content_e));
-            } catch (Exception e) {
-                parser_e.setTextContent(e.getMessage());
-            }
-        } else {
-            Element instruction_e;
-            if (instruction instanceof Element) {
-                instruction_e = (Element) instruction;
-            } else {
-                instruction_e = ((Document) instruction).getDocumentElement();
-            }
-            String key = instruction_e.getNamespaceURI() + ","
-                    + instruction_e.getLocalName();
-            Object instance = parserInstances.get(key);
-            Method method = (Method) parserMethods.get(key);
-            StringWriter swLogger = new StringWriter();
-            PrintWriter pwLogger = new PrintWriter(swLogger);
-            int arg_count = method.getParameterTypes().length;
-            Object[] args = new Object[arg_count];
-            args[0] = uc;
-            args[1] = instruction_e;
-            args[2] = pwLogger;
-            if (arg_count > 3) {
-                args[3] = this;
-            }
-            Object return_object;
-            try {
-                return_object = method.invoke(instance, args);
-            } catch (java.lang.reflect.InvocationTargetException e) {
-                throw e.getTargetException();
-            }
-            pwLogger.close();
-            if (return_object instanceof Node) {
-                t.transform(new DOMSource((Node) return_object), new DOMResult(
-                        content_e));
-            } else if (return_object != null) {
-                content_e.appendChild(response_doc.createTextNode(return_object
-                        .toString()));
-            }
-
-            parser_e.setAttribute("prefix", instruction_e.getPrefix());
-            parser_e.setAttribute("local-name", instruction_e.getLocalName());
-            parser_e.setAttribute("namespace-uri", instruction_e
-                    .getNamespaceURI());
-            parser_e.setTextContent(swLogger.toString());
-        }
-        response_e.appendChild(parser_e);
-        response_e.appendChild(content_e);
-        response_doc.appendChild(response_e);
-        return response_doc;
-    }
-
-//    public Document parse(URLConnection uc, String response_id)
-//            throws Throwable {
-//        return parse(uc, response_id, null);
-//    }
-
-    public Node message(int depth, String message) {
-        String indent = "";
-        for (int i = 0; i < depth; i++) {
-            indent += "  ";
-        }
-        String formatted_message = indent
-                + message.trim().replaceAll("\n", "\n" + indent);
-        synchronized (Out) {
-            Out.println(formatted_message);
-        }
-        return null;
-    }
-
     public Node message(String message) {
         String formatted_message = indent + message.trim().replaceAll("\n", "\n" + indent);
         out.println(formatted_message);
         return null;
     }
 
-    public Node copy(Node node) throws Exception {
-        if (node instanceof Text) {
-            synchronized (Out) {
-                Out.println(node.getTextContent());
-            }
-        } else {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer t = tf.newTransformer();
-            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            synchronized (Out) {
-                t.transform(new DOMSource(node), new StreamResult(Out));
-                Out.println("");
-            }
-        }
-        return null;
-    }
+//    public Node copy(Node node) throws Exception {
+//        if (node instanceof Text) {
+//            synchronized (Out) {
+//                Out.println(node.getTextContent());
+//            }
+//        } else {
+//            TransformerFactory tf = TransformerFactory.newInstance();
+//            Transformer t = tf.newTransformer();
+//            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+//            synchronized (Out) {
+//                t.transform(new DOMSource(node), new StreamResult(Out));
+//                Out.println("");
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Converts CTL input form data to generate a Swing-based or XHTML form and
@@ -1306,7 +1064,7 @@ return doc;
      * @return a DOM Document containing the resulting &lt;values&gt; element
      *        as the document element.
      */
-    public Document form(Document ctlForm) throws Exception {
+    public Document form(Document ctlForm, String id) throws Exception {
         String name = Thread.currentThread().getName();
         Element form = (Element)ctlForm.getElementsByTagNameNS(Test.CTL_NS, "form").item(0);
         NamedNodeMap attrs = form.getAttributes();
@@ -1370,118 +1128,14 @@ return doc;
         Document doc = formResults;
 //        System.out.println(DomUtils.serializeNode(doc));
         formResults = null;
+
+        if (logger != null) {
+            logger.println("<formresults id=\"" + id + "\">");
+            logger.println(DomUtils.serializeNode(doc));
+            logger.println("</formresults>");
+        }
+
         return doc;
-    }
-
-    /**
-     * Save a file on the local file system to the working directory for use
-     * in the validation, returns the new local path to the file
-     */
-    public String saveFileToWorkingDir (String origFilepath) {
-    	try {
-    		origFilepath = URLDecoder.decode(origFilepath, "UTF-8");
-	} catch (Exception e) {
-            System.err.println("Error decoding path.  "
-                    + e.getMessage());
-            return "";
-	}
-
-	// Create the working directory	for this file
-	String path = makeWorkingDir();
-
-	// Save the file to that path
-	File file = null;
-	try {
-		// Create new file, and get streams to each file
-		File origFile = new File(origFilepath);
-		file = new File(path, origFile.getName());
-		file.createNewFile();
-
-		FileInputStream in = new FileInputStream(origFile);
-		FileOutputStream out = new FileOutputStream(file);
-
-		// Transfer bytes from one file to the other
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-	} catch (Exception e) {
-            System.err.println("Error creating and writing to file.  "
-                    + e.getMessage());
-            return "";
-	}
-
-	return file.getAbsolutePath();
-    }
-
-    /**
-     * Gets the proper directory to save working files to
-     */
-    public String makeWorkingDir() {
-
-	// Create the working directory	for this file
-	String path = "";
-        if (SessionDir != null) {
-            path = SessionDir;
-        } else {
-            path = System.getProperty("java.io.tmpdir") + "/tecore.temp";
-        }
-
-        String randomStr = Utils.randomString(16, new Random());
-        path = path + "/work/" + randomStr;
-        File dir = new File(path);
-        dir.mkdirs();
-
-	return dir.getAbsolutePath();
-    }
-
-    /**
-     * Converts a DOM Document/Node to a String
-     *
-     * @param node
-     *            the node to convert
-     * @return String a string representation of the DOM
-     */
-    public static String documentToString(Node node) {
-        try {
-            DOMSource domSource = new DOMSource(node);
-            StringWriter writer = new StringWriter();
-            StreamResult result = new StreamResult(writer);
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
-            transformer.transform(domSource, result);
-            return writer.toString();
-        } catch (Exception e) {
-            System.err.println("Error coverting Document to String.  "
-                    + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Rebuilds an externally supplied DOM Document node using the same
-     * configuration as the Saxon form transformer. This is done because it is
-     * not possible for any query or transformation to manipulate multiple
-     * documents unless they all belong to the same Configuration.
-     *
-     * @param a
-     *            DOM Document the node to be rebuilt.
-     * @return Document the new document with the same configuration as the
-     *         transformer.
-     */
-    private Document rebuildDocument(Document sourceDoc) {
-        Document newDoc = null;
-        DocumentBuilderImpl domBuilder = new DocumentBuilderImpl();
-        domBuilder.setConfiguration((Configuration) TF
-                .getAttribute(FeatureKeys.CONFIGURATION));
-        try {
-            newDoc = domBuilder.parse(new InputSource(new StringReader(
-                    documentToString(sourceDoc))));
-        } catch (SAXException ex) {
-            ex.printStackTrace();
-        }
-        return newDoc;
     }
 
     public File getLogDir() {

@@ -14,6 +14,8 @@ import com.occamlab.te.index.Index;
 public class Globals {
     public static Index masterIndex = new Index();
     
+    public static long memThreshhold = 0;
+    
     public static Processor processor = null;
     public static XsltCompiler compiler = null;
     public static DocumentBuilder builder = null;

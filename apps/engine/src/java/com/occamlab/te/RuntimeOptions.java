@@ -115,6 +115,10 @@ public class RuntimeOptions {
         return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
     }
 
+    public XdmNode getContextNode() {
+        return null;
+    }
+
     public String getTestName() {
         return testName;
     }

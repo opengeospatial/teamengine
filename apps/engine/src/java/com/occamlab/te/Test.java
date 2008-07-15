@@ -35,7 +35,10 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import net.sf.saxon.Configuration;
+import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.functions.FunctionLibraryList;
+import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.Serializer;
@@ -100,7 +103,7 @@ public class Test {
         Iterator<File> it = sources.iterator();
         while (it.hasNext()) {
             File source = it.next();
-System.out.println("Processing source(s) at: " + source.getAbsolutePath());
+//System.out.println("Processing source(s) at: " + source.getAbsolutePath());
 //          appLogger.log(Level.INFO, "Processing source(s) at: " + source.getAbsolutePath());
 
             String encodedName = URLEncoder.encode(source.getAbsolutePath(), "UTF-8");
@@ -141,8 +144,10 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
             boolean regenerate = true;
             if (indexFile.isFile()) {
                 try {
-                    index = new Index(indexFile);
-                    regenerate = index.outOfDate();
+                    if (indexFile.lastModified() > generatorStylesheet.lastModified()) {
+                        index = new Index(indexFile);
+                        regenerate = index.outOfDate();
+                    }
                 } catch (Exception e) {
                     // If there was an exception reading the index file, it is likely corrupt.  Regenerate it.
                     regenerate = true;
@@ -172,11 +177,13 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
                     generatorTransformer.setParameter(new QName("outdir"), av);
                     generatorTransformer.transform();
                     
-                    // Read the generated index and add the entries to the master index
+                    // Read the generated index
                     index = new Index(indexFile);
-                    Globals.masterIndex.add(index);
                 }
             }
+
+            // Add new index entries to the master index
+            Globals.masterIndex.add(index);
         }
             
         // If there were any validation errors, display them and throw an exception
@@ -242,6 +249,7 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
         List<TestEntry> tests = new ArrayList<TestEntry>();
         List<String> testPaths = new ArrayList<String>();
         List<XdmNode> params = new ArrayList<XdmNode>();
+        List<XdmNode> contexts = new ArrayList<XdmNode>();
 
         // Fill the arrays
         if (mode == RESUME_MODE) {
@@ -250,6 +258,7 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
             tests.add(Globals.masterIndex.getTest(testName));
             testPaths.add(sessionId);
             params.add(LogUtils.getParamsFromLog(log));
+            contexts.add(LogUtils.getContextFromLog(log));
         } else if (mode == RETEST_MODE) {
             Iterator<String> it = opts.getTestPaths().iterator();
             while (it.hasNext()) {
@@ -259,16 +268,19 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
                 tests.add(Globals.masterIndex.getTest(testName));
                 testPaths.add(testPath);
                 params.add(LogUtils.getParamsFromLog(log));
+                contexts.add(LogUtils.getContextFromLog(log));
             }
         } else if (opts.getTestName() != null) {
             tests.add(Globals.masterIndex.getTest(opts.getTestName()));
             testPaths.add(sessionId);
             params.add(opts.getParamsNode());
+            contexts.add(opts.getContextNode());
         } else if (opts.getSuiteName() != null) {
             SuiteEntry suite = Globals.masterIndex.getSuite(opts.getSuiteName());
             tests.add(Globals.masterIndex.getTest(suite.getStartingTest()));
             testPaths.add(sessionId);
             params.add(opts.getParamsNode());
+            contexts.add(opts.getContextNode());
         } else {
             Iterator<String> it = Globals.masterIndex.getSuiteKeys().iterator();
             if (!it.hasNext()) {
@@ -281,6 +293,7 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
             tests.add(Globals.masterIndex.getTest(suite.getStartingTest()));
             testPaths.add(sessionId);
             params.add(opts.getParamsNode());
+            contexts.add(opts.getContextNode());
         }
         
         // Instantiate a core object
@@ -308,7 +321,15 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
             core.setTestPath(testPaths.get(i));
 
             // Execute the test
-            core.executeTest(tests.get(i), params.get(i), null);
+            TestEntry test = tests.get(i);
+            XPathContext context = null; 
+            if (test.usesContext()) {
+//              Executable ex = new Executable(Globals.processor.getUnderlyingConfiguration());
+                XsltExecutable xe = test.loadExecutable();
+                Executable ex = xe.getUnderlyingCompiledStylesheet().getExecutable();
+                context = new XPathContextMajor(contexts.get(i).getUnderlyingNode(), ex);
+            }
+            core.executeTest(tests.get(i), params.get(i), context);
         }
     }
 
@@ -440,7 +461,19 @@ System.out.println("Processing source(s) at: " + source.getAbsolutePath());
         generateXsl(setupOpts);
         
         prepareSaxon();
-        
+
+        // Set memory theshhold
+        if (Globals.memThreshhold == 0) {
+            long maxMemory = Runtime.getRuntime().maxMemory();
+            if (maxMemory >= 32768*1024) {
+                // Set threshhold at 16K if there is 32K or more available
+                Globals.memThreshhold = maxMemory - 16384*1024;
+            } else {
+                // Otherwise, set it at half the memory available
+                Globals.memThreshhold = maxMemory / 2;
+            }
+        }
+
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
             preload();
         }
