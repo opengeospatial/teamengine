@@ -2,6 +2,8 @@ package com.occamlab.te.util;
 
 import java.io.StringWriter;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -176,4 +178,48 @@ public class DomUtils {
         }
         return doc;
     }
+
+    static public Element getChildElement(Node node) {
+        NodeList nl = node.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                return (Element)n;
+            }
+        }
+        return null;
+    }
+
+    static public Element getElementByTagName(Node node, String tagname) {
+        NodeList nl;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            nl = ((Document)node).getElementsByTagName(tagname);
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            nl = ((Element)node).getElementsByTagName(tagname);
+        } else {
+            return null;
+        }
+        if (nl.getLength() >= 0) {
+            return (Element)nl.item(0);
+        } else {
+            return null;
+        }
+    }
+
+    static public List<Element> getElementsByTagName(Node node, String tagname) {
+        ArrayList<Element> list = new ArrayList<Element>(); 
+        NodeList nl;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            nl = ((Document)node).getElementsByTagName(tagname);
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            nl = ((Element)node).getElementsByTagName(tagname);
+        } else {
+            return null;
+        }
+        for (int i = 0; i < nl.getLength(); i++) {
+            list.add((Element)nl.item(i));
+        }
+        return list;
+    }
+
 }

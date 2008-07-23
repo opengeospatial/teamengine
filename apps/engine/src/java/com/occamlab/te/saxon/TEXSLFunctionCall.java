@@ -121,17 +121,20 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         xml += "</params>";
 //System.out.println(xml);
         Source src = new StreamSource(new CharArrayReader(xml.toCharArray()));
-        XdmValue result = null;
+//        XdmValue result = null;
+        NodeInfo result = null;
         try {
-            result = core.executeTemplate(fe, Globals.builder.build(src), context);
+//            result = core.executeTemplate(fe, Globals.builder.build(src), context);
+            NodeInfo paramsNode = Globals.builder.build(src).getUnderlyingNode();
+            result = core.executeXSLFunction(context, fe, paramsNode);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         if (result == null) {
             return EmptyIterator.getInstance();
         } else {
-//            Value v = Value.convertJavaObjectToXPath(result, SequenceType.ANY_SEQUENCE, context);
-            Value v = Value.asValue(result.getUnderlyingValue());
+//            Value v = Value.asValue(result.getUnderlyingValue());
+            Value v = Value.asValue(result);
             return v.iterate();
         }
     }

@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -94,14 +96,15 @@ import com.occamlab.te.util.StringUtils;
  *
  */
 public class TECore {
-    String sessionId;
-    File logDir = null;
-    PrintStream out;
-    boolean web = false;
-    int mode = Test.TEST_MODE;
-    String testPath;
+    String sessionId;                   // Session identifier
+    File logDir = null;                 // Log directory
+    PrintStream out;                    // Console destination
+    boolean web = false;                // True when running as a servlet
+    int mode = Test.TEST_MODE;          // Test mode
+    String testPath;                    // Uniquely identifies a test instance
+    String fnPath = "";                 // Uniquely identifies an XSL function instance within a test instance
     String indent = "";
-//    long memThreshhold;
+    String contextLabel = "";
     int result;
     Document prevLog = null;
     PrintWriter logger = null;
@@ -120,6 +123,8 @@ public class TECore {
     static final String CTL_NS = Test.CTL_NS;
     static final String TE_NS = Test.TE_NS;
     
+    static final String INDENT = "   ";
+    
     static final QName TECORE_QNAME = new QName("te", TE_NS, "core");
     static final QName TEPARAMS_QNAME = new QName("te", TE_NS, "params");
     static final QName LOCALNAME_QNAME = new QName("local-name");
@@ -130,54 +135,15 @@ public class TECore {
         
         testPath = sessionId;
         out = System.out;
-            }
-    
-//    static boolean freeExecutable() {
-//        Set<String> keys = Globals.loadedExecutables.keySet();
-//        synchronized(Globals.loadedExecutables) {
-//            Iterator<String> it = keys.iterator();
-//            if (it.hasNext()) {
-//                Globals.loadedExecutables.remove(it.next());
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    }
     
     public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws SaxonApiException {
         XsltExecutable executable = template.loadExecutable();
-//        String key = template.getId();
-//        XsltExecutable executable = Globals.loadedExecutables.get(key);
-//        while (executable == null) {
-//            try {
-////                System.out.println(template.getTemplateFile().getAbsolutePath());
-//                Source source = new StreamSource(template.getTemplateFile());
-//                executable = Globals.compiler.compile(source);
-//                Globals.loadedExecutables.put(key, executable);
-//            } catch (OutOfMemoryError e) {
-//                boolean freed = freeExecutable();
-//                if (!freed) {
-//                    throw e;
-//                }
-//            }
-//        }
-//        
-//        Runtime rt = Runtime.getRuntime();
-//        while (rt.totalMemory() - rt.freeMemory() > memThreshhold) {
-//            boolean freed = freeExecutable();
-//            if (!freed) {
-//                break;
-//            }
-//        }
-
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
         if (template.usesContext() && context != null) {
-//            XdmNode n = S9APIUtils.makeNode((NodeInfo)context.getContextItem());
-//            xt.setSource(n.asSource());
             xt.setSource((NodeInfo)context.getContextItem());
-//            System.out.println(n);
         } else {
             xt.setSource(new StreamSource(new StringReader("<nil/>")));
         }
@@ -187,15 +153,7 @@ public class TECore {
         }
         xt.transform();
         XdmNode ret = dest.getXdmNode();
-//        if (ret != null) System.out.println(ret.toString());
         return ret;
-//        XdmNode ret = dest.getXdmNode();
-//        if (ret == null) {
-//            return null;
-//        } else {
-//            System.out.println(ret.toString());
-//            return ret.getTypedValue();
-//        }
     }
     
     static String getLabel(XdmNode n) {
@@ -224,7 +182,7 @@ public class TECore {
         return label;
     }
     
-    static String getAssertionValue(String text, XdmNode paramsVar) {
+    String getAssertionValue(String text, XdmNode paramsVar) {
         if (text.indexOf("$") < 0) {
             return text;
         }
@@ -240,11 +198,8 @@ public class TECore {
                 String label = getLabel(n);
                 newText = StringUtils.replaceAll(newText, "{$" + name + "}", label);
             }
-            if (tagname.equals("context")) {
-                String label = getLabel(n);
-                newText = StringUtils.replaceAll(newText, "{$context}", label);
-            }
         }
+        newText = StringUtils.replaceAll(newText, "{$context}", contextLabel);
         return newText;
     }
     
@@ -260,23 +215,7 @@ public class TECore {
         }
     }
 
-    static int getResultFromLog(Document log) throws Exception {
-        if (log != null) {
-            NodeList nl = log.getElementsByTagName("endtest");
-            if (nl != null) {
-                Element endtest = (Element) nl.item(0);
-                return Integer.parseInt(endtest.getAttribute("result"));
-            }
-        }
-        return -1;
-    }
-
-    
     public void executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
-        String assertion = getAssertionValue(test.getAssertion(), params);
-        out.println(indent + "Testing " + test.getName() + " (" + testPath + ")...");
-        out.println(indent + "   " + assertion);
-
         Document oldPrevLog = prevLog;
         if (mode == Test.RESUME_MODE) {
             prevLog = readLog();
@@ -284,6 +223,15 @@ public class TECore {
             prevLog = null;
         }
         
+        String assertion = getAssertionValue(test.getAssertion(), params);
+        out.print(indent + (prevLog == null ? "Testing " : "Resuming Test "));
+        out.println(test.getName() + " (" + testPath + ")...");
+
+        String oldIndent = indent;
+        indent += INDENT;
+
+        out.println(indent + "Assertion: " + assertion);
+
         PrintWriter oldLogger = logger;
         if (logDir != null) {
             logger = createLog();
@@ -296,7 +244,7 @@ public class TECore {
                 logger.println(params.toString());
             }
             if (test.usesContext()) {
-                logger.println("<context>");
+                logger.println("<context label=\"" + contextLabel + "\">");
                 NodeInfo contextNode = (NodeInfo)context.getContextItem();
                 int kind = contextNode.getNodeKind(); 
                 if (kind == Type.ATTRIBUTE) {
@@ -313,6 +261,7 @@ public class TECore {
                 
             }
             logger.println("</starttest>");
+            logger.flush();
         }
         
         result = PASS;
@@ -335,6 +284,8 @@ public class TECore {
 
         prevLog = oldPrevLog;
 
+        indent = oldIndent;
+        
         out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
     }
     
@@ -344,15 +295,15 @@ public class TECore {
         String key = "{" + NamespaceURI + "}" + localName;
         TestEntry test = Globals.masterIndex.getTest(key);
 
-//        PrintWriter logger = getLogger();
         if (logger != null) {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
+            logger.flush();
         }
         if (mode == Test.RESUME_MODE) {
             Document doc = LogUtils.readLog(logDir, testPath + "/" + callId);
-            int result = getResultFromLog(doc);
+            int result = LogUtils.getResultFromLog(doc);
             if (result >= 0) {
-                out.println(indent + "   " + "Test " + test.getName() + " " + getResultDescription(result));
+                out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
                 if (result == WARNING) {
                     warning();
                 } else if (result != PASS){
@@ -360,36 +311,13 @@ public class TECore {
                 }
                 return;
             }
-//            File logFile = new File(new File(new File(logDir, testPath), callId), "log.xml");
-//            if (logFile.exists()) {
-//                Processor processor = new Processor(false);
-//                net.sf.saxon.s9api.XPathCompiler compiler = processor.newXPathCompiler();
-//                net.sf.saxon.s9api.XPathExecutable xpe = compiler.compile("/log/endtest/@result");
-//                net.sf.saxon.s9api.XPathSelector selector = xpe.load();
-//                net.sf.saxon.s9api.DocumentBuilder db = processor.newDocumentBuilder();
-//                net.sf.saxon.s9api.XdmNode node = db.build(logFile);
-//                selector.setContextItem(node);
-//                XdmItem value = selector.evaluateSingle();
-//                if (value != null) {
-//                    out.println(indent + "   " + "Test " + test.getName() + " " + getResultDescription(result));
-//                    if (result == WARNING) {
-//                        warning();
-//                    } else if (result != PASS){
-//                        inheritedFailure();
-//                    }
-//                    return;
-//                }
-//            }
         }
 
-        String oldIndent = indent;
         String oldTestPath = testPath;
         int oldResult = result;
-        indent += "   ";
         testPath += "/" + callId;
         executeTest(test, S9APIUtils.makeNode(params), context);
         testPath = oldTestPath;
-        indent = oldIndent;
         if (result < oldResult) {
             // Restore parent result if the child results aren't worse
             result = oldResult;
@@ -400,7 +328,17 @@ public class TECore {
             // Keep child result as parent result
         }
     }
-    
+
+    public NodeInfo executeXSLFunction(XPathContext context, FunctionEntry fe, NodeInfo params) throws Exception {
+        String oldFnPath = fnPath;
+        CRC32 crc = new CRC32();
+        crc.update(fe.getId().getBytes());
+        fnPath += Long.toHexString(crc.getValue()) + "/";
+        XdmNode n = executeTemplate(fe, S9APIUtils.makeNode(params), context);
+        fnPath = oldFnPath;
+        return n.getUnderlyingNode();
+    }
+
     public NodeInfo callFunction(XPathContext context, String localName, String NamespaceURI, NodeInfo params) throws Exception {
 //        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
         String key = "{" + NamespaceURI + "}" + localName;
@@ -411,47 +349,10 @@ public class TECore {
             System.out.println("Attempt to call a java function with call-function");
             return null;
         } else {
-            XdmNode n = executeTemplate(entry, S9APIUtils.makeNode(params), context);
-            return n.getUnderlyingNode();
-//System.out.println(S9APIUtils.makeNode(params));
-//XdmValue v = executeTemplate(entry, S9APIUtils.makeNode(params), null);
-//XdmSequenceIterator it = v.iterator(); 
-//XdmItem item = it.next();
-//if (item == null) {
-//} else if (item.isAtomicValue()) {
-//boolean b = it.hasNext();
-//System.out.println(item.getStringValue());
-//} else {
-//XdmNode n = (XdmNode)item;
-//System.out.println(n.toString());
-//}
-//return v;
-//System.out.println(n.toString());
-//DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-//Document doc = db.newDocument();
-//Element root = doc.createElement("values");
-//doc.appendChild(root);
-//return doc;
-//            return Globals.builder.build(new StreamSource(new StringReader(n.toString()))).getUnderlyingNode();
-//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//            dbf.setNamespaceAware(true);
-//            Document doc = dbf.newDocumentBuilder().newDocument();
-//            doc.appendChild(doc.createElementNS("blah", "blah:test"));
-////            TransformerFactory.newInstance().newTransformer().transform(n.asSource(), new DOMResult(doc));
-//            return doc;
-//System.out.println(S9APIUtils.makeNode(n.getUnderlyingNode()).toString());            
+            return executeXSLFunction(context, entry, params);
         }
     }
   
-//    public Document dummyFunction() throws Exception {
-//DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-//Document doc = db.newDocument();
-//Element root = doc.createElement("values");
-//root.appendChild(doc.createTextNode("x"));
-//doc.appendChild(root);
-//return doc;
-//  }
-
     public void warning() {
         if (result < WARNING) {
             result = WARNING;
@@ -471,7 +372,8 @@ public class TECore {
     }
     
     public void setContextLabel(String label) {
-        // TODO: implement
+        // TODO: test
+        contextLabel = label;
         System.out.println("setcontextLabel(" + label + ")");
     }
 
@@ -496,34 +398,32 @@ public class TECore {
     }
 
     public PrintWriter createLog() throws Exception {
-//        PrintWriter logger = null;
-        if (logDir != null) {
-            File dir = new File(logDir, testPath);
-            dir.mkdir();
-            File f = new File(dir, "log.xml");
-            f.delete();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(f), "UTF-8"));
-            logger = new PrintWriter(writer);
-//            logger.println("<log>");
-        }
-//        loggers.push(logger);
-        return logger;
+        return LogUtils.createLog(logDir, testPath);
+//        if (logDir != null) {
+//            File dir = new File(logDir, testPath);
+//            dir.mkdir();
+//            File f = new File(dir, "log.xml");
+//            f.delete();
+//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+//                    new FileOutputStream(f), "UTF-8"));
+//            logger = new PrintWriter(writer);
+//        }
+//        return logger;
     }
 
-    public static Node reset_log(String logdir, String callpath)
-            throws Exception {
-        if (logdir.length() > 0) {
-            File dir = new File(logdir, callpath);
-            dir.mkdir();
-            File f = new File(dir, "log.xml");
-            RandomAccessFile raf = new RandomAccessFile(f, "rw");
-            raf.setLength(0);
-            raf.writeBytes("<log>\n</log>\n");
-            raf.close();
-        }
-        return null;
-    }
+//    public static Node reset_log(String logdir, String callpath)
+//            throws Exception {
+//        if (logdir.length() > 0) {
+//            File dir = new File(logdir, callpath);
+//            dir.mkdir();
+//            File f = new File(dir, "log.xml");
+//            RandomAccessFile raf = new RandomAccessFile(f, "rw");
+//            raf.setLength(0);
+//            raf.writeBytes("<log>\n</log>\n");
+//            raf.close();
+//        }
+//        return null;
+//    }
 
     // Get a File pointer to a file reference (in XML)
     public static File getFile(NodeList fileNodes) {
@@ -554,33 +454,25 @@ public class TECore {
     }
     
     public Node request(Document ctlRequest, String id) throws Throwable {
-        //TODO: ID won't necessarily be unique if called from a function
-//        String id = Long.toString(System.currentTimeMillis()) + "_" + Integer.toString(seqno);
         Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
-        if (mode == Test.RESUME_MODE) {
-            NodeList nl = prevLog.getElementsByTagName("request");
-            for (int i = 0; i < nl.getLength(); i++) {
-                Element e = (Element)nl.item(i);
-                if (e.getAttribute("id").equals(id)) {
-                    NodeList nl2 = e.getElementsByTagName("response"); 
-                    if (nl2.getLength() == 1) {
-                        logger.println(DomUtils.serializeNode(e));
-                        NodeList nl3 = nl2.item(0).getChildNodes();
-                        for (int j = 0; j < nl3.getLength(); j++) {
-                            Node n = nl3.item(j); 
-                            if (n.getNodeType() == Node.ELEMENT_NODE) {
-                                return n;
-                            }
-                        }
-                    }
+        if (mode == Test.RESUME_MODE && prevLog != null) {
+            for (Element request_e : DomUtils.getElementsByTagName(prevLog, "request")) {
+                if (request_e.getAttribute("id").equals(fnPath + id)) {
+                    logger.println(DomUtils.serializeNode(request_e));
+                    logger.flush();
+                    Element response_e = DomUtils.getElementByTagName(request_e, "response");
+                    Element content_e = DomUtils.getElementByTagName(response_e, "content");
+                    return DomUtils.getChildElement(content_e);
                 }
             }
         }
 
-        if (logger != null) {
-            logger.println("<request id=\"" + id + "\">");
-            logger.println(DomUtils.serializeNode(request));
-        }
+        String logTag = "<request id=\"" + fnPath + id + "\">\n";
+        logTag += DomUtils.serializeNode(request) + "\n";
+//        if (logger != null) {
+//            logger.println("<request id=\"" + fnPath + id + "\">");
+//            logger.println(DomUtils.serializeNode(request));
+//        }
         Exception ex = null;
         Element response = null;
         Element parserInstruction = null;
@@ -594,14 +486,18 @@ public class TECore {
         try {
             URLConnection uc = build_request(request);
             response = parse(uc, parserInstruction);
-            if (logger != null) {
-                logger.println(DomUtils.serializeNode(response));
-            }
+            logTag += DomUtils.serializeNode(response) + "\n";
+//            if (logger != null) {
+//                logger.println(DomUtils.serializeNode(response));
+//            }
         } catch (Exception e) {
             ex = e;
         }
+        logTag += "</request>";
         if (logger != null) {
-            logger.println("</request>");
+//            logger.println("</request>");
+            logger.println(logTag);
+            logger.flush();
         }
         if (ex == null) {
             Node n = response.getElementsByTagName("content").item(0);
@@ -925,23 +821,6 @@ public class TECore {
             t.transform(new DOMSource((Node) content), new StreamResult(temp));
         }
         URLConnection uc = temp.toURL().openConnection();
-/*
-    	// Get URLConnection values
-	InputStream is = uc.getInputStream();
-	byte[] respBytes = IOUtils.inputStreamToBytes(is);
-
-	// Construct the HttpResponse (BasicHttpResponse) to send to parsers
-	HttpVersion version = new HttpVersion(1,1);
-	int respCode = 200;
-	String respMess = "OK";
-	BasicStatusLine statusLine = new BasicStatusLine(version, respCode, respMess);
-	BasicHttpResponse resp = new BasicHttpResponse(statusLine);
-	HttpEntity entity = new ByteArrayEntity(respBytes);
-	resp.setEntity(entity);
-
-        Document doc = parse(resp, null, parser_instruction);
-*/
-//        Document doc = parse(uc, parser_instruction);
         Element result = parse(uc, parser_instruction);
         temp.delete();
         return result;
@@ -1035,23 +914,6 @@ public class TECore {
         return null;
     }
 
-//    public Node copy(Node node) throws Exception {
-//        if (node instanceof Text) {
-//            synchronized (Out) {
-//                Out.println(node.getTextContent());
-//            }
-//        } else {
-//            TransformerFactory tf = TransformerFactory.newInstance();
-//            Transformer t = tf.newTransformer();
-//            t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-//            synchronized (Out) {
-//                t.transform(new DOMSource(node), new StreamResult(Out));
-//                Out.println("");
-//            }
-//        }
-//        return null;
-//    }
-
     /**
      * Converts CTL input form data to generate a Swing-based or XHTML form and
      * reports the results of processing the submitted form. The results document
@@ -1064,9 +926,19 @@ public class TECore {
      * @return a DOM Document containing the resulting &lt;values&gt; element
      *        as the document element.
      */
-    public Document form(Document ctlForm, String id) throws Exception {
+    public Node form(Document ctlForm, String id) throws Exception {
+        if (mode == Test.RESUME_MODE && prevLog != null) {
+            for (Element e : DomUtils.getElementsByTagName(prevLog, "formresults")) {
+                if (e.getAttribute("id").equals(fnPath + id)) {
+                    logger.println(DomUtils.serializeNode(e));
+                    logger.flush();
+                    return DomUtils.getChildElement(e);
+                }
+            }
+        }
+
         String name = Thread.currentThread().getName();
-        Element form = (Element)ctlForm.getElementsByTagNameNS(Test.CTL_NS, "form").item(0);
+        Element form = (Element)ctlForm.getElementsByTagNameNS(CTL_NS, "form").item(0);
         NamedNodeMap attrs = form.getAttributes();
         Attr attr = (Attr) attrs.getNamedItem("name");
         if (attr != null) {
@@ -1130,7 +1002,7 @@ public class TECore {
         formResults = null;
 
         if (logger != null) {
-            logger.println("<formresults id=\"" + id + "\">");
+            logger.println("<formresults id=\"" + fnPath + id + "\">");
             logger.println(DomUtils.serializeNode(doc));
             logger.println("</formresults>");
         }
