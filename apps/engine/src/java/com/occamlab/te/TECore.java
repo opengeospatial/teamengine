@@ -96,6 +96,7 @@ import com.occamlab.te.util.StringUtils;
  *
  */
 public class TECore {
+    Engine engine;
     String sessionId;                   // Session identifier
     File logDir = null;                 // Log directory
     PrintStream out;                    // Console destination
@@ -130,7 +131,8 @@ public class TECore {
     static final QName LOCALNAME_QNAME = new QName("local-name");
     static final QName LABEL_QNAME = new QName("label");
     
-    public TECore(String sessionId) {
+    public TECore(Engine engine, String sessionId) {
+        this.engine = engine;
         this.sessionId = sessionId;
         
         testPath = sessionId;
@@ -138,7 +140,7 @@ public class TECore {
     }
     
     public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws SaxonApiException {
-        XsltExecutable executable = template.loadExecutable();
+        XsltExecutable executable = engine.loadExecutable(template);
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
@@ -254,7 +256,7 @@ public class TECore {
                     logger.println("/>");
                 } else if (kind == Type.ELEMENT || kind == Type.DOCUMENT) {
                     logger.println("<value>");
-                    logger.println(Globals.builder.build(contextNode).toString());
+                    logger.println(engine.getBuilder().build(contextNode).toString());
                     logger.println("</value>");
                 }
                 logger.println("</context>");
@@ -293,7 +295,7 @@ public class TECore {
 //        System.out.println("call_test");
 //        System.out.println(params.getClass().getName());
         String key = "{" + NamespaceURI + "}" + localName;
-        TestEntry test = Globals.masterIndex.getTest(key);
+        TestEntry test = engine.getMasterIndex().getTest(key);
 
         if (logger != null) {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
@@ -342,7 +344,7 @@ public class TECore {
     public NodeInfo callFunction(XPathContext context, String localName, String NamespaceURI, NodeInfo params) throws Exception {
 //        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
         String key = "{" + NamespaceURI + "}" + localName;
-        FunctionEntry entry = Globals.masterIndex.getFunction(key);
+        FunctionEntry entry = engine.getMasterIndex().getFunction(key);
 
         if (entry.isJava()) {
             //TODO: implement
@@ -852,7 +854,7 @@ public class TECore {
             }
             String key = "{" + instruction_e.getNamespaceURI() + "}"
                     + instruction_e.getLocalName();
-            ParserEntry pe = Globals.masterIndex.getParser(key);
+            ParserEntry pe = engine.getMasterIndex().getParser(key);
             Object instance = null;
             if (pe.isInitialized()) {
                 instance = parserInstances.get(key);
@@ -965,7 +967,7 @@ public class TECore {
 		}
 	}
         
-        XsltTransformer xt = Globals.formExecutable.load();
+        XsltTransformer xt = engine.getFormExecutable().load();
         xt.setSource(new DOMSource(ctlForm));
         xt.setParameter(new QName("title"), new XdmAtomicValue(name));
         xt.setParameter(new QName("web"), new XdmAtomicValue(web ? "yes" : "no"));
@@ -1056,5 +1058,9 @@ public class TECore {
 
     public Object putFunctionInstance(String key, Object instance) {
         return functionInstances.put(key, instance);
+    }
+    
+    public Engine getEngine() {
+        return engine;
     }
 }

@@ -97,7 +97,7 @@ public class RuntimeOptions {
         this.params.add(param);
     }
     
-    public XdmNode getParamsNode() throws Exception {
+    public String getParamsXML() throws Exception {
         String paramsXML = "<params>";
         for (int i = 0; i < params.size(); i++){
             String param = params.get(i);
@@ -111,8 +111,9 @@ public class RuntimeOptions {
         }
         paramsXML += "</params>";
 //System.out.println("paramsXML: "+paramsXML);
+        return paramsXML;
 
-        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
+//        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
     }
 
     public XdmNode getContextNode() {

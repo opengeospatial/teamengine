@@ -81,6 +81,10 @@ public class Index {
         }
     }
     
+    public void persist(File file) throws Exception {
+        //TODO: implement
+    }
+    
     public boolean outOfDate() {
         if (indexFile != null) {
             long indexDate = indexFile.lastModified();

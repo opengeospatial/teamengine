@@ -125,7 +125,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         NodeInfo result = null;
         try {
 //            result = core.executeTemplate(fe, Globals.builder.build(src), context);
-            NodeInfo paramsNode = Globals.builder.build(src).getUnderlyingNode();
+            NodeInfo paramsNode = core.getEngine().getBuilder().build(src).getUnderlyingNode();
             result = core.executeXSLFunction(context, fe, paramsNode);
         } catch (Exception e) {
             throw new RuntimeException(e);

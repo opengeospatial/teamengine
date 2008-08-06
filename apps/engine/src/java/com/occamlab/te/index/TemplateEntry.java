@@ -74,43 +74,43 @@ public class TemplateEntry extends IndexEntry {
         this.usesContext = usesContext;
     }
     
-    static boolean freeExecutable() {
-        Set<String> keys = Globals.loadedExecutables.keySet();
-        synchronized(Globals.loadedExecutables) {
-            Iterator<String> it = keys.iterator();
-            if (it.hasNext()) {
-                Globals.loadedExecutables.remove(it.next());
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public XsltExecutable loadExecutable() throws SaxonApiException {
-        String key = getId();
-        XsltExecutable executable = Globals.loadedExecutables.get(key);
-        while (executable == null) {
-            try {
-//                System.out.println(template.getTemplateFile().getAbsolutePath());
-                Source source = new StreamSource(getTemplateFile());
-                executable = Globals.compiler.compile(source);
-                Globals.loadedExecutables.put(key, executable);
-            } catch (OutOfMemoryError e) {
-                boolean freed = freeExecutable();
-                if (!freed) {
-                    throw e;
-                }
-            }
-        }
-
-        Runtime rt = Runtime.getRuntime();
-        while (rt.totalMemory() - rt.freeMemory() > Globals.memThreshhold) {
-            boolean freed = freeExecutable();
-            if (!freed) {
-                break;
-            }
-        }
-
-        return executable;
-    }
+//    static boolean freeExecutable() {
+//        Set<String> keys = Globals.loadedExecutables.keySet();
+//        synchronized(Globals.loadedExecutables) {
+//            Iterator<String> it = keys.iterator();
+//            if (it.hasNext()) {
+//                Globals.loadedExecutables.remove(it.next());
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//    
+//    public XsltExecutable loadExecutable() throws SaxonApiException {
+//        String key = getId();
+//        XsltExecutable executable = Globals.loadedExecutables.get(key);
+//        while (executable == null) {
+//            try {
+////                System.out.println(template.getTemplateFile().getAbsolutePath());
+//                Source source = new StreamSource(getTemplateFile());
+//                executable = Globals.compiler.compile(source);
+//                Globals.loadedExecutables.put(key, executable);
+//            } catch (OutOfMemoryError e) {
+//                boolean freed = freeExecutable();
+//                if (!freed) {
+//                    throw e;
+//                }
+//            }
+//        }
+//
+//        Runtime rt = Runtime.getRuntime();
+//        while (rt.totalMemory() - rt.freeMemory() > Globals.memThreshhold) {
+//            boolean freed = freeExecutable();
+//            if (!freed) {
+//                break;
+//            }
+//        }
+//
+//        return executable;
+//    }
 }

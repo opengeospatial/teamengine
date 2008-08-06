@@ -67,6 +67,25 @@ public class Test {
     public static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
     public static final String TE_NS = "http://www.occamlab.com/te";
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
+    
+    static void syntax(String cmd) {
+        System.out.println();
+        System.out.println("Test mode:");
+        System.out.println("  Use to start a test session.\n");
+        System.out.println("  " + cmd + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
+        System.out.println("    [-suite=qname|-test=qname [@param-name=value] ...] [-logdir=dir] [-session=session] \n");
+        System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
+        System.out.println("Resume mode:");
+        System.out.println("  Use to resume a test session that was interrupted before completion.\n");
+        System.out.println("  " + cmd + " -mode=resume -logdir=dir session\n");
+        System.out.println("Retest mode:");
+        System.out.println("  Use to reexecute individual tests.\n");
+        System.out.println("  " + cmd + " -mode=retest -logdir=dir testpath1 [testpath2] ...\n");
+//        System.out.println("Doc mode:");
+//        System.out.println("  Use to generate a list of assertions.\n");
+//        System.out.println("  " + cmd + " -mode=doc -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
+//        System.out.println("    [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
+    }
 
     public static void main(String[] args) throws Exception {
         SetupOptions setupOpts = new SetupOptions();
@@ -141,51 +160,47 @@ public class Test {
 
         setupOpts.setMode(mode);
         runOpts.setMode(mode);
+        
+        File logDir = runOpts.getLogDir();
 
-        if (!sourcesSupplied) {
-            System.out.println();
-            System.out.println("Test mode:");
-            System.out.println("  Use to start a test session.\n");
-            System.out.println("  " + cmd + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
-            System.out.println("    [-suite=qname|-test=qname [@param-name=value] ...] [-logdir=dir] [-session=session] \n");
-            System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
-            System.out.println("Resume mode:");
-            System.out.println("  Use to resume a test session that was interrupted before completion.\n");
-            System.out.println("  " + cmd + " -mode=resume -logdir=dir session\n");
-            System.out.println("Retest mode:");
-            System.out.println("  Use to reexecute individual tests.\n");
-            System.out.println("  " + cmd + " -mode=retest -logdir=dir testpath1 [testpath2] ...\n");
-            System.out.println("Doc mode:");
-            System.out.println("  Use to generate a list of assertions.\n");
-            System.out.println("  " + cmd + " -mode=doc -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
-            System.out.println("    [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
+        if ((mode == TEST_MODE && !sourcesSupplied) ||
+            (mode == RETEST_MODE && logDir == null) ||
+            (mode == RESUME_MODE && logDir == null)
+            ) {
+            syntax(cmd);
             return;
         }
 
         Thread.currentThread().setName("TEAM Engine");
         
-        Generator.generateXsl(setupOpts);
-        
-        Execute.prepareSaxon();
-
-        // Set memory theshhold
-        if (Globals.memThreshhold == 0) {
-            long maxMemory = Runtime.getRuntime().maxMemory();
-            if (maxMemory >= 32768*1024) {
-                // Set threshhold at 16K if there is 32K or more available
-                Globals.memThreshhold = maxMemory - 16384*1024;
-            } else {
-                // Otherwise, set it at half the memory available
-                Globals.memThreshhold = maxMemory / 2;
+        Index masterIndex;
+//        if (mode == TEST_MODE || mode == CHECK_MODE) {
+            masterIndex = Generator.generateXsl(setupOpts);
+            if (logDir != null) {
+                File indexFile = new File(logDir, "index.xml");
+                masterIndex.persist(indexFile);
             }
-        }
-
+//        } else {
+//            File indexFile = new File(logDir, "index.xml");
+//            if (!indexFile.canRead()) {
+//              System.out.println("Error: Can't read index file.");
+//              return;
+//            }
+//            masterIndex = new Index(indexFile);
+//            if (masterIndex.outOfDate()) {
+//                System.out.println("Error: Scripts have changed.  Start a new session.");
+//                return;
+//            }
+//        }
+        
+        Engine engine = new Engine(masterIndex);
+        
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
-            Execute.preload();
+            engine.preload();
         }
         
         if (mode != CHECK_MODE) {
-            Execute.execute(runOpts, System.out, false);
+            engine.execute(runOpts, System.out, false);
         }
     }
 }
