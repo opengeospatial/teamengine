@@ -1,6 +1,7 @@
 package com.occamlab.te.index;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +32,33 @@ public class FunctionEntry extends TemplateEntry {
     FunctionEntry() {
         super();
     }
+    
+//    public void persistAttributes(PrintWriter out) {
+//        super.persistAttributes(out);
+//        out.print(" type=\"" + (java ? "java" : "xsl") + "\"");
+//    }
+//    
+//    public void persistTags(PrintWriter out) {
+//        super.persistTags(out);
+//        if (minArgs != maxArgs) {
+//            int min = minArgs;
+//            int max = maxArgs;
+//            if (getParams() != null) {
+//                min -= getParams().size();
+//                max -= getParams().size();
+//            }
+//            if (usesContext()) {
+//                min--;
+//                max--;
+//            }
+//            out.println("<varags min=\"" + Integer.toString(min) + "\"" +
+//                               " max=\"" + Integer.toString(max) + "\"/>");
+//        }
+//    }
+//    
+//    public void persist(PrintWriter out) {
+//        persist(out, "function");
+//    }
 
     FunctionEntry(Element function) {
         super(function);

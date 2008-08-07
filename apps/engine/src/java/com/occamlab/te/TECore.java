@@ -96,7 +96,7 @@ import com.occamlab.te.util.StringUtils;
  *
  */
 public class TECore {
-    Engine engine;
+    Engine engine;                      // Engine object
     String sessionId;                   // Session identifier
     File logDir = null;                 // Log directory
     PrintStream out;                    // Console destination
@@ -104,13 +104,13 @@ public class TECore {
     int mode = Test.TEST_MODE;          // Test mode
     String testPath;                    // Uniquely identifies a test instance
     String fnPath = "";                 // Uniquely identifies an XSL function instance within a test instance
-    String indent = "";
-    String contextLabel = "";
-    int result;
-    Document prevLog = null;
-    PrintWriter logger = null;
-    String formHtml;
-    Document formResults;
+    String indent = "";                 // Contains the appropriate number of spaces for the current indet level
+    String contextLabel = "";           // Current context label set by ctl:for-each
+    int result;                         // Result for current test
+    Document prevLog = null;            // Log document for current test from previous  test execution (resume and retest modes only)
+    PrintWriter logger = null;          // Logger for current test
+    String formHtml;                    // HTML representation for an active form 
+    Document formResults;               // Holds form results until they are retrieved
     Map<String, Object>functionInstances = new HashMap<String, Object>();
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();

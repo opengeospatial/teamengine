@@ -21,6 +21,7 @@
 package com.occamlab.te.index;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +38,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.occamlab.te.util.DomUtils;
+
 public class Index {
     File indexFile = null;
     List<File> dependencies = new ArrayList<File>();
@@ -44,6 +47,8 @@ public class Index {
     Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
     Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
     Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
+
+    List<Element> elements = new ArrayList<Element>();
     
     public Index() {
     }
@@ -60,6 +65,7 @@ public class Index {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element el = (Element)node;
+                elements.add(el);
                 String name = el.getNodeName();
                 if (name.equals("dependency")) {
                     File file = new File(el.getAttribute("file"));
@@ -82,7 +88,13 @@ public class Index {
     }
     
     public void persist(File file) throws Exception {
-        //TODO: implement
+        PrintWriter out = new PrintWriter(file);
+        out.println("<index>");
+        for (Element el : elements) {
+            out.println(DomUtils.serializeNode(el));
+        }
+        out.println("</index>");
+        out.close();
     }
     
     public boolean outOfDate() {
@@ -98,6 +110,7 @@ public class Index {
     }
     
     public void add(Index index) {
+        elements.addAll(index.elements);
         dependencies.addAll(index.dependencies);
         functionMap.putAll(index.functionMap);
         suiteMap.putAll(index.suiteMap);
@@ -113,12 +126,20 @@ public class Index {
         return (FunctionEntry)getEntry(functionMap, qname);
     }
     
+    public Set<String> getFunctionKeys() {
+        return functionMap.keySet();
+    }
+    
     public ParserEntry getParser(String name) {
         return (ParserEntry)getEntry(parserMap, name);
     }
 
     public ParserEntry getParser(QName qname) {
         return (ParserEntry)getEntry(parserMap, qname);
+    }
+    
+    public Set<String> getParserKeys() {
+        return parserMap.keySet();
     }
     
     public SuiteEntry getSuite(String name) {
@@ -141,6 +162,10 @@ public class Index {
         return (TestEntry)getEntry(testMap, qname);
     }
 
+    public Set<String> getTestKeys() {
+        return testMap.keySet();
+    }
+    
     private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, QName qname) {
         return getEntry(map, "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
     }
@@ -183,5 +208,9 @@ public class Index {
         }
 
         return null;
+    }
+
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
     }
 }

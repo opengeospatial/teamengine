@@ -21,41 +21,8 @@
 package com.occamlab.te;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
-import net.sf.saxon.Configuration;
-import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.expr.XPathContextMajor;
-import net.sf.saxon.functions.FunctionLibraryList;
-import net.sf.saxon.instruct.Executable;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XsltCompiler;
-import net.sf.saxon.s9api.XsltExecutable;
-import net.sf.saxon.s9api.XsltTransformer;
-
-import org.w3c.dom.Document;
 
 import com.occamlab.te.index.Index;
-import com.occamlab.te.index.SuiteEntry;
-import com.occamlab.te.index.TestEntry;
-import com.occamlab.te.saxon.TEFunctionLibrary;
-import com.occamlab.te.util.LogUtils;
-import com.occamlab.te.util.Misc;
 
 public class Test {
     public static final int TEST_MODE = 0;
@@ -77,10 +44,10 @@ public class Test {
         System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
         System.out.println("Resume mode:");
         System.out.println("  Use to resume a test session that was interrupted before completion.\n");
-        System.out.println("  " + cmd + " -mode=resume -logdir=dir session\n");
+        System.out.println("  " + cmd + " -mode=resume -logdir=dir -session=session\n");
         System.out.println("Retest mode:");
         System.out.println("  Use to reexecute individual tests.\n");
-        System.out.println("  " + cmd + " -mode=retest -logdir=dir testpath1 [testpath2] ...\n");
+        System.out.println("  " + cmd + " -mode=retest -logdir=dir -session=session testpath1 [testpath2] ...\n");
 //        System.out.println("Doc mode:");
 //        System.out.println("  Use to generate a list of assertions.\n");
 //        System.out.println("  " + cmd + " -mode=doc -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
@@ -94,6 +61,8 @@ public class Test {
         boolean sourcesSupplied = false;
         String cmd = "java com.occamlab.te.Test";
         File workDir = null;
+        File logDir = null;
+        String session = null;
         int mode = TEST_MODE;
 
         // Parse arguments from command-line
@@ -111,10 +80,14 @@ public class Test {
                 }
             } else if (args[i].startsWith("-workdir=")) {
                 workDir = new File(args[i].substring(9));
+                setupOpts.setWorkDir(workDir);
+                runOpts.setWorkDir(workDir);
             } else if (args[i].startsWith("-logdir=")) {
-                runOpts.setLogDir(new File(args[i].substring(8)));
+                logDir = new File(args[i].substring(8));
+                runOpts.setLogDir(logDir);
             } else if (args[i].startsWith("-session=")) {
-                runOpts.setSessionId(args[i].substring(9));
+                session = args[i].substring(9); 
+                runOpts.setSessionId(session);
             } else if (args[i].startsWith("-test=")) {
                 runOpts.setTestName(args[i].substring(6));
             } else if (args[i].startsWith("-suite=")) {
@@ -155,17 +128,12 @@ public class Test {
             }
         }
 
-        setupOpts.setWorkDir(workDir);
-        runOpts.setWorkDir(workDir);
-
         setupOpts.setMode(mode);
         runOpts.setMode(mode);
         
-        File logDir = runOpts.getLogDir();
-
         if ((mode == TEST_MODE && !sourcesSupplied) ||
-            (mode == RETEST_MODE && logDir == null) ||
-            (mode == RESUME_MODE && logDir == null)
+            (mode == RETEST_MODE && (logDir == null || session == null)) ||
+            (mode == RESUME_MODE && (logDir == null || session == null))
             ) {
             syntax(cmd);
             return;
@@ -174,24 +142,29 @@ public class Test {
         Thread.currentThread().setName("TEAM Engine");
         
         Index masterIndex;
-//        if (mode == TEST_MODE || mode == CHECK_MODE) {
+        File indexFile = null;
+        if (logDir != null && session != null) {
+            File dir = new File(logDir, runOpts.getSessionId());
+            indexFile = new File(dir, "index.xml");
+        }
+
+        if (mode == TEST_MODE || mode == CHECK_MODE) {
             masterIndex = Generator.generateXsl(setupOpts);
-            if (logDir != null) {
-                File indexFile = new File(logDir, "index.xml");
+            if (indexFile != null) {
                 masterIndex.persist(indexFile);
             }
-//        } else {
-//            File indexFile = new File(logDir, "index.xml");
-//            if (!indexFile.canRead()) {
-//              System.out.println("Error: Can't read index file.");
-//              return;
-//            }
-//            masterIndex = new Index(indexFile);
-//            if (masterIndex.outOfDate()) {
-//                System.out.println("Error: Scripts have changed.  Start a new session.");
-//                return;
-//            }
-//        }
+        } else {
+            if (!indexFile.canRead()) {
+              System.out.println("Error: Can't read index file.");
+              return;
+            }
+            masterIndex = new Index(indexFile);
+            if (masterIndex.outOfDate()) {
+                System.out.println("Warning: Scripts have changed since this session was first executed.");
+            }
+        }
+            
+        masterIndex.setElements(null);
         
         Engine engine = new Engine(masterIndex);
         

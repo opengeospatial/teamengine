@@ -1,6 +1,8 @@
 package com.occamlab.te.index;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -51,9 +53,29 @@ public class TemplateEntry extends IndexEntry {
         }
     }
 
+//    public void persistAttributes(PrintWriter out) {
+//        super.persistAttributes(out);
+//        try {
+//            out.print(" file=\"" + templateFile.toURI().toURL().toString() + "\""
+//                    + " uses-context=\"" + Boolean.toString(usesContext) + "\"");
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//    
+//    public void persistTags(PrintWriter out) {
+//        super.persistTags(out);
+//        for (QName qname : params) {
+//            out.println("<param prefix=\"" + qname.getPrefix() + "\"" + 
+//                              " namespace-uri=\"" + qname.getNamespaceURI() + "\"" +
+//                              " local-name=\"" + qname.getLocalPart() + "\"/>");
+//        }
+//    }
+
     public File getTemplateFile() {
         return templateFile;
     }
+
     public void setTemplateFile(File templateFile) {
         this.templateFile = templateFile;
     }
