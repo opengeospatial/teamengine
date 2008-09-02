@@ -190,12 +190,40 @@ public class DomUtils {
         return null;
     }
 
+    static public List<Element> getChildElements(Node node) {
+        ArrayList<Element> list = new ArrayList<Element>(); 
+        NodeList nl = node.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                list.add((Element)nl.item(i));
+            }
+        }
+        return list;
+    }
+
     static public Element getElementByTagName(Node node, String tagname) {
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
             nl = ((Document)node).getElementsByTagName(tagname);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             nl = ((Element)node).getElementsByTagName(tagname);
+        } else {
+            return null;
+        }
+        if (nl.getLength() >= 0) {
+            return (Element)nl.item(0);
+        } else {
+            return null;
+        }
+    }
+
+    static public Element getElementByTagNameNS(Node node, String namespaceURI, String localName) {
+        NodeList nl;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            nl = ((Document)node).getElementsByTagNameNS(namespaceURI, localName);
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            nl = ((Element)node).getElementsByTagNameNS(namespaceURI, localName);
         } else {
             return null;
         }
@@ -213,6 +241,22 @@ public class DomUtils {
             nl = ((Document)node).getElementsByTagName(tagname);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             nl = ((Element)node).getElementsByTagName(tagname);
+        } else {
+            return null;
+        }
+        for (int i = 0; i < nl.getLength(); i++) {
+            list.add((Element)nl.item(i));
+        }
+        return list;
+    }
+
+    static public List<Element> getElementsByTagNameNS(Node node, String namespaceURI, String localName) {
+        ArrayList<Element> list = new ArrayList<Element>(); 
+        NodeList nl;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            nl = ((Document)node).getElementsByTagNameNS(namespaceURI, localName);
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            nl = ((Element)node).getElementsByTagNameNS(namespaceURI, localName);
         } else {
             return null;
         }

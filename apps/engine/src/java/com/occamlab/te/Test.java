@@ -92,6 +92,8 @@ public class Test {
                 runOpts.setTestName(args[i].substring(6));
             } else if (args[i].startsWith("-suite=")) {
                 runOpts.setSuiteName(args[i].substring(7));
+            } else if (args[i].startsWith("-profile=")) {
+                runOpts.addProfile(args[i].substring(9));
             } else if(args[i].startsWith("@")){
                 runOpts.addParam(args[i].substring(1));
             } else if (args[i].equals("-mode=test")) {
@@ -128,7 +130,7 @@ public class Test {
             }
         }
 
-        setupOpts.setMode(mode);
+//        setupOpts.setMode(mode);
         runOpts.setMode(mode);
         
         if ((mode == TEST_MODE && !sourcesSupplied) ||
@@ -169,11 +171,11 @@ public class Test {
         Engine engine = new Engine(masterIndex);
         
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
-            engine.preload();
+            engine.preload(masterIndex, setupOpts.getSourcesName());
         }
         
         if (mode != CHECK_MODE) {
-            engine.execute(runOpts, System.out, false);
+            engine.execute(runOpts, masterIndex, System.out, false);
         }
     }
 }

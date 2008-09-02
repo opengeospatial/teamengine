@@ -82,6 +82,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.index.Index;
 import com.occamlab.te.index.ParserEntry;
 import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
@@ -97,7 +98,9 @@ import com.occamlab.te.util.StringUtils;
  */
 public class TECore {
     Engine engine;                      // Engine object
+    Index index;
     String sessionId;                   // Session identifier
+    String sourcesName;                 // Name of active collection of sources
     File logDir = null;                 // Log directory
     PrintStream out;                    // Console destination
     boolean web = false;                // True when running as a servlet
@@ -115,10 +118,10 @@ public class TECore {
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();
     
-    static final int PASS = 0;
-    static final int WARNING = 1;
-    static final int INHERITED_FAILURE = 2;
-    static final int FAIL = 3;
+    public static final int PASS = 0;
+    public static final int WARNING = 1;
+    public static final int INHERITED_FAILURE = 2;
+    public static final int FAIL = 3;
 
     static final String XSL_NS = Test.XSL_NS;
     static final String CTL_NS = Test.CTL_NS;
@@ -131,16 +134,18 @@ public class TECore {
     static final QName LOCALNAME_QNAME = new QName("local-name");
     static final QName LABEL_QNAME = new QName("label");
     
-    public TECore(Engine engine, String sessionId) {
+    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
         this.engine = engine;
+        this.index = index;
         this.sessionId = sessionId;
+        this.sourcesName = sourcesName;
         
         testPath = sessionId;
         out = System.out;
     }
     
     public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws SaxonApiException {
-        XsltExecutable executable = engine.loadExecutable(template);
+        XsltExecutable executable = engine.loadExecutable(template, sourcesName);
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
@@ -217,7 +222,7 @@ public class TECore {
         }
     }
 
-    public void executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
+    public int executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
         Document oldPrevLog = prevLog;
         if (mode == Test.RESUME_MODE) {
             prevLog = readLog();
@@ -289,13 +294,15 @@ public class TECore {
         indent = oldIndent;
         
         out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
+
+        return result;
     }
     
     public void callTest(XPathContext context, String localName, String NamespaceURI, NodeInfo params, String callId) throws Exception {
 //        System.out.println("call_test");
 //        System.out.println(params.getClass().getName());
         String key = "{" + NamespaceURI + "}" + localName;
-        TestEntry test = engine.getMasterIndex().getTest(key);
+        TestEntry test = index.getTest(key);
 
         if (logger != null) {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
@@ -344,7 +351,7 @@ public class TECore {
     public NodeInfo callFunction(XPathContext context, String localName, String NamespaceURI, NodeInfo params) throws Exception {
 //        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
         String key = "{" + NamespaceURI + "}" + localName;
-        FunctionEntry entry = engine.getMasterIndex().getFunction(key);
+        FunctionEntry entry = index.getFunction(key);
 
         if (entry.isJava()) {
             //TODO: implement
@@ -854,7 +861,7 @@ public class TECore {
             }
             String key = "{" + instruction_e.getNamespaceURI() + "}"
                     + instruction_e.getLocalName();
-            ParserEntry pe = engine.getMasterIndex().getParser(key);
+            ParserEntry pe = index.getParser(key);
             Object instance = null;
             if (pe.isInitialized()) {
                 instance = parserInstances.get(key);
@@ -1011,6 +1018,13 @@ public class TECore {
 
         return doc;
     }
+    
+    public void setIndentLevel(int level) {
+        indent = "";
+        for (int i = 0; i < level; i++) {
+            indent += INDENT;
+        }
+    }
 
     public File getLogDir() {
         return logDir;
@@ -1062,5 +1076,17 @@ public class TECore {
     
     public Engine getEngine() {
         return engine;
+    }
+
+    public Index getIndex() {
+        return index;
+    }
+
+    public String getSourcesName() {
+        return sourcesName;
+    }
+
+    public String getSessionId() {
+        return sessionId;
     }
 }

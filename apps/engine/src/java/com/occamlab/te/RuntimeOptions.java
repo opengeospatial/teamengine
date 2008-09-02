@@ -38,8 +38,18 @@ public class RuntimeOptions {
     String sessionId = null;
     String testName = null;
     String suiteName = null;
+    String sourcesName = "default";
+    ArrayList<String> profiles = new ArrayList<String>();
     ArrayList<String> testPaths = new ArrayList<String>();
     ArrayList<String> params = new ArrayList<String>();
+
+    public String getSourcesName() {
+        return sourcesName;
+    }
+
+    public void setSourcesName(String sourcesName) {
+        this.sourcesName = sourcesName;
+    }
 
     public File getLogDir() {
         return logDir;
@@ -81,6 +91,14 @@ public class RuntimeOptions {
         this.suiteName = suiteName;
     }
 
+    public ArrayList<String> getProfiles() {
+        return profiles;
+    }
+
+    public void addProfile(String profile) {
+        this.profiles.add(profile);
+    }
+
     public ArrayList<String> getTestPaths() {
         return testPaths;
     }
@@ -97,25 +115,6 @@ public class RuntimeOptions {
         this.params.add(param);
     }
     
-    public String getParamsXML() throws Exception {
-        String paramsXML = "<params>";
-        for (int i = 0; i < params.size(); i++){
-            String param = params.get(i);
-            String name = param.substring(0, param.indexOf('='));
-            String value = param.substring(param.indexOf('=') + 1);
-            if (params.get(i).indexOf('=') != 0) {
-                paramsXML += "<param local-name=\"" + name + "\" namespace-uri=\"\" prefix=\"\" type=\"xs:string\">";
-                paramsXML += "<value>" + value + "</value>";
-                paramsXML += "</param>";
-            }
-        }
-        paramsXML += "</params>";
-//System.out.println("paramsXML: "+paramsXML);
-        return paramsXML;
-
-//        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
-    }
-
     public XdmNode getContextNode() {
         return null;
     }

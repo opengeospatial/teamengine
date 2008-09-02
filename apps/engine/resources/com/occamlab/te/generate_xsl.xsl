@@ -28,6 +28,7 @@
  xmlns:xi="http://www.w3.org/2001/XInclude"
  xmlns:xs="http://www.w3.org/2001/XMLSchema"
  xmlns:stack="java:java.util.ArrayDeque"
+ xmlns:fn="http://www.w3.org/2005/xpath-functions"
  version="2.0">
  
  	<!--
@@ -390,7 +391,50 @@
 		</xsl:variable>
 		<suite prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
 			<starting-test prefix="{$starting-test/prefix}" namespace-uri="{$starting-test/namespace-uri}" local-name="{$starting-test/local-name}"/>
+			<xsl:copy-of select="ctl:form"/>
 		</suite>
+	</xsl:template>
+
+	<!-- Calls parse-qname -->
+	<xsl:template match="ctl:profile">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+		<profile prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
+			<xsl:variable name="base">
+				<xsl:for-each select="ctl:base">
+					<xsl:call-template name="parse-qname">
+						<xsl:with-param name="qname" select="."/>
+					</xsl:call-template>
+				</xsl:for-each>
+			</xsl:variable>
+			<base prefix="{$base/prefix}" namespace-uri="{$base/namespace-uri}" local-name="{$base/local-name}"/>
+			<xsl:for-each select="ctl:exclude">
+				<xsl:variable name="exclude" select="."/>
+				<exclude>
+					<xsl:for-each select="fn:tokenize(fn:substring-after(., '/'), '/')">
+						<xsl:variable name="token" select="."/>
+						<xsl:variable name="test">
+							<xsl:for-each select="$exclude">
+								<xsl:call-template name="parse-qname">
+									<xsl:with-param name="qname" select="$token"/>
+								</xsl:call-template>
+							</xsl:for-each>
+						</xsl:variable>
+						<test prefix="{$test/prefix}" namespace-uri="{$test/namespace-uri}" local-name="{$test/local-name}"/>
+					</xsl:for-each>
+				</exclude>
+			</xsl:for-each>
+			<xsl:variable name="starting-test">
+				<xsl:for-each select="ctl:starting-test">
+					<xsl:call-template name="parse-qname">
+						<xsl:with-param name="qname" select="."/>
+					</xsl:call-template>
+				</xsl:for-each>
+			</xsl:variable>
+			<starting-test prefix="{$starting-test/prefix}" namespace-uri="{$starting-test/namespace-uri}" local-name="{$starting-test/local-name}"/>
+			<xsl:copy-of select="ctl:form"/>
+		</profile>
 	</xsl:template>
 
 	<!-- Calls get-filename, make-sub-stylesheet -->

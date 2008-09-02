@@ -27,11 +27,20 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 
 public class SetupOptions {
-    int mode = Test.TEST_MODE;
+//    int mode = Test.TEST_MODE;
     boolean validate = true;
     boolean preload = false;
     File workDir = null;
+    String sourcesName = "default";
     ArrayList<File> sources = new ArrayList<File>();
+
+    public String getSourcesName() {
+        return sourcesName;
+    }
+
+    public void setSourcesName(String sourcesName) {
+        this.sourcesName = sourcesName;
+    }
 
     public File getWorkDir() {
         return workDir;
@@ -41,13 +50,13 @@ public class SetupOptions {
         this.workDir = workDir;
     }
 
-    public int getMode() {
-        return mode;
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
-    }
+//    public int getMode() {
+//        return mode;
+//    }
+//
+//    public void setMode(int mode) {
+//        this.mode = mode;
+//    }
 
     public ArrayList<File> getSources() {
         return sources;

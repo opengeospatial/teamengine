@@ -23,6 +23,7 @@ package com.occamlab.te.index;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,7 @@ public class Index {
     Map<String, FunctionEntry> functionMap = new HashMap<String, FunctionEntry>();
     Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
     Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
+    Map<String, ProfileEntry> profileMap = new HashMap<String, ProfileEntry>();
     Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
 
     List<Element> elements = new ArrayList<Element>();
@@ -68,11 +70,14 @@ public class Index {
                 elements.add(el);
                 String name = el.getNodeName();
                 if (name.equals("dependency")) {
-                    File file = new File(el.getAttribute("file"));
+                    File file = new File(el.getAttribute("file").substring(5));
                     dependencies.add(file);
                 } else if (name.equals("suite")) {
                     SuiteEntry se = new SuiteEntry(el);
                     suiteMap.put(se.getId(), se);
+                } else if (name.equals("profile")) {
+                    ProfileEntry pe = new ProfileEntry(el);
+                    profileMap.put(pe.getId(), pe);
                 } else if (name.equals("test")) {
                     TestEntry te = new TestEntry(el);
                     testMap.put(te.getId(), te);
@@ -114,6 +119,7 @@ public class Index {
         dependencies.addAll(index.dependencies);
         functionMap.putAll(index.functionMap);
         suiteMap.putAll(index.suiteMap);
+        profileMap.putAll(index.profileMap);
         testMap.putAll(index.testMap);
         parserMap.putAll(index.parserMap);
     }
@@ -152,6 +158,22 @@ public class Index {
     
     public Set<String> getSuiteKeys() {
         return suiteMap.keySet();
+    }
+
+    public ProfileEntry getProfile(String name) {
+        return (ProfileEntry)getEntry(profileMap, name);
+    }
+
+    public ProfileEntry getProfile(QName qname) {
+        return (ProfileEntry)getEntry(profileMap, qname);
+    }
+    
+    public Set<String> getProfileKeys() {
+        return profileMap.keySet();
+    }
+
+    public Collection<ProfileEntry> getProfiles() {
+        return profileMap.values();
     }
 
     public TestEntry getTest(String name) {
