@@ -51,7 +51,8 @@ public void jspInit() {
     String[] dirs = userdir.list();
     for (int i = 0; i < dirs.length; i++) {
       if (new File(new File(userdir, dirs[i]), "session.xml").exists()) {
-   	    TestSession s = TestSession.load(DB, userdir, dirs[i]);
+   	    TestSession s = new TestSession();
+   	    s.load(userdir, dirs[i]);
     	out.println("<tr>");
         out.println("<td><a href=\"viewSessionLog.jsp?session=" + s.getSessionId() + "\">" + s.getSessionId() + "</a></td>" );
         out.println("<td>" + s.getDescription() + "</td>");

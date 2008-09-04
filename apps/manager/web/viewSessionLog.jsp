@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
 DocumentBuilderImpl DB;
@@ -12,7 +12,7 @@ public void jspInit() {
 		Conf = new Config();
 		DB = new DocumentBuilderImpl();      
 		DB.setConfiguration((Configuration) ViewLog.transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));        
-		File stylesheet = Test.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
@@ -101,6 +101,8 @@ public void jspInit() {
 %>
 		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%>'"/>
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
+		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
+		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/>
 		<br/>
 		<br/>
 		<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
@@ -111,7 +113,7 @@ public void jspInit() {
 		<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td><td id="nFail" align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
 		</tr>
 		</table>
-		</br>		
+		<br/>		
 		<a href="viewSessions.jsp"/>Sessions list</a>
 		<%@ include file="footer.jsp" %>				
 	</body>

@@ -10,6 +10,7 @@ public void jspInit() {
 	try {
 		Config conf = new Config();
 		SuiteCollectionHash = new LinkedHashMap();
+/*
 		LinkedHashMap sourcesHash = conf.getAvailableSuites();
 		Iterator it = sourcesHash.keySet().iterator();
 		while (it.hasNext()) {
@@ -17,6 +18,7 @@ public void jspInit() {
 			ArrayList sources = (ArrayList)sourcesHash.get(sourcesId);
 			SuiteCollectionHash.put(sourcesId, ListSuites.getSuites(sources));
 		}
+*/
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
 	}
@@ -60,7 +62,7 @@ public void jspInit() {
 		<p>
 			The following test suites are available:
 			<ul>
-<%
+<%--
 Iterator it1 = SuiteCollectionHash.keySet().iterator();
 while (it1.hasNext()) {
 	String sourcesId = (String)it1.next();
@@ -88,7 +90,7 @@ while (it1.hasNext()) {
 }
 
 Url = new URL(request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath());
-%>
+--%>
 			</ul>
 		</p>
         <p>

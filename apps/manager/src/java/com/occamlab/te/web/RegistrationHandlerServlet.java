@@ -35,45 +35,45 @@ import java.io.PrintStream;
  */
 public class RegistrationHandlerServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 7428127065308163495L;
+    private static final long serialVersionUID = 7428127065308163495L;
 
-	Config Conf;
+    Config Conf;
 
-	public void init() throws ServletException {
-		Conf = new Config();
-	}
+    public void init() throws ServletException {
+        Conf = new Config();
+    }
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
-		try {
-			String username = request.getParameter("username");
-			String password = request.getParameter("password");
-			String email = request.getParameter("email");
-			File userDir = new File(Conf.getUsersDir(), username);
-			if (userDir.exists()) {
-				String url = "register.jsp?error=duplicate&username="
-						+ username;
-				if (email != null) {
-					url += "&email=" + email;
-				}
-				response.sendRedirect(url);
-			} else {
-				userDir.mkdir();
-				File xmlfile = new File(userDir, "user.xml");
-				PrintStream out = new PrintStream(new FileOutputStream(xmlfile));
-				out.println("<user>");
-				out.println(" <name>" + username + "</name>");
-				out.println(" <roles>");
-				out.println("  <name>user</name>");
-				out.println(" </roles>");
-				out.println(" <password>" + password + "</password>");
-				out.println(" <email>" + email + "</email>");
-				out.println("</user>");
-				out.close();
-				response.sendRedirect("registered.jsp");
-			}
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+        try {
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String email = request.getParameter("email");
+            File userDir = new File(Conf.getUsersDir(), username);
+            if (userDir.exists()) {
+                String url = "register.jsp?error=duplicate&username="
+                        + username;
+                if (email != null) {
+                    url += "&email=" + email;
+                }
+                response.sendRedirect(url);
+            } else {
+                userDir.mkdir();
+                File xmlfile = new File(userDir, "user.xml");
+                PrintStream out = new PrintStream(new FileOutputStream(xmlfile));
+                out.println("<user>");
+                out.println(" <name>" + username + "</name>");
+                out.println(" <roles>");
+                out.println("  <name>user</name>");
+                out.println(" </roles>");
+                out.println(" <password>" + password + "</password>");
+                out.println(" <email>" + email + "</email>");
+                out.println("</user>");
+                out.close();
+                response.sendRedirect("registered.jsp");
+            }
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
 }

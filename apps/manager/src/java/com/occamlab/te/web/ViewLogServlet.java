@@ -39,6 +39,7 @@ import java.util.ArrayList;
 
 import com.occamlab.te.Test;
 import com.occamlab.te.ViewLog;
+import com.occamlab.te.util.Misc;
 
 /**
  * Processes (GET method) requests to view a test log.
@@ -46,46 +47,46 @@ import com.occamlab.te.ViewLog;
  */
 public class ViewLogServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 2891486945236875019L;
+    private static final long serialVersionUID = 2891486945236875019L;
 
-	Config conf;
+    Config conf;
 
-	DocumentBuilderImpl DB;
+    DocumentBuilderImpl DB;
 
-	Templates viewLogTemplates;
+    Templates viewLogTemplates;
 
-	public void init() throws ServletException {
-		try {
-			conf = new Config();
-			File stylesheet = Test
-					.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			viewLogTemplates = transformerFactory
-					.newTemplates(new StreamSource(stylesheet));
-			DB = new DocumentBuilderImpl();
-			DB.setConfiguration((Configuration) transformerFactory
-					.getAttribute(FeatureKeys.CONFIGURATION));
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-	}
+    public void init() throws ServletException {
+        try {
+            conf = new Config();
+            File stylesheet = Misc
+                    .getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+            TransformerFactory transformerFactory = TransformerFactory
+                    .newInstance();
+            viewLogTemplates = transformerFactory
+                    .newTemplates(new StreamSource(stylesheet));
+            DB = new DocumentBuilderImpl();
+            DB.setConfiguration((Configuration) transformerFactory
+                    .getAttribute(FeatureKeys.CONFIGURATION));
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+    }
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
-		try {
-			ArrayList<String> tests = new ArrayList<String>();
-			String user = request.getRemoteUser();
-			File userlog = new File(conf.getUsersDir(), user);
-			String session = request.getParameter("session");
-			String test = request.getParameter("test");
-			if (test != null) {
-				tests.add(test);
-			}
-			ViewLog.view_log(DB, userlog, session, tests, viewLogTemplates,
-					new OutputStreamWriter(response.getOutputStream()));
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+        try {
+            ArrayList<String> tests = new ArrayList<String>();
+            String user = request.getRemoteUser();
+            File userlog = new File(conf.getUsersDir(), user);
+            String session = request.getParameter("session");
+            String test = request.getParameter("test");
+            if (test != null) {
+                tests.add(test);
+            }
+            ViewLog.view_log(DB, userlog, session, tests, viewLogTemplates,
+                    new OutputStreamWriter(response.getOutputStream()));
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
 }

@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.occamlab.te.Test;
+import com.occamlab.te.util.Misc;
 
 import java.io.File;
 
@@ -50,7 +51,7 @@ public class DeleteSessionServlet extends HttpServlet {
 			String sessionId = request.getParameter("session");
 			File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
 			File sessiondir = new File(userdir, sessionId);
-			Test.deleteDir(sessiondir);
+			Misc.deleteDir(sessiondir);
 			response.sendRedirect("sessionDeleted.jsp");
 		} catch (Exception e) {
 			throw new ServletException(e);

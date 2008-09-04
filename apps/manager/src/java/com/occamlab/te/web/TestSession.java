@@ -30,151 +30,110 @@ import java.util.Map;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.occamlab.te.Engine;
+import com.occamlab.te.RuntimeOptions;
 import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
 import com.occamlab.te.TestDriverConfig;
+import com.occamlab.te.index.Index;
+import com.occamlab.te.util.DomUtils;
 
 /**
  * Encapsulates all information pertaining to a test session.
  */
-public class TestSession implements Runnable, HttpSessionBindingListener {
-	Test testDriver;
+public class TestSession {
+    String sessionId;
+    String sourcesName;
+    String description;
+    String suiteName;
+    ArrayList<String> profiles;
 
-	File userLogDir;
+    /**
+     * Creates a new test session.
+     */
+    public TestSession() throws Exception {
+        suiteName = null;
+        profiles = new ArrayList<String>();
+    }
+    
+    public void save(File logdir) throws Exception {
+        File sessionDir = new File(logdir, sessionId);
+        sessionDir.mkdir();
+        PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
+        out.println("<session id=\"" + sessionId + "\" sourcesId=\"" + sourcesName + "\">");
+        out.println("<suite>" + suiteName + "</suite>");
+        for (String profile : profiles) {
+            out.println("<profile>" + profile + "</profile>");
+        }
+        out.println("<description>" + description + "</description>");
+        out.println("</session>");
+    }
 
-	String suiteId;
+    /**
+     * Creates a test session from a previous run.
+     */
+    public void load(File logdir, String sessionId) throws Exception {
+        File sessionDir = new File(logdir, sessionId);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new File(sessionDir, "session.xml"));
+        Element session = (Element) (doc.getElementsByTagName("session").item(0));
+        RuntimeOptions opts = new RuntimeOptions();
+        opts.setSessionId(sessionId);
+        opts.setSourcesName(session.getAttribute("sourcesId"));
+        Element suite = DomUtils.getElementByTagName(session, "suite");
+        opts.setSuiteName(suite.getTextContent());
+        for (Element profile : DomUtils.getElementsByTagName(session, "profile")) {
+            opts.addProfile(profile.getTextContent());
+        }
+        Element description = (Element) (session.getElementsByTagName("description").item(0));
+        this.description = description.getTextContent();
+    }
 
-	String sessionId;
+    public String getDescription() {
+        return description;
+    }
 
-	String description;
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	String suiteName;
+    public ArrayList<String> getProfiles() {
+        return profiles;
+    }
 
-	int Mode;
+    public void setProfiles(ArrayList<String> profiles) {
+        this.profiles = profiles;
+    }
 
-	ArrayList<String> testList;
+    public String getSessionId() {
+        return sessionId;
+    }
 
-	TECore core;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 
-	ByteArrayOutputStream Out;
+    public String getSourcesName() {
+        return sourcesName;
+    }
 
-	Thread ActiveThread = null;
+    public void setSourcesName(String sourcesName) {
+        this.sourcesName = sourcesName;
+    }
 
-	boolean Complete = false;
+    public String getSuiteName() {
+        return suiteName;
+    }
 
-	/**
-	 * Creates a new test session.
-	 */
-	static TestSession create(File logdir, String suiteId, String suiteName,
-			String description) throws Exception {
-		TestSession s = new TestSession();
-		s.userLogDir = logdir;
-		s.suiteId = suiteId;
-		s.sessionId = TestDriverConfig.generateSessionId(logdir);
-		s.suiteName = suiteName;
-		s.description = description;
-		File sessionDir = new File(logdir, s.sessionId);
-		sessionDir.mkdir();
-		PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
-		out.println("<session id=\"" + s.sessionId + "\" sourcesId=\""
-				+ s.suiteId + "\">");
-		out.println("<suite>" + s.suiteName + "</suite>");
-		out.println("<description>" + s.description + "</description>");
-		out.println("</session>");
-		return s;
-	}
-
-	/**
-	 * Creates a test session from a previous run.
-	 */
-	public static TestSession load(DocumentBuilder db, File logdir,
-			String sessionId) throws Exception {
-		TestSession s = new TestSession();
-		s.sessionId = sessionId;
-		File sessionDir = new File(logdir, s.sessionId);
-		Document doc = db.parse(new File(sessionDir, "session.xml"));
-		Element session = (Element) (doc.getElementsByTagName("session")
-				.item(0));
-		s.suiteId = session.getAttribute("sourcesId");
-		Element suite = (Element) (session.getElementsByTagName("suite")
-				.item(0));
-		s.suiteName = suite.getTextContent();
-		Element description = (Element) (session
-				.getElementsByTagName("description").item(0));
-		s.description = description.getTextContent();
-		s.userLogDir = logdir;
-		return s;
-	}
-
-	void prepare(Map testClasses, int mode) {
-		testDriver = (Test) testClasses.get(suiteId);
-		TestDriverConfig driverConfig = testDriver.getDriverConfig();
-		driverConfig.setLogDir(userLogDir);
-		driverConfig.setMode(mode);
-		driverConfig.setSessionId(sessionId);
-		driverConfig.setSuiteName(suiteName);
-		Mode = mode;
-		testList = new ArrayList<String>();
-	}
-
-	void prepare(Map testClasses, int mode, String test) {
-		prepare(testClasses, mode);
-		if (mode == Test.RETEST_MODE) {
-			testList.add(test);
-		}
-	}
-
-	synchronized public String getOutput() {
-		String output = Out.toString();
-		Out.reset();
-		return output;
-	}
-
-	public boolean isComplete() {
-		return Complete;
-	}
-
-	public TECore getCore() {
-		return core;
-	}
-
-	public String getSessionId() {
-		return sessionId;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void run() {
-		assert (null != testDriver) : "Test driver has not been initialized in TestSession.prepare().";
-		try {
-			ActiveThread = Thread.currentThread();
-			userLogDir.mkdir();
-			Out = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream(Out);
-			core = new TECore(ps, true);
-			testDriver.test(testList, core);
-			ps.close();
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-		ActiveThread = null;
-		Complete = true;
-	}
-
-	public void valueBound(HttpSessionBindingEvent e) {
-	}
-
-	public void valueUnbound(HttpSessionBindingEvent e) {
-		if (e.getName().equals("testsession")) {
-			if (ActiveThread != null) {
-				ActiveThread.interrupt();
-			}
-		}
-	}
+    public void setSuiteName(String suiteName) {
+        this.suiteName = suiteName;
+    }
+    
 }

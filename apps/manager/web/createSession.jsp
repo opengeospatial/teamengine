@@ -8,6 +8,7 @@ LinkedHashMap SuiteCollectionHash;
 public void jspInit() {
 	try {
 		Config conf = new Config();
+/*
 		SuiteCollectionHash = new LinkedHashMap();
 		LinkedHashMap sourcesHash = conf.getAvailableSuites();
 		Iterator it = sourcesHash.keySet().iterator();
@@ -16,6 +17,7 @@ public void jspInit() {
 			ArrayList sources = (ArrayList)sourcesHash.get(sourcesId);
 			SuiteCollectionHash.put(sourcesId, ListSuites.getSuites(sources));
 		}
+*/
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
 	}
