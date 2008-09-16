@@ -11,8 +11,6 @@ String sessionId;
 public void jspInit() {
 	try {
 		Conf = new Config();
-		DB = new DocumentBuilderImpl();      
-		DB.setConfiguration((Configuration) ViewLog.transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));  		
 		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
@@ -56,7 +54,7 @@ public void jspInit() {
       sessionId = (i > 0) ? test.substring(0, i) : test;
       ArrayList tests = new ArrayList();
       tests.add(test);
-      boolean complete = ViewLog.view_log(DB, userlog, sessionId, tests, ViewLogTemplates, out);
+      boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);
       out.println("<br/>");
       if (!complete) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");

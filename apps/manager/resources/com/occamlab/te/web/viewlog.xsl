@@ -21,10 +21,11 @@
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <xsl:transform
+ xmlns:viewlog="viewlog"
  xmlns:te="java:com.occamlab.te.TECore"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:encoder="java:java.net.URLEncoder"
- exclude-result-prefixes="encoder te"
+ exclude-result-prefixes="viewlog encoder te"
  version="2.0">
 	<xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 	<xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
@@ -78,9 +79,43 @@
 		<xsl:value-of select="saxon:serialize(., 'xml')" xmlns:saxon="http://saxon.sf.net/"/>
 	</xsl:template>
 
+	<xsl:template name="result-text">
+		<xsl:param name="result-code" select="@result"/>
+		<xsl:param name="complete" select="not(@complete='no')"/>
+		<xsl:choose>
+			<xsl:when test="$result-code=3 and not($complete)">Failed and did not complete</xsl:when>
+			<xsl:when test="$result-code=3">Failed</xsl:when>
+			<xsl:when test="not($complete)">Did not complete</xsl:when>
+			<xsl:when test="$result-code=2">Failed (Inherited Failure)</xsl:when>
+			<xsl:when test="$result-code=1">Warning</xsl:when>
+			<xsl:otherwise>Passed</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="result-filename">
+		<xsl:param name="result-code" select="@result"/>
+		<xsl:param name="complete" select="not(@complete='no')"/>
+		<xsl:text>images/</xsl:text>
+		<xsl:choose>
+			<xsl:when test="$result-code=3">fail</xsl:when>
+			<xsl:when test="not($complete)">incomplete</xsl:when>
+			<xsl:when test="$result-code=2">fail</xsl:when>
+			<xsl:when test="$result-code=1">warn</xsl:when>
+			<xsl:otherwise>pass</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>.png</xsl:text>
+	</xsl:template>
+	
+	<xsl:function name="viewlog:encode">
+		<xsl:param name="str"/>
+		<xsl:if test="string-length($str) &gt; 0">
+			<xsl:value-of select="encoder:encode($str, 'UTF-8')"/>
+		</xsl:if>
+	</xsl:function>
+
 	<xsl:template name="test" match="test">
 		<xsl:param name="testnum" select="1"/>
-
+<!-- 
 		<xsl:variable name="result">
 			<xsl:choose>
 				<xsl:when test="@failed='yes'">fail</xsl:when>
@@ -90,24 +125,28 @@
 				<xsl:otherwise>pass</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-	
+ -->
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="test">
 			<img src="images/minus.png" name="image{$testnum}" onclick="toggle('{$testnum}', event)" title="Click to toggle.  Ctrl+Click for a deep toggle."/>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:if>
-		<img src="images/{$result}.png"/>
+		<img>
+			<xsl:attribute name="src">
+				<xsl:call-template name="result-filename"/>
+			</xsl:attribute>
+		</img>
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:choose>
 		<xsl:when test="contains(@path,'/')">
 			<xsl:variable name="sessionid" select="substring-before(@path,'/')"/>
-			<a href="viewTest.jsp?file={encoder:encode(@file, 'UTF-8')}&amp;namespace={encoder:encode(@namespace-uri, 'UTF-8')}&amp;name={@local-name}&amp;sessionid={$sessionid}">
+			<a href="viewTest.jsp?file={viewlog:encode(@file)}&amp;namespace={viewlog:encode(@namespace-uri)}&amp;name={@local-name}&amp;sessionid={$sessionid}">
 				<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
 			</a>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:variable name="sessionid" select="@path"/>
-			<a href="viewTest.jsp?file={encoder:encode(@file, 'UTF-8')}&amp;namespace={encoder:encode(@namespace-uri, 'UTF-8')}&amp;name={@local-name}&amp;sessionid={$sessionid}">
+			<a href="viewTest.jsp?file={viewlog:encode(@file)}&amp;namespace={viewlog:encode(@namespace-uri)}&amp;name={@local-name}&amp;sessionid={$sessionid}">
 				<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
 			</a>		
 		</xsl:otherwise>
@@ -123,6 +162,8 @@
 		<xsl:text>&#xa;(</xsl:text>
 		<a href="viewTestLog.jsp?test={@path}">View Details</a>
 		<xsl:text>): </xsl:text>
+		<xsl:call-template name="result-text"/>
+<!-- 
 		<xsl:choose>
 			<xsl:when test="$result = 'fail' and @failed='yes' and @complete='no'">Failed and did not complete</xsl:when>
 			<xsl:when test="$result = 'fail' and @failed='yes'">Failed</xsl:when>
@@ -131,6 +172,7 @@
 			<xsl:when test="$result = 'warn' and @warning='yes'">Warning</xsl:when>	
 			<xsl:otherwise>Passed</xsl:otherwise>
 		</xsl:choose>
+ -->
 		<br/>
 		<xsl:if test="test">
 			<div style="display:block; margin-left:30px" id="test{$testnum}">
@@ -141,10 +183,35 @@
 				</xsl:for-each>
 			</div>
 		</xsl:if>
+
+		<br/>
+		<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
+			<tr>
+				<th align="left">
+					<font color="#000099">Summary</font>
+				</th>
+				<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td>
+				<td id="nPass" align="center" bgcolor="#00FF00">
+					<xsl:value-of select="count(//test[@result=0 and @complete='yes'])"/>
+				</td>
+				<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td>
+				<td id="nWarn" align="center" bgcolor="#FFFF00">
+					<xsl:value-of select="count(//test[@result=1 and @complete='yes'])"/>
+				</td>
+				<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td>
+				<td id="nFail" align="center" bgcolor="#FF0000">
+					<xsl:value-of select="count(//test[@result &gt; 1 and @complete='yes'])"/>
+				</td>
+			</tr>
+		</table>
 	</xsl:template>
 
 	<xsl:template match="log">
 		<xsl:variable name="result">
+			<xsl:for-each select="$index/test">
+				<xsl:call-template name="result-text"/>
+			</xsl:for-each>
+<!-- 
 			<xsl:choose>
 				<xsl:when test="endtest/@result = 3">Failed</xsl:when>
 				<xsl:when test="$index//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
@@ -152,6 +219,7 @@
 				<xsl:when test="endtest">Passed</xsl:when>
 				<xsl:otherwise>Test execution did not complete</xsl:otherwise>
 			</xsl:choose>
+ -->
 		</xsl:variable>
 		<pre>
 			<xsl:apply-templates select="*"/>
@@ -284,6 +352,10 @@
 	<xsl:template match="testcall">
 		<xsl:variable name="path" select="@path"/>
 		<xsl:variable name="result">
+			<xsl:for-each select="$index//test[@path=$path]">
+				<xsl:call-template name="result-text"/>
+			</xsl:for-each>
+<!-- 
 			<xsl:choose>
 				<xsl:when test="$index//test[@path=$path and @failed='yes' and @complete='no']">Failed and did not complete</xsl:when>
 				<xsl:when test="$index//test[@path=$path and @failed='yes']">Failed</xsl:when>
@@ -292,6 +364,7 @@
 				<xsl:when test="$index//test[@path=$path and @warning='yes']">Warning</xsl:when>				
 				<xsl:otherwise>Passed</xsl:otherwise>
 			</xsl:choose>
+ -->
 		</xsl:variable>
 		<xsl:value-of select="concat('Subtest ', @path, ' ', $result, '&#xa;&#xa;')"/>
 	</xsl:template>

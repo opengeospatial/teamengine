@@ -1,28 +1,22 @@
-<%@ page
-	language="java"
-	session="false"
-	import="java.util.*, com.occamlab.te.*, com.occamlab.te.web.*"
-%><%!
-LinkedHashMap SuiteCollectionHash;
-
-public void jspInit() {
-	try {
-		Config conf = new Config();
-/*
-		SuiteCollectionHash = new LinkedHashMap();
-		LinkedHashMap sourcesHash = conf.getAvailableSuites();
-		Iterator it = sourcesHash.keySet().iterator();
-		while (it.hasNext()) {
-			String sourcesId = (String)it.next();
-			ArrayList sources = (ArrayList)sourcesHash.get(sourcesId);
-			SuiteCollectionHash.put(sourcesId, ListSuites.getSuites(sources));
+<%@ page language="java" session="false"
+	import="java.util.*,java.io.*,javax.xml.parsers.*,com.occamlab.te.index.SuiteEntry,com.occamlab.te.*,com.occamlab.te.web.*"%><%!
+	Config Conf = null;
+	List<String> organizationList = null;
+	Map<String, List<String>> standardMap = null;
+	Map<String, List<String>> versionMap = null;
+	Map<String, List<String>> revisionMap = null;
+	
+	public void jspInit() {
+		try {
+			Conf = new Config();
+			organizationList = Conf.getOrganizationList();
+			standardMap = Conf.getStandardMap();
+			versionMap = Conf.getVersionMap();
+			revisionMap = Conf.getRevisionMap();
+		} catch (Exception e) {	
+			e.printStackTrace(System.out);
 		}
-*/
-	} catch (Exception e) {
-		e.printStackTrace(System.out);
-	}
-}
-%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	}%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   The contents of this file are subject to the Mozilla Public License
@@ -45,68 +39,214 @@ public void jspInit() {
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-		<title>Create Session</title>
-		<script>
-			function setSources(id) {
-				document.forms["sources"].elements["sources"].value = id;
-			}
-		</script>
-	</head>
-	<body>
-		<%@ include file="header.jsp" %>
-		<h2>Create Session</h2>
-		<form name="sources" method="post" action="test.jsp">
-			<p>
-				Select Test Suite:
-				<table>
-<%
-String firstSourcesId = null;
-Iterator it1 = SuiteCollectionHash.keySet().iterator();
-while (it1.hasNext()) {
-	String sourcesId = (String)it1.next();
-	Collection suiteCollection = (Collection)SuiteCollectionHash.get(sourcesId);
-	Iterator it2 = suiteCollection.iterator();
-	while (it2.hasNext()) {
-		Suite suite = (Suite)it2.next();
-		out.println("<tr>");
-		out.println("<td valign=\"top\">");
-		out.print("<input type=\"radio\" name=\"suite\" value=\"" + suite.getKey() + "\"");
-		if (firstSourcesId == null) {
-			out.print(" checked=\"checked\"");
-			firstSourcesId = sourcesId;
-		}
-		out.println(" onclick=\"setSources('" + sourcesId + "')\"/>");
-		out.println("</td>");
-		out.println("<td>");
-		String link = suite.getLink();
-		if (link == null) {
-			out.print(suite.getTitle());
-		} else {
-			out.print("<a href=\"" + link + "\">" + suite.getTitle() + "</a>");
-		}
-		out.println("<br/>");
-		String desc = suite.getDescription();
-		if (desc != null) {
-			out.println(desc);
-		}
-		out.println("</td>");
-		out.println("</tr>");
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Compliance Testing</title>
+<script>
+
+	function fillOrganization(){ 
+		 // this function is used to fill the category list on load
+		<% 
+		//Fill Organization
+		for(int i = 0; i < organizationList.size(); i++){ 
+		%>
+		addOption(document.standardsForm.Organization, "<%=organizationList.get(i)%>", "<%=organizationList.get(i)%>", "");
+		<%}//for loop%>
 	}
-}
-%>
-				</table>
-				<br/>
-				Session Description (Optional):<br/>
-				<input name="description" type="text" size="50"/>
-				<br/>
-				<br/>
-				<input type="submit" value="OK"/>
-				<input type="hidden" name="mode" value="test"/>
-				<input type="hidden" id="sources" name="sources" value="<%=firstSourcesId%>"/>
-			</p>
-		</form>
-		<%@ include file="footer.jsp" %>
-	</body>
+
+	function SelectStandard(){
+		// ON selection of organization this function will work
+		
+		removeAllOptions(document.standardsForm.Standard);
+		addOption(document.standardsForm.Standard, "", "Standard", "");
+		<%
+		for(int i=0;i<organizationList.size();i++){
+		%>
+			if(document.standardsForm.Organization.value == '<%=organizationList.get(i)%>'){
+			<% 
+				List<String> standardList = standardMap.get(organizationList.get(i)); 
+				for(int j=0; j < standardList.size(); j++){
+			%>
+				addOption(document.standardsForm.Standard,"<%=standardList.get(j)%>", "<%=standardList.get(j)%>");
+				<%}//loop j%>
+			}//organization	
+		<%}//loop i%>
+	}//function
+
+	
+	function SelectVersion(){
+		// ON selection of organization this function will work
+		
+		removeAllOptions(document.standardsForm.Version);
+		addOption(document.standardsForm.Version, "", "Version", "");
+		<%
+		for(int i=0;i<organizationList.size();i++){
+		%>
+			if(document.standardsForm.Organization.value == '<%=organizationList.get(i)%>'){			
+			<%	
+				List<String> standardList = standardMap.get(organizationList.get(i)); 
+				for(int j=0;j<standardList.size();j++){
+			%>
+				if(document.standardsForm.Standard.value == '<%=standardList.get(j)%>'){
+				<% 
+					List<String> versionList = versionMap.get(organizationList.get(i) + "_" + standardList.get(j)); 
+					for(int k=0; k < versionList.size(); k++){
+				%>
+					addOption(document.standardsForm.Version,"<%=versionList.get(k)%>", "<%=versionList.get(k)%>");
+					<%}//loop k%>
+				}//standard
+				<%}//loop j%>
+			}//organization
+		<%}//loop i%>
+	}//function
+
+	function SelectTest(){
+		// ON selection of organization this function will work
+		
+		removeAllOptions(document.standardsForm.Test);
+		addOption(document.standardsForm.Test, "", "Test", "");
+		<%
+		for(int i=0; i < organizationList.size(); i++){
+		%>
+			if(document.standardsForm.Organization.value == '<%=organizationList.get(i)%>'){			
+			<%	
+				List<String> standardList = standardMap.get(organizationList.get(i)); 
+				for(int j=0; j < standardList.size(); j++){
+				%>
+					if(document.standardsForm.Standard.value == '<%=standardList.get(j)%>'){
+					<% 
+						List<String> versionList = versionMap.get(organizationList.get(i) + "_" + standardList.get(j)); 
+					    for(int k=0; k < versionList.size(); k++){
+					%>
+						if(document.standardsForm.Version.value == '<%=versionList.get(k)%>'){
+						<% 
+							List<String> revisionList = revisionMap.get(organizationList.get(i) + "_" + standardList.get(j) + "_" + versionList.get(k)); 
+						    for(int l=0; l < revisionList.size(); l++){
+						%>
+								addOption(document.standardsForm.Test,"<%=revisionList.get(l)%>", "<%=revisionList.get(l)%>");
+							<%}//loop l%>
+						}//version	
+						<%}//loop k%>
+					}//standard
+				<%}//loop j%>
+			}//organization
+		<%}//loop i%>
+	}//funciton
+
+	
+	function removeAllOptions(selectbox)
+	{
+		var i;
+		for(i=selectbox.options.length-1;i>=0;i--)
+		{
+			//selectbox.options.remove(i);
+			selectbox.remove(i);
+		}
+	}
+	
+	function addOption(selectbox, value, text )
+	{
+		var optn = document.createElement("OPTION");
+		optn.text = text;
+		optn.value = value;
+	
+		selectbox.options.add(optn);
+	}
+	
+	
+	function viewInformation(){
+	    var sourceId = document.standardsForm.Standard.value + "-" + document.standardsForm.Version.value;
+	    if(sourceId != "-"){
+			alert("No Documentation Available for: "+sourceId)
+<%--
+			<%
+			Set suiteLinks = suiteMap.keySet();         // The set of keys in the map.
+		    Iterator suiteLinksIter = suiteLinks.iterator();
+		    while (suiteLinksIter.hasNext()) {
+		       Object sourceId = suiteLinksIter.next();  	 // Get the next key.
+		       Suite suite = (Suite)suiteMap.get(sourceId);  // Get the value for that key.
+			%>
+				if(sourceId == '<%=sourceId%>'){
+				<%	if(suite.getLink() != null){
+					%>
+						window.location = '<%=suite.getLink()%>'
+					<%	
+					}//not null
+					else {
+					%>
+						alert("No Documentation Available for: "+sourceId)
+					<%	
+					}//null	
+				%>
+				}     
+	    	<%}//loop iterator%>
+--%>
+	    }
+	    else{
+	    	alert("Plase select from available standards");
+	    }
+	}
+	
+	function submitform() {
+		var form = document.standardsForm;
+	    var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
+	    if(sourceId != "___"){
+			document.forms["standardsForm"].elements["sources"].value = sourceId;
+			document.standardsForm.submit();
+	    }
+	    else{
+	    	alert("Please select from available standards");
+	    }
+	}
+				
+</script>
+</head>
+<body onload="fillOrganization()" >
+<%@ include file="header.jsp"%>
+<form name="standardsForm" action="test.jsp" method="post" >
+Select test suite:
+<table border="1" width="60%" >
+	<tr>
+		<th width="15%">Organization</th>
+		<th width="15%">Standard</th>
+		<th width="15%">Version</th>
+		<th width="15%">Test Suite Rev</th>
+	</tr>
+	<tr>
+		<td>
+			<select  id="Organization" name="Organization" onChange="SelectStandard();" >
+			<option value="">Organization</option>
+			</select>
+		</td>
+		<td>
+			<select id="Standard" name="Standard" onChange="SelectVersion();" >
+			<option value="">Standard</option>
+			</select>
+		</td>
+		<td>
+			<select id="Version" name="Version" onChange="SelectTest();" >
+			<option value="">Version</option>
+			</select>
+		</td>
+		<td>
+			<select id="Test" name="Test">
+			<option value="">Test</option>
+			</select>
+		</td>
+	</tr>
+</table >
+<br/>
+Enter Session Description (Optional):<br/>
+<input type="text" name="description" id="description" size="50"/>
+<br/>
+<br/>
+<input type="button" value="Start a new test session" onclick="submitform()" />
+<br/>
+<input type="hidden" name="mode" value="test" />
+<input type="hidden" id="sources" name="sources" />
+<input type="hidden" id="suite" name="suite" />
+<p></p>
+</form>
+<%@ include file="footer.jsp"%>
+</body>
 </html>

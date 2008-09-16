@@ -97,7 +97,7 @@ Url = new URL(request.getScheme(), request.getServerName(), request.getServerPor
         <img alt="WARNING!" src="images/warn.png" align="bottom" hspace="4" />
         It may be necessary to load test data before running a test suite!
         </p>
-		<a href="viewSessions.jsp"/>Start Testing</a>
+		<a href="viewSessions.jsp">Start Testing</a>
 		<%@ include file="footer.jsp" %>
 	</body>
 </html>

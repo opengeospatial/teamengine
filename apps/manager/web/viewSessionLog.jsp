@@ -10,8 +10,6 @@ Templates ViewLogTemplates;
 public void jspInit() {
 	try {
 		Conf = new Config();
-		DB = new DocumentBuilderImpl();      
-		DB.setConfiguration((Configuration) ViewLog.transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));        
 		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
@@ -93,7 +91,7 @@ public void jspInit() {
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
       ArrayList tests = new ArrayList();    
-      boolean complete = ViewLog.view_log(DB, userlog, sessionId, tests, ViewLogTemplates, out);     
+      boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
       if (!complete) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
@@ -104,6 +102,7 @@ public void jspInit() {
 		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
 		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/>
 		<br/>
+<%-- 
 		<br/>
 		<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
 		<tr>
@@ -113,8 +112,9 @@ public void jspInit() {
 		<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td><td id="nFail" align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
 		</tr>
 		</table>
-		<br/>		
-		<a href="viewSessions.jsp"/>Sessions list</a>
+--%>
+ 		<br/>		
+ 		<a href="viewSessions.jsp">Sessions list</a>
 		<%@ include file="footer.jsp" %>				
 	</body>
 </html>

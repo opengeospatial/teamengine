@@ -32,6 +32,46 @@
 			<param-value>xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)xpointer(//csw:RequestId)</param-value>
 		</init-param>
 	</servlet>
+	<servlet>
+		<servlet-name>renameSession</servlet-name>
+		<servlet-class>com.occamlab.te.web.RenameSessionServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>downloadLog</servlet-name>
+		<servlet-class>com.occamlab.te.web.DownloadLogServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>emailLog</servlet-name>
+		<servlet-class>com.occamlab.te.web.EmailLogServlet</servlet-class>
+		<init-param>
+			<description>SMTP Server</description>
+			<param-name>mail.smtp.host</param-name>
+			<param-value>smtpserver.ogc.com</param-value>
+		</init-param>
+		<init-param>
+			<description>SMTP UserId</description>
+			<param-name>mail.smtp.userid</param-name>
+			<param-value>userid</param-value>
+		</init-param>
+		<init-param>
+			<description>SMTP Password</description>
+			<param-name>mail.smtp.passwd</param-name>
+			<param-value>password</param-value>
+		</init-param>
+		<init-param>
+			<description>Mail To Address</description>
+			<param-name>mail.to</param-name>
+			<param-value>approver@ogc.com</param-value>
+		</init-param>
+	</servlet>	
+	<servlet>
+		<servlet-name>userProfile</servlet-name>
+		<servlet-class>com.occamlab.te.web.UserProfileServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>complianceTesting</servlet-name>
+		<servlet-class>com.occamlab.te.web.ComplianceTestingServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>CallbackHandlerServlet</servlet-name>
 		<url-pattern>/callback/http</url-pattern>
@@ -52,10 +92,28 @@
 		<servlet-name>deleteSession</servlet-name>
 		<url-pattern>/deleteSession</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>renameSession</servlet-name>
+		<url-pattern>/renameSession</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>downloadLog</servlet-name>
+		<url-pattern>/downloadLog</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>emailLog</servlet-name>
+		<url-pattern>/emailLog</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>userProfile</servlet-name>
+		<url-pattern>/userProfile</url-pattern>
+	</servlet-mapping>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>user-specific</web-resource-name>
 			<url-pattern>/deleteSession</url-pattern>
+			<url-pattern>/renameSession</url-pattern>
+			<url-pattern>/complianceTesting</url-pattern>
 			<url-pattern>/logout</url-pattern>
 			<url-pattern>/test</url-pattern>
 			<url-pattern>/createSession.jsp</url-pattern>
@@ -65,6 +123,10 @@
 			<url-pattern>/viewSessions.jsp</url-pattern>
 			<url-pattern>/viewTest.jsp</url-pattern>
 			<url-pattern>/viewTestLog.jsp</url-pattern>
+			<url-pattern>/emailLog.jsp</url-pattern>
+			<url-pattern>/emailSent.jsp</url-pattern>
+			<url-pattern>/userProfile.jsp</url-pattern>
+			<url-pattern>/startTesting.jsp</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>user</role-name>

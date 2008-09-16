@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -55,6 +56,7 @@ import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
 import com.occamlab.te.TestDriverConfig;
 import com.occamlab.te.index.Index;
+import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.StringUtils;
 
@@ -94,11 +96,25 @@ public class TestServlet extends HttpServlet {
 //            File logsDir = new File(System.getProperty("catalina.base"), "logs");
 
             indexes = new HashMap<String, Index>();
-
+            
+            for (Entry<String, List<File>> sourceEntry : conf.getSources().entrySet()) {
+                String sourcesName = sourceEntry.getKey();
+//              System.out.println("TestServlet: " + sourcesName);
+                SetupOptions setupOpts = new SetupOptions();
+                setupOpts.setWorkDir(conf.getWorkDir());
+                setupOpts.setSourcesName(sourcesName);
+                for (File source : sourceEntry.getValue()) {
+                    setupOpts.addSource(source);
+                }
+                Index index = Generator.generateXsl(setupOpts);
+                indexes.put(sourcesName, index);
+            }
+/*
             File scriptsDir = conf.getScriptsDir();
             String sourcesNames[] = scriptsDir.list();
             for (int i = 0; i < sourcesNames.length; i++) {
                 String sourcesName = sourcesNames[i];
+//System.out.println("TestServlet: " + sourcesName);
                 SetupOptions setupOpts = new SetupOptions();
                 setupOpts.setWorkDir(conf.getWorkDir());
                 setupOpts.setSourcesName(sourcesName);
@@ -120,7 +136,7 @@ public class TestServlet extends HttpServlet {
                 Index index = Generator.generateXsl(setupOpts);
                 indexes.put(sourcesName, index);
             }
-            
+*/
             engine = new Engine(indexes.values());
         } catch (ServletException e) {
             throw e;
@@ -177,8 +193,8 @@ public class TestServlet extends HttpServlet {
                 RuntimeOptions opts = new RuntimeOptions();
                 opts.setWorkDir(conf.getWorkDir());
                 opts.setLogDir(logdir);
-                opts.setMode(Integer.parseInt(mode));
                 if (mode.equals("retest")) {
+                    opts.setMode(Test.RETEST_MODE);
                     String sessionid = params.get("session");
                     String test = params.get("test");
                     if (sessionid == null) {
@@ -187,32 +203,38 @@ public class TestServlet extends HttpServlet {
                     }
                     opts.setSessionId(sessionid);
                     if (test == null) {
-                        s.load(logdir, test);
+                        opts.addTestPath(sessionid);
                     } else {
-                        s.load(logdir, sessionid);
-                        opts.setTestName(test);
+                        opts.addTestPath(test);
                     }
+                    s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
                 } else if (mode.equals("resume")) {
+                    opts.setMode(Test.RESUME_MODE);
                     String sessionid = params.get("session");
                     opts.setSessionId(sessionid);
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
                 } else {
+                    opts.setMode(Test.TEST_MODE);
                     String sessionid = LogUtils.generateSessionId(logdir);
                     s.setSessionId(sessionid);
                     String sources = params.get("sources");
                     s.setSourcesName(sources);
-                    String suite = params.get("suite");
-                    s.setSuiteName(suite);
+                    SuiteEntry suite = conf.getSuites().get(sources);
+                    s.setSuiteName(suite.getId());
+//                    String suite = params.get("suite");
+//                    s.setSuiteName(suite);
                     String description = params.get("description");
                     s.setDescription(description);
                     s.save(logdir);
                     opts.setSessionId(sessionid);
                     opts.setSourcesName(sources);
-                    opts.setSuiteName(suite);
+                    opts.setSuiteName(suite.getId());
                 }
+System.out.println(opts.getSourcesName());
                 TECore core = new TECore(engine, indexes.get(opts.getSourcesName()), opts);
+//System.out.println(indexes.get(opts.getSourcesName()).toString());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 PrintStream ps = new PrintStream(baos);
                 core.setOut(ps);
@@ -224,11 +246,15 @@ public class TestServlet extends HttpServlet {
                 out.println("<thread id=\"" + thread.getId()
                         + "\" sessionId=\"" + s.getSessionId() + "\"/>");
             } else if (operation.equals("Stop")) {
-                TECore core = (TECore)session.getAttribute("testsession");
-                core.stopThread();
-                session.removeAttribute("testsession");
                 response.setContentType("text/xml");
-                out.println("<stopped/>");
+                TECore core = (TECore)session.getAttribute("testsession");
+                if (core != null) {
+                    core.stopThread();
+                    session.removeAttribute("testsession");
+                    out.println("<stopped/>");
+                } else {
+                    out.println("<message>Could not retrieve core object</message>");
+                }
             } else if (operation.equals("GetStatus")) {
                 TECore core = (TECore)session.getAttribute("testsession");
                 response.setContentType("text/xml");
@@ -289,6 +315,10 @@ public class TestServlet extends HttpServlet {
                 out.println("<head><title>Form Submitted</title></head>");
                 out.print("<body onload=\"window.parent.update()\"></body>");
                 out.println("</html>");
+            } else if (operation.equals("GetScripts")) {
+                response.setContentType("text/xml");
+                out.println("<scripts>");
+                out.println("</scripts>");
             }
         } catch (Exception e) {
             throw new ServletException(e);

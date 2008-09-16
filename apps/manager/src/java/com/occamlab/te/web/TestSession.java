@@ -78,19 +78,18 @@ public class TestSession {
      * Creates a test session from a previous run.
      */
     public void load(File logdir, String sessionId) throws Exception {
+        this.sessionId = sessionId;
         File sessionDir = new File(logdir, sessionId);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File(sessionDir, "session.xml"));
         Element session = (Element) (doc.getElementsByTagName("session").item(0));
-        RuntimeOptions opts = new RuntimeOptions();
-        opts.setSessionId(sessionId);
-        opts.setSourcesName(session.getAttribute("sourcesId"));
+        setSourcesName(session.getAttribute("sourcesId"));
         Element suite = DomUtils.getElementByTagName(session, "suite");
-        opts.setSuiteName(suite.getTextContent());
+        setSuiteName(suite.getTextContent());
         for (Element profile : DomUtils.getElementsByTagName(session, "profile")) {
-            opts.addProfile(profile.getTextContent());
+            profiles.add(profile.getTextContent());
         }
         Element description = (Element) (session.getElementsByTagName("description").item(0));
         this.description = description.getTextContent();

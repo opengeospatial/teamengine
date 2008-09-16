@@ -51,8 +51,6 @@ public class ViewLogServlet extends HttpServlet {
 
     Config conf;
 
-    DocumentBuilderImpl DB;
-
     Templates viewLogTemplates;
 
     public void init() throws ServletException {
@@ -64,9 +62,6 @@ public class ViewLogServlet extends HttpServlet {
                     .newInstance();
             viewLogTemplates = transformerFactory
                     .newTemplates(new StreamSource(stylesheet));
-            DB = new DocumentBuilderImpl();
-            DB.setConfiguration((Configuration) transformerFactory
-                    .getAttribute(FeatureKeys.CONFIGURATION));
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
@@ -83,7 +78,7 @@ public class ViewLogServlet extends HttpServlet {
             if (test != null) {
                 tests.add(test);
             }
-            ViewLog.view_log(DB, userlog, session, tests, viewLogTemplates,
+            ViewLog.view_log(userlog, session, tests, viewLogTemplates,
                     new OutputStreamWriter(response.getOutputStream()));
         } catch (Exception e) {
             throw new ServletException(e);
