@@ -41,6 +41,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.CRC32;
@@ -57,6 +58,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.expr.XPathContextMajor;
+import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
@@ -84,6 +87,8 @@ import org.w3c.dom.Text;
 import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.ParserEntry;
+import com.occamlab.te.index.ProfileEntry;
+import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.ObjValue;
@@ -96,15 +101,16 @@ import com.occamlab.te.util.StringUtils;
  * Provides various utility methods to support test execution and logging.
  *
  */
-public class TECore {
+public class TECore implements Runnable {
     Engine engine;                      // Engine object
     Index index;
-    String sessionId;                   // Session identifier
-    String sourcesName;                 // Name of active collection of sources
-    File logDir = null;                 // Log directory
-    PrintStream out;                    // Console destination
+    RuntimeOptions opts;
+//    String sessionId;                   // Session identifier
+//    String sourcesName;                 // Name of active collection of sources
+//    File logDir = null;                 // Log directory
+    volatile PrintStream out;                    // Console destination
     boolean web = false;                // True when running as a servlet
-    int mode = Test.TEST_MODE;          // Test mode
+//    int mode = Test.TEST_MODE;          // Test mode
     String testPath;                    // Uniquely identifies a test instance
     String fnPath = "";                 // Uniquely identifies an XSL function instance within a test instance
     String indent = "";                 // Contains the appropriate number of spaces for the current indet level
@@ -112,11 +118,15 @@ public class TECore {
     int result;                         // Result for current test
     Document prevLog = null;            // Log document for current test from previous  test execution (resume and retest modes only)
     PrintWriter logger = null;          // Logger for current test
-    String formHtml;                    // HTML representation for an active form 
-    Document formResults;               // Holds form results until they are retrieved
+    volatile String formHtml;                    // HTML representation for an active form 
+    volatile Document formResults;               // Holds form results until they are retrieved
     Map<String, Object>functionInstances = new HashMap<String, Object>();
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();
+
+    volatile boolean threadComplete = false;
+    volatile boolean stop = false;
+    volatile ByteArrayOutputStream threadOutput;
     
     public static final int PASS = 0;
     public static final int WARNING = 1;
@@ -134,18 +144,218 @@ public class TECore {
     static final QName LOCALNAME_QNAME = new QName("local-name");
     static final QName LABEL_QNAME = new QName("label");
     
-    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
+//    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
+//        this.engine = engine;
+//        this.index = index;
+//        this.sessionId = sessionId;
+//        this.sourcesName = sourcesName;
+//        
+//        testPath = sessionId;
+//        out = System.out;
+//    }
+    
+    public TECore(Engine engine, Index index, RuntimeOptions opts) {
         this.engine = engine;
         this.index = index;
-        this.sessionId = sessionId;
-        this.sourcesName = sourcesName;
+        this.opts = opts;
+//        this.sessionId = opts.getSessionId();
+//        this.sourcesName = opts.getSourcesName();
         
-        testPath = sessionId;
+        testPath = opts.getSessionId();
         out = System.out;
     }
     
-    public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws SaxonApiException {
-        XsltExecutable executable = engine.loadExecutable(template, sourcesName);
+    public String getParamsXML(List<String> params) throws Exception {
+        String paramsXML = "<params>";
+        for (int i = 0; i < params.size(); i++){
+            String param = params.get(i);
+            String name = param.substring(0, param.indexOf('='));
+            String value = param.substring(param.indexOf('=') + 1);
+            if (params.get(i).indexOf('=') != 0) {
+                paramsXML += "<param local-name=\"" + name + "\" namespace-uri=\"\" prefix=\"\" type=\"xs:string\">";
+                paramsXML += "<value>" + value + "</value>";
+                paramsXML += "</param>";
+            }
+        }
+        paramsXML += "</params>";
+//System.out.println("paramsXML: "+paramsXML);
+        return paramsXML;
+
+//        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
+    }
+    
+    
+    XPathContext getXPathContext(TestEntry test, String sourcesName, XdmNode contextNode) throws SaxonApiException {
+        XPathContext context = null; 
+        if (test.usesContext()) {
+            XsltExecutable xe = engine.loadExecutable(test, sourcesName);
+            Executable ex = xe.getUnderlyingCompiledStylesheet().getExecutable();
+            context = new XPathContextMajor(contextNode.getUnderlyingNode(), ex);
+        }
+        return context;
+    }
+
+    
+    // Execute tests
+    public void execute() throws Exception {
+        String sessionId = opts.getSessionId();
+//        File logDir = opts.getLogDir();
+        int mode = opts.getMode();
+//        String sourcesName = opts.getSourcesName();
+        ArrayList<String> params = opts.getParams();
+
+        if (mode == Test.RESUME_MODE) {
+            reexecute_test(sessionId);
+        } else if (mode == Test.RETEST_MODE) {
+            for (String testPath : opts.getTestPaths()) {
+                reexecute_test(testPath);
+            }
+        } else if (mode == Test.TEST_MODE) {
+            String testName = opts.getTestName();
+            if (testName != null) {
+                XdmNode contextNode = opts.getContextNode();
+                execute_test(testName, params, contextNode);
+            } else {
+                String suiteName = opts.getSuiteName();
+                List<String> profiles = opts.getProfiles();
+                if (suiteName != null || profiles.size() == 0) {
+                    execute_suite(suiteName, params);
+                }
+                if (profiles.contains("*")) {
+                    for (String profile : index.getProfileKeys()) {
+                        execute_profile(profile, params, false);
+                    }
+                } else {
+                    for (String profile : profiles) {
+                        execute_profile(profile, params, true);
+                    }
+                }
+            }
+        } else {
+            throw new Exception("Unsupported mode");
+        }
+    }
+
+    public void reexecute_test(String testPath) throws Exception {
+System.out.println("reexecute_test");
+        Document log = LogUtils.readLog(opts.getLogDir(), testPath);
+        String testId = LogUtils.getTestIdFromLog(log);
+        TestEntry test = index.getTest(testId);
+        net.sf.saxon.s9api.DocumentBuilder builder = engine.getBuilder();
+        XdmNode paramsNode = LogUtils.getParamsFromLog(builder, log);
+        XdmNode contextNode = LogUtils.getContextFromLog(builder, log);
+        XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
+        setTestPath(testPath);
+        executeTest(test, paramsNode, context);
+    }
+
+    public int execute_test(String testName, List<String> params, XdmNode contextNode) throws Exception {
+        TestEntry test = index.getTest(testName);
+        if (test == null) {
+            throw new Exception("Error: Test " + testName + " not found.");
+        }
+        XdmNode paramsNode = engine.getBuilder().build(new StreamSource(new StringReader(getParamsXML(params))));
+        XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode); 
+        return executeTest(test, paramsNode, context);
+    }
+
+    public void execute_suite(String suiteName, List<String> params) throws Exception {
+        SuiteEntry suite = null;
+        if (suiteName == null) {
+            Iterator<String> it = index.getSuiteKeys().iterator();
+            if (!it.hasNext()) {
+                throw new Exception("Error: No suites in sources.");
+            }
+            suite = index.getSuite(it.next());
+            if (it.hasNext()) {
+                throw new Exception("Error: Suite name must be specified since there is more than one suite in sources.");
+            }
+        } else {
+            suite = index.getSuite(suiteName);
+            if (suite == null) {
+                throw new Exception("Error: Suite " + suiteName + " not found.");
+            }
+        }
+        ArrayList<String> kvps = new ArrayList<String>();
+        kvps.addAll(params);
+        Document form = suite.getForm(); 
+        if (form != null) {
+            Document results = (Document)form(form, suite.getId());
+            for (Element value : DomUtils.getElementsByTagName(results, "value")) {
+                kvps.add(value.getAttribute("key") + "=" + value.getTextContent());
+            }
+        }
+        String name = suite.getPrefix() + ":" + suite.getLocalName();
+        out.println("Testing suite " + name + "...");
+        setIndentLevel(1);
+        int result = execute_test(suite.getStartingTest().toString(), kvps, null);
+        out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName() + " ");
+        if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
+            out.println("Failed");
+        } else {
+            out.println("Passed");
+        }
+    }
+
+    public void execute_profile(String profileName, List<String> params, boolean required) throws Exception {
+        ProfileEntry profile = index.getProfile(profileName);
+        if (profile == null) {
+            throw new Exception("Error: Profile " + profileName + " not found.");
+        }
+
+        String sessionId = opts.getSessionId();
+        Document log = LogUtils.readLog(opts.getLogDir(), sessionId);
+        String testId = LogUtils.getTestIdFromLog(log);
+        List<String> baseParams = LogUtils.getParamListFromLog(engine.getBuilder(), log);
+        TestEntry test = index.getTest(testId);
+        SuiteEntry suite = index.getSuite(profile.getBaseSuite());
+        if (suite.getStartingTest().equals(test.getQName())) {
+            ArrayList<String> kvps = new ArrayList<String>();
+            kvps.addAll(baseParams);
+            kvps.addAll(params);
+            Document form = profile.getForm(); 
+            if (form != null) {
+                Document results = (Document)form(form, profile.getId());
+                for (Element value : DomUtils.getElementsByTagName(results, "value")) {
+                    kvps.add(value.getAttribute("key") + "=" + value.getTextContent());
+                }
+            }
+            setTestPath(sessionId + "/" + profile.getLocalName());
+            String name = profile.getPrefix() + ":" + profile.getLocalName();
+            out.println("\nTesting profile " + name + "...");
+            Document baseLog = LogUtils.makeTestList(opts.getLogDir(), sessionId, profile.getExcludes());
+            Element baseTest = DomUtils.getElement(baseLog);
+//out.println(DomUtils.serializeNode(baseLog));            
+            out.print(TECore.INDENT + "Base tests from suite " + suite.getPrefix() + ":" + suite.getLocalName() + " ");
+            String summary = "Not complete";
+            if ("yes".equals(baseTest.getAttribute("complete"))) {
+                int baseResult = Integer.parseInt(baseTest.getAttribute("result"));
+                if (baseResult == TECore.FAIL || baseResult == TECore.INHERITED_FAILURE) {
+                    summary = "Failed";
+                } else {
+                    summary = "Passed";
+                }
+            }
+            out.println(summary);
+            setIndentLevel(1);
+            int result = execute_test(profile.getStartingTest().toString(), kvps, null);
+            out.print("Profile " + profile.getPrefix() + ":" + profile.getLocalName() + " ");
+            if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
+                summary = "Failed";
+            }
+            out.println(summary);
+        } else {
+            if (required) {
+                throw new Exception("Error: Profile " + profileName + " is not a valid profile for session " + sessionId + ".");
+            }
+        }
+    }
+
+    public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws Exception {
+        if (stop) {
+            throw new Exception("Execution was stopped by the user.");
+        }
+        XsltExecutable executable = engine.loadExecutable(template, opts.getSourcesName());
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
@@ -224,7 +434,7 @@ public class TECore {
 
     public int executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
         Document oldPrevLog = prevLog;
-        if (mode == Test.RESUME_MODE) {
+        if (opts.getMode() == Test.RESUME_MODE) {
             prevLog = readLog();
         } else {
             prevLog = null;
@@ -240,12 +450,13 @@ public class TECore {
         out.println(indent + "Assertion: " + assertion);
 
         PrintWriter oldLogger = logger;
-        if (logDir != null) {
+        if (opts.getLogDir() != null) {
             logger = createLog();
             logger.println("<log>");
             logger.println("<starttest local-name=\"" + test.getLocalName() + "\" " + 
                                       "prefix=\"" + test.getPrefix() + "\" " +
-                                      "namespace-uri=\"" + test.getNamespaceURI() + "\">");
+                                      "namespace-uri=\"" + test.getNamespaceURI() + "\" " +
+                                      "path=\"" + testPath + "\">");
             logger.println("<assertion>" + assertion + "</assertion>");
             if (params != null) {
                 logger.println(params.toString());
@@ -308,8 +519,8 @@ public class TECore {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
             logger.flush();
         }
-        if (mode == Test.RESUME_MODE) {
-            Document doc = LogUtils.readLog(logDir, testPath + "/" + callId);
+        if (opts.getMode() == Test.RESUME_MODE) {
+            Document doc = LogUtils.readLog(opts.getLogDir(), testPath + "/" + callId);
             int result = LogUtils.getResultFromLog(doc);
             if (result >= 0) {
                 out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
@@ -403,11 +614,11 @@ public class TECore {
     }
 
     public Document readLog() throws Exception {
-        return LogUtils.readLog(logDir, testPath);
+        return LogUtils.readLog(opts.getLogDir(), testPath);
     }
 
     public PrintWriter createLog() throws Exception {
-        return LogUtils.createLog(logDir, testPath);
+        return LogUtils.createLog(opts.getLogDir(), testPath);
 //        if (logDir != null) {
 //            File dir = new File(logDir, testPath);
 //            dir.mkdir();
@@ -464,7 +675,7 @@ public class TECore {
     
     public Node request(Document ctlRequest, String id) throws Throwable {
         Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
-        if (mode == Test.RESUME_MODE && prevLog != null) {
+        if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
             for (Element request_e : DomUtils.getElementsByTagName(prevLog, "request")) {
                 if (request_e.getAttribute("id").equals(fnPath + id)) {
                     logger.println(DomUtils.serializeNode(request_e));
@@ -936,7 +1147,7 @@ public class TECore {
      *        as the document element.
      */
     public Node form(Document ctlForm, String id) throws Exception {
-        if (mode == Test.RESUME_MODE && prevLog != null) {
+        if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
             for (Element e : DomUtils.getElementsByTagName(prevLog, "formresults")) {
                 if (e.getAttribute("id").equals(fnPath + id)) {
                     logger.println(DomUtils.serializeNode(e));
@@ -1003,6 +1214,9 @@ public class TECore {
         }
 
         while (formResults == null) {
+            if (stop) {
+                throw new Exception("Execution was stopped by the user.");
+            }
             Thread.sleep(250);
         }
 
@@ -1026,22 +1240,52 @@ public class TECore {
         }
     }
 
+    public String getOutput() {
+        String output = threadOutput.toString();
+        threadOutput.reset();
+        return output;
+    }
+    
+    public void stopThread() {
+        stop = true;
+    }
+    
+    public boolean isThreadComplete() {
+        return threadComplete;
+    }
+
+    public void run() {
+        threadComplete = false;
+//        activeThread = Thread.currentThread();
+        try {
+            opts.logDir.mkdir();
+            threadOutput = new ByteArrayOutputStream();
+            out = new PrintStream(threadOutput);
+            execute();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+//        activeThread = null;
+        threadComplete = true;
+    }
+
     public File getLogDir() {
-        return logDir;
+        return opts.getLogDir();
     }
-
-    public void setLogDir(File logDir) {
-        this.logDir = logDir;
-    }
-
-    public int getMode() {
-        return mode;
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
-    }
-
+//
+//    public void setLogDir(File logDir) {
+//        this.logDir = logDir;
+//    }
+//
+//    public int getMode() {
+//        return mode;
+//    }
+//
+//    public void setMode(int mode) {
+//        this.mode = mode;
+//    }
+//
     public PrintStream getOut() {
         return out;
     }
@@ -1081,12 +1325,12 @@ public class TECore {
     public Index getIndex() {
         return index;
     }
-
-    public String getSourcesName() {
-        return sourcesName;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
+//
+//    public String getSourcesName() {
+//        return sourcesName;
+//    }
+//
+//    public String getSessionId() {
+//        return sessionId;
+//    }
 }

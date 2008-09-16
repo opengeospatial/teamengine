@@ -13,7 +13,7 @@ public class SuiteEntry extends IndexEntry {
     QName startingTest;
     Document form = null;
     
-    SuiteEntry() {
+    public SuiteEntry() {
         super();
     }
 

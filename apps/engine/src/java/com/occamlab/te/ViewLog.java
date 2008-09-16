@@ -56,71 +56,82 @@ import com.occamlab.te.util.Misc;
 public class ViewLog {
 
     // Count how many errors and passes for output later
-    static public int passCount = 0;
+//    static public int passCount = 0;
+//    static public int failCount = 0;
+//    static public int warnCount = 0;
 
-    static public int failCount = 0;
+    public static TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
-    static public int warnCount = 0;
+//    static void increment_counts(Element test) {
+//        int result = Integer.parseInt(test.getAttribute("result"));
+//        String complete = test.getAttribute("complete");
+//        if (!("no".equals(complete))) {
+//            if (result == TECore.PASS) {
+//                passCount++;
+//            } else if (result == TECore.WARNING) {
+//                warnCount++;
+//            } else if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
+//                failCount++;
+//            }
+//        }
+//        for (Element subtest : DomUtils.getChildElements(test)) {
+//            increment_counts(subtest);
+//        }
+//    }
 
-    public static TransformerFactory transformerFactory = TransformerFactory
-            .newInstance();
+//    static Element parse_log(DocumentBuilder db, Document owner, File logdir,
+//            String path) throws Exception {
+//        File log = new File(new File(logdir, path), "log.xml");
+//        Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
+//        Element test = owner.createElement("test");
+//        Element log_e = (Element) logdoc.getElementsByTagName("log").item(0);
+//        NodeList children = log_e.getChildNodes();
+//        boolean complete = false;
+//        for (int i = 0; i < children.getLength(); i++) {
+//            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+//                Element e = (Element) children.item(i);
+//                if (e.getNodeName().equals("starttest")) {
+//                    NamedNodeMap atts = e.getAttributes();
+//                    for (int j = 0; j < atts.getLength(); j++) {
+//                        test.setAttribute(atts.item(j).getNodeName(), atts
+//                                .item(j).getNodeValue());
+//                    }
+//                } else if (e.getNodeName().equals("endtest")) {
+//                    complete = true;
+//                    if (Integer.parseInt(e.getAttribute("result")) == 3) {
+//                        failCount++;
+//                        test.setAttribute("failed", "yes");
+//                    }
+//                    if (Integer.parseInt(e.getAttribute("result")) == 1) {
+//                        warnCount++;
+//                        test.setAttribute("warning", "yes");
+//                    }
+//                    if (Integer.parseInt(e.getAttribute("result")) == 2) {
+//                        failCount++;
+//                    }
+//                    if (Integer.parseInt(e.getAttribute("result")) == 0) {
+//                        passCount++;
+//                    }
+//                } else if (e.getNodeName().equals("testcall")) {
+//                    test.appendChild(parse_log(db, owner, logdir, e
+//                            .getAttribute("path")));
+//                }
+//            }
+//        }
+//        test.setAttribute("complete", complete ? "yes" : "no");
+//        return test;
+//    }
 
-    static Element parse_log(DocumentBuilder db, Document owner, File logdir,
-            String path) throws Exception {
-        File log = new File(new File(logdir, path), "log.xml");
-        Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
-        Element test = owner.createElement("test");
-        Element log_e = (Element) logdoc.getElementsByTagName("log").item(0);
-        NodeList children = log_e.getChildNodes();
-        boolean complete = false;
-        for (int i = 0; i < children.getLength(); i++) {
-            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                Element e = (Element) children.item(i);
-                if (e.getNodeName().equals("starttest")) {
-                    NamedNodeMap atts = e.getAttributes();
-                    for (int j = 0; j < atts.getLength(); j++) {
-                        test.setAttribute(atts.item(j).getNodeName(), atts
-                                .item(j).getNodeValue());
-                    }
-                } else if (e.getNodeName().equals("endtest")) {
-                    complete = true;
-                    if (Integer.parseInt(e.getAttribute("result")) == 3) {
-                        failCount++;
-                        test.setAttribute("failed", "yes");
-                    }
-                    if (Integer.parseInt(e.getAttribute("result")) == 1) {
-                        warnCount++;
-                        test.setAttribute("warning", "yes");
-                    }
-                    if (Integer.parseInt(e.getAttribute("result")) == 2) {
-                        failCount++;
-                    }
-                    if (Integer.parseInt(e.getAttribute("result")) == 0) {
-                        passCount++;
-                    }
-                } else if (e.getNodeName().equals("testcall")) {
-                    test.appendChild(parse_log(db, owner, logdir, e
-                            .getAttribute("path")));
-                }
-            }
-        }
-        test.setAttribute("complete", complete ? "yes" : "no");
-        return test;
-    }
-
-    public static boolean view_log(DocumentBuilderImpl db, File logdir,
-            String session, ArrayList tests, Templates templates, Writer out)
-            throws Exception {
-        passCount = 0;
-        failCount = 0;
-        warnCount = 0;
+    public static boolean view_log(File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
+//        passCount = 0;
+//        failCount = 0;
+//        warnCount = 0;
         Transformer t = templates.newTransformer();
         t.setParameter("logdir", logdir.getAbsolutePath());
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
         if (tests.size() == 0 && session == null) {
-            DocumentBuilder db3 = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder();
-            Document doc = db3.newDocument();
+            Document doc = db.newDocument();
             Element sessions_e = doc.createElement("sessions");
             doc.appendChild(sessions_e);
             String[] children = logdir.list();
@@ -131,32 +142,18 @@ public class ViewLog {
                     sessions_e.appendChild(session_e);
                 }
             }
-            DocumentBuilderImpl db2 = new DocumentBuilderImpl();
-            db2.setConfiguration((Configuration) transformerFactory
-                    .getAttribute(FeatureKeys.CONFIGURATION));
-            Document doc2 = db2.newDocument();
-            doc2 = rebuildDocument(doc);
-            t.transform(new DOMSource(doc2), new StreamResult(out));
+            t.transform(new DOMSource(doc), new StreamResult(out));
             return true;
         } else if (tests.size() == 0) {
             File session_dir = new File(logdir, session);
             if (!session_dir.isDirectory()) {
-                System.out.println("Error: Directory "
-                        + session_dir.getAbsolutePath() + " does not exist.");
+                System.out.println("Error: Directory " + session_dir.getAbsolutePath() + " does not exist.");
                 return false;
             }
-            DocumentBuilder db3 = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder();
-            Document doc = db3.newDocument();
-            doc.appendChild(parse_log(db, doc, logdir, session));
-            DocumentBuilderImpl db2 = new DocumentBuilderImpl();
-            db2.setConfiguration((Configuration) transformerFactory
-                    .getAttribute(FeatureKeys.CONFIGURATION));
-            Document doc2 = db2.newDocument();
-            doc2 = rebuildDocument(doc);
-            t.transform(new DOMSource(doc2), new StreamResult(out));
-            Element testElement = (Element) (doc.getElementsByTagName("test")
-                    .item(0));
+            Document doc = LogUtils.makeTestList(logdir, session);
+//            increment_counts(doc.getDocumentElement());
+            t.transform(new DOMSource(doc), new StreamResult(out));
+            Element testElement = (Element) (doc.getElementsByTagName("test").item(0));
             return testElement.getAttribute("complete").equals("yes");
         } else {
             boolean ret = true;
@@ -165,28 +162,16 @@ public class ViewLog {
                 String test = (String) it.next();
                 File f = new File(new File(logdir, test), "log.xml");
                 if (f.exists()) {
-                    DocumentBuilder db3 = DocumentBuilderFactory.newInstance()
-                            .newDocumentBuilder();
-                    Document index = db3.newDocument();
-                    index.appendChild(parse_log(db, index, logdir, test));
-                    t.setParameter("index", index);
-                    // t.transform(new StreamSource(f), new
-                    // StreamResult(System.out));
+                    Document doc = LogUtils.makeTestList(logdir, test);
+                    t.setParameter("index", doc);
+                    // t.transform(new StreamSource(f), new StreamResult(System.out));
                     Document log = LogUtils.readLog(logdir, test);
-                    DocumentBuilderImpl db2 = new DocumentBuilderImpl();
-                    db2.setConfiguration((Configuration) transformerFactory
-                            .getAttribute(FeatureKeys.CONFIGURATION));
-                    Document log2 = db2.newDocument();
-                    log2 = rebuildDocument(log);
-                    t.transform(new DOMSource(log2), new StreamResult(out));
-                    Element logElement = (Element) (log
-                            .getElementsByTagName("log").item(0));
-                    NodeList endtestlist = logElement
-                            .getElementsByTagName("endtest");
+                    t.transform(new DOMSource(log), new StreamResult(out));
+                    Element logElement = (Element) (log.getElementsByTagName("log").item(0));
+                    NodeList endtestlist = logElement.getElementsByTagName("endtest");
                     ret = ret && (endtestlist.getLength() > 0);
                 } else {
-                    System.out.println("Error: " + f.getAbsolutePath()
-                            + " does not exist.");
+                    System.out.println("Error: " + f.getAbsolutePath() + " does not exist.");
                     ret = ret && false;
                 }
             }
@@ -239,24 +224,7 @@ public class ViewLog {
         Templates templates = transformerFactory.newTemplates(new StreamSource(
                 stylesheet));
 
-        DocumentBuilderImpl db = new DocumentBuilderImpl();
-        db.setConfiguration((Configuration) transformerFactory
-                .getAttribute(FeatureKeys.CONFIGURATION));
-
         Writer out = new OutputStreamWriter(System.out);
-        view_log(db, logdir, session, tests, templates, out);
-    }
-
-    private static Document rebuildDocument(Document sourceDoc) {
-        Document newDoc = null;
-        DocumentBuilderImpl domBuilder = new DocumentBuilderImpl();
-        domBuilder.setConfiguration((Configuration) transformerFactory
-                .getAttribute(FeatureKeys.CONFIGURATION));
-        try {
-            newDoc = domBuilder.parse(new InputSource(new StringReader(DomUtils.serializeNode(sourceDoc))));
-        } catch (SAXException ex) {
-            ex.printStackTrace();
-        }
-        return newDoc;
+        view_log(logdir, session, tests, templates, out);
     }
 }

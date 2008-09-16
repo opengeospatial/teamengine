@@ -75,6 +75,19 @@
 		<xsl:value-of select="saxon:serialize(., 'xml')" xmlns:saxon="http://saxon.sf.net/"/>
 	</xsl:template>
 
+	<xsl:template name="result-text">
+		<xsl:param name="result-code" select="@result"/>
+		<xsl:param name="complete" select="not(@complete='no')"/>
+		<xsl:choose>
+			<xsl:when test="$result-code=3 and not($complete)">Failed and did not complete</xsl:when>
+			<xsl:when test="$result-code=3">Failed</xsl:when>
+			<xsl:when test="not($complete)">Did not complete</xsl:when>
+			<xsl:when test="$result-code=2">Failed (Inherited Failure)</xsl:when>
+			<xsl:when test="$result-code=1">Warning</xsl:when>
+			<xsl:otherwise>Passed</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 <!--
 	<xsl:template name="literal">
 		<xsl:value-of select="concat('&lt;', name())"/>
@@ -107,6 +120,8 @@
 		<xsl:param name="indent" select="''"/>
 <!--		<xsl:value-of select="saxon:serialize(/, 'xml')" xmlns:saxon="http://saxon.sf.net/"/> -->
 		<xsl:variable name="result">
+			<xsl:call-template name="result-text"/>
+<!-- 
 			<xsl:choose>
 				<xsl:when test="@failed='yes' and @complete='no'">Failed and did not complete</xsl:when>
 				<xsl:when test="@failed='yes'">Failed</xsl:when>
@@ -115,6 +130,7 @@
 				<xsl:when test="@warning='yes'">Warning</xsl:when>
 				<xsl:otherwise>Passed</xsl:otherwise>
 			</xsl:choose>
+-->
 		</xsl:variable>
 		<xsl:value-of select="concat($indent, 'Test ', @prefix, ':', @local-name, ' (', @path, ') ', $result, '&#xa;')"/>
 		<xsl:for-each select="test">
@@ -127,6 +143,10 @@
 	<xsl:template match="log">
 		<xsl:apply-templates select="*"/>
 		<xsl:variable name="result">
+			<xsl:for-each select="$index/test">
+				<xsl:call-template name="result-text"/>
+			</xsl:for-each>
+<!--
 			<xsl:choose>
 				<xsl:when test="endtest/@result = 3">Failed</xsl:when>
 				<xsl:when test="$index//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
@@ -134,6 +154,7 @@
 				<xsl:when test="endtest">Passed</xsl:when>
 				<xsl:otherwise>Test execution did not complete</xsl:otherwise>
 			</xsl:choose>
+ -->
 		</xsl:variable>
 		<xsl:value-of select="concat('Result: ', $result, '&#xa;')"/>
 	</xsl:template>
@@ -252,14 +273,19 @@
 	<xsl:template match="testcall">
 		<xsl:variable name="path" select="@path"/>
 		<xsl:variable name="result">
-			<xsl:choose>
-				<xsl:when test="$index//test[@path=$path and @failed='yes' and @complete='no']">Failed and did not complete</xsl:when>
-				<xsl:when test="$index//test[@path=$path and @failed='yes']">Failed</xsl:when>
-				<xsl:when test="$index//test[@path=$path and @complete='no']">Did not complete</xsl:when>
-				<xsl:when test="$index//test[@path=$path]//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
-				<xsl:when test="$index//test[@path=$path and @warning='yes']">Warning</xsl:when>		
-				<xsl:otherwise>Passed</xsl:otherwise>
-			</xsl:choose>
+			<xsl:for-each select="$index//test[@path=$path]">
+				<xsl:call-template name="result-text"/>
+			</xsl:for-each>
+<!-- 
+				<xsl:choose>
+					<xsl:when test="$index//test[@path=$path and @failed='yes' and @complete='no']">Failed and did not complete</xsl:when>
+					<xsl:when test="$index//test[@path=$path and @failed='yes']">Failed</xsl:when>
+					<xsl:when test="$index//test[@path=$path and @complete='no']">Did not complete</xsl:when>
+					<xsl:when test="$index//test[@path=$path]//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
+					<xsl:when test="$index//test[@path=$path and @warning='yes']">Warning</xsl:when>		
+					<xsl:otherwise>Passed</xsl:otherwise>
+ 				</xsl:choose>
+ -->
 		</xsl:variable>
 		<xsl:value-of select="concat('Subtest ', @path, ' ', $result, '&#xa;&#xa;')"/>
 	</xsl:template>

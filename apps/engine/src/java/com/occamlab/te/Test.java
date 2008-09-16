@@ -175,7 +175,9 @@ public class Test {
         }
         
         if (mode != CHECK_MODE) {
-            engine.execute(runOpts, masterIndex, System.out, false);
+            TECore core = new TECore(engine, masterIndex, runOpts);
+            core.execute();
+//            engine.execute(runOpts, masterIndex, System.out, false);
         }
     }
 }
