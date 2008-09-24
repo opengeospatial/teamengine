@@ -27,8 +27,8 @@
  xmlns:saxon="http://saxon.sf.net/"
  xmlns:xi="http://www.w3.org/2001/XInclude"
  xmlns:xs="http://www.w3.org/2001/XMLSchema"
- xmlns:stack="java:java.util.ArrayDeque"
  xmlns:fn="http://www.w3.org/2005/xpath-functions"
+ extension-element-prefixes="saxon"
  version="2.0">
  
  	<!--
@@ -55,11 +55,35 @@
 	<xsl:param name="xsl-ver">1.0</xsl:param>
 
 	<!-- Stack for current filename.  Initially the source CTL file.  Include files are added to the stack as they are processed -->
-	<xsl:variable name="filename-stack" select="stack:new()"/>
+<!-- 	<xsl:variable name="filename-stack" select="stack:new()"/> -->
+	<xsl:variable name="stack" saxon:assignable="yes">
+		<filename>top</filename>filename>
+	</xsl:variable>
 
 
 	<!-- Supporting functions/templates -->
 	
+	<xsl:template name="push">
+		<xsl:param name="filename"/>
+		<saxon:assign name="stack">
+			<filename>
+				<xsl:value-of select="$filename"/>
+			</filename>
+			<xsl:copy-of select="$stack/filename"/>
+		</saxon:assign>
+	</xsl:template>
+
+	<xsl:template name="pop">
+		<xsl:value-of select="$stack[1]"/>
+		<saxon:assign name="stack">
+			<xsl:copy-of select="$stack[position() &gt; 1]"/>
+		</saxon:assign>
+	</xsl:template>
+
+	<xsl:template name="peek">
+		<xsl:value-of select="$stack[1]"/>
+	</xsl:template>
+
 	<!-- Returns a string containing the destination filename for a test or function. -->
 	<!-- Called by templates match="ctl:test" and match="ctl:function" -->
 	<!-- Calls parse-qname -->
@@ -106,8 +130,12 @@
 
 	<!-- Creates a marker loc attribute to tie the generated code to the line number in the source CTL file -->
 	<xsl:template name="loc">
+		<xsl:variable name="filename">
+			<xsl:call-template name="peek"/>
+		</xsl:variable>
 		<xsl:attribute name="loc" namespace="http://www.occamlab.com/te">
-			<xsl:value-of select="concat(saxon:line-number(.), ',', stack:peek($filename-stack))"/>	<!-- Example: loc=10,file:/file.ctl -->
+<!-- 			<xsl:value-of select="concat(saxon:line-number(.), ',', stack:peek($filename-stack))"/> -->	<!-- Example: loc=10,file:/file.ctl -->
+			<xsl:value-of select="concat(saxon:line-number(.), ',', $filename)"/>	<!-- Example: loc=10,file:/file.ctl -->
 		</xsl:attribute>
 	</xsl:template>
 
@@ -390,6 +418,12 @@
 			</xsl:for-each>
 		</xsl:variable>
 		<suite prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
+			<title>
+				<xsl:value-of select="ctl:title"/>
+			</title>
+			<description>
+				<xsl:value-of select="ctl:description"/>
+			</description>
 			<starting-test prefix="{$starting-test/prefix}" namespace-uri="{$starting-test/namespace-uri}" local-name="{$starting-test/local-name}"/>
 			<xsl:copy-of select="ctl:form"/>
 		</suite>
@@ -401,6 +435,12 @@
 			<xsl:call-template name="parse-qname"/>
 		</xsl:variable>
 		<profile prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}">
+			<title>
+				<xsl:value-of select="ctl:title"/>
+			</title>
+			<description>
+				<xsl:value-of select="ctl:description"/>
+			</description>
 			<xsl:variable name="base">
 				<xsl:for-each select="ctl:base">
 					<xsl:call-template name="parse-qname">
@@ -757,12 +797,21 @@
 
 	<xsl:template name="main" match="/" mode="include">
 		<!-- Push current filename onto stack.  Output 0 characters -->
-		<xsl:value-of select="substring(stack:push($filename-stack, document-uri(.)), 1, 0)"/>
+<!--   		<xsl:value-of select="substring(stack:push($filename-stack, document-uri(.)), 1, 0)"/> -->
+		<xsl:call-template name="push">
+			<xsl:with-param name="filename" select="document-uri(.)"/>
+		</xsl:call-template>
 		<!-- Create an index entry for the current filename -->
-		<dependency file="{stack:peek($filename-stack)}"/>
+<!-- 	<dependency file="{stack:peek($filename-stack)}"/> -->
+		<dependency>
+			<xsl:attribute name="file">
+				<xsl:call-template name="peek"/>
+			</xsl:attribute>
+		</dependency>
 		<!-- Process the file -->
 		<xsl:apply-templates/>
 		<!-- Pop the filename back off of the stack.  Output 0 characters -->
-		<xsl:value-of select="substring(stack:pop($filename-stack), 1, 0)"/>
+<!-- 		<xsl:value-of select="substring(stack:pop($filename-stack), 1, 0)"/> -->
+		<xsl:call-template name="pop"/>
 	</xsl:template>
 </xsl:transform>

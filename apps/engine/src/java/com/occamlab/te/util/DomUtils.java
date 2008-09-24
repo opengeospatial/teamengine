@@ -1,10 +1,15 @@
 package com.occamlab.te.util;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -14,6 +19,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -148,6 +154,68 @@ public class DomUtils {
 	return baos.toString();
     }
 
+    /**
+     * Serializes a Node to a String
+     */
+    public static String serializeNoNS(Node node) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("<");
+        buf.append(node.getLocalName());
+        for (Entry<QName, String> entry : getAttributes(node).entrySet()) {
+            QName name = entry.getKey();
+            if (name.getNamespaceURI() != null) {
+                buf.append(" ");
+                buf.append(name.getLocalPart());
+                buf.append("=\"");
+                buf.append(entry.getValue());
+                buf.append("\"");
+            }
+        }
+        boolean tagOpen = true;
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node n = children.item(i);
+            short type = node.getNodeType(); 
+            if (type == Node.TEXT_NODE) {
+                if (tagOpen) {
+                    buf.append(">\n");
+                    tagOpen = false;
+                }
+                buf.append(node.getTextContent());
+            } else if (type == Node.ELEMENT_NODE) {
+                if (tagOpen) {
+                    buf.append(">\n");
+                    tagOpen = false;
+                }
+                buf.append(serializeNoNS(n));
+                buf.append("\n");
+            }
+        }
+        if (tagOpen) {
+            buf.append("/>\n");
+        } else {
+            buf.append("</");
+            buf.append(node.getLocalName());
+            buf.append(">\n");
+        }
+        return buf.toString();
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        try {
+//                TransformerFactory factory = TransformerFactory.newInstance();
+//                File f = Misc.getResourceAsFile("com/occamlab/te/drop-ns.xsl");
+//                Transformer transformer = factory.newTransformer(new StreamSource(f));
+//
+//                DOMSource src = new DOMSource(node);
+//                StreamResult dest = new StreamResult(baos);
+//                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+//                transformer.transform(src, dest);
+//        } catch (Exception e) {
+//                System.out.println("Error serializing node.  "+e.getMessage());
+//        }
+//
+//        return baos.toString();
+    }
+
     /** HELPER METHOD TO PRINT A DOM TO STDOUT */
     static public void displayNode(Node node) {
 	try {
@@ -166,6 +234,26 @@ public class DomUtils {
             return (Element)node;
         }
         return null;
+    }
+
+    static public Map<QName, String> getAttributes(Node node) {
+        Map<QName, String> atts = new HashMap<QName, String>();
+        NamedNodeMap nnm = node.getAttributes();
+        if (nnm != null) {
+            for (int i = 0; i < nnm.getLength(); i++) {
+                Attr att = (Attr)nnm.item(i);
+                QName name;
+                if (att.getBaseURI() == null) {
+                    name = new QName(att.getLocalName());
+                } else if (att.getPrefix() == null) {
+                    name = new QName(att.getBaseURI(), att.getLocalName());
+                } else {
+                    name = new QName(att.getBaseURI(), att.getLocalName(), att.getPrefix());
+                }
+                atts.put(name, att.getValue());
+            }
+        }
+        return atts;
     }
 
     static public Document createDocument(Node node) throws Exception {

@@ -237,7 +237,6 @@ public class TECore implements Runnable {
     }
 
     public void reexecute_test(String testPath) throws Exception {
-System.out.println("reexecute_test");
         Document log = LogUtils.readLog(opts.getLogDir(), testPath);
         String testId = LogUtils.getTestIdFromLog(log);
         TestEntry test = index.getTest(testId);
@@ -489,8 +488,8 @@ System.out.println("reexecute_test");
             out.println(e.getMessage());
             if (logger != null) {
                 logger.println("<exception><![CDATA[" + e.getMessage() + "]]></exception>");
-                result = FAIL;
             }
+            result = FAIL;
         }
 
         if (logger != null) {
@@ -1246,8 +1245,11 @@ System.out.println("reexecute_test");
         return output;
     }
     
-    public void stopThread() {
+    public void stopThread() throws Exception {
         stop = true;
+        while (!threadComplete) {
+            Thread.sleep(100);
+        }
     }
     
     public boolean isThreadComplete() {

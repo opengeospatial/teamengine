@@ -12,6 +12,10 @@ import com.occamlab.te.util.DomUtils;
 public class SuiteEntry extends IndexEntry {
     QName startingTest;
     Document form = null;
+    String title = null;
+    String description = null;
+    String link;
+    String dataLink;
     
     public SuiteEntry() {
         super();
@@ -19,6 +23,8 @@ public class SuiteEntry extends IndexEntry {
 
     SuiteEntry(Element suite) throws Exception {
         super(suite);
+        title = DomUtils.getElementByTagName(suite, "title").getTextContent();
+        description = DomUtils.getElementByTagName(suite, "description").getTextContent();
         Element e = DomUtils.getElementByTagName(suite, "starting-test");
         String prefix = e.getAttribute("prefix");
         String namespaceUri = e.getAttribute("namespace-uri");
@@ -44,6 +50,38 @@ public class SuiteEntry extends IndexEntry {
 
     public void setForm(Document form) {
         this.form = form;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDataLink() {
+        return dataLink;
+    }
+
+    public void setDataLink(String dataLink) {
+        this.dataLink = dataLink;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
 }

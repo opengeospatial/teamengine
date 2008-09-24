@@ -24,6 +24,7 @@
 				<xs:element ref="ctl:package"/>
 				<xs:element ref="ctl:test"/>
 				<xs:element ref="ctl:suite"/>
+				<xs:element ref="ctl:profile"/>
 				<xs:element ref="xi:include"/>
 			</xs:choice>
 		</xs:sequence>
@@ -82,6 +83,34 @@
 			<xs:element name="description" type="xs:string" minOccurs="0"/>
 			<xs:element name="link" type="ctl:linkType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="starting-test" type="xs:QName"/>
+			<xs:element name="form" minOccurs="0">
+				<xs:complexType mixed="true">
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:any processContents="lax"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:QName" use="required"/>
+        <xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
+        <xs:attribute name="version" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:element name="profile" type="ctl:profileType"/>
+	<xs:complexType name="profileType">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string"/>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+			<xs:element name="link" type="ctl:linkType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="base" type="xs:QName"/>
+			<xs:element name="exclude" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="starting-test" type="xs:QName"/>
+			<xs:element name="form" minOccurs="0">
+				<xs:complexType mixed="true">
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:any processContents="lax"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:QName" use="required"/>
         <xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
