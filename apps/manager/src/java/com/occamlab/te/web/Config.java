@@ -40,37 +40,25 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.occamlab.te.index.ProfileEntry;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.DomUtils;
 
 /**
- * Reads the test harness configuration file. The file is structured as follows:
- * 
- * <pre>
- *    &lt;config&gt;
- *      &lt;home&gt;${base-url}&lt;/home&gt;
- *      &lt;usersdir&gt;${users.dir}&lt;/usersdir&gt;
- *      &lt;!-- one or more test suites --&gt;
- *      &lt;sources id=&quot;${test-suite-id}&quot;&gt;
- *        &lt;source&gt;${ctl.source.location}&lt;/source&gt;
- *        &lt;!-- additional CTL source locations --&gt;
- *      &lt;/sources&gt;
- *    &lt;/config&gt;
- * </pre>
+ * Reads the test harness configuration file.
  */
 public class Config {
     private String home;
     private File scriptsDir;
     private File usersDir;
     private File workDir;
-    private List<String> organizationList;
-    private Map<String, List<String>> standardMap;  // Key is org, value is a list of standards
-    private Map<String, List<String>> versionMap;   // Key is org_std, value is a list of versions
-    private Map<String, List<String>> revisionMap;  // Key is org_std_ver, value is a list of revisions
-    private Map<String, SuiteEntry> suites;         // Key is org_std_ver_rev, value is a SuiteEntry 
-    private Map<String, List<File>> sources;        // Key is org_std_ver_rev, value is a list of sources 
-
-//    private static LinkedHashMap<String, List<File>> availableSuites;
+    private List<String> organizationList;             // A list of organizations
+    private Map<String, List<String>> standardMap;     // Key is org, value is a list of standards
+    private Map<String, List<String>> versionMap;      // Key is org_std, value is a list of versions
+    private Map<String, List<String>> revisionMap;     // Key is org_std_ver, value is a list of revisions
+    private Map<String, SuiteEntry> suites;            // Key is org_std_ver_rev, value is a SuiteEntry 
+    private Map<String, List<ProfileEntry>> profiles;  // Key is org_std_ver_rev, value is a list of profiles 
+    private Map<String, List<File>> sources;           // Key is org_std_ver_rev, value is a list of sources 
 
     public Config() {
         try {
@@ -104,46 +92,78 @@ public class Config {
             versionMap = new HashMap<String, List<String>>();
             revisionMap = new HashMap<String, List<String>>();
             suites = new HashMap<String, SuiteEntry>(); 
+            profiles = new HashMap<String, List<ProfileEntry>>(); 
             sources = new HashMap<String, List<File>>(); 
 
             for (Element organizationEl : DomUtils.getElementsByTagName(configElem, "organization")) {
                 String organization = DomUtils.getElementByTagName(organizationEl, "name").getTextContent();
                 organizationList.add(organization);
 
+                ArrayList<String> standardList = new ArrayList<String>();
                 for (Element standardEl : DomUtils.getElementsByTagName(organizationEl, "standard")) {
                     String standard = DomUtils.getElementByTagName(standardEl, "name").getTextContent();
-                    ArrayList<String> standardList = new ArrayList<String>();
                     standardList.add(standard);
                     standardMap.put(organization, standardList);
 
+                    ArrayList<String> versionList = new ArrayList<String>();
                     for (Element versionEl : DomUtils.getElementsByTagName(standardEl, "version")) {
                         String version = DomUtils.getElementByTagName(versionEl, "name").getTextContent();
-                        ArrayList<String> versionList = new ArrayList<String>();
                         versionList.add(version);
                         String verKey = organization + "_" + standard;
                         versionMap.put(verKey, versionList);
 
-                        for (Element suiteEl : DomUtils.getElementsByTagName(versionEl, "suite")) {
-                            String revision = DomUtils.getElementByTagName(suiteEl, "revision").getTextContent();
-                            ArrayList<String> revisionList = new ArrayList<String>();
-                            revisionList.add(revision);
-                            String revKey = verKey + "_" + version;
-                            revisionMap.put(revKey, revisionList);
-                            
-                            String key = revKey + "_" + revision;
-
-                            SuiteEntry suite = new SuiteEntry();
-                            String namespaceUri = DomUtils.getElementByTagName(suiteEl, "namespace-uri").getTextContent();
-                            String prefix = DomUtils.getElementByTagName(suiteEl, "prefix").getTextContent();
-                            String localName = DomUtils.getElementByTagName(suiteEl, "local-name").getTextContent();
-                            suite.setQName(new QName(namespaceUri, localName, prefix));
-                            suites.put(key, suite);
-                            
-                            ArrayList<File> list = new ArrayList<File>();
-                            for (Element sourceEl : DomUtils.getElementsByTagName(suiteEl, "source")) {
-                                list.add(new File(scriptsDir, sourceEl.getTextContent()));
+                        SuiteEntry suite = new SuiteEntry();
+                        Element suiteEl = DomUtils.getElementByTagName(versionEl, "suite");
+                        String namespaceUri = DomUtils.getElementByTagName(suiteEl, "namespace-uri").getTextContent();
+                        String prefix = DomUtils.getElementByTagName(suiteEl, "prefix").getTextContent();
+                        String localName = DomUtils.getElementByTagName(suiteEl, "local-name").getTextContent();
+                        suite.setQName(new QName(namespaceUri, localName, prefix));
+                        suite.setTitle(DomUtils.getElementByTagName(suiteEl, "title").getTextContent());
+                        Element descEl = DomUtils.getElementByTagName(suiteEl, "description");
+                        if (descEl != null) {
+                            suite.setDescription(descEl.getTextContent());
+                        }
+                        for (Element linkEl : DomUtils.getElementsByTagName(suiteEl, "link")) {
+                            String value = linkEl.getTextContent();
+                            if ("data".equals(linkEl.getAttribute("linkType"))) {
+                                suite.setDataLink(value);
+                            } else if (value.startsWith("data/")) {
+                                suite.setDataLink(value);
+                            } else {
+                                suite.setLink(value);
                             }
-                            sources.put(key, list);
+                        }
+                    
+                        ArrayList<String> revisionList = new ArrayList<String>();
+                        for (Element el : DomUtils.getChildElements(versionEl)) {
+                            if (el.getNodeName().equals("revision")) {
+                                String revision = DomUtils.getElementByTagName(el, "name").getTextContent();
+                                revisionList.add(revision);
+                                String revKey = verKey + "_" + version;
+                                revisionMap.put(revKey, revisionList);
+                            
+                                String key = revKey + "_" + revision;
+                                suites.put(key, suite);
+
+                                ArrayList<File> list = new ArrayList<File>();
+                                for (Element sourceEl : DomUtils.getElementsByTagName(el, "source")) {
+                                    list.add(new File(scriptsDir, sourceEl.getTextContent()));
+                                }
+                                sources.put(key, list);
+                                
+                                ArrayList<ProfileEntry> profileList = new ArrayList<ProfileEntry>();
+                                for (Element profileEl : DomUtils.getElementsByTagName(el, "profile")) {
+                                    ProfileEntry profile = new ProfileEntry();
+                                    namespaceUri = DomUtils.getElementByTagName(profileEl, "namespace-uri").getTextContent();
+                                    prefix = DomUtils.getElementByTagName(profileEl, "prefix").getTextContent();
+                                    localName = DomUtils.getElementByTagName(profileEl, "local-name").getTextContent();
+                                    profile.setQName(new QName(namespaceUri, localName, prefix));
+                                    profile.setBaseSuite(suite.getQName());
+                                    profile.setTitle(DomUtils.getElementByTagName(profileEl, "title").getTextContent());
+                                    profileList.add(profile);
+                                }
+                                profiles.put(key, profileList);
+                            }
                         }
                     }
                 }
@@ -221,6 +241,10 @@ public class Config {
 
     public Map<String, SuiteEntry> getSuites() {
         return suites;
+    }
+
+    public Map<String, List<ProfileEntry>> getProfiles() {
+        return profiles;
     }
 
     public Map<String, List<String>> getVersionMap() {

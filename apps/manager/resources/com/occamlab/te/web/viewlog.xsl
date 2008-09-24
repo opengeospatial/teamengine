@@ -25,7 +25,8 @@
  xmlns:te="java:com.occamlab.te.TECore"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:encoder="java:java.net.URLEncoder"
- exclude-result-prefixes="viewlog encoder te"
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ exclude-result-prefixes="viewlog encoder te ctl"
  version="2.0">
 	<xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 	<xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
@@ -137,6 +138,8 @@
 			</xsl:attribute>
 		</img>
 		<xsl:text>&#xa;</xsl:text>
+		<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
+<!--
 		<xsl:choose>
 		<xsl:when test="contains(@path,'/')">
 			<xsl:variable name="sessionid" select="substring-before(@path,'/')"/>
@@ -151,7 +154,8 @@
 			</a>		
 		</xsl:otherwise>
 		</xsl:choose>				
-		<!--<xsl:text>&#xa;(</xsl:text>
+ -->
+ 		<!--<xsl:text>&#xa;(</xsl:text>
 		<a href="viewTestLog.jsp?test={@path}">
 			<xsl:value-of select="@path"/>
 		</a>
@@ -183,27 +187,6 @@
 				</xsl:for-each>
 			</div>
 		</xsl:if>
-
-		<br/>
-		<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
-			<tr>
-				<th align="left">
-					<font color="#000099">Summary</font>
-				</th>
-				<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td>
-				<td id="nPass" align="center" bgcolor="#00FF00">
-					<xsl:value-of select="count(//test[@result=0 and @complete='yes'])"/>
-				</td>
-				<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td>
-				<td id="nWarn" align="center" bgcolor="#FFFF00">
-					<xsl:value-of select="count(//test[@result=1 and @complete='yes'])"/>
-				</td>
-				<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td>
-				<td id="nFail" align="center" bgcolor="#FF0000">
-					<xsl:value-of select="count(//test[@result &gt; 1 and @complete='yes'])"/>
-				</td>
-			</tr>
-		</table>
 	</xsl:template>
 
 	<xsl:template match="log">
@@ -285,37 +268,41 @@
 		<xsl:text>Request </xsl:text>
 		<xsl:value-of select="@id"/>
 		<xsl:text>:&#xa;</xsl:text>
+		<xsl:apply-templates select="*"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:request">
 		<xsl:text>   Method: </xsl:text>
-		<xsl:value-of select="method"/>
+		<xsl:value-of select="ctl:method"/>
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:text>   URL: </xsl:text>
 		<xsl:choose>
-			<xsl:when test="translate(method, 'GET', 'get') = 'get'">
+			<xsl:when test="translate(ctl:method, 'GET', 'get') = 'get'">
 				<xsl:call-template name="build-url">
-					<xsl:with-param name="url" select="url"/>
-					<xsl:with-param name="params" select="param"/>
+					<xsl:with-param name="url" select="ctl:url"/>
+					<xsl:with-param name="params" select="ctl:param"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="url"/>
+				<xsl:value-of select="ctl:url"/>
 			</xsl:otherwise>
 		</xsl:choose>
 		<xsl:text>&#xa;</xsl:text>
-		<xsl:if test="translate(method, 'POST', 'post') = 'post'">
+		<xsl:if test="translate(ctl:method, 'POST', 'post') = 'post'">
 			<xsl:text>   Body: </xsl:text>
 			<xsl:choose>
-				<xsl:when test="body">
+				<xsl:when test="ctl:body">
 					<xsl:text>&#xa;</xsl:text>
-					<xsl:for-each select="body/*">
+					<xsl:for-each select="ctl:body/*">
 						<xsl:call-template name="literal"/>
 					</xsl:for-each>
-					<xsl:if test="not(body/*)">
-						<xsl:value-of select="body"/>
+					<xsl:if test="not(ctl:body/*)">
+						<xsl:value-of select="ctl:body"/>
 					</xsl:if>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:call-template name="build-param-string">
-						<xsl:with-param name="params" select="param"/>
+						<xsl:with-param name="params" select="ctl:param"/>
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -384,4 +371,30 @@
 	</xsl:template>
 
 	<xsl:template match="*|@*"/>
+
+	<xsl:template match="/">
+		<xsl:apply-templates/>
+		<xsl:if test="test">
+			<br/>
+			<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
+				<tr>
+					<th align="left">
+						<font color="#000099">Summary</font>
+					</th>
+					<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td>
+					<td id="nPass" align="center" bgcolor="#00FF00">
+						<xsl:value-of select="count(//test[@result=0 and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td>
+					<td id="nWarn" align="center" bgcolor="#FFFF00">
+						<xsl:value-of select="count(//test[@result=1 and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td>
+					<td id="nFail" align="center" bgcolor="#FF0000">
+						<xsl:value-of select="count(//test[@result &gt; 1 and @complete='yes'])"/>
+					</td>
+				</tr>
+			</table>
+		</xsl:if>
+	</xsl:template>
 </xsl:transform>

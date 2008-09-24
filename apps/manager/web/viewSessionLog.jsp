@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
 DocumentBuilderImpl DB;
@@ -38,6 +38,7 @@ public void jspInit() {
   Contributor(s): No additional contributors to date
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<%@page import="java.net.URLEncoder"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>			
@@ -86,8 +87,42 @@ public void jspInit() {
 	<body>
 		<%@ include file="header.jsp" %>
 		<h2>Results for session <%=request.getParameter("session")%></h2>
-				
 <%
+      File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
+      String sessionId = request.getParameter("session");
+      TestSession ts = new TestSession();
+      ts.load(userlog, sessionId);
+
+      out.println("<h3>Test Suite: " + (Conf.getSuites().get(ts.getSourcesName())).getTitle() + "</h3>");
+
+      ArrayList tests = new ArrayList();
+      boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);     
+      out.println("<br/>");
+      if (!complete) {
+          out.println("<input type=\"button\" value=\"Resume executing these tests\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
+      }
+//      out.println("<input type=\"button\" value=\"Execute these tests again\" onclick=\"window.location = 'test.jsp?mode=retest&amp;test=" + sessionId + "'\"/>");
+      
+      String profileParams = "";
+      if (complete) {
+          int i = 0;
+	      for (ProfileEntry profile : Conf.getProfiles().get(ts.getSourcesName())) {
+	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
+	          if (ts.getProfiles().contains(profile.getId())) {
+	        	  String path = sessionId + "/" + profile.getLocalName();
+	    	      complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out);
+				  out.println("<br/>");
+	//        	  if (!complete) {
+	//    	          out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
+	//	          }
+//	    	      out.println("<input type=\"button\" value=\"Execute these tests again\" onclick=\"window.location = 'test.jsp?mode=retest&amp;test=" + path + "'\"/>");
+                 profileParams += "&amp;" + "profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile.getId(), "UTF-8");
+                 i++;
+		      }
+	      }
+      }
+%>
+<%--
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
       ArrayList tests = new ArrayList();    
@@ -96,11 +131,12 @@ public void jspInit() {
       if (!complete) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
       }
-%>
-		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%>'"/>
+--%>
+		<br/>
+		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%><%=profileParams%>'"/>
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
-		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/>
+<%--		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/> --%>
 		<br/>
 <%-- 
 		<br/>

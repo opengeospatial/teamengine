@@ -26,6 +26,7 @@ String sessionId;
   Contributor(s): No additional contributors to date
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<%@page import="java.net.URLEncoder"%>
 <html>
 	<head>
 		<title>Executing Tests</title>
@@ -64,6 +65,15 @@ if (mode.equals("retest") || mode.equals("resume")) {
   params += "&sources=" + request.getParameter("sources");
   params += "&suite=" + request.getParameter("suite");
   params += "&description=" + request.getParameter("description");
+}
+if (mode.equals("test") || mode.equals("retest")) {
+  String profile = request.getParameter("profile_0");
+  int i = 0;
+  while (profile != null) {
+      params += "&profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile, "UTF-8");
+      i++;
+      profile = request.getParameter("profile_" + Integer.toString(i));
+  }
 }
 %>
 				var url = "test?te-operation=Test&<%=params%>&t=" + d.getTime();

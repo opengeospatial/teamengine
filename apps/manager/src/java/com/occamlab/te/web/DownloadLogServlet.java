@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -43,15 +44,17 @@ import com.occamlab.te.util.ZipUtils;
 
 	      BufferedInputStream fileInBuf = new BufferedInputStream(new FileInputStream (zipFile));
 
-	      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//	      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+              OutputStream out = response.getOutputStream();
 
 	      while((length = fileInBuf.read(buf)) > 0) {
-	      baos.write(buf, 0, length);
+                  out.write(buf, 0, length);
+//	      baos.write(buf, 0, length);
 	      }
 
-	      response.getOutputStream().write(baos.toByteArray());
-	      response.getOutputStream().flush();
-	      response.getOutputStream().close();
+//	      response.getOutputStream().write(baos.toByteArray());
+//	      response.getOutputStream().flush();
+//	      response.getOutputStream().close();
 	      }
 	      catch(Exception e)
 	      {

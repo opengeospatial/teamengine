@@ -1,24 +1,13 @@
 <%@ page
  language="java"
  session="false"
- import="java.net.URL, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*"
+ import="com.occamlab.te.index.*, com.occamlab.te.web.*"
 %><%!
-LinkedHashMap SuiteCollectionHash;
-URL Url;
+Config conf;
 
 public void jspInit() {
 	try {
-		Config conf = new Config();
-		SuiteCollectionHash = new LinkedHashMap();
-/*
-		LinkedHashMap sourcesHash = conf.getAvailableSuites();
-		Iterator it = sourcesHash.keySet().iterator();
-		while (it.hasNext()) {
-			String sourcesId = (String)it.next();
-			ArrayList sources = (ArrayList)sourcesHash.get(sourcesId);
-			SuiteCollectionHash.put(sourcesId, ListSuites.getSuites(sources));
-		}
-*/
+		conf = new Config();
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
 	}
@@ -60,37 +49,28 @@ public void jspInit() {
 			to verify that an implementation of a specification complies with the specification.
 		</p>
 		<p>
-			The following test suites are available:
+			<span>The following test suites are available:</span>
 			<ul>
-<%--
-Iterator it1 = SuiteCollectionHash.keySet().iterator();
-while (it1.hasNext()) {
-	String sourcesId = (String)it1.next();
-	Collection suiteCollection = (Collection)SuiteCollectionHash.get(sourcesId);
-	Iterator it2 = suiteCollection.iterator();
-	while (it2.hasNext()) {
-		Suite suite = (Suite)it2.next();
-		out.print("<li>");
-		String link = suite.getLink();
-		if (link == null) {
-			out.print(suite.getTitle());
-		} else {
-			out.print("<a href=\"" + link + "\">" + suite.getTitle() + "</a>");
-		}
-		out.println("<br/>");
-		String desc = suite.getDescription();
-		if (desc != null) {
-			out.println(desc);
-		}
-        out.println("<br />");
-        if (null != suite.getDataLink()) {
-			out.print("<a href=\"" + suite.getDataLink() + "\">" + "Test data</a>");
-		}
+<%
+  for (SuiteEntry suite : conf.getSuites().values()) {
+	out.print("<li>");
+	String link = suite.getLink();
+	if (link == null) {
+		out.print(suite.getTitle());
+	} else {
+		out.print("<a href=\"" + link + "\">" + suite.getTitle() + "</a>");
 	}
-}
-
-Url = new URL(request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath());
---%>
+	out.println("<br/>");
+	String desc = suite.getDescription();
+	if (desc != null) {
+		out.println(desc);
+	}
+    out.println("<br/>");
+    if (null != suite.getDataLink()) {
+		out.print("<a href=\"" + suite.getDataLink() + "\">" + "Test data</a>");
+	}
+  }
+%>
 			</ul>
 		</p>
         <p>

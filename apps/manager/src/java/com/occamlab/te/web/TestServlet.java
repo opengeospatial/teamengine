@@ -24,6 +24,7 @@ package com.occamlab.te.web;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Iterator;
@@ -207,6 +208,13 @@ public class TestServlet extends HttpServlet {
                     } else {
                         opts.addTestPath(test);
                     }
+                    for (Entry<String,String> entry : params.entrySet()) {
+                        if(entry.getKey().startsWith("profile_")) {
+                            String profileId = entry.getValue();
+                            int i = profileId.indexOf("}");
+                            opts.addTestPath(sessionid + "/" + profileId.substring(i + 1));
+                        }
+                    }
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
                 } else if (mode.equals("resume")) {
@@ -227,12 +235,20 @@ public class TestServlet extends HttpServlet {
 //                    s.setSuiteName(suite);
                     String description = params.get("description");
                     s.setDescription(description);
-                    s.save(logdir);
                     opts.setSessionId(sessionid);
                     opts.setSourcesName(sources);
                     opts.setSuiteName(suite.getId());
+                    ArrayList<String> profiles = new ArrayList<String>();
+                    for (Entry<String,String> entry : params.entrySet()) {
+                        if(entry.getKey().startsWith("profile_")) {
+                            profiles.add(entry.getValue());
+                            opts.addProfile(entry.getValue());
+                        }
+                    }
+                    s.setProfiles(profiles);
+                    s.save(logdir);
                 }
-System.out.println(opts.getSourcesName());
+//System.out.println(opts.getSourcesName());
                 TECore core = new TECore(engine, indexes.get(opts.getSourcesName()), opts);
 //System.out.println(indexes.get(opts.getSourcesName()).toString());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -315,10 +331,6 @@ System.out.println(opts.getSourcesName());
                 out.println("<head><title>Form Submitted</title></head>");
                 out.print("<body onload=\"window.parent.update()\"></body>");
                 out.println("</html>");
-            } else if (operation.equals("GetScripts")) {
-                response.setContentType("text/xml");
-                out.println("<scripts>");
-                out.println("</scripts>");
             }
         } catch (Exception e) {
             throw new ServletException(e);

@@ -1,10 +1,12 @@
 <%@ page language="java" session="false"
-	import="java.util.*,java.io.*,javax.xml.parsers.*,com.occamlab.te.index.SuiteEntry,com.occamlab.te.*,com.occamlab.te.web.*"%><%!
+	import="java.util.*,com.occamlab.te.index.*,com.occamlab.te.web.*"%><%!
 	Config Conf = null;
 	List<String> organizationList = null;
 	Map<String, List<String>> standardMap = null;
 	Map<String, List<String>> versionMap = null;
 	Map<String, List<String>> revisionMap = null;
+//	Map<String, SuiteEntry> suites = null;
+	Map<String, List<ProfileEntry>> profiles = null;
 	
 	public void jspInit() {
 		try {
@@ -13,6 +15,8 @@
 			standardMap = Conf.getStandardMap();
 			versionMap = Conf.getVersionMap();
 			revisionMap = Conf.getRevisionMap();
+//			suites = Conf.getSuites();
+			profiles = Conf.getProfiles();
 		} catch (Exception e) {	
 			e.printStackTrace(System.out);
 		}
@@ -43,6 +47,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Compliance Testing</title>
 <script>
+    var profiles_key = null;
 
 	function fillOrganization(){ 
 		 // this function is used to fill the category list on load
@@ -134,6 +139,31 @@
 	}//funciton
 
 	
+	function SelectProfile() {
+        var profile_div;
+	    var i = 0;
+		if (profiles_key != null) {
+            profile_div = document.getElementById(profiles_key);
+            if (profile_div != null) {
+				profile_div.style.display = "none";
+				var inputs = profile_div.getElementsByTagName("input");
+				for (i = 0; i < inputs.length; i++) {
+					inputs[i].checked = false;
+				}
+			}
+		}
+	    profiles_key = "Profiles";
+	    profiles_key += "_" + document.standardsForm.Organization.value;
+	    profiles_key += "_" + document.standardsForm.Standard.value;
+	    profiles_key += "_" + document.standardsForm.Version.value;
+	    profiles_key += "_" + document.standardsForm.Test.value;
+        profile_div = document.getElementById(profiles_key);
+        if (profile_div != null) {
+			profile_div.style.display = "block";
+		}
+	}
+
+
 	function removeAllOptions(selectbox)
 	{
 		var i;
@@ -189,13 +219,12 @@
 	
 	function submitform() {
 		var form = document.standardsForm;
-	    var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
-	    if(sourceId != "___"){
+		if (form.Organization.value == "" || form.Standard.value == "" || form.Version.value == "" || form.Test.value == "") {
+	    	alert("Please select from available standards");
+	    } else {
+	        var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
 			document.forms["standardsForm"].elements["sources"].value = sourceId;
 			document.standardsForm.submit();
-	    }
-	    else{
-	    	alert("Please select from available standards");
 	    }
 	}
 				
@@ -229,12 +258,45 @@ Select test suite:
 			</select>
 		</td>
 		<td>
-			<select id="Test" name="Test">
+			<select id="Test" name="Test" onChange="SelectProfile();" >
 			<option value="">Test</option>
 			</select>
 		</td>
 	</tr>
-</table >
+</table>
+<br/>
+Select Profile(s):<br>
+<%
+	for (int i=0; i < organizationList.size(); i++) {
+	    String org = organizationList.get(i);
+		List<String> standardList = standardMap.get(org); 
+		for (int j=0; j < standardList.size(); j++) {
+		    String std = standardList.get(j);
+			List<String> versionList = versionMap.get(org + "_" + std); 
+		    for (int k=0; k < versionList.size(); k++) {
+		        String ver = versionList.get(k);
+				List<String> revisionList = revisionMap.get(org + "_" + std + "_" + ver); 
+				for (int l=0; l < revisionList.size(); l++) {
+				    String rev = revisionList.get(l);
+				    String key = org + "_" + std + "_" + ver + "_" + rev;
+%>
+<div id="Profiles_<%=key%>" style="display:none">
+<%
+					List<ProfileEntry> profileList = profiles.get(key);
+					for (int m=0; m < profileList.size(); m++) {
+					    ProfileEntry profile = profileList.get(m);
+%>
+<input type="checkbox" name="profile_<%=m%>" value="<%=profile.getId()%>"/><%=profile.getTitle()%><br/>
+<%
+					}
+%>
+</div>
+<%
+				}
+		    }
+		}
+	}
+%>
 <br/>
 Enter Session Description (Optional):<br/>
 <input type="text" name="description" id="description" size="50"/>
