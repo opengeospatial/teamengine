@@ -190,9 +190,10 @@
     </copy>
     <copy todir="webapps/teamengine/WEB-INF/lib">
       <fileset dir="apps/engine/lib">
-		  <exclude name="servlet-api.jar"/>
+        <exclude name="servlet-api.jar"/>
       </fileset>
       <fileset dir="apps/engine/dist"/>
+      <fileset dir="apps/manager/dist"/>
       <fileset dir="apps/manager/lib"/>
     </copy>
   </target>
@@ -357,7 +358,6 @@
     <copy todir="build/teamengine${version.stamp}">
       <fileset dir=".">
         <include name="apps/manager/lib/**"/>
-        <exclude name="apps/manager/lib/te-manager.jar"/>
         <include name="apps/manager/resources/**"/>
         <include name="apps/manager/src/**"/>
         <include name="apps/manager/test/**"/>

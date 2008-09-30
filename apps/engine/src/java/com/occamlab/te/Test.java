@@ -123,9 +123,10 @@ public class Test {
         if (workDir == null) {
             workDir = new File(System.getProperty("java.io.tmpdir"), "te_work");
             workDir.mkdirs();
+            System.out.println("No working directory supplied.  Using " + workDir.toString());
         } else {
             if (!workDir.isDirectory()) {
-                System.out.println("Error: Working directory " + workDir + " does not exist.");
+                System.out.println("Error: Working directory " + workDir.toString() + " does not exist.");
                 return;
             }
         }

@@ -216,6 +216,7 @@
 			 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 			 xmlns:tec="java:com.occamlab.te.TECore"
 			 version="{$xsl-ver}">
+				<xsl:namespace name="saxon" select="'http://saxon.sf.net/'"/>
 				<xsl:copy-of select="namespace::*"/>	<!-- Copy namespaces from source CTL -->
 				<xsl:call-template name="template-includes">
 					<xsl:with-param name="qname" select="$qname"/>
