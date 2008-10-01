@@ -376,7 +376,11 @@ public class TECore implements Runnable {
         String label = n.getAttributeValue(LABEL_QNAME);
         if (label == null) {
             XdmNode value = (XdmNode)n.axisIterator(Axis.CHILD).next();
-            XdmItem childItem = value.axisIterator(Axis.CHILD).next();
+            XdmItem childItem = null;
+            try {
+                childItem = value.axisIterator(Axis.CHILD).next();
+            } catch (Exception e) {
+            }
             if (childItem == null) {
                 XdmSequenceIterator it = value.axisIterator(Axis.ATTRIBUTE);
                 if (it.hasNext()) {
@@ -408,11 +412,14 @@ public class TECore implements Runnable {
         XdmSequenceIterator it = params.axisIterator(Axis.CHILD);
         while (it.hasNext()) {
             XdmNode n = (XdmNode)it.next();
-            String tagname = n.getNodeName().getLocalName(); 
-            if (tagname.equals("param")) {
-                String name = n.getAttributeValue(LOCALNAME_QNAME);
-                String label = getLabel(n);
-                newText = StringUtils.replaceAll(newText, "{$" + name + "}", label);
+            QName qname = n.getNodeName();
+            if (qname != null) {
+            String tagname = qname.getLocalName(); 
+                if (tagname.equals("param")) {
+                    String name = n.getAttributeValue(LOCALNAME_QNAME);
+                    String label = getLabel(n);
+                    newText = StringUtils.replaceAll(newText, "{$" + name + "}", label);
+                }
             }
         }
         newText = StringUtils.replaceAll(newText, "{$context}", contextLabel);

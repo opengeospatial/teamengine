@@ -25,6 +25,7 @@ import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.ParameterSet;
 import net.sf.saxon.om.EmptyIterator;
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.StructuredQName;
@@ -71,24 +72,8 @@ public class TEXSLFunctionCall extends TEFunctionCall {
             xml += " local-name=\"" + param.getLocalPart() + "\"";
             xml += " namespace-uri=\"" + param.getNamespaceURI() + "\"";
             xml += " prefix=\"" + param.getPrefix() + "\"";
-            ValueRepresentation vr = ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
-//            if (vr instanceof NodeInfo) {
-//                NodeInfo ni = (NodeInfo)vr;
-//                int kind = ni.getNodeKind();
-//                if (kind == Type.DOCUMENT || kind == Type.ELEMENT) {
-//                    xml += ">\n";
-//                    xml += "<value>";
-//                    xml += S9APIUtils.makeNode(ni).toString();
-//                    xml += "</value>\n";
-//                } else if (kind == Type.ATTRIBUTE) {
-//                    xml += ">\n";
-//                    xml += "<value " + ni.getDisplayName() + "=\"" + ni.getStringValue() + "\"";
-//                    if (ni.getPrefix() != null) {
-//                        xml += " xmlns:" + ni.getPrefix() + "=\"" + ni.getURI() + "\"";
-//                    }
-//                    xml += "/>\n";
-//                }
-//            } else {
+            ValueRepresentation vr = ExpressionTool.eagerEvaluate(argExpressions[i], context);
+//            ValueRepresentation vr = ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
             Value v = Value.asValue(vr);
             try {
                 Node n = (Node)v.convertToJava(Node.class, context);
@@ -111,7 +96,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
                     xml += " type=\"" + getTypeName(it) + "\">\n";
                     xml += "<value>" + n.getNodeValue() + "</value>\n";
                 }
-            } catch (XPathException e) {
+            } catch (Exception e) {
                 ItemType it = v.getItemType(context.getConfiguration().getTypeHierarchy());
                 xml += " type=\"" + getTypeName(it) + "\">\n";
                 xml += "<value>" + v.getStringValue() + "</value>\n";

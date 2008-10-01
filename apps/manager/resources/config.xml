@@ -55,6 +55,30 @@
 			</standard>
 		</organization>
 		<organization>
+			<name>NSG</name>
+			<title>NSG</title>
+			<standard>
+				<name>WMS</name>
+				<title>Web Map Service</title>
+				<version>
+					<name>1.1.1</name>
+					<suite>
+						<namespace-uri>http://www.opengis.net/wms</namespace-uri>
+						<prefix>wms</prefix>
+						<local-name>main_wms</local-name>
+						<title>Web Map Service (WMS) 1.1.1</title>
+						<description>Validates that a WMS 1.1.1 is compliant.</description>
+					</suite>
+					<revision>
+						<name>A</name>
+						<sources>
+							<source>nsg/ctl</source>
+						</sources>
+					</revision>
+				</version>
+			</standard>
+		</organization>
+		<organization>
 			<name>NGC</name>
 			<standard>
 				<name>ProfileTest</name>

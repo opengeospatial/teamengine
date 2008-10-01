@@ -175,7 +175,7 @@
 				</local-name>
 				<prefix/>
 				<namespace-uri>
-					<xsl:value-of select="namespace::*[name()='']"/>
+<!-- 					<xsl:value-of select="namespace::*[name()='']"/>  -->
 				</namespace-uri>
 			</xsl:otherwise>
 		</xsl:choose>
