@@ -23,6 +23,7 @@ package com.occamlab.te;
 import java.io.File;
 
 import com.occamlab.te.index.Index;
+import com.occamlab.te.util.LogUtils;
 
 public class Test {
     public static final int TEST_MODE = 0;
@@ -140,6 +141,19 @@ public class Test {
             ) {
             syntax(cmd);
             return;
+        }
+        
+        if (runOpts.getProfiles().size() > 0 && logDir == null) {
+            System.out.println("Error: A -logdir parameter is required for testing profiles");
+            return;
+        }
+        
+        if (session == null) {
+            if (logDir == null) {
+                runOpts.setSessionId("s0001");
+            } else {
+                runOpts.setSessionId(LogUtils.generateSessionId(logDir));
+            }
         }
 
         Thread.currentThread().setName("TEAM Engine");

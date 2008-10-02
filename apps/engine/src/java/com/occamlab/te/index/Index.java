@@ -93,6 +93,7 @@ public class Index {
     }
     
     public void persist(File file) throws Exception {
+        file.getParentFile().mkdirs();
         PrintWriter out = new PrintWriter(file);
         out.println("<index>");
         for (Element el : elements) {
@@ -212,7 +213,7 @@ public class Index {
         i = name.indexOf(':');
         if (i >= 0) {
             prefix = name.substring(0, i);
-            localName = name.substring(i);
+            localName = name.substring(i + 1);
         }
         
         Iterator<? extends IndexEntry> it = map.values().iterator();

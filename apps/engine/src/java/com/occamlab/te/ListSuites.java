@@ -1,87 +1,64 @@
 package com.occamlab.te;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Iterator;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import com.occamlab.te.index.Index;
+import com.occamlab.te.index.SuiteEntry;
 
 /**
  * Provides utility methods for managing a collection of CTL test suites.
  * 
  */
 public class ListSuites {
-    public static Collection getSuites(ArrayList sources) throws Exception {
-        LinkedHashMap<String, Suite> suites = new LinkedHashMap<String, Suite>();
-
-        System.setProperty(
-                "org.apache.xerces.xni.parser.XMLParserConfiguration",
-                "org.apache.xerces.parsers.XIncludeParserConfiguration");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setFeature(
-                "http://apache.org/xml/features/xinclude/fixup-base-uris",
-                false);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        Iterator it = sources.iterator();
-        while (it.hasNext()) {
-            File f = (File) it.next();
-            File files[];
-            if (f.isDirectory()) {
-                files = f.listFiles();
-            } else {
-                files = new File[1];
-                files[0] = f;
-            }
-            for (int i = 0; i < files.length; i++) {
-                String path = files[i].getAbsolutePath().toLowerCase();
-                if (path.indexOf(".ctl") > 0 || path.indexOf(".xml") > 0) {
-                    Document doc = db.parse(files[i]);
-                    NodeList suiteElements = doc.getElementsByTagNameNS(
-                            Test.CTL_NS, "suite");
-                    for (int j = 0; j < suiteElements.getLength(); j++) {
-                        Suite suite = new Suite((Element) suiteElements.item(j));
-                        suites.put(suite.getKey(), suite);
-                    }
-                }
-            }
-        }
-        return suites.values();
-    }
-
+    
     public static void main(String[] args) throws Exception {
-        ArrayList<File> sources = new ArrayList<File>();
-        String cmd = "java com.occamlab.te.ListSessions";
+        SetupOptions setupOpts = new SetupOptions();
 
+        boolean sourcesSupplied = false;
+        String cmd = "java com.occamlab.te.ListSuites";
+        File workDir = null;
+
+        // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-cmd=")) {
                 cmd = args[i].substring(5);
             } else if (args[i].startsWith("-source=")) {
-                sources.add(new File(args[i].substring(8)));
+                File f = new File(args[i].substring(8));
+                if (f.exists()) {
+                    setupOpts.addSource(f);
+                    sourcesSupplied = true;
+                } else {
+                    System.out.println("Error: Can't find source \"" + args[i].substring(8) + "\".");
+                    return;
+                }
+            } else if (args[i].startsWith("-workdir=")) {
+                workDir = new File(args[i].substring(9));
+                setupOpts.setWorkDir(workDir);
+            }
+        }
+        
+        if (workDir == null) {
+            workDir = new File(System.getProperty("java.io.tmpdir"), "te_work");
+            workDir.mkdirs();
+            System.out.println("No working directory supplied.  Using " + workDir.toString());
+        } else {
+            if (!workDir.isDirectory()) {
+                System.out.println("Error: Working directory " + workDir.toString() + " does not exist.");
+                return;
             }
         }
 
-        if (sources.size() == 0) {
-            System.out.println("Syntax:");
-            System.out.println(cmd
-                    + " -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
+        if (!sourcesSupplied) {
+            System.out.println(cmd + " [-workdir=dir] -source=ctlfile|dir [-source=ctlfile|dir] ...");
             return;
         }
 
-        Iterator it = getSuites(sources).iterator();
-        while (it.hasNext()) {
-            Suite suite = (Suite) it.next();
-            System.out.print("Suite " + suite.getPrefix() + ":"
-                    + suite.getLocalName());
-            System.out.println(" (" + suite.getKey() + ")");
+        Index index = Generator.generateXsl(setupOpts);
+        
+        for (String suiteId : index.getSuiteKeys()) {
+            SuiteEntry suite = index.getSuite(suiteId);
+            System.out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName());
+            System.out.println(" (" + suiteId + ")");
             System.out.println(suite.getTitle());
             String desc = suite.getDescription();
             if (desc != null) {

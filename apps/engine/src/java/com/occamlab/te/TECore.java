@@ -173,7 +173,7 @@ public class TECore implements Runnable {
             String value = param.substring(param.indexOf('=') + 1);
             if (params.get(i).indexOf('=') != 0) {
                 paramsXML += "<param local-name=\"" + name + "\" namespace-uri=\"\" prefix=\"\" type=\"xs:string\">";
-                paramsXML += "<value>" + value + "</value>";
+                paramsXML += "<value><![CDATA[" + value + "]]></value>";
                 paramsXML += "</param>";
             }
         }
@@ -302,12 +302,22 @@ public class TECore implements Runnable {
             throw new Exception("Error: Profile " + profileName + " not found.");
         }
 
+        SuiteEntry suite = index.getSuite(profile.getBaseSuite());
         String sessionId = opts.getSessionId();
         Document log = LogUtils.readLog(opts.getLogDir(), sessionId);
+        if (log == null) {
+//            if (opts.getLogDir() == null) {
+//                File tempLogDir = File.createTempFile("telog", null);
+//                tempLogDir.delete();
+//                tempLogDir.mkdir();
+//                opts.setLogDir(tempLogDir);
+//            }
+            execute_suite(suite.getId(), params);
+            log = LogUtils.readLog(opts.getLogDir(), sessionId);
+        }
         String testId = LogUtils.getTestIdFromLog(log);
         List<String> baseParams = LogUtils.getParamListFromLog(engine.getBuilder(), log);
         TestEntry test = index.getTest(testId);
-        SuiteEntry suite = index.getSuite(profile.getBaseSuite());
         if (suite.getStartingTest().equals(test.getQName())) {
             ArrayList<String> kvps = new ArrayList<String>();
             kvps.addAll(baseParams);

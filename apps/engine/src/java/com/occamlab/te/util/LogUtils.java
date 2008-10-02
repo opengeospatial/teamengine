@@ -51,14 +51,13 @@ public class LogUtils {
     
     // Reads a log from disk
     public static Document readLog(File logDir, String callpath) throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        Document doc = db.newDocument();
         File dir = new File(logDir, callpath);
         File f = new File(dir, "log.xml");
         if (f.exists()) {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.newDocument();
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer t = tf.newTransformer();
             t.setErrorListener(new com.occamlab.te.NullErrorListener());
