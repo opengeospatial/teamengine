@@ -9,10 +9,11 @@
 
   <!-- Load property overrides from user home -->
   <property file="${user.home}/${ant.project.name}.properties"/>
-  <property file="build.properties"/>
 
+  <property file="build.properties"/>
   <property name="common.lib.dir" value="${basedir}/lib"/>
   <property name="usersdir" value="webapps/teamengine/WEB-INF/users"/>
+
   <property name="component.excludes" value=""/>
   <property name="script.excludes" value=""/>     <!-- may provide patterns such as "wms-1.1.1/** wms-1.3.0/**" to prevent building/executing script packages -->
 
@@ -90,16 +91,11 @@
     <basename property="scriptname" file="${script}"/>
     <echo file="${configfile}" append="true">  &lt;sources id="${scriptname}"&gt;${line.separator}</echo>
     <if>
-      <available file="${script}/ctl/main.ctl"/>
+      <available file="${script}/build.properties"/>
       <then>
-        <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl/main.ctl&lt;/source&gt;${line.separator}</echo>
+        <property file="${script}/build.properties"/>
+        <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/${source}&lt;/source&gt;${line.separator}</echo>
       </then>
-	  <elseif>
-		<available file="${script}/ctl/main.xml"/>
-		<then>
-		  <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl/main.xml&lt;/source&gt;${line.separator}</echo>
-		</then>
-	  </elseif>
       <else>
         <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl&lt;/source&gt;${line.separator}</echo>
       </else>
@@ -124,24 +120,8 @@
       </then>
       <else>
         <echo file="${configfile}">&lt;config&gt;${line.separator}</echo>
-		<if>
-		  <isset property="home" />
-		  <then>
-			<echo file="${configfile}" append="true">  &lt;home&gt;${home}&lt;/home&gt;${line.separator}</echo>
-		  </then>
-		  <else>
-			<echo file="${configfile}" append="true">  &lt;home&gt;&lt;/home&gt;${line.separator}</echo>
-		  </else>
-		</if>
-		<if>
-		  <contains string="${usersdir}" substring="${catalina.base}" />
-		  <then>
-			<echo file="${configfile}" append="true">  &lt;usersdir&gt;/users&lt;/usersdir&gt;${line.separator}</echo>
-		  </then>
-		  <else>
-			<echo file="${configfile}" append="true">  &lt;usersdir&gt;${usersdir}&lt;/usersdir&gt;${line.separator}</echo>
-		  </else>
-		</if>		
+        <echo file="${configfile}" append="true">  &lt;home&gt;&lt;/home&gt;${line.separator}</echo>
+        <echo file="${configfile}" append="true">  &lt;usersdir&gt;${usersdir}&lt;/usersdir&gt;${line.separator}</echo>
         <foreach param="script" target="config.xml.script" inheritall="true">
           <path refid="scripts.path"/>
         </foreach>
@@ -253,6 +233,12 @@
 
   <target name="webapp.script">
     <if>
+      <available file="${script}/build.xml"/>
+      <then>
+        <ant dir="${script}"/>
+      </then>
+    </if>
+    <if>
       <available file="${script}/resources"/>
       <then>
         <copy todir="webapps/teamengine/WEB-INF/classes">
@@ -315,6 +301,7 @@
     <copy todir="build/teamengine${version.stamp}">
       <fileset dir=".">
         <include name="apps/engine/lib/**"/>
+        <include name="apps/engine/dist/**"/>
         <include name="apps/engine/resources/**"/>
         <exclude name="apps/engine/resources/com/occamlab/te/scripts/*.dxsl"/>
         <exclude name="apps/engine/resources/com/occamlab/te/scripts/*.txsl"/>
