@@ -572,6 +572,9 @@ public class TECore implements Runnable {
         fnPath += Long.toHexString(crc.getValue()) + "/";
         XdmNode n = executeTemplate(fe, S9APIUtils.makeNode(params), context);
         fnPath = oldFnPath;
+        if (n == null) {
+            return null;
+        }
         return n.getUnderlyingNode();
     }
 
