@@ -31,6 +31,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.Serializer;
@@ -57,6 +58,7 @@ public class Generator {
         
         // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
+        processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
         File generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
         XsltExecutable generatorXsltExecutable = generatorCompiler.compile(new StreamSource(generatorStylesheet));

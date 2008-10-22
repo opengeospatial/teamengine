@@ -25,9 +25,6 @@
  xmlns:ctl="http://www.occamlab.com/ctl"
  xmlns:te="http://www.occamlab.com/te"
  xmlns:saxon="http://saxon.sf.net/"
- xmlns:xi="http://www.w3.org/2001/XInclude"
- xmlns:xs="http://www.w3.org/2001/XMLSchema"
- xmlns:fn="http://www.w3.org/2005/xpath-functions"
  extension-element-prefixes="saxon"
  version="2.0">
  
@@ -53,6 +50,9 @@
 	
 	<xsl:param name="outdir"/>
 	<xsl:param name="xsl-ver">1.0</xsl:param>
+	<xsl:variable name="namespaces">
+		<namespaces/> <!-- Placeholder element to hold default namespaces -->
+	</xsl:variable>
 
 	<!-- Stack for current filename.  Initially the source CTL file.  Include files are added to the stack as they are processed -->
 <!-- 	<xsl:variable name="filename-stack" select="stack:new()"/> -->
@@ -97,17 +97,21 @@
 		<xsl:variable name="file" select="file:new(concat($outdir, '/', $prefix, $seqno, '$', $local-name, '.', $file-type))"/>	<!-- Example "/workdir/ns$name.fn" -->
 		<xsl:choose>
 			<xsl:when test="file:exists($file)">
+<!--
 				<xsl:variable name="qname">
-					<xsl:for-each select="saxon:discard-document(document(uri:toString(file:toURI($file))))/xsl:transform/xsl:template">	<!-- Get existing template from disk -->
+					<xsl:for-each select="saxon:discard-document(document(uri:toString(file:toURI($file))))/xsl:transform/xsl:template">	<!- Get existing template from disk ->
 						<xsl:call-template name="parse-qname"/>
 					</xsl:for-each>
 				</xsl:variable>
+ -->
 				<xsl:choose>
+<!-- 
 					<xsl:when test="$qname/namespace-uri = $namespace-uri">
-						<!-- Duplicate object -->
+						<!- Duplicate object ->
 						<xsl:message>Warning: Overwriting <xsl:value-of select="uri:toString(file:toURI($file))"/></xsl:message>
 						<xsl:value-of select="uri:toString(file:toURI($file))"/>
 					</xsl:when>
+ -->
 					<xsl:when test="$prefix = ''">
 						<!-- Assign a prefix and try again -->
 						<xsl:value-of select="te:get-filename($file-type, 'ns', $local-name, $namespace-uri, '')"/>
@@ -217,7 +221,13 @@
 			 xmlns:tec="java:com.occamlab.te.TECore"
 			 version="{$xsl-ver}">
 				<xsl:namespace name="saxon" select="'http://saxon.sf.net/'"/>
-				<xsl:copy-of select="namespace::*"/>	<!-- Copy namespaces from source CTL -->
+				<xsl:for-each select="namespace::*">
+					<xsl:variable name="prefix" select="name()"/>
+					<xsl:if test="not($namespaces/namespaces/namespace::*[name()=$prefix])">
+						<xsl:copy/>
+					</xsl:if>
+				</xsl:for-each>
+				<!-- xsl:copy-of select="namespace::*"/ -->	<!-- Copy namespaces from source CTL -->
 				<xsl:call-template name="template-includes">
 					<xsl:with-param name="qname" select="$qname"/>
 				</xsl:call-template>
@@ -225,7 +235,7 @@
 				<txsl:param name="te:params"/>
 				<xsl:if test="ctl:param">
 					<!-- Generate a function for parsing parameters -->
-					<txsl:function name="te:param-value">
+					<txsl:function name="te:param-value" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 						<txsl:param name="local-name"/>
 						<txsl:param name="namespace-uri"/>
 						<txsl:for-each select="$te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri]">
@@ -398,7 +408,7 @@
 
 	<!-- Handle includes -->
 
-	<xsl:template match="ctl:include|xi:include">
+	<xsl:template match="ctl:include">
 		<!-- matches the "main" template -->
 		<xsl:apply-templates select="document(@href)" mode="include"/>
 	</xsl:template>
@@ -453,7 +463,7 @@
 			<xsl:for-each select="ctl:exclude">
 				<xsl:variable name="exclude" select="."/>
 				<exclude>
-					<xsl:for-each select="fn:tokenize(fn:substring-after(., '/'), '/')">
+					<xsl:for-each select="fn:tokenize(fn:substring-after(., '/'), '/')" xmlns:fn="http://www.w3.org/2005/xpath-functions">
 						<xsl:variable name="token" select="."/>
 						<xsl:variable name="test">
 							<xsl:for-each select="$exclude">

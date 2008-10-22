@@ -13,6 +13,7 @@
 
   <property name="common.lib.dir" value="${basedir}/lib"/>
   <property name="usersdir" value="webapps/teamengine/WEB-INF/users"/>
+  <property name="workdir" value="webapps/teamengine/WEB-INF/work"/>
   <property name="component.excludes" value=""/>
   <property name="script.excludes" value=""/>     <!-- may provide patterns such as "wms-1.1.1/** wms-1.3.0/**" to prevent building/executing script packages -->
 
@@ -51,6 +52,7 @@
       <then>
         <ant dir="apps/manager" target="clean" />
         <ant dir="setup/UserFilesRealm" target="clean" />
+        <ant dir="setup/ConfigFileBuilder" target="clean" />
         <delete file="setup/teamengine.war" />
       </then>
     </if>
@@ -85,29 +87,11 @@
     </foreach>
   </target>
 
-
-  <target name="config.xml.script">
-    <basename property="scriptname" file="${script}"/>
-    <echo file="${configfile}" append="true">  &lt;sources id="${scriptname}"&gt;${line.separator}</echo>
-    <if>
-      <available file="${script}/ctl/main.ctl"/>
-      <then>
-        <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl/main.ctl&lt;/source&gt;${line.separator}</echo>
-      </then>
-	  <elseif>
-		<available file="${script}/ctl/main.xml"/>
-		<then>
-		  <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl/main.xml&lt;/source&gt;${line.separator}</echo>
-		</then>
-	  </elseif>
-      <else>
-        <echo file="${configfile}" append="true">    &lt;source&gt;webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl&lt;/source&gt;${line.separator}</echo>
-      </else>
-    </if>
-    <echo file="${configfile}" append="true">  &lt;/sources&gt;${line.separator}</echo>
+  <target name="configFileBuilder">
+  	<ant dir="setup/ConfigFileBuilder"/>
   </target>
 
-  <target name="config.xml">
+  <target name="config.xml" depends="jar.engine,configFileBuilder">
     <mkdir dir="webapps"/>
     <mkdir dir="webapps/teamengine"/>
     <mkdir dir="webapps/teamengine/WEB-INF"/>
@@ -123,29 +107,13 @@
         <copy tofile="${configfile}" file="apps/manager/src/conf/config.xml" overwrite="true"/>
       </then>
       <else>
-        <echo file="${configfile}">&lt;config&gt;${line.separator}</echo>
-		<if>
-		  <isset property="home" />
-		  <then>
-			<echo file="${configfile}" append="true">  &lt;home&gt;${home}&lt;/home&gt;${line.separator}</echo>
-		  </then>
-		  <else>
-			<echo file="${configfile}" append="true">  &lt;home&gt;&lt;/home&gt;${line.separator}</echo>
-		  </else>
-		</if>
-		<if>
-		  <contains string="${usersdir}" substring="${catalina.base}" />
-		  <then>
-			<echo file="${configfile}" append="true">  &lt;usersdir&gt;/users&lt;/usersdir&gt;${line.separator}</echo>
-		  </then>
-		  <else>
-			<echo file="${configfile}" append="true">  &lt;usersdir&gt;${usersdir}&lt;/usersdir&gt;${line.separator}</echo>
-		  </else>
-		</if>		
-        <foreach param="script" target="config.xml.script" inheritall="true">
-          <path refid="scripts.path"/>
-        </foreach>
-        <echo file="${configfile}" append="true">&lt;/config&gt;</echo>
+      	<java fork="true" dir="scripts" classname="com.occamlab.te.ConfigFileBuilder" output="${configfile}">
+          <classpath>
+            <pathelement path="apps/engine/build/classes"/>
+            <pathelement path="setup/ConfigFileBuilder/build"/>
+          </classpath>
+          <arg line="-usersdir=${usersdir} -workdir=${workdir} -scriptsdir=webapps/teamengine/WEB-INF/scripts"/>
+        </java>
       </else>
     </if>
   </target>
@@ -367,13 +335,15 @@
         <include name="docs/manager.txt"/>
         <include name="setup/UserFilesRealm/src/**"/>
         <include name="setup/UserFilesRealm/build.xml"/>
+        <include name="setup/ConfigFileBuilder/src/**"/>
+        <include name="setup/ConfigFileBuilder/build.xml"/>
       </fileset>
     </copy>
     <mkdir dir="zips"/>
     <zip destfile="zips/teamengine-manager${version.stamp}-src.zip" basedir="build"/>
   </target>
 
-  <target name="zip.manager.bin" depends="war,jar.realm">
+  <target name="zip.manager.bin" depends="init.version.stamp,war,jar.realm">
     <delete dir="build"/>
     <mkdir dir="build"/>
     <mkdir dir="build/teamengine${version.stamp}"/>
@@ -418,12 +388,26 @@
 
   <target name="zips" depends="zip.engine.bin,zip.engine.src,zip.manager.bin,zip.manager.src,zip.components,zip.scripts"/>
 
-  <target name="all" depends="zips">
+  <target name="all">
+    <antcall target="zip.engine.src"/>
+    <antcall target="zip.engine.bin"/>
+    <if>
+      <available file="components"/>
+      <then>
+        <antcall target="zip.components"/>
+      </then>
+    </if>
+    <if>
+      <available file="scripts"/>
+      <then>
+        <antcall target="zip.scripts"/>
+      </then>
+    </if>
     <if>
       <available file="apps/manager"/>
       <then>
-        <antcall target="war"/>
-        <antcall target="jar.realm"/>
+        <antcall target="zip.manager.src"/>
+        <antcall target="zip.manager.bin"/>
       </then>
     </if>
   </target>
