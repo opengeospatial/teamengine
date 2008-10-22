@@ -44,7 +44,7 @@ import com.occamlab.te.util.DomUtils;
 public class Index {
     File indexFile = null;
     List<File> dependencies = new ArrayList<File>();
-    Map<String, FunctionEntry> functionMap = new HashMap<String, FunctionEntry>();
+    Map<String, List<FunctionEntry>> functionsMap = new HashMap<String, List<FunctionEntry>>();
     Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
     Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
     Map<String, ProfileEntry> profileMap = new HashMap<String, ProfileEntry>();
@@ -83,7 +83,14 @@ public class Index {
                     testMap.put(te.getId(), te);
                 } else if (name.equals("function")) {
                     FunctionEntry fe = new FunctionEntry(el);
-                    functionMap.put(fe.getId(), fe);
+                    List<FunctionEntry> functions = functionsMap.get(fe.getId());
+                    if (functions == null) {
+                        functions = new ArrayList<FunctionEntry>();
+                        functions.add(fe);
+                        functionsMap.put(fe.getId(), functions);
+                    } else {
+                        functions.add(fe);
+                    }
                 } else if (name.equals("parser")) {
                     ParserEntry pe = new ParserEntry(el);
                     parserMap.put(pe.getId(), pe);
@@ -118,23 +125,26 @@ public class Index {
     public void add(Index index) {
         elements.addAll(index.elements);
         dependencies.addAll(index.dependencies);
-        functionMap.putAll(index.functionMap);
+        functionsMap.putAll(index.functionsMap);
         suiteMap.putAll(index.suiteMap);
         profileMap.putAll(index.profileMap);
         testMap.putAll(index.testMap);
         parserMap.putAll(index.parserMap);
     }
     
-    public FunctionEntry getFunction(String name) {
-        return (FunctionEntry)getEntry(functionMap, name);
+    public List<FunctionEntry> getFunctions(String name) {
+        if (name.startsWith("{")) {
+            return functionsMap.get(name);
+        }
+        throw new RuntimeException("Invalid function name");
     }
     
-    public FunctionEntry getFunction(QName qname) {
-        return (FunctionEntry)getEntry(functionMap, qname);
+    public List<FunctionEntry> getFunctions(QName qname) {
+        return getFunctions("{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
     }
     
     public Set<String> getFunctionKeys() {
-        return functionMap.keySet();
+        return functionsMap.keySet();
     }
     
     public ParserEntry getParser(String name) {

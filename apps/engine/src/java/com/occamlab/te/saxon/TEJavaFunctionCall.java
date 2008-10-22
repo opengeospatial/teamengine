@@ -75,11 +75,11 @@ public class TEJavaFunctionCall extends TEFunctionCall {
 
         Object instance = null;
         if (fe.isInitialized()) {
-            instance = core.getFunctionInstance(fe.getId());
+            instance = core.getFunctionInstance(fe.hashCode());
             if (instance == null) {
                 try {
                     instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams());
-                    core.putFunctionInstance(fe.getId(), instance);
+                    core.putFunctionInstance(fe.hashCode(), instance);
                 } catch (Exception e) {
                     throw new XPathException(e);
                 }

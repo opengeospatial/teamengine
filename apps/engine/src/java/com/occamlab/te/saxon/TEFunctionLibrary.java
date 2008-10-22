@@ -1,6 +1,7 @@
 package com.occamlab.te.saxon;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import com.occamlab.te.Test;
 import com.occamlab.te.index.FunctionEntry;
@@ -32,25 +33,26 @@ public class TEFunctionLibrary implements FunctionLibrary {
         }
 
         String key = functionName.getClarkName();
-        FunctionEntry fe = index.getFunction(key);
-        if (fe == null) {
-            // Just return null rather than throw an exception, because there may be
-            // another function library that supports this function
-            return null;
-        }
-
+        List<FunctionEntry> functions = index.getFunctions(key);
         int argCount = staticArgs.length;
-        if (argCount < fe.getMinArgs() || argCount > fe.getMaxArgs()) {
-            return null;
+        
+        if (functions != null) {
+            for (FunctionEntry fe : functions) {
+                if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
+                    if (fe.isJava()) {
+                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env);
+                        return fc;
+                    } else {
+                        TEXSLFunctionCall fc = new TEXSLFunctionCall(fe, functionName, staticArgs, env);
+                        return fc;
+                    }
+                }
+            }
         }
 
-        if (fe.isJava()) {
-            TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env);
-            return fc;
-        } else {
-            TEXSLFunctionCall fc = new TEXSLFunctionCall(fe, functionName, staticArgs, env);
-            return fc;
-        }
+        // Just return null rather than throw an exception, because there may be
+        // another function library that supports this function
+        return null;
     }
 
     public FunctionLibrary copy() {
@@ -59,14 +61,15 @@ public class TEFunctionLibrary implements FunctionLibrary {
 
     public boolean isAvailable(StructuredQName functionName, int arity) {
         String key = functionName.getClarkName();
-        FunctionEntry fe = index.getFunction(key);
-        if (fe == null) {
-            return false;
+        List<FunctionEntry> functions = index.getFunctions(key);
+        if (functions != null) {
+            for (FunctionEntry fe : functions) {
+                if (arity >= fe.getMinArgs() && arity <= fe.getMaxArgs()) {
+                    return true;
+                }
+            }
         }
-        if (fe.isJava()) {
-            return (arity >= fe.getMinArgs() && arity <= fe.getMaxArgs());
-        }
-        return true;
+        return false;
     }
 
 }

@@ -151,9 +151,11 @@ public class Engine {
             loadExecutable(te, sourcesName);
         }
         for (String key : index.getFunctionKeys()) {
-            FunctionEntry fe = index.getFunction(key);
-            if (!fe.isJava()) {
-                loadExecutable(fe, sourcesName);
+            List<FunctionEntry> functions = index.getFunctions(key);
+            for (FunctionEntry fe : functions) {
+                if (!fe.isJava()) {
+                    loadExecutable(fe, sourcesName);
+                }
             }
         }
     }

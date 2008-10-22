@@ -57,9 +57,12 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.instruct.Executable;
+import net.sf.saxon.om.AxisIterator;
+import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
@@ -74,6 +77,7 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
+import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 
 import org.w3c.dom.Attr;
@@ -120,7 +124,7 @@ public class TECore implements Runnable {
     PrintWriter logger = null;          // Logger for current test
     volatile String formHtml;                    // HTML representation for an active form 
     volatile Document formResults;               // Holds form results until they are retrieved
-    Map<String, Object>functionInstances = new HashMap<String, Object>();
+    Map<Integer, Object>functionInstances = new HashMap<Integer, Object>();
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();
 
@@ -568,7 +572,7 @@ public class TECore implements Runnable {
     public NodeInfo executeXSLFunction(XPathContext context, FunctionEntry fe, NodeInfo params) throws Exception {
         String oldFnPath = fnPath;
         CRC32 crc = new CRC32();
-        crc.update(fe.getId().getBytes());
+        crc.update((fe.getPrefix() + fe.getId()).getBytes());
         fnPath += Long.toHexString(crc.getValue()) + "/";
         XdmNode n = executeTemplate(fe, S9APIUtils.makeNode(params), context);
         fnPath = oldFnPath;
@@ -578,18 +582,93 @@ public class TECore implements Runnable {
         return n.getUnderlyingNode();
     }
 
-    public NodeInfo callFunction(XPathContext context, String localName, String NamespaceURI, NodeInfo params) throws Exception {
+    public Object callFunction(XPathContext context, String localName, String NamespaceURI, NodeInfo params) throws Exception {
 //        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
         String key = "{" + NamespaceURI + "}" + localName;
-        FunctionEntry entry = index.getFunction(key);
-
-        if (entry.isJava()) {
-            //TODO: implement
-            System.out.println("Attempt to call a java function with call-function");
-            return null;
-        } else {
-            return executeXSLFunction(context, entry, params);
+        List<FunctionEntry> functions = index.getFunctions(key);
+        Node paramsNode = NodeOverNodeInfo.wrap(params);
+        List<Element> paramElements = DomUtils.getElementsByTagName(paramsNode, "param");
+        for (FunctionEntry fe : functions) {
+            if (!fe.isJava()) {
+                boolean valid = true;
+                for (Element el : paramElements) {
+                    String uri = el.getAttribute("namespace-uri");
+                    String name = el.getAttribute("local-name");
+                    String prefix = el.getAttribute("prefix");
+                    javax.xml.namespace.QName qname = new javax.xml.namespace.QName(uri, name, prefix); 
+                    if (!fe.getParams().contains(qname)) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) {
+                    return executeXSLFunction(context, fe, params);
+                }
+            }
         }
+
+        for (FunctionEntry fe : functions) {
+            if (fe.isJava()) {
+                int argCount = paramElements.size();
+                if (fe.getMinArgs() >= argCount && fe.getMaxArgs() <= argCount) {
+                    Method method = Misc.getMethod(fe.getClassName(), fe.getMethod(), argCount);
+                    Object[] args = new Object[argCount];
+                    for (int i = 0; i < argCount; i++) {
+                        Element el = DomUtils.getElementByTagName(paramElements.get(i), "value");
+                        Class<?>[] types = method.getParameterTypes();
+                        if (types[i].toString().equals("String")) {
+                            Map<javax.xml.namespace.QName, String> attrs = DomUtils.getAttributes(el);
+                            if (attrs.size() >= 0) {
+                                args[i] = attrs.values().iterator().next();
+                            } else {
+                                args[i] = el.getTextContent();
+                            }
+                        } else if (types[i].toString().equals("char")) {
+                            args[i] = el.getTextContent().charAt(0);
+                        } else if (types[i].toString().equals("boolean")) {
+                            args[i] = Boolean.parseBoolean(el.getTextContent());
+                        } else if (types[i].toString().equals("byte")) {
+                            args[i] = Byte.parseByte(el.getTextContent());
+                        } else if (types[i].toString().equals("short")) {
+                            args[i] = Short.parseShort(el.getTextContent());
+                        } else if (types[i].toString().equals("int")) {
+                            args[i] = Integer.parseInt(el.getTextContent());
+                        } else if (types[i].toString().equals("float")) {
+                            args[i] = Float.parseFloat(el.getTextContent());
+                        } else if (types[i].toString().equals("double")) {
+                            args[i] = Double.parseDouble(el.getTextContent());
+//                        } else if (types[i].isAssignableFrom(Node.class)) {
+                        } else {
+                            args[i] = el.getFirstChild();
+                        }
+                    }
+                    try {
+                        Object instance = null;
+                        if (fe.isInitialized()) {
+//                            String instkey = fe.getId() + "," + Integer.toString(fe.getMinArgs()) + "," + Integer.toString(fe.getMaxArgs());
+                            instance = getFunctionInstance(fe.hashCode());
+                            if (instance == null) {
+                                try {
+                                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams());
+                                    putFunctionInstance(fe.hashCode(), instance);
+                                } catch (Exception e) {
+                                    throw new XPathException(e);
+                                }
+                            }
+                        }
+                        return method.invoke(instance, args);
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        Throwable cause = e.getCause();
+                        String msg = "Error invoking function " + fe.getId() + "\n" + cause.getClass().getName();
+                        if (cause.getMessage() != null) {
+                            msg += ": " + cause.getMessage();
+                        }
+                        throw new Exception(msg, cause);
+                    }
+                }
+            }
+        }
+        throw new Exception("No function {" + NamespaceURI + "}" + localName + " with a compatible signature.");
     }
   
     public void warning() {
@@ -1332,11 +1411,11 @@ public class TECore implements Runnable {
         this.web = web;
     }
     
-    public Object getFunctionInstance(String key) {
+    public Object getFunctionInstance(Integer key) {
         return functionInstances.get(key);
     }
 
-    public Object putFunctionInstance(String key, Object instance) {
+    public Object putFunctionInstance(Integer key, Object instance) {
         return functionInstances.put(key, instance);
     }
     
