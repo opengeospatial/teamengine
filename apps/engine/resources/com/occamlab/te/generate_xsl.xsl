@@ -252,6 +252,12 @@
 									<!-- Empty string cast to saved type -->
 									<txsl:copy-of select="saxon:evaluate(concat('&quot;&quot; cast as ', @type))"/>
 								</txsl:when>
+								<txsl:when test="starts-with(@type, 'document-node')">
+									<!-- Document node -->
+									<txsl:document>
+									<txsl:copy-of select="value/node()"/>
+									</txsl:document>
+								</txsl:when>
 								<txsl:otherwise>
 									<!-- Element or text nodes -->
 									<txsl:copy-of select="value/node()"/>
@@ -740,7 +746,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</txsl:variable>
-		<txsl:value-of select="tec:message($te:core, $te:message-var, '{generate-id()}_{position()}')"/>
+		<txsl:value-of select="tec:message($te:core, $te:message-var, concat('{generate-id()}_', position()))"/>
 	</xsl:template>
 
 	<!-- Currently undocumented and untested.  Serializes an XML value -->

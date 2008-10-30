@@ -612,13 +612,13 @@ public class TECore implements Runnable {
                 int argCount = paramElements.size();
                 if (fe.getMinArgs() >= argCount && fe.getMaxArgs() <= argCount) {
                     Method method = Misc.getMethod(fe.getClassName(), fe.getMethod(), argCount);
+                    Class<?>[] types = method.getParameterTypes();
                     Object[] args = new Object[argCount];
                     for (int i = 0; i < argCount; i++) {
                         Element el = DomUtils.getElementByTagName(paramElements.get(i), "value");
-                        Class<?>[] types = method.getParameterTypes();
-                        if (types[i].toString().equals("String")) {
+                        if (types[i].equals(String.class)) {
                             Map<javax.xml.namespace.QName, String> attrs = DomUtils.getAttributes(el);
-                            if (attrs.size() >= 0) {
+                            if (attrs.size() > 0) {
                                 args[i] = attrs.values().iterator().next();
                             } else {
                                 args[i] = el.getTextContent();
@@ -637,9 +637,14 @@ public class TECore implements Runnable {
                             args[i] = Float.parseFloat(el.getTextContent());
                         } else if (types[i].toString().equals("double")) {
                             args[i] = Double.parseDouble(el.getTextContent());
-//                        } else if (types[i].isAssignableFrom(Node.class)) {
-                        } else {
+                        } else if (Document.class.isAssignableFrom(types[i])) {
+                            args[i] = DomUtils.createDocument(DomUtils.getChildElement(el));
+                        } else if (NodeList.class.isAssignableFrom(types[i])) {
+                            args[i] = el.getChildNodes();
+                        } else if (Node.class.isAssignableFrom(types[i])) {
                             args[i] = el.getFirstChild();
+                        } else {
+                            throw new Exception("Error: Function " + key + " uses unsupported Java type " + types[i].toString());
                         }
                     }
                     try {

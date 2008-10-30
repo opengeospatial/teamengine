@@ -242,15 +242,20 @@ public class DomUtils {
         if (nnm != null) {
             for (int i = 0; i < nnm.getLength(); i++) {
                 Attr att = (Attr)nnm.item(i);
+                String uri = att.getBaseURI();
+                String localname = att.getLocalName();
+                String prefix = att.getPrefix();
                 QName name;
-                if (att.getBaseURI() == null) {
-                    name = new QName(att.getLocalName());
-                } else if (att.getPrefix() == null) {
-                    name = new QName(att.getBaseURI(), att.getLocalName());
+                if (uri == null) {
+                    name = new QName(localname);
+                } else if (prefix == null) {
+                    name = new QName(uri, localname);
                 } else {
-                    name = new QName(att.getBaseURI(), att.getLocalName(), att.getPrefix());
+                    name = new QName(uri, localname, prefix);
                 }
-                atts.put(name, att.getValue());
+                if (prefix == null || !(prefix.equals("xmlns") || prefix.equals("xml"))) {
+                    atts.put(name, att.getValue());
+                }
             }
         }
         return atts;

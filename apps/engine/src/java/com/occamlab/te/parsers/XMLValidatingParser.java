@@ -72,7 +72,12 @@ public class XMLValidatingParser {
             throws Exception {
 
         // Parse Document for schema elements
-        Document d = schemaLinks.getOwnerDocument();
+        Document d;
+        if (schemaLinks instanceof Document) {
+        	d = (Document)schemaLinks;
+        } else {
+        	d = schemaLinks.getOwnerDocument();
+        }
 
         // If instruction body is in ctlp:schemas form, add each schema to the ArrayList
         NodeList nodes = d.getElementsByTagNameNS(

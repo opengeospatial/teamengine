@@ -157,23 +157,29 @@ public class Misc {
                 boolean constructorCorrect = true;
                 for (int j = 0; j < types.length; j++) {
                     Node n = classParams.get(j);
-                    if (Node.class.isAssignableFrom(types[j])) {
+                    if (Document.class.isAssignableFrom(types[j])) {
+                    	if (n instanceof Document) {
+                    		classParamObjects[j] = (Document)n;
+                    	} else {
+                            classParamObjects[j] = DomUtils.createDocument(n);
+                    	}
+                    } else if (Node.class.isAssignableFrom(types[j])) {
                         classParamObjects[j] = n;
-                    } else if (types[j] == String.class) {
+                    } else if (types[j].equals(String.class)) {
                         classParamObjects[j] = n.getTextContent();
-                    } else if (types[j] == Character.class) {
+                    } else if (types[j].toString().equals("char")) {
                         classParamObjects[j] = n.getTextContent().charAt(0);
-                    } else if (types[j] == Boolean.class) {
+                    } else if (types[j].toString().equals("boolean")) {
                         classParamObjects[j] = Boolean.parseBoolean(n.getTextContent());
-                    } else if (types[j] == Byte.class) {
+                    } else if (types[j].toString().equals("byte")) {
                         classParamObjects[j] = Byte.parseByte(n.getTextContent());
-                    } else if (types[j] == Short.class) {
+                    } else if (types[j].toString().equals("short")) {
                         classParamObjects[j] = Short.parseShort(n.getTextContent());
-                    } else if (types[j] == Integer.class) {
+                    } else if (types[j].toString().equals("int")) {
                         classParamObjects[j] = Integer.parseInt(n.getTextContent());
-                    } else if (types[j] == Float.class) {
+                    } else if (types[j].toString().equals("float")) {
                         classParamObjects[j] = Float.parseFloat(n.getTextContent());
-                    } else if (types[j] == Double.class) {
+                    } else if (types[j].toString().equals("double")) {
                         classParamObjects[j] = Double.parseDouble(n.getTextContent());
                     } else {
                         constructorCorrect = false;
