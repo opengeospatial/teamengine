@@ -1226,9 +1226,12 @@ public class TECore implements Runnable {
         return response_e;
     }
 
-    public Node message(String message) {
+    public Node message(String message, String id) {
         String formatted_message = indent + message.trim().replaceAll("\n", "\n" + indent);
         out.println(formatted_message);
+        if (logger != null) {
+            logger.println("<message id=\"" + id + "\"><![CDATA[" + message + "]]></message>");
+        }
         return null;
     }
 

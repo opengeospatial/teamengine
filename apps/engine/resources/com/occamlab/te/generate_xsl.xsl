@@ -740,7 +740,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</txsl:variable>
-		<txsl:value-of select="tec:message($te:core, $te:message-var)"/>
+		<txsl:value-of select="tec:message($te:core, $te:message-var, '{generate-id()}_{position()}')"/>
 	</xsl:template>
 
 	<!-- Currently undocumented and untested.  Serializes an XML value -->
