@@ -94,9 +94,14 @@ public class XMLValidatingParser {
                 schema = new File(e.getTextContent());
             } else if (type.equals("resource")) {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                schema = new File(cl.getResource(e.getTextContent()).getFile());
+                String resource = e.getTextContent();
+                URL url = cl.getResource(resource);
+                if (url == null) {
+                    throw new Exception("Can't find resource " + resource);
+                }
+                schema = new File(url.getFile());
             } else {
-                System.out.println("Incorrect schema resource:  Unknown type!");
+                throw new Exception("Unknown schema resource type " + type);
             }
 
             schemas.add(schema);
@@ -301,7 +306,7 @@ public class XMLValidatingParser {
 	NodeList errorStrings = null;
 	XmlErrorHandler eh = new XmlErrorHandler();
 
-	PrintWriter logger = new PrintWriter(System.out);
+//	PrintWriter logger = new PrintWriter(System.out);
         Element e = instruction.getDocumentElement();
 
 	// Load the schemas declared in the XML element
