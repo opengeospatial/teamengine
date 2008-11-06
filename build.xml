@@ -283,6 +283,7 @@
     <mkdir dir="build/teamengine${version.stamp}"/>
     <copy todir="build/teamengine${version.stamp}">
       <fileset dir=".">
+        <include name="apps/engine/dist/**"/>
         <include name="apps/engine/lib/**"/>
         <include name="apps/engine/resources/**"/>
         <exclude name="apps/engine/resources/com/occamlab/te/scripts/*.dxsl"/>
