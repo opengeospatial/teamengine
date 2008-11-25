@@ -122,7 +122,7 @@ public class TECore implements Runnable {
     int result;                         // Result for current test
     Document prevLog = null;            // Log document for current test from previous  test execution (resume and retest modes only)
     PrintWriter logger = null;          // Logger for current test
-    volatile String formHtml;                    // HTML representation for an active form 
+    volatile String formHtml;                    // HTML representation for an active form
     volatile Document formResults;               // Holds form results until they are retrieved
     Map<Integer, Object>functionInstances = new HashMap<Integer, Object>();
     Map<String, Object>parserInstances = new HashMap<String, Object>();
@@ -131,7 +131,7 @@ public class TECore implements Runnable {
     volatile boolean threadComplete = false;
     volatile boolean stop = false;
     volatile ByteArrayOutputStream threadOutput;
-    
+
     public static final int PASS = 0;
     public static final int WARNING = 1;
     public static final int INHERITED_FAILURE = 2;
@@ -140,35 +140,35 @@ public class TECore implements Runnable {
     static final String XSL_NS = Test.XSL_NS;
     static final String CTL_NS = Test.CTL_NS;
     static final String TE_NS = Test.TE_NS;
-    
+
     static final String INDENT = "   ";
-    
+
     static final QName TECORE_QNAME = new QName("te", TE_NS, "core");
     static final QName TEPARAMS_QNAME = new QName("te", TE_NS, "params");
     static final QName LOCALNAME_QNAME = new QName("local-name");
     static final QName LABEL_QNAME = new QName("label");
-    
+
 //    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
 //        this.engine = engine;
 //        this.index = index;
 //        this.sessionId = sessionId;
 //        this.sourcesName = sourcesName;
-//        
+//
 //        testPath = sessionId;
 //        out = System.out;
 //    }
-    
+
     public TECore(Engine engine, Index index, RuntimeOptions opts) {
         this.engine = engine;
         this.index = index;
         this.opts = opts;
 //        this.sessionId = opts.getSessionId();
 //        this.sourcesName = opts.getSourcesName();
-        
+
         testPath = opts.getSessionId();
         out = System.out;
     }
-    
+
     public String getParamsXML(List<String> params) throws Exception {
         String paramsXML = "<params>";
         for (int i = 0; i < params.size(); i++){
@@ -187,10 +187,10 @@ public class TECore implements Runnable {
 
 //        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
     }
-    
-    
+
+
     XPathContext getXPathContext(TestEntry test, String sourcesName, XdmNode contextNode) throws SaxonApiException {
-        XPathContext context = null; 
+        XPathContext context = null;
         if (test.usesContext()) {
             XsltExecutable xe = engine.loadExecutable(test, sourcesName);
             Executable ex = xe.getUnderlyingCompiledStylesheet().getExecutable();
@@ -199,7 +199,7 @@ public class TECore implements Runnable {
         return context;
     }
 
-    
+
     // Execute tests
     public void execute() throws Exception {
         String sessionId = opts.getSessionId();
@@ -258,7 +258,7 @@ public class TECore implements Runnable {
             throw new Exception("Error: Test " + testName + " not found.");
         }
         XdmNode paramsNode = engine.getBuilder().build(new StreamSource(new StringReader(getParamsXML(params))));
-        XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode); 
+        XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
         return executeTest(test, paramsNode, context);
     }
 
@@ -281,7 +281,7 @@ public class TECore implements Runnable {
         }
         ArrayList<String> kvps = new ArrayList<String>();
         kvps.addAll(params);
-        Document form = suite.getForm(); 
+        Document form = suite.getForm();
         if (form != null) {
             Document results = (Document)form(form, suite.getId());
             for (Element value : DomUtils.getElementsByTagName(results, "value")) {
@@ -326,7 +326,7 @@ public class TECore implements Runnable {
             ArrayList<String> kvps = new ArrayList<String>();
             kvps.addAll(baseParams);
             kvps.addAll(params);
-            Document form = profile.getForm(); 
+            Document form = profile.getForm();
             if (form != null) {
                 Document results = (Document)form(form, profile.getId());
                 for (Element value : DomUtils.getElementsByTagName(results, "value")) {
@@ -338,7 +338,7 @@ public class TECore implements Runnable {
             out.println("\nTesting profile " + name + "...");
             Document baseLog = LogUtils.makeTestList(opts.getLogDir(), sessionId, profile.getExcludes());
             Element baseTest = DomUtils.getElement(baseLog);
-//out.println(DomUtils.serializeNode(baseLog));            
+//out.println(DomUtils.serializeNode(baseLog));
             out.print(TECore.INDENT + "Base tests from suite " + suite.getPrefix() + ":" + suite.getLocalName() + " ");
             String summary = "Not complete";
             if ("yes".equals(baseTest.getAttribute("complete"))) {
@@ -385,7 +385,7 @@ public class TECore implements Runnable {
         XdmNode ret = dest.getXdmNode();
         return ret;
     }
-    
+
     static String getLabel(XdmNode n) {
         String label = n.getAttributeValue(LABEL_QNAME);
         if (label == null) {
@@ -415,12 +415,12 @@ public class TECore implements Runnable {
         }
         return label;
     }
-    
+
     String getAssertionValue(String text, XdmNode paramsVar) {
         if (text.indexOf("$") < 0) {
             return text;
         }
-        
+
         String newText = text;
         XdmNode params = (XdmNode)paramsVar.axisIterator(Axis.CHILD).next();
         XdmSequenceIterator it = params.axisIterator(Axis.CHILD);
@@ -428,7 +428,7 @@ public class TECore implements Runnable {
             XdmNode n = (XdmNode)it.next();
             QName qname = n.getNodeName();
             if (qname != null) {
-            String tagname = qname.getLocalName(); 
+            String tagname = qname.getLocalName();
                 if (tagname.equals("param")) {
                     String name = n.getAttributeValue(LOCALNAME_QNAME);
                     String label = getLabel(n);
@@ -439,7 +439,7 @@ public class TECore implements Runnable {
         newText = StringUtils.replaceAll(newText, "{$context}", contextLabel);
         return newText;
     }
-    
+
     static String getResultDescription(int result) {
         if (result == PASS) {
             return "Passed";
@@ -459,7 +459,7 @@ public class TECore implements Runnable {
         } else {
             prevLog = null;
         }
-        
+
         String assertion = getAssertionValue(test.getAssertion(), params);
         out.print(indent + (prevLog == null ? "Testing " : "Resuming Test "));
         out.println(test.getName() + " (" + testPath + ")...");
@@ -473,7 +473,7 @@ public class TECore implements Runnable {
         if (opts.getLogDir() != null) {
             logger = createLog();
             logger.println("<log>");
-            logger.println("<starttest local-name=\"" + test.getLocalName() + "\" " + 
+            logger.println("<starttest local-name=\"" + test.getLocalName() + "\" " +
                                       "prefix=\"" + test.getPrefix() + "\" " +
                                       "namespace-uri=\"" + test.getNamespaceURI() + "\" " +
                                       "path=\"" + testPath + "\">");
@@ -484,7 +484,7 @@ public class TECore implements Runnable {
             if (test.usesContext()) {
                 logger.println("<context label=\"" + contextLabel + "\">");
                 NodeInfo contextNode = (NodeInfo)context.getContextItem();
-                int kind = contextNode.getNodeKind(); 
+                int kind = contextNode.getNodeKind();
                 if (kind == Type.ATTRIBUTE) {
                     logger.print("<value " + contextNode.getDisplayName() + "=\""
                                            + contextNode.getStringValue() + "\"");
@@ -496,12 +496,12 @@ public class TECore implements Runnable {
                     logger.println("</value>");
                 }
                 logger.println("</context>");
-                
+
             }
             logger.println("</starttest>");
             logger.flush();
         }
-        
+
         result = PASS;
         try {
             executeTemplate(test, params, context);
@@ -523,12 +523,12 @@ public class TECore implements Runnable {
         prevLog = oldPrevLog;
 
         indent = oldIndent;
-        
+
         out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
 
         return result;
     }
-    
+
     public void callTest(XPathContext context, String localName, String NamespaceURI, NodeInfo params, String callId) throws Exception {
 //        System.out.println("call_test");
 //        System.out.println(params.getClass().getName());
@@ -561,7 +561,7 @@ public class TECore implements Runnable {
         if (result < oldResult) {
             // Restore parent result if the child results aren't worse
             result = oldResult;
-        } else if (result == FAIL && oldResult != FAIL) { 
+        } else if (result == FAIL && oldResult != FAIL) {
             // If the child result was FAIL and parent hasn't directly failed, set parent result to INHERITED_FAILURE
             result = INHERITED_FAILURE;
         } else {
@@ -595,7 +595,7 @@ public class TECore implements Runnable {
                     String uri = el.getAttribute("namespace-uri");
                     String name = el.getAttribute("local-name");
                     String prefix = el.getAttribute("prefix");
-                    javax.xml.namespace.QName qname = new javax.xml.namespace.QName(uri, name, prefix); 
+                    javax.xml.namespace.QName qname = new javax.xml.namespace.QName(uri, name, prefix);
                     if (!fe.getParams().contains(qname)) {
                         valid = false;
                         break;
@@ -675,7 +675,7 @@ public class TECore implements Runnable {
         }
         throw new Exception("No function {" + NamespaceURI + "}" + localName + " with a compatible signature.");
     }
-  
+
     public void warning() {
         if (result < WARNING) {
             result = WARNING;
@@ -687,13 +687,13 @@ public class TECore implements Runnable {
             result = INHERITED_FAILURE;
         }
     }
-    
+
     public void fail() {
         if (result < FAIL) {
             result = FAIL;
         }
     }
-    
+
     public void setContextLabel(String label) {
         // TODO: test
         contextLabel = label;
@@ -775,7 +775,7 @@ public class TECore implements Runnable {
         }
         return file;
     }
-    
+
     public Node request(Document ctlRequest, String id) throws Throwable {
         Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
@@ -801,7 +801,7 @@ public class TECore implements Runnable {
         Element parserInstruction = null;
         NodeList nl = request.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
-            Node n = nl.item(i); 
+            Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && !n.getNamespaceURI().equals(CTL_NS)) {
                 parserInstruction = (Element)n;
             }
@@ -832,7 +832,7 @@ public class TECore implements Runnable {
     }
 
     // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
-    static URLConnection build_request(Node xml) throws Exception {
+    static public URLConnection build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -1084,7 +1084,7 @@ public class TECore implements Runnable {
         Transformer t = null;
         Node content = null;
         Document parser_instruction = null;
-        
+
         Element parse_element = (Element)parse_instruction.getElementsByTagNameNS(CTL_NS, "parse").item(0);
 
         NodeList children = parse_element.getChildNodes();
@@ -1153,7 +1153,7 @@ public class TECore implements Runnable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-        
+
         Transformer t = TransformerFactory.newInstance().newTransformer();
         Document response_doc = db.newDocument();
         Element parser_e = response_doc.createElement("parser");
@@ -1218,7 +1218,7 @@ public class TECore implements Runnable {
                 content_e.appendChild(response_doc.createTextNode(return_object
                         .toString()));
             }
-        
+
             parser_e.setAttribute("prefix", instruction_e.getPrefix());
             parser_e.setAttribute("local-name", instruction_e.getLocalName());
             parser_e.setAttribute("namespace-uri", instruction_e
@@ -1290,7 +1290,7 @@ public class TECore implements Runnable {
 			}
 		}
 	}
-        
+
         XsltTransformer xt = engine.getFormExecutable().load();
         xt.setSource(new DOMSource(ctlForm));
         xt.setParameter(new QName("title"), new XdmAtomicValue(name));
@@ -1338,7 +1338,7 @@ public class TECore implements Runnable {
 
         return doc;
     }
-    
+
     public void setIndentLevel(int level) {
         indent = "";
         for (int i = 0; i < level; i++) {
@@ -1351,14 +1351,14 @@ public class TECore implements Runnable {
         threadOutput.reset();
         return output;
     }
-    
+
     public void stopThread() throws Exception {
         stop = true;
         while (!threadComplete) {
             Thread.sleep(100);
         }
     }
-    
+
     public boolean isThreadComplete() {
         return threadComplete;
     }
@@ -1418,7 +1418,7 @@ public class TECore implements Runnable {
     public void setWeb(boolean web) {
         this.web = web;
     }
-    
+
     public Object getFunctionInstance(Integer key) {
         return functionInstances.get(key);
     }
@@ -1426,7 +1426,7 @@ public class TECore implements Runnable {
     public Object putFunctionInstance(Integer key, Object instance) {
         return functionInstances.put(key, instance);
     }
-    
+
     public Engine getEngine() {
         return engine;
     }
