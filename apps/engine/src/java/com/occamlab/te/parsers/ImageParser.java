@@ -145,6 +145,12 @@ public class ImageParser {
             return !done;
         }
     }
+    
+    private Element initialInstruction = null;
+    
+    public ImageParser(Document init) {
+        initialInstruction = init.getDocumentElement();
+    }
 
     // Same as Thread.sleep, except it ignores exceptions
     private static void sleep(long millis) {
@@ -405,9 +411,16 @@ public class ImageParser {
         return str.substring(0, str.lastIndexOf(","));
     }
 
-    public static Document parse(URLConnection uc, Element instruction,
-            PrintWriter logger) throws Exception {
+    public static Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
         return parse(uc.getContent(), instruction, logger);
+    }
+
+    public Document parseAsInitialized(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
+        if (initialInstruction == null) {
+            throw new Exception("Parser was not initialized");
+        } else {
+            return parse(uc.getContent(), initialInstruction, logger);
+        }
     }
 /*
     public static Document parse(HttpResponse resp, Element instruction,
@@ -417,9 +430,9 @@ public class ImageParser {
 */
     private static Document parse(Object source, Element instruction,
             PrintWriter logger) throws Exception {
-        if (System.getProperty("java.awt.headless") == null) {
-            System.setProperty("java.awt.headless", "true");
-        }
+//        if (System.getProperty("java.awt.headless") == null) {
+//            System.setProperty("java.awt.headless", "true");
+//        }
 
         try {
             Image image;
