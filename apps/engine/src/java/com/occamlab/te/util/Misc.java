@@ -191,6 +191,6 @@ public class Misc {
                 }
             }
         }
-        return null;
+        throw new Exception("No compatible constructors found in class " + className);
     }
 }

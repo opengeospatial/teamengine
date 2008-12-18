@@ -476,7 +476,8 @@ public class TECore implements Runnable {
             logger.println("<starttest local-name=\"" + test.getLocalName() + "\" " +
                                       "prefix=\"" + test.getPrefix() + "\" " +
                                       "namespace-uri=\"" + test.getNamespaceURI() + "\" " +
-                                      "path=\"" + testPath + "\">");
+                                      "path=\"" + testPath + "\" " +
+                                      "file=\"" + test.getTemplateFile().getAbsolutePath() + "\">");
             logger.println("<assertion>" + assertion + "</assertion>");
             if (params != null) {
                 logger.println(params.toString());
@@ -1180,7 +1181,11 @@ public class TECore implements Runnable {
             if (pe.isInitialized()) {
                 instance = parserInstances.get(key);
                 if (instance == null) {
-                    instance = Misc.makeInstance(pe.getClassName(), pe.getClassParams());
+                    try {
+                        instance = Misc.makeInstance(pe.getClassName(), pe.getClassParams());
+                    } catch (Exception e) {
+                        throw new Exception("Can't instantiate parser " + pe.getName(), e);
+                    }
                     parserInstances.put(key, instance);
                 }
             }

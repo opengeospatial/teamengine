@@ -25,8 +25,9 @@
  xmlns:te="java:com.occamlab.te.TECore"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:encoder="java:java.net.URLEncoder"
+ xmlns:file="java:java.io.File"
  xmlns:ctl="http://www.occamlab.com/ctl"
- exclude-result-prefixes="viewlog encoder te ctl"
+ exclude-result-prefixes="viewlog encoder file te ctl"
  version="2.0">
  	<xsl:import href="../logstyles/default.xsl"/>
  
@@ -70,7 +71,19 @@
 			</xsl:attribute>
 		</img>
 		<xsl:text>&#xa;</xsl:text>
-		<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
+<!-- 
+		<xsl:variable name="namespace-uri" select="@namespace-uri"/>
+		<xsl:variable name="local-name" select="@local-name"/>
+		<xsl:variable name="file" select="$index/test[@namespace-uri=$namespace-uri and @local-name=$local-name]/@file"/>
+		<a href="listings/{translate(viewlog:encode($file), '%', '~')}.html">
+		<a href="listings/{substring($dir, string:lastIndexOf(string($dir), '/')+1)}.html">
+		<xsl:variable name="dir" select="substring(@file, 1, string:lastIndexOf(string(@file), '/'))"/>
+		<a href="listings/{@file}.html">
+ -->
+		<xsl:variable name="dir" select="file:getName(file:getParentFile(file:new(string(@file))))"/>
+		<a href="listings/{$dir}.html#{@prefix}:{@local-name}">
+			<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
+		</a>
 <!--
 		<xsl:choose>
 		<xsl:when test="contains(@path,'/')">

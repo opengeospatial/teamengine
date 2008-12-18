@@ -5,7 +5,7 @@
 	<servlet>
 		<servlet-name>test</servlet-name>
 		<servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
-		<!--<load-on-startup>1</load-on-startup>-->
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>registrationHandler</servlet-name>

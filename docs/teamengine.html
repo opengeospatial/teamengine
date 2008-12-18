@@ -19,76 +19,34 @@ implementation of a specification complies with the specification.
 
 <h2>Installation</h2>
 
-General installation instructions (for both the console and web interface):
-
 <ol>
   <li> <b>Install JRE 1.5.0</b> -
        You will need a copy of the Java Runtime Environment (JRE),
-       version 1.5.0 or greater. If not already installed on your system, 
-       download it from <a href="http://java.sun.com">Sun.com</a> 
-       and install it.
-  </li>
-  <li> <b>Install Ant 1.7.0</b> -
-       You will need a copy of Ant 1.7.0 to build the source files.  
-       If not already on your system, download this from 
-       <a href="http://ant.apache.org/">Apache.org</a> and install it.
-  </li>
-  <li> <b>Unpack the TEAM Engine archive</b> -
-       Download the latest TEAM binary distribution archive from 
-       <a href="http://sourceforge.net/projects/teamengine/">SourceForge.net</a> 
-       and unpack it to the location of your choice.
-  </li>
-  <li> <b>Set build.properties</b> -
-       The TEAM engine requires some local environment variables to be set, such as
-       the location of the Java JRE and the location of the servlet container, as
-       shown in the build.properties.example file.
-  </li>
+       version 1.5.0 or greater (also called JRE 5.0).  It is part of the
+       Java 2 Platform Standard Edition (J2SE) 5.0 package.
+       If not already on your system, download this from
+       <a href="http://java.sun.com">http://java.sun.com</a> and install it.
+
+  <li> <b>Unpack the archive</b> -
+       Download the TEAM binary distribution archive and unpack it to the location of your choice.
+
+  <li> <b>Set environment variables</b> -
+       The TEAM commands use the JAVA_HOME environment variable to determine the location of the JRE.
+       If it is not already set to the location of your copy of JRE 1.5.0 or greater,
+       edit the file setenv.bat (Windows) or setenv.sh (Unix/Linux) to set the JAVA_HOME variable.
+       It should be set to the JRE directory, which should contain a bin directory that contains
+       the java executable. You may also set a JAVA_OPTS variable to pass other arguments to the
+       Java Virtual Machine (JVM), such as proxy parameters.
 </ol>
 
-Additional web interface-specific installation steps:<br/>
-
-<ol>
-  <li> <b>Install a servlet container (Tomcat 5.5.x)</b> -
-       You will need a servlet container to deploy the web component of the 
-       engine. The latest production release of Tomcat 5.5 is recommended; 
-       download this from <a href="http://tomcat.apache.org/">Apache.org</a> 
-       and install it.
-  </li>
-  <li> <b>Add test suites</b> -
-       Add any desired test suites to the WEB-INF/scripts/ directory.  Under the 
-       root suite directory there should be at least a ctl/ directory to contain 
-       the ctl scripts, with optional resources/ (schemas, and other resources to 
-       be accessed by the scripts), web/data/ (test data for the scripts), and 
-       web/docs/(documentation) directories.
-  </li>
-  <li> <b>Build the Engine</b> -
-       Use the default "build" target in the root build.xml file and copy the content 
-       of webapps/ into the Tomcat deployment webapps/ directory.
-  </li>
-  <li> <b>Copy UserFilesRealm.jar</b> -
-       Copy the UserFilesRealm.jar file (located at setup/UserFilesRealm/) into the 
-       Tomcat server/lib directory.
-  </li>    
-  <li> <b>Update the configuration files</b> -
-       Ensure that the config.xml file (located in the WEB-INF/classes/ directory)
-       correctly refers to the parent directory or main file for each available 
-       test suite. Also, the context.xml file (located at teamengine/META-INF/) 
-       must identify the appropriate users directory&mdash;the default location 
-       is ${catalina.base}/users.
-  </li>    
-  <li> <b>Start the Tomcat server</b> -
-       Start the Tomcat server and access the manager via http://localhost:8080/teamengine (or other
-       configured location).
-  </li>     
-</ol>
-
-<h2>Console Commands</h2>
+<h2>Test Tool</h2>
 
 <h4>Synopsis</h4>
 
 <p>
-Execute the commands below by directly calling the Test.java class, or use the Ant function calls in the
-build.xml and run-suite.xml files located in the apps/engine/ directory.
+Use the test tool (test.bat for Windows or test.sh for Unix/Linux) to execute CTL scripts.  
+Executing the tool with no command-line parameters will provide a synopsis as shown 
+below:
 </p>
 
 <pre>
@@ -148,7 +106,7 @@ with the same qualified name, the tests in the later source location will take p
 In test mode, execution begins with one of the test suite elements in the source CTL.  If 
 there is just one suite in the CTL sources, the test tool will start there, but if there are 
 multiple suites, you will need to supply a -suite parameter.  The suite name may be 
-specified using the suite elementï¿½s unqualified name, its prefix qualified name, or its 
+specified using the suite element’s unqualified name, its prefix qualified name, or its 
 namespace qualified name.  For the prefix qualified form, use the same namespace prefix 
 used in the CTL file, followed by a colon, followed by the base suite name.  For the 
 namespace qualified form, use the full namespace URI, followed by a comma, followed 
@@ -242,9 +200,9 @@ view, identified by their test path.
 <h2>Developer</h2>
 
 <p>
-The original TEAM engine was developed by Northrop Grumman Corporation, jointly with The 
-National Technology Alliance.  Additional enhancements and modifications have been 
-provided by <a href="http://www.galdosinc.com">Galdos Systems Inc</a>.
+TEAM engine was developed by Northrop Grumman Corporation, jointly with The 
+National Technology Alliance and is Copyright (C) 2005-2006, Northrop Grumman 
+Corporation. All Rights Reserved.
 </p>
 
 <h2>License</h2>
@@ -264,16 +222,12 @@ listed below.
 
 <table>
 <tr>
-<td><a href="http://saxon.sourceforge.net">Saxon 8.9.0.3</a> &nbsp;</td>
-<td><a href="http://www.mozilla.org/MPL/MPL-1.1.html">Mozilla Public License, Version 1.1</a></td>
+<td><a href="http://saxon.sourceforge.net">Saxon 8.6.1</a> &nbsp;</td>
+<td><a href="http://www.mozilla.org/MPL/MPL-1.0.html">Mozilla Public License, Version 1.0</a></td>
 </tr>
 <tr>
-<td><a href="http://xerces.apache.org/">Xerces J 2.9.0</a> &nbsp;</td>
+<td><a href="http://xerces.apache.org/">Xerces J 2.8.0</a> &nbsp;</td>
 <td><a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License, Version 2.0</a></td>
-</tr>
-<tr>
-<td><a href="http://www.thaiopensource.com/relaxng/jing.html">Jing, Version 20030619</a> &nbsp;</td>
-<td></td>
 </tr>
 </table>
 

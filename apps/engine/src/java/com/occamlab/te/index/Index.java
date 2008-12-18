@@ -246,4 +246,14 @@ public class Index {
     public void setElements(List<Element> elements) {
         this.elements = elements;
     }
+
+    public List<File> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<File> dependencies) {
+        this.dependencies = dependencies;
+    }
+    
+    
 }

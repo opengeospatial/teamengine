@@ -24,6 +24,7 @@ package com.occamlab.te.web;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -40,6 +41,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XsltCompiler;
+import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.XsltTransformer;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,6 +68,7 @@ import com.occamlab.te.TestDriverConfig;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.LogUtils;
+import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
 
 /**
@@ -98,6 +108,16 @@ public class TestServlet extends HttpServlet {
 
             indexes = new HashMap<String, Index>();
             
+            Processor processor = new Processor(false);
+            processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
+            XsltCompiler sourceGeneratorCompiler = processor.newXsltCompiler();
+            File sourceGeneratorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_source_html.xsl");
+            XsltExecutable sourceGeneratorXsltExecutable = sourceGeneratorCompiler.compile(new StreamSource(sourceGeneratorStylesheet));
+            XsltTransformer sourceGeneratorTransformer = sourceGeneratorXsltExecutable.load();
+
+            File listings = new File(getServletConfig().getServletContext().getRealPath("/"), "listings");
+            listings.mkdir();
+
             for (Entry<String, List<File>> sourceEntry : conf.getSources().entrySet()) {
                 String sourcesName = sourceEntry.getKey();
 //              System.out.println("TestServlet: " + sourcesName);
@@ -109,6 +129,24 @@ public class TestServlet extends HttpServlet {
                 }
                 Index index = Generator.generateXsl(setupOpts);
                 indexes.put(sourcesName, index);
+                
+                for (File ctlFile: index.getDependencies()) {
+                    String encodedName = URLEncoder.encode(ctlFile.getAbsolutePath(), "UTF-8");
+                    encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
+                    File indexFile = new File(new File(conf.getWorkDir(), encodedName), "index.xml");
+                    File htmlFile = new File(listings, encodedName + ".html");
+                    boolean needsGenerating = true;
+                    if (htmlFile.exists()) {
+                        needsGenerating = (indexFile.lastModified() > htmlFile.lastModified());
+                    }
+                    if (needsGenerating) {
+                        sourceGeneratorTransformer.setSource(new StreamSource(ctlFile));
+                        Serializer sourceGeneratorSerializer = new Serializer();
+                        sourceGeneratorSerializer.setOutputFile(htmlFile);
+                        sourceGeneratorTransformer.setDestination(sourceGeneratorSerializer);
+                        sourceGeneratorTransformer.transform();
+                    }
+                }
             }
 /*
             File scriptsDir = conf.getScriptsDir();

@@ -59,6 +59,7 @@ public class Generator {
         // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
         processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
+        processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
         File generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
         XsltExecutable generatorXsltExecutable = generatorCompiler.compile(new StreamSource(generatorStylesheet));
