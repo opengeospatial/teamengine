@@ -41,7 +41,8 @@ public class Test {
         System.out.println("Test mode:");
         System.out.println("  Use to start a test session.\n");
         System.out.println("  " + cmd + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
-        System.out.println("    [-suite=qname|-test=qname [@param-name=value] ...] [-logdir=dir] [-session=session] \n");
+        System.out.println("    [-workdir=dir] [-logdir=dir] [-session=session]");
+        System.out.println("    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...\n");
         System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
         System.out.println("Resume mode:");
         System.out.println("  Use to resume a test session that was interrupted before completion.\n");
@@ -81,14 +82,14 @@ public class Test {
                 }
             } else if (args[i].startsWith("-workdir=")) {
                 workDir = new File(args[i].substring(9));
-                setupOpts.setWorkDir(workDir);
-                runOpts.setWorkDir(workDir);
+//                setupOpts.setWorkDir(workDir);
+//                runOpts.setWorkDir(workDir);
             } else if (args[i].startsWith("-logdir=")) {
                 logDir = new File(args[i].substring(8));
-                runOpts.setLogDir(logDir);
+//                runOpts.setLogDir(logDir);
             } else if (args[i].startsWith("-session=")) {
                 session = args[i].substring(9); 
-                runOpts.setSessionId(session);
+//                runOpts.setSessionId(session);
             } else if (args[i].startsWith("-test=")) {
                 runOpts.setTestName(args[i].substring(6));
             } else if (args[i].startsWith("-suite=")) {
@@ -121,20 +122,44 @@ public class Test {
             }
         }
         
+        // Set work dir
         if (workDir == null) {
-            workDir = new File(System.getProperty("java.io.tmpdir"), "te_work");
-            workDir.mkdirs();
-            System.out.println("No working directory supplied.  Using " + workDir.toString());
-        } else {
-            if (!workDir.isDirectory()) {
-                System.out.println("Error: Working directory " + workDir.toString() + " does not exist.");
+            String prop = System.getProperty("team.workdir");
+            if (prop == null) {
+                workDir = new File(System.getProperty("java.io.tmpdir"), "te_work");
+                workDir.mkdirs();
+                System.out.println("No working directory supplied.  Using " + workDir.toString());
+            } else {
+                workDir = new File(prop);
+            }
+        }
+        if (!workDir.isDirectory()) {
+            System.out.println("Error: Working directory " + workDir.toString() + " does not exist.");
+            return;
+        }
+        setupOpts.setWorkDir(workDir);
+        runOpts.setWorkDir(workDir);
+
+        // Set log dir
+        if (logDir == null) {
+            String prop = System.getProperty("team.logdir");
+            if (prop != null) {
+                logDir = new File(prop);
+            }
+        }
+        if (logDir != null) {
+            if (!logDir.isDirectory()) {
+                System.out.println("Error: Log directory " + logDir.toString() + " does not exist.");
                 return;
             }
         }
+        runOpts.setLogDir(logDir);
 
+        // Set mode
 //        setupOpts.setMode(mode);
         runOpts.setMode(mode);
         
+        // Syntax checks
         if ((mode == TEST_MODE && !sourcesSupplied) ||
             (mode == RETEST_MODE && (logDir == null || session == null)) ||
             (mode == RESUME_MODE && (logDir == null || session == null))
@@ -142,19 +167,23 @@ public class Test {
             syntax(cmd);
             return;
         }
-        
         if (runOpts.getProfiles().size() > 0 && logDir == null) {
             System.out.println("Error: A -logdir parameter is required for testing profiles");
             return;
         }
-        
+
+        // Set session
+        if (session == null) {
+            session = System.getProperty("team.session");
+        }
         if (session == null) {
             if (logDir == null) {
-                runOpts.setSessionId("s0001");
+                session = "s0001";
             } else {
-                runOpts.setSessionId(LogUtils.generateSessionId(logDir));
+                session = LogUtils.generateSessionId(logDir);
             }
         }
+        runOpts.setSessionId(session);
 
         Thread.currentThread().setName("TEAM Engine");
         
