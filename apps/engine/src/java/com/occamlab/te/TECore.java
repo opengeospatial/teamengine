@@ -307,6 +307,9 @@ public class TECore implements Runnable {
         }
 
         SuiteEntry suite = index.getSuite(profile.getBaseSuite());
+        if (suite == null) {
+            throw new Exception("Error: The base suite (" + profile.getBaseSuite().toString() + ") for the profile (" + profileName + ") not found.");
+        }
         String sessionId = opts.getSessionId();
         Document log = LogUtils.readLog(opts.getLogDir(), sessionId);
         if (log == null) {
