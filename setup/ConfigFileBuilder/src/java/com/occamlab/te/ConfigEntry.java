@@ -21,6 +21,8 @@ public class ConfigEntry {
     public QName suite = null;
     public String title = null;
     public String description = null;
+    public String link = null;
+    public String dataLink = null;
     public List<QName> profiles = new ArrayList<QName>();
     public List<String> profileTitles = new ArrayList<String>();
     public List<String> profileDescriptions = new ArrayList<String>();
@@ -44,6 +46,17 @@ public class ConfigEntry {
             if (titleEl != null) title = titleEl.getTextContent();
             Element descriptionEl = DomUtils.getElementByTagName(suiteEl, "description");
             if (descriptionEl != null) description = descriptionEl.getTextContent();
+//            link = file.getParentFile().getName();
+            for (Element linkEl : DomUtils.getElementsByTagName(suiteEl, "link")) {
+                String value = linkEl.getTextContent();
+                if ("data".equals(linkEl.getAttribute("linkType"))) {
+                    dataLink = file.getParentFile().getName() + "/" + value;
+                } else if (value.startsWith("data/")) {
+                    dataLink = file.getParentFile().getName() + "/" + value;
+                } else {
+                    link = value;
+                }
+            }
         }
         for (Element profileEl : DomUtils.getElementsByTagName(config, "profile")) {
             String localName = DomUtils.getElementByTagName(profileEl, "local-name").getTextContent();

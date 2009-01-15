@@ -71,6 +71,12 @@ public class ConfigFileBuilder {
                     if (config.description != null) {
                         System.out.println("            <description>" + config.description + "</description>");
                     }
+                    if (config.link != null) {
+                        System.out.println("            <link>" + config.link + "</link>");
+                    }
+                    if (config.dataLink != null) {
+                        System.out.println("            <link type=\"data\">" + config.dataLink + "</link>");
+                    }
                     System.out.println("          </suite>");
                     while (config != null && config.organization.equals(organization) && config.standard.equals(standard) && config.version.equals(version)) {
                         List<QName> profiles = new ArrayList<QName>();
