@@ -71,16 +71,19 @@
 			</xsl:attribute>
 		</img>
 		<xsl:text>&#xa;</xsl:text>
-<!-- 
-		<xsl:variable name="namespace-uri" select="@namespace-uri"/>
-		<xsl:variable name="local-name" select="@local-name"/>
-		<xsl:variable name="file" select="$index/test[@namespace-uri=$namespace-uri and @local-name=$local-name]/@file"/>
-		<a href="listings/{translate(viewlog:encode($file), '%', '~')}.html">
-		<a href="listings/{substring($dir, string:lastIndexOf(string($dir), '/')+1)}.html">
-		<xsl:variable name="dir" select="substring(@file, 1, string:lastIndexOf(string(@file), '/'))"/>
-		<a href="listings/{@file}.html">
- -->
-		<xsl:variable name="dir" select="file:getName(file:getParentFile(file:new(string(@file))))"/>
+		<xsl:variable name="file" select="file:new(string(@file))"/>
+		<xsl:variable name="pdir1" select="file:getName(file:getParentFile($file))"/>
+		<xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/>
+		<xsl:variable name="dir">
+			<xsl:choose>
+				<xsl:when test="contains($pdir1, '~5C')">
+					<xsl:value-of select="$pdir1"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="concat($pdir2, '~5C', $pdir1)"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		<a href="listings/{$dir}.html#{@prefix}:{@local-name}">
 			<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
 		</a>

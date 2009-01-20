@@ -133,8 +133,13 @@ public class TestServlet extends HttpServlet {
                 for (File ctlFile: index.getDependencies()) {
                     String encodedName = URLEncoder.encode(ctlFile.getAbsolutePath(), "UTF-8");
                     encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
+                    String basename = encodedName;
+                    int i = basename.lastIndexOf('.');
+                    if (i > 0) {
+                        basename = basename.substring(0, i);
+                    }
                     File indexFile = new File(new File(conf.getWorkDir(), encodedName), "index.xml");
-                    File htmlFile = new File(listings, encodedName + ".html");
+                    File htmlFile = new File(listings, basename + ".html");
                     boolean needsGenerating = true;
                     if (htmlFile.exists()) {
                         needsGenerating = (indexFile.lastModified() > htmlFile.lastModified());
