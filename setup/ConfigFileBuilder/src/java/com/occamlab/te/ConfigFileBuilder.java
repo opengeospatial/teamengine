@@ -65,9 +65,11 @@ public class ConfigFileBuilder {
                     System.out.println("            <namespace-uri>" + config.suite.getNamespaceURI() + "</namespace-uri>");
                     System.out.println("            <prefix>" + config.suite.getPrefix() + "</prefix>");
                     System.out.println("            <local-name>" + config.suite.getLocalPart() + "</local-name>");
-                    if (config.title != null) {
-                        System.out.println("            <title>" + config.title + "</title>");
+                    String title = config.title;
+                    if (title == null) {
+                        title = organization + " " + standard + " " + version + " Test Suite";
                     }
+                    System.out.println("            <title>" + title + "</title>");
                     if (config.description != null) {
                         System.out.println("            <description>" + config.description + "</description>");
                     }
