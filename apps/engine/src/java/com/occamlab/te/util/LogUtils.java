@@ -161,46 +161,50 @@ public class LogUtils {
         File log = new File(new File(logdir, path), "log.xml");
         Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
         Element test = owner.createElement("test");
-        Element log_e = DomUtils.getElementByTagName(logdoc, "log");
         List<QName> testQName = new ArrayList<QName>();
         testQName.addAll(pathQName);
         int result = TECore.PASS;
         boolean complete = false;
         boolean childrenFailed = false;
-        for (Element e : DomUtils.getChildElements(log_e)) {
-            if (e.getNodeName().equals("starttest")) {
-                NamedNodeMap atts = e.getAttributes();
-                for (int j = 0; j < atts.getLength(); j++) {
-                    test.setAttribute(atts.item(j).getNodeName(), atts.item(j).getNodeValue());
-                }
-                String namespaceURI = test.getAttribute("namespace-uri");
-                String localPart = test.getAttribute("local-name");
-                String prefix = test.getAttribute("prefix");
-                QName qname = new QName(namespaceURI, localPart, prefix);
-                testQName.add(qname);
-                if (excludes.contains(testQName)) {
-                    return null;
-                }
-            } else if (e.getNodeName().equals("endtest")) {
-                complete = true;
-                int code = Integer.parseInt(e.getAttribute("result"));
-                if (code == TECore.FAIL) {
-                    result = TECore.FAIL;
-                } else if (childrenFailed) {
-                    result = TECore.INHERITED_FAILURE;
-                } else if (code == TECore.WARNING) {
-                    result = TECore.WARNING;
-                }
-            } else if (e.getNodeName().equals("testcall")) {
-                String newpath = e.getAttribute("path");
-                Element child = makeTestListElement(db, owner, logdir, newpath, testQName, excludes);
-                if (child != null) {
-                    child.setAttribute("path", newpath);
-                    int code = Integer.parseInt(child.getAttribute("result"));
-                    if (code == TECore.FAIL || code == TECore.INHERITED_FAILURE) {
-                        childrenFailed = true;
+        if (logdoc != null) {
+            Element log_e = DomUtils.getElementByTagName(logdoc, "log");
+            if (log_e != null) {
+                for (Element e : DomUtils.getChildElements(log_e)) {
+                    if (e.getNodeName().equals("starttest")) {
+                        NamedNodeMap atts = e.getAttributes();
+                        for (int j = 0; j < atts.getLength(); j++) {
+                            test.setAttribute(atts.item(j).getNodeName(), atts.item(j).getNodeValue());
+                        }
+                        String namespaceURI = test.getAttribute("namespace-uri");
+                        String localPart = test.getAttribute("local-name");
+                        String prefix = test.getAttribute("prefix");
+                        QName qname = new QName(namespaceURI, localPart, prefix);
+                        testQName.add(qname);
+                        if (excludes.contains(testQName)) {
+                            return null;
+                        }
+                    } else if (e.getNodeName().equals("endtest")) {
+                        complete = true;
+                        int code = Integer.parseInt(e.getAttribute("result"));
+                        if (code == TECore.FAIL) {
+                            result = TECore.FAIL;
+                        } else if (childrenFailed) {
+                            result = TECore.INHERITED_FAILURE;
+                        } else if (code == TECore.WARNING) {
+                            result = TECore.WARNING;
+                        }
+                    } else if (e.getNodeName().equals("testcall")) {
+                        String newpath = e.getAttribute("path");
+                        Element child = makeTestListElement(db, owner, logdir, newpath, testQName, excludes);
+                        if (child != null) {
+                            child.setAttribute("path", newpath);
+                            int code = Integer.parseInt(child.getAttribute("result"));
+                            if (code == TECore.FAIL || code == TECore.INHERITED_FAILURE) {
+                                childrenFailed = true;
+                            }
+                            test.appendChild(child);
+                        }
                     }
-                    test.appendChild(child);
                 }
             }
         }
