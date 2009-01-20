@@ -77,7 +77,7 @@
 		<xsl:variable name="dir">
 			<xsl:choose>
 				<xsl:when test="contains($pdir1, '~5C')">
-					<xsl:value-of select="$pdir1"/>
+					<xsl:value-of select="substring($pdir1, 1, string-length($pdir1) - 4)"/>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="concat($pdir2, '~5C', $pdir1)"/>
