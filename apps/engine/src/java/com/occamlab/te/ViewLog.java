@@ -153,8 +153,12 @@ public class ViewLog {
             Document doc = LogUtils.makeTestList(logdir, session);
 //            increment_counts(doc.getDocumentElement());
             t.transform(new DOMSource(doc), new StreamResult(out));
-            Element testElement = (Element) (doc.getElementsByTagName("test").item(0));
-            return testElement.getAttribute("complete").equals("yes");
+            Element testElement = DomUtils.getElementByTagName(doc, "test");
+            if (testElement == null) {
+                return false;
+            } else {
+                return testElement.getAttribute("complete").equals("yes");
+            }
         } else {
             boolean ret = true;
             Iterator it = tests.iterator();
