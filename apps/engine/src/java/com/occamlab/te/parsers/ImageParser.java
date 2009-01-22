@@ -27,13 +27,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.zip.CRC32;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.ImageObserver;
 import java.awt.image.Raster;
 import javax.xml.transform.*;
@@ -42,101 +44,25 @@ import javax.xml.transform.stream.*;
 import javax.xml.parsers.*;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.w3c.dom.*;
+import net.sf.saxon.FeatureKeys;
 
-import com.occamlab.te.util.IOUtils;
+import org.w3c.dom.*;
 
 /**
  * Extracts the body of a response message and treats it as an image resource.
  * If the entity does not correspond to a supported image format, an exception
  * is reported in the test log.
- *
+ * 
  */
 public class ImageParser {
 
     private static class ImageTracker implements ImageObserver {
-
-        private boolean done;
-        private String type;
-        private Image image;
-
-        public ImageTracker(Image image, boolean wait) {
-            this.image = image;
-
-            if (wait) {
-                ImageTracker tracker = new ImageTracker(image, false);
-                tracker.waitForImage();
-                type = tracker.getImageType();
-                done = true;
-            } else {
-                type = null;
-                done = false;
-            }
-        }
-
-        public ImageTracker(Image image) {
-            this(image, true);
-        }
-
-        public String getImageType() {
-            if (type == null) {
-                while (image.getWidth(this) == -1 && !done) {
-                    sleep(50);
-                }
-            }
-            return type;
-        }
-
-        public boolean isDone() {
-            return done;
-        }
-
-        public void waitForImage() {
-            while (image.getWidth(this) == -1 && !done) {
-                sleep(50);
-            }
-
-            while (image.getHeight(this) == -1 && !done) {
-                sleep(50);
-            }
-
-            java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();
-            if (tk.prepareImage(image, -1, -1, this)) {
-                done = true;
-            }
-
-            while (!done) {
-                sleep(50);
-            }
-        }
-
-        /**
-         * Determines image type by parsing a stack trace to find out which
-         * ImageDecoder class is being used. This is admittedly a rather
-         * contrived method, but it seems to be the only way to retrieve the
-         * information from an Image created with an ImageProducer class.
-         *
-         * @see java.awt.image.ImageObserver#imageUpdate(java.awt.Image, int,
-         *      int, int, int, int)
-         */
-        public synchronized boolean imageUpdate(Image img, int infoflags,
-                int x, int y, int width, int height) {
-            if (type == null) {
-                try {
-                    java.io.StringWriter sw = new java.io.StringWriter();
-                    new Throwable("").printStackTrace(new java.io.PrintWriter(
-                            sw));
-                    String stackTrace = sw.toString();
-                    int i = stackTrace.indexOf("ImageDecoder.produceImage");
-                    int j = stackTrace.lastIndexOf(".", i - 1);
-                    type = stackTrace.substring(j + 1, i).toLowerCase();
-                } catch (Exception e) {
-                    type = "Could not determine";
-                }
-            }
-
+        volatile boolean done = false;
+        
+        public synchronized boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
             if ((infoflags & (ABORT | ERROR)) != 0) {
                 done = true;
             } else {
@@ -145,9 +71,9 @@ public class ImageParser {
             return !done;
         }
     }
-    
+
     private Element initialInstruction = null;
-    
+
     public ImageParser(Document init) {
         initialInstruction = init.getDocumentElement();
     }
@@ -169,9 +95,8 @@ public class ImageParser {
         }
     }
 
-    private static void processBufferedImage(BufferedImage buffimage,
-            NodeList nodes) throws Exception {
-        java.util.HashMap<Object, Object> bandMap = new java.util.HashMap<Object, Object>();
+    private static void processBufferedImage(BufferedImage buffimage, NodeList nodes) throws Exception {
+        HashMap<Object, Object> bandMap = new HashMap<Object, Object>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
@@ -182,31 +107,27 @@ public class ImageParser {
                     int y = Integer.parseInt(e.getAttribute("y"));
                     int w = Integer.parseInt(e.getAttribute("width"));
                     int h = Integer.parseInt(e.getAttribute("height"));
-                    processBufferedImage(buffimage.getSubimage(x, y, w, h), e
-                            .getChildNodes());
+                    processBufferedImage(buffimage.getSubimage(x, y, w, h), e.getChildNodes());
                 } else if (node.getLocalName().equals("checksum")) {
-                    java.util.zip.CRC32 checksum = new java.util.zip.CRC32();
+                    CRC32 checksum = new CRC32();
                     Raster raster = buffimage.getRaster();
-                    java.awt.image.DataBufferByte buffer = (java.awt.image.DataBufferByte) raster
-                            .getDataBuffer();
+                    DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
                     int numbanks = buffer.getNumBanks();
                     for (int j = 0; j < numbanks; j++) {
                         checksum.update(buffer.getData(j));
                     }
                     Document doc = node.getOwnerDocument();
-                    node.appendChild(doc.createTextNode(Long.toString(checksum
-                            .getValue())));
+                    node.appendChild(doc.createTextNode(Long.toString(checksum.getValue())));
                 } else if (node.getLocalName().equals("count")) {
                     String band = ((Element) node).getAttribute("bands");
                     String sample = ((Element) node).getAttribute("sample");
                     if (sample.equals("all")) {
                         bandMap.put(band, null);
                     } else {
-                        java.util.HashMap<Object, Object> sampleMap = (java.util.HashMap<Object, Object>) bandMap
-                                .get(band);
+                        HashMap<Object, Object> sampleMap = (HashMap<Object, Object>) bandMap.get(band);
                         if (sampleMap == null) {
                             if (!bandMap.containsKey(band)) {
-                                sampleMap = new java.util.HashMap<Object, Object>();
+                                sampleMap = new HashMap<Object, Object>();
                                 bandMap.put(band, sampleMap);
                             }
                         }
@@ -216,7 +137,7 @@ public class ImageParser {
             }
         }
 
-        java.util.Iterator bandIt = bandMap.keySet().iterator();
+        Iterator bandIt = bandMap.keySet().iterator();
         while (bandIt.hasNext()) {
             String band_str = (String) bandIt.next();
             int band_indexes[];
@@ -239,8 +160,7 @@ public class ImageParser {
             }
 
             Raster raster = buffimage.getRaster();
-            java.util.HashMap sampleMap = (java.util.HashMap) bandMap
-                    .get(band_str);
+            java.util.HashMap sampleMap = (java.util.HashMap) bandMap.get(band_str);
             boolean addall = (sampleMap == null);
             if (sampleMap == null) {
                 sampleMap = new java.util.HashMap();
@@ -255,8 +175,7 @@ public class ImageParser {
 
             for (int y = miny; y < maxy; y++) {
                 for (int i = 0; i < band_indexes.length; i++) {
-                    raster.getSamples(minx, y, maxx, 1, band_indexes[i],
-                            bands[i]);
+                    raster.getSamples(minx, y, maxx, 1, band_indexes[i], bands[i]);
                 }
                 for (int x = minx; x < maxx; x++) {
                     int sample = 0;
@@ -287,15 +206,13 @@ public class ImageParser {
                 if (node.getLocalName().equals("count")) {
                     String band = ((Element) node).getAttribute("bands");
                     String sample = ((Element) node).getAttribute("sample");
-                    java.util.HashMap sampleMap = (java.util.HashMap) bandMap
-                            .get(band);
+                    HashMap sampleMap = (HashMap) bandMap.get(band);
                     Document doc = node.getOwnerDocument();
                     if (sample.equals("all")) {
                         Node parent = node.getParentNode();
                         Node prevSibling = node.getPreviousSibling();
                         // Node nextSibling = node.getNextSibling();
-                        java.util.Iterator sampleIt = sampleMap.keySet()
-                                .iterator();
+                        Iterator sampleIt = sampleMap.keySet().iterator();
                         Element countnode = null;
                         int digits;
                         String prefix;
@@ -313,30 +230,26 @@ public class ImageParser {
                             digits = band.length() * 2;
                         }
                         while (sampleIt.hasNext()) {
-                            countnode = doc.createElement("count");
+                            countnode = doc.createElementNS(node.getNamespaceURI(), "count");
                             Integer sampleInt = (Integer) sampleIt.next();
                             Integer count = (Integer) sampleMap.get(sampleInt);
                             if (band.length() > 0) {
                                 countnode.setAttribute("bands", band);
                             }
-                            countnode.setAttribute("sample", prefix
-                                    + HexString(sampleInt.intValue(), digits));
-                            Node textnode = doc
-                                    .createTextNode(count.toString());
+                            countnode.setAttribute("sample", prefix + HexString(sampleInt.intValue(), digits));
+                            Node textnode = doc.createTextNode(count.toString());
                             countnode.appendChild(textnode);
                             parent.insertBefore(countnode, node);
                             if (sampleIt.hasNext()) {
                                 if (prevSibling.getNodeType() == Node.TEXT_NODE) {
-                                    parent.insertBefore(prevSibling
-                                            .cloneNode(false), node);
+                                    parent.insertBefore(prevSibling.cloneNode(false), node);
                                 }
                             }
                         }
                         parent.removeChild(node);
                         node = countnode;
                     } else {
-                        Integer count = (Integer) sampleMap.get(Integer
-                                .decode(sample));
+                        Integer count = (Integer) sampleMap.get(Integer.decode(sample));
                         if (count == null)
                             count = new Integer(0);
                         Node textnode = doc.createTextNode(count.toString());
@@ -350,7 +263,7 @@ public class ImageParser {
 
     /**
      * Determines the type of image, or null if not a valid image type
-     *
+     * 
      * @param imageLoc
      *            the string location of the image (uri syntax expected)
      * @return String the name of the image type/format, or null if not valid
@@ -412,108 +325,163 @@ public class ImageParser {
     }
 
     public static Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
-        return parse(uc.getContent(), instruction, logger);
+        return parse(uc.getInputStream(), instruction, logger);
     }
 
     public Document parseAsInitialized(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
         if (initialInstruction == null) {
             throw new Exception("Parser was not initialized");
         } else {
-            return parse(uc.getContent(), initialInstruction, logger);
+            return parse(uc, initialInstruction, logger);
         }
     }
-/*
-    public static Document parse(HttpResponse resp, Element instruction,
-            PrintWriter logger) throws Exception {
-        return parse(IOUtils.inputStreamToBytes(resp.getEntity().getContent()), instruction, logger);
-    }
-*/
-    private static Document parse(Object source, Element instruction,
-            PrintWriter logger) throws Exception {
-//        if (System.getProperty("java.awt.headless") == null) {
-//            System.setProperty("java.awt.headless", "true");
-//        }
-
-        try {
-            Image image;
-            try {
-                if (source instanceof InputStream) {
-                    byte[] imgBytes = IOUtils.inputStreamToBytes((InputStream)source);
-                    image = java.awt.Toolkit.getDefaultToolkit().createImage(imgBytes);
-                } else {
-                    image = java.awt.Toolkit.getDefaultToolkit().createImage((ImageProducer)source);
-                }
-            } catch (Exception e) {
-                logger.println("ImageParser Error: Could not get the image");
-                return null;
-            }
-
-            // Document doc = instruction.getOwnerDocument();
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.newDocument();
-
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer t = tf.newTransformer();
-            t.transform(new DOMSource(instruction), new DOMResult(doc));
-
-            Element new_instruction = (Element) doc.getElementsByTagNameNS(
-                    "http://www.occamlab.com/te/parsers", "ImageParser")
-                    .item(0);
-
-            ImageTracker tracker = new ImageTracker(image);
-            String type = tracker.getImageType();
-            int height = image.getHeight(tracker);
-            int width = image.getWidth(tracker);
-
-            NodeList nodes = new_instruction.getChildNodes();
-            // System.out.println(Integer.toString(nodes.getLength()));
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    // System.out.println(node.getLocalName());
-                    if (node.getLocalName().equals("type")) {
-                        node.appendChild(doc.createTextNode(type));
-                    } else if (node.getLocalName().equals("height")) {
-                        // System.out.println("height");
-                        node.appendChild(doc.createTextNode(Integer
-                                .toString(height)));
-                    } else if (node.getLocalName().equals("width")) {
-                        node.appendChild(doc.createTextNode(Integer
-                                .toString(width)));
-                    } else if (node.getLocalName().equals("model")) {
-                        int imagetype;
-                        String model = ((Element) node).getAttribute("value");
-                        if (model.equals("MONOCHROME")) {
-                            imagetype = BufferedImage.TYPE_BYTE_BINARY;
-                        } else if (model.equals("GRAY")) {
-                            imagetype = BufferedImage.TYPE_BYTE_GRAY;
-                        } else if (model.equals("RGB")) {
-                            imagetype = BufferedImage.TYPE_3BYTE_BGR;
-                        } else if (model.equals("ARGB")) {
-                            imagetype = BufferedImage.TYPE_4BYTE_ABGR;
-                        } else {
-                            imagetype = BufferedImage.TYPE_CUSTOM;
-                        }
-                        BufferedImage buffImage = new BufferedImage(width,
-                                height, imagetype);
-                        Graphics2D g2 = buffImage.createGraphics();
-                        g2.drawImage(image, 0, 0, tracker);
-                        processBufferedImage(buffImage, node.getChildNodes());
-                    } else {
-                        logger.println("ImageParser Error: Invalid tag "
-                                + node.getNodeName());
-                    }
-                }
-            }
-
-            // t.transform(new DOMSource(doc), new StreamResult(System.out));
-            return doc;
-        } catch (Exception e) {
-            logger.println("ImageParser " + e.getClass().toString() + ": "
-                    + e.getMessage());
+    
+    private static Node processFrame(ImageReader reader, int frame, NodeList nodes, PrintWriter logger) throws Exception {
+        if (nodes.getLength() == 0) {
             return null;
         }
+
+        BufferedImage image = reader.read(frame);
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                // System.out.println(node.getLocalName());
+                if (node.getLocalName().equals("type")) {
+                    node.setTextContent(reader.getFormatName());
+                } else if (node.getLocalName().equals("height")) {
+                    node.setTextContent(Integer.toString(image.getHeight()));
+                } else if (node.getLocalName().equals("width")) {
+                    node.setTextContent(Integer.toString(image.getWidth()));
+                } else if (node.getLocalName().equals("metadata")) {
+                    IIOMetadata metadata = reader.getImageMetadata(frame);
+                    if (metadata != null) {
+                        String format = metadata.getNativeMetadataFormatName();
+                        Node tree = metadata.getAsTree(format);
+                        TransformerFactory tf = TransformerFactory.newInstance();
+                        Transformer t = tf.newTransformer();
+                        t.transform(new DOMSource(tree), new DOMResult(node));
+                    }
+                } else if (node.getLocalName().equals("model")) {
+                    int imagetype = -1;
+                    String model = ((Element) node).getAttribute("value");
+                    if (model.equals("MONOCHROME")) {
+                        imagetype = BufferedImage.TYPE_BYTE_BINARY;
+                    } else if (model.equals("GRAY")) {
+                        imagetype = BufferedImage.TYPE_BYTE_GRAY;
+                    } else if (model.equals("RGB")) {
+                        imagetype = BufferedImage.TYPE_3BYTE_BGR;
+                    } else if (model.equals("ARGB")) {
+                        imagetype = BufferedImage.TYPE_4BYTE_ABGR;
+                    } else {
+                        model = "CUSTOM";
+                    }
+                    ((Element)node).setAttribute("value", model);
+                    BufferedImage buffImage = image;
+                    if (image.getType() != imagetype && imagetype != -1) {
+                        buffImage = new BufferedImage(image.getWidth(), image.getHeight(), imagetype);
+                        Graphics2D g2 = buffImage.createGraphics();
+                        ImageTracker tracker = new ImageTracker();
+                        boolean done = g2.drawImage(image, 0, 0, tracker);
+                        if (!done) {
+                            while (!tracker.done) {
+                                sleep(50);
+                            }
+                        }
+                    }
+                    processBufferedImage(buffImage, node.getChildNodes());
+                } else {
+                    logger.println("ImageParser Error: Invalid tag " + node.getNodeName());
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Document parse(InputStream source, Element instruction, PrintWriter logger) throws Exception {
+        ImageInputStream iis = ImageIO.createImageInputStream(source);
+        if (iis == null) {
+            logger.println("No image handlers available for the data stream.");
+            return null;
+        }
+
+        ImageReader reader = ImageIO.getImageReaders(iis).next();
+        reader.setInput(iis);
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.newDocument();
+
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer t = tf.newTransformer();
+        t.transform(new DOMSource(instruction), new DOMResult(doc));
+
+        Element new_instruction = doc.getDocumentElement();
+
+        int framesRead = 0;
+        boolean containsFrames = false;
+        Element framesElement = null;
+        Element metadataElement = null;
+        
+        NodeList nodes = new_instruction.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                // System.out.println(node.getLocalName());
+                if (node.getLocalName().equals("type")) {
+                    node.setTextContent(reader.getFormatName());
+                } else if (node.getLocalName().equals("frames")) {
+                    framesElement = (Element)node;
+                } else if (node.getLocalName().equals("metadata")) {
+                    metadataElement = (Element)node;
+                } else if (node.getLocalName().equals("frame")) {
+                    int frame;
+                    String frameStr = ((Element) node).getAttribute("num");
+                    if (frameStr.length() == 0) {
+                        frame = framesRead;
+                        framesRead++;
+                        ((Element) node).setAttribute("num", Integer.toString(frame));
+                    } else {
+                        frame = Integer.parseInt(frameStr);
+                        framesRead = frame + 1;
+                    }
+                    processFrame(reader, frame, node.getChildNodes(), logger);
+                    containsFrames = true;
+                }
+            }
+        }
+            
+        if (containsFrames) {
+            if (metadataElement != null) {
+                IIOMetadata metadata = reader.getStreamMetadata();
+                if (metadata != null) {
+                    String format = metadata.getNativeMetadataFormatName();
+                    Node tree = metadata.getAsTree(format);
+                    t.transform(new DOMSource(tree), new DOMResult(metadataElement));
+                }
+            }
+            if (framesElement != null) {
+                boolean allowSearch = !reader.isSeekForwardOnly(); 
+                int frames = reader.getNumImages(allowSearch);
+                if (frames == -1) {
+                    try {
+                        while(true) {
+                            reader.read(framesRead);
+                            framesRead++;
+                        }
+                    } catch (Exception e) {
+                        frames = framesRead + 1;
+                    }
+                }
+                framesElement.setTextContent(Integer.toString(frames));
+            }
+        } else {
+            processFrame(reader, 0, nodes, logger);
+            framesRead = 1;
+        }
+        
+        // t.transform(new DOMSource(doc), new StreamResult(System.out));
+        return doc;
     }
 
     public static void main(String[] args) throws Exception {
@@ -540,8 +508,8 @@ public class ImageParser {
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(xml_url.openStream());
-        Element instruction = (Element) doc.getElementsByTagNameNS(
-                "http://www.occamlab.com/te/parsers", "ImageParser").item(0);
+//        Element instruction = (Element) doc.getElementsByTagNameNS("http://www.occamlab.com/te/parsers", "ImageParser").item(0);
+        Element instruction = (Element) doc.getDocumentElement();
 
         PrintWriter logger = new PrintWriter(System.out);
         InputStream image_is = image_url.openConnection().getInputStream();
@@ -549,10 +517,16 @@ public class ImageParser {
         Document result = parse(image_is, instruction, logger);
         logger.flush();
 
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer();
-        t.setOutputProperty(OutputKeys.INDENT, "yes");
-        t.transform(new DOMSource(result), new StreamResult(System.out));
+        if (result != null) {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            try {
+                tf.setAttribute("http://saxon.sf.net/feature/strip-whitespace", "all");
+            } catch (IllegalArgumentException e) {
+            }
+            Transformer t = tf.newTransformer();
+            t.setOutputProperty(OutputKeys.INDENT, "yes");
+            t.transform(new DOMSource(result), new StreamResult(System.out));
+        }
 
         System.exit(0);
     }
