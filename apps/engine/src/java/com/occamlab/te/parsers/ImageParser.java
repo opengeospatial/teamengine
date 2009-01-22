@@ -47,8 +47,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import net.sf.saxon.FeatureKeys;
-
 import org.w3c.dom.*;
 
 /**
@@ -348,7 +346,7 @@ public class ImageParser {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 // System.out.println(node.getLocalName());
                 if (node.getLocalName().equals("type")) {
-                    node.setTextContent(reader.getFormatName());
+                    node.setTextContent(reader.getFormatName().toLowerCase());
                 } else if (node.getLocalName().equals("height")) {
                     node.setTextContent(Integer.toString(image.getHeight()));
                 } else if (node.getLocalName().equals("width")) {
@@ -429,7 +427,7 @@ public class ImageParser {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 // System.out.println(node.getLocalName());
                 if (node.getLocalName().equals("type")) {
-                    node.setTextContent(reader.getFormatName());
+                    node.setTextContent(reader.getFormatName().toLowerCase());
                 } else if (node.getLocalName().equals("frames")) {
                     framesElement = (Element)node;
                 } else if (node.getLocalName().equals("metadata")) {
