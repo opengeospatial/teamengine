@@ -704,15 +704,25 @@
 	</xsl:template>
 	
 	<xsl:template match="ctl:parse">
-		<!-- Expand any child CTL instructions into XSL instructions and store in generated variable -->
-		<txsl:variable name="te:parse-xml">
-			<xsl:copy>
-				<xsl:apply-templates select="@*"/>
-				<xsl:apply-templates/>
-			</xsl:copy>
-		</txsl:variable>
-		<!-- Generate parse method call -->
-		<txsl:copy-of select="tec:parse($te:core, $te:parse-xml, '{$xsl-ver}')"/>
+		<xsl:choose>
+			<xsl:when test="parent::ctl:form">
+				<xsl:copy>
+					<xsl:apply-templates select="@*"/>
+					<xsl:apply-templates/>
+				</xsl:copy>
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- Expand any child CTL instructions into XSL instructions and store in generated variable -->
+				<txsl:variable name="te:parse-xml">
+					<xsl:copy>
+					<xsl:apply-templates select="@*"/>
+						<xsl:apply-templates/>
+					</xsl:copy>
+				</txsl:variable>
+				<!-- Generate parse method call -->
+				<txsl:copy-of select="tec:parse($te:core, $te:parse-xml, '{$xsl-ver}')"/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="ctl:for-each">

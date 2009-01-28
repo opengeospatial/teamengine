@@ -124,6 +124,7 @@ public class TECore implements Runnable {
     PrintWriter logger = null;          // Logger for current test
     volatile String formHtml;                    // HTML representation for an active form
     volatile Document formResults;               // Holds form results until they are retrieved
+    Map<String, Element>formParsers = new HashMap<String, Element>();
     Map<Integer, Object>functionInstances = new HashMap<Integer, Object>();
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();
@@ -720,6 +721,10 @@ public class TECore implements Runnable {
         this.formResults = doc;
     }
 
+    public Map<String, Element> getFormParsers() {
+        return formParsers;
+    }
+
     public Document readLog() throws Exception {
         return LogUtils.readLog(opts.getLogDir(), testPath);
     }
@@ -1157,9 +1162,17 @@ public class TECore implements Runnable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-
-        Transformer t = TransformerFactory.newInstance().newTransformer();
         Document response_doc = db.newDocument();
+        return parse(uc, instruction, response_doc);
+    }
+    
+    public Element parse(URLConnection uc, Node instruction, Document response_doc) throws Throwable {
+//        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//        dbf.setNamespaceAware(true);
+//        DocumentBuilder db = dbf.newDocumentBuilder();
+//
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+//        Document response_doc = db.newDocument();
         Element parser_e = response_doc.createElement("parser");
         Element response_e = response_doc.createElement("response");
         Element content_e = response_doc.createElement("content");
@@ -1235,7 +1248,7 @@ public class TECore implements Runnable {
         }
         response_e.appendChild(parser_e);
         response_e.appendChild(content_e);
-        response_doc.appendChild(response_e);
+//        response_doc.appendChild(response_e);
         return response_e;
     }
 
@@ -1278,26 +1291,31 @@ public class TECore implements Runnable {
         if (attr != null) {
             name = attr.getValue();
         }
-
-        // Get "method" attribute - "post" or "get"
-        attr = (Attr) attrs.getNamedItem("method");
-        String method = "";
-        if (attr != null) {
-            method = attr.getValue();
+        
+        for (Element parseInstruction : DomUtils.getElementsByTagNameNS(form, CTL_NS, "parse")) {
+            String key = parseInstruction.getAttribute("file");
+            formParsers.put(key, DomUtils.getChildElement(parseInstruction));
         }
 
 	// Determine if there are file widgets or not
 	boolean hasFiles = false;
-	NodeList inputs = ctlForm.getElementsByTagName("input");
-	for (int i = 0; i < inputs.getLength(); i++) {
-		NamedNodeMap inputAttrs = inputs.item(i).getAttributes();
-		Attr typeAttr = (Attr) inputAttrs.getNamedItem("type");
-		if (typeAttr != null) {
-			if (typeAttr.getValue().toLowerCase().equals("file")) {
-				hasFiles = true;
-			}
-		}
+        List<Element> inputs = DomUtils.getElementsByTagName(form, "input");
+        inputs.addAll(DomUtils.getElementsByTagNameNS(form, "http://www.w3.org/1999/xhtml", "input"));
+	for (Element input : inputs) {
+            if (input.getAttribute("type").toLowerCase().equals("file")) {
+                hasFiles = true;
+                break;
+            }
 	}
+
+        // Get "method" attribute - "post" or "get"
+        attr = (Attr) attrs.getNamedItem("method");
+        String method = "get";
+        if (attr != null) {
+            method = attr.getValue().toLowerCase();
+        } else if (hasFiles) {
+            method = "post";
+        }
 
         XsltTransformer xt = engine.getFormExecutable().load();
         xt.setSource(new DOMSource(ctlForm));
@@ -1305,7 +1323,7 @@ public class TECore implements Runnable {
         xt.setParameter(new QName("web"), new XdmAtomicValue(web ? "yes" : "no"));
         xt.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes" : "no"));
         xt.setParameter(new QName("thread"), new XdmAtomicValue(Long.toString(Thread.currentThread().getId())));
-        xt.setParameter(new QName("method"), new XdmAtomicValue(method.toLowerCase().equals("post") ? "post" : "get"));
+        xt.setParameter(new QName("method"), new XdmAtomicValue(method));
         StringWriter sw = new StringWriter();
         Serializer serializer = new Serializer();
         serializer.setOutputWriter(sw);
@@ -1329,6 +1347,7 @@ public class TECore implements Runnable {
 
         while (formResults == null) {
             if (stop) {
+                formParsers.clear();
                 throw new Exception("Execution was stopped by the user.");
             }
             Thread.sleep(250);
@@ -1337,6 +1356,7 @@ public class TECore implements Runnable {
         Document doc = formResults;
 //        System.out.println(DomUtils.serializeNode(doc));
         formResults = null;
+        formParsers.clear();
 
         if (logger != null) {
             logger.println("<formresults id=\"" + fnPath + id + "\">");

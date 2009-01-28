@@ -1,6 +1,7 @@
 package com.occamlab.te;
 
 import java.awt.BorderLayout;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.io.File;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.occamlab.te.util.DomUtils;
+
 /**
  * Swing-based form created from the content of a <ctl:form> element. This is
  * produced when not running the test harness in a web application context.
@@ -46,8 +49,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                 int start = 0;
                 int end = data.length();
 
-                DocumentBuilder db = DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder();
+                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 Document doc = db.newDocument();
                 Element root = doc.createElement("values");
                 doc.appendChild(root);
@@ -69,12 +71,25 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                     valueElement.setAttribute("key", key);
                     // Special case for file inputs
                     if (fileFields.contains(key)) {
-                    	File temp = new File(value);
-                    	if (temp != null) {
+                    	File f = new File(URLDecoder.decode(value, "UTF-8"));
+                    	if (f != null) {
+                            if (Core.formParsers.containsKey(key)) {
+                                Element parser = Core.formParsers.get(key); 
+                                URL url = f.toURI().toURL();
+                                Element response = Core.parse(url.openConnection(), parser, doc);
+                                Element content = DomUtils.getElementByTagName(response, "content");
+                                if (content != null) {
+                                    Element child = DomUtils.getChildElement(content);
+                                    if (child != null) {
+                                        valueElement.appendChild(child);
+                                    }
+                                }
+                            } else {
 //                    		value = Core.saveFileToWorkingDir(value);  // What does copying the file to a new dir accomplish?
 		                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-		                fileEntry.setAttribute("full-path", value.replace('\\','/'));
+                                fileEntry.setAttribute("full-path", URLDecoder.decode(value, "UTF-8").replace('\\','/'));
 		                valueElement.appendChild(fileEntry);
+                            }
                     	}
                     }
                     else {
@@ -86,8 +101,8 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                 } while (start < end);
 
                 Core.setFormResults(doc);
-            } catch (Exception e) {
-                e.printStackTrace(System.out);
+            } catch (Throwable t) {
+                t.printStackTrace(System.out);
             }
             Form.dispose();
             Form = null;

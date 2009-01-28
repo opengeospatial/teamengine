@@ -34,20 +34,13 @@
 			</head>
 			<body>
 				<xsl:for-each select="*[local-name()='form']">
-					<form method="{method}">
+					<form method="{$method}">
 						<xsl:if test="$files = 'yes'">
 							<xsl:attribute name="enctype">multipart/form-data</xsl:attribute>
 						</xsl:if>
 						<xsl:if test="$web = 'yes'">
 							<xsl:attribute name="action">test</xsl:attribute>
-							<input type="hidden" name="te-operation">
-								<xsl:attribute name="value">
-									<xsl:choose>
-										<xsl:when test="$method = 'post'">SubmitPostForm</xsl:when>
-										<xsl:otherwise>SubmitForm</xsl:otherwise>
-									</xsl:choose>
-								</xsl:attribute>
-							</input>
+							<input type="hidden" name="te-operation" value="SubmitForm"/>
 							<input type="hidden" name="te-thread" value="{$thread}"/>
 						</xsl:if>
 						<xsl:apply-templates select="node()"/>
@@ -63,6 +56,8 @@
 			<xsl:apply-templates/>
 		</xsl:element>
 	</xsl:template>
+
+	<xsl:template match="ctl:parse" xmlns:ctl="http://www.occamlab.com/ctl"/>
 
 	<xsl:template match="node()">
 		<xsl:copy>

@@ -24,6 +24,7 @@ package com.occamlab.te.web;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -67,6 +68,7 @@ import com.occamlab.te.TECore;
 import com.occamlab.te.TestDriverConfig;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
+import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
@@ -327,7 +329,8 @@ public class TestServlet extends HttpServlet {
                 }
                 out.println(">");
                 out.print("<![CDATA[");
-                out.print(core.getOutput());
+//                out.print(core.getOutput());
+                out.print(URLEncoder.encode(core.getOutput(), "UTF-8").replace('+', ' '));
                 out.println("]]>");
                 out.println("</status>");
             } else if (operation.equals("GetForm")) {
@@ -336,7 +339,7 @@ public class TestServlet extends HttpServlet {
                 core.setFormHtml(null);
                 response.setContentType("text/html");
                 out.print(html);
-            } else if (operation.equals("SubmitForm") || operation.equals("SubmitPostForm")) {
+            } else if (operation.equals("SubmitForm")) {
                 TECore core = (TECore)session.getAttribute("testsession");
                 Document doc = DB.newDocument();
                 Element root = doc.createElement("values");
@@ -358,12 +361,26 @@ public class TestServlet extends HttpServlet {
                                 StringUtils.getFilenameFromString(item.getName()));
                             item.write(uploadedFile);
                             Element valueElement = doc.createElement("value");
-                            valueElement.setAttribute("key", item.getFieldName());
-                            Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-                            fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath());
-                            fileEntry.setAttribute("media-type", item.getContentType());
-                            fileEntry.setAttribute("size", String.valueOf(item.getSize()));
-                            valueElement.appendChild(fileEntry);
+                            String key = item.getFieldName();
+                            valueElement.setAttribute("key", key);
+                            if (core.getFormParsers().containsKey(key)) {
+                                Element parser = core.getFormParsers().get(key); 
+                                URL url = uploadedFile.toURI().toURL();
+                                Element resp = core.parse(url.openConnection(), parser, doc);
+                                Element content = DomUtils.getElementByTagName(resp, "content");
+                                if (content != null) {
+                                    Element child = DomUtils.getChildElement(content);
+                                    if (child != null) {
+                                        valueElement.appendChild(child);
+                                    }
+                                }
+                            } else {
+                                Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
+                                fileEntry.setAttribute("full-path", uploadedFile.getAbsolutePath().replace('\\','/'));
+                                fileEntry.setAttribute("media-type", item.getContentType());
+                                fileEntry.setAttribute("size", String.valueOf(item.getSize()));
+                                valueElement.appendChild(fileEntry);
+                            }
                             root.appendChild(valueElement);
                         }
                     }
@@ -375,8 +392,8 @@ public class TestServlet extends HttpServlet {
                 out.print("<body onload=\"window.parent.update()\"></body>");
                 out.println("</html>");
             }
-        } catch (Exception e) {
-            throw new ServletException(e);
+        } catch (Throwable t) {
+            throw new ServletException(t);
         }
     }
 }
