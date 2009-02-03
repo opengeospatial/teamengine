@@ -134,7 +134,7 @@ if (mode.equals("test") || mode.equals("retest")) {
 					node = node.nextSibling;
 				}
 				if (console && console.write && s != "") {
-					console.write(decodeURIComponent(s));
+					console.write(decodeURIComponent(s).replace(/\n\r?/g, '\n\r'));
 				}
 				var form = status.getAttribute("form");
 				if (form) {
