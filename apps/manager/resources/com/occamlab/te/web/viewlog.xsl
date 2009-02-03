@@ -74,13 +74,19 @@
 		<xsl:variable name="file" select="file:new(string(@file))"/>
 		<xsl:variable name="pdir1" select="file:getName(file:getParentFile($file))"/>
 		<xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/>
+		<xsl:variable name="separator">
+			<xsl:choose>
+				<xsl:when test="contains(@file, '/')">~2F</xsl:when>
+				<xsl:otherwise>~5C</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		<xsl:variable name="dir">
 			<xsl:choose>
-				<xsl:when test="contains($pdir1, '~5C')">
+				<xsl:when test="contains($pdir1, $separator)">
 					<xsl:value-of select="substring($pdir1, 1, string-length($pdir1) - 4)"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="concat($pdir2, '~5C', $pdir1)"/>
+					<xsl:value-of select="concat($pdir2, $separator, $pdir1)"/>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
