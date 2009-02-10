@@ -700,7 +700,7 @@
 			</xsl:copy>
 		</txsl:variable>
 		<!-- Generate request method call -->
-		<txsl:copy-of select="tec:request($te:core, $te:request-xml, concat('{generate-id()}_', position()))"/>
+		<txsl:copy-of select="tec:request($te:core, $te:request-xml, concat('{generate-id()}_', position()))/node()"/>
 	</xsl:template>
 	
 	<xsl:template match="ctl:parse">

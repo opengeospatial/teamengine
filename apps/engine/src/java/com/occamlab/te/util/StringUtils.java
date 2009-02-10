@@ -66,4 +66,14 @@ public class StringUtils {
         }
         return newStr;
     }
+    
+    public static String escapeXML(String str) {
+        String ret = str;
+        ret = ret.replaceAll("\"", "&quot;");
+        ret = ret.replaceAll("&", "&amp;");
+        ret = ret.replaceAll("<", "&lt;");
+        ret = ret.replaceAll(">", "&gt;");
+        ret = ret.replaceAll("'", "&apos;");
+        return ret;
+    }
 }

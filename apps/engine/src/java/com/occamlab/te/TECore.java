@@ -487,7 +487,7 @@ public class TECore implements Runnable {
                 logger.println(params.toString());
             }
             if (test.usesContext()) {
-                logger.println("<context label=\"" + contextLabel + "\">");
+                logger.println("<context label=\"" + StringUtils.escapeXML(contextLabel) + "\">");
                 NodeInfo contextNode = (NodeInfo)context.getContextItem();
                 int kind = contextNode.getNodeKind();
                 if (kind == Type.ATTRIBUTE) {
@@ -539,7 +539,7 @@ public class TECore implements Runnable {
 //        System.out.println(params.getClass().getName());
         String key = "{" + NamespaceURI + "}" + localName;
         TestEntry test = index.getTest(key);
-
+        
         if (logger != null) {
             logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
             logger.flush();
@@ -700,9 +700,7 @@ public class TECore implements Runnable {
     }
 
     public void setContextLabel(String label) {
-        // TODO: test
         contextLabel = label;
-        System.out.println("setcontextLabel(" + label + ")");
     }
 
     public String getFormHtml() {
@@ -785,7 +783,7 @@ public class TECore implements Runnable {
         return file;
     }
 
-    public Node request(Document ctlRequest, String id) throws Throwable {
+    public NodeList request(Document ctlRequest, String id) throws Throwable {
         Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
             for (Element request_e : DomUtils.getElementsByTagName(prevLog, "request")) {
@@ -794,7 +792,8 @@ public class TECore implements Runnable {
                     logger.flush();
                     Element response_e = DomUtils.getElementByTagName(request_e, "response");
                     Element content_e = DomUtils.getElementByTagName(response_e, "content");
-                    return DomUtils.getChildElement(content_e);
+                    return content_e.getChildNodes();
+//                    return DomUtils.getChildElement(content_e);
                 }
             }
         }
@@ -834,7 +833,9 @@ public class TECore implements Runnable {
         if (ex == null) {
             Node n = response.getElementsByTagName("content").item(0);
 //            System.out.println(DomUtils.serializeNode(n.getFirstChild()));
-            return n.getFirstChild();
+            return n.getChildNodes();
+//            return DomUtils.getChildElement(n);
+//            return n.getFirstChild();
         } else {
             throw ex;
         }
