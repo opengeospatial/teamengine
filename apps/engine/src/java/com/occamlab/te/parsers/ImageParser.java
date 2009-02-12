@@ -397,14 +397,15 @@ public class ImageParser {
     }
 
     private static Document parse(InputStream source, Element instruction, PrintWriter logger) throws Exception {
-        ImageInputStream iis = ImageIO.createImageInputStream(source);
-        if (iis == null) {
+        ImageReader reader;
+        try {
+            ImageInputStream iis = ImageIO.createImageInputStream(source);
+            reader = ImageIO.getImageReaders(iis).next();
+            reader.setInput(iis);
+        } catch (Exception e) {
             logger.println("No image handlers available for the data stream.");
             return null;
         }
-
-        ImageReader reader = ImageIO.getImageReaders(iis).next();
-        reader.setInput(iis);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();

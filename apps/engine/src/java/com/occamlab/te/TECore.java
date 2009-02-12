@@ -831,11 +831,15 @@ public class TECore implements Runnable {
             logger.flush();
         }
         if (ex == null) {
-            Node n = response.getElementsByTagName("content").item(0);
-//            System.out.println(DomUtils.serializeNode(n.getFirstChild()));
-            return n.getChildNodes();
-//            return DomUtils.getChildElement(n);
-//            return n.getFirstChild();
+            Element parser = DomUtils.getElementByTagName(response, "parser");
+            if (parser != null) {
+                String text = parser.getTextContent();
+                if (text.length() > 0) {
+                    out.println(parser.getTextContent());
+                }
+            }
+            Element content = DomUtils.getElementByTagName(response, "content");
+            return content.getChildNodes();
         } else {
             throw ex;
         }
@@ -1182,7 +1186,7 @@ public class TECore implements Runnable {
                 InputStream is = uc.getInputStream();
                 t.transform(new StreamSource(is), new DOMResult(content_e));
             } catch (Exception e) {
-                parser_e.setTextContent(e.getMessage());
+                parser_e.setTextContent(e.getClass().getName() + ": " + e.getMessage());
             }
         } else {
             Element instruction_e;
