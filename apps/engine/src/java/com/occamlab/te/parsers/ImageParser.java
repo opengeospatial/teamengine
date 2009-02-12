@@ -354,7 +354,10 @@ public class ImageParser {
                 } else if (node.getLocalName().equals("metadata")) {
                     IIOMetadata metadata = reader.getImageMetadata(frame);
                     if (metadata != null) {
-                        String format = metadata.getNativeMetadataFormatName();
+                        String format = ((Element)node).getAttribute("format");
+                        if (format.length() == 0) {
+                            format = metadata.getNativeMetadataFormatName();
+                        }
                         Node tree = metadata.getAsTree(format);
                         TransformerFactory tf = TransformerFactory.newInstance();
                         Transformer t = tf.newTransformer();
@@ -431,6 +434,7 @@ public class ImageParser {
                     node.setTextContent(reader.getFormatName().toLowerCase());
                 } else if (node.getLocalName().equals("frames")) {
                     framesElement = (Element)node;
+                    containsFrames = true;
                 } else if (node.getLocalName().equals("metadata")) {
                     metadataElement = (Element)node;
                 } else if (node.getLocalName().equals("frame")) {
@@ -454,7 +458,10 @@ public class ImageParser {
             if (metadataElement != null) {
                 IIOMetadata metadata = reader.getStreamMetadata();
                 if (metadata != null) {
-                    String format = metadata.getNativeMetadataFormatName();
+                    String format = metadataElement.getAttribute("format");
+                    if (format.length() == 0) {
+                        format = metadata.getNativeMetadataFormatName();
+                    }
                     Node tree = metadata.getAsTree(format);
                     t.transform(new DOMSource(tree), new DOMResult(metadataElement));
                 }
