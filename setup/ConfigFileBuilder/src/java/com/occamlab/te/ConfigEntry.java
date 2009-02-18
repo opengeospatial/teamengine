@@ -63,10 +63,10 @@ public class ConfigEntry {
             String namespaceUri = DomUtils.getElementByTagName(profileEl, "namespace-uri").getTextContent();
             String prefix = DomUtils.getElementByTagName(profileEl, "prefix").getTextContent();
             profiles.add(new QName(namespaceUri, localName, prefix));
-            Element titleEl = DomUtils.getElementByTagName(suiteEl, "title");
-            if (titleEl != null) profileTitles.add(titleEl.getTextContent());
-            Element descriptionEl = DomUtils.getElementByTagName(suiteEl, "description");
-            if (descriptionEl != null) profileDescriptions.add(descriptionEl.getTextContent());
+            Element titleEl = DomUtils.getElementByTagName(profileEl, "title");
+            profileTitles.add(titleEl == null ? "" : titleEl.getTextContent());
+            Element descriptionEl = DomUtils.getElementByTagName(profileEl, "description");
+            profileDescriptions.add(descriptionEl == null ? "" : descriptionEl.getTextContent());
         }
         for (Element sourceEl : DomUtils.getElementsByTagName(config, "source")) {
             sources.add(new File(file.getParentFile(), sourceEl.getTextContent()));

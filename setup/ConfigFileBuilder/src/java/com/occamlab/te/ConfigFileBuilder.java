@@ -111,8 +111,13 @@ public class ConfigFileBuilder {
                                 System.out.println("              <namespace-uri>" + profiles.get(i).getNamespaceURI() + "</namespace-uri>");
                                 System.out.println("              <prefix>" + profiles.get(i).getPrefix() + "</prefix>");
                                 System.out.println("              <local-name>" + profiles.get(i).getLocalPart() + "</local-name>");
-                                System.out.println("              <title>" + profileTitles.get(i) + "</title>");
-                                System.out.println("              <description>" + profileDescriptions.get(i) + "</description>");
+                                String profileTitle = profileTitles.get(i);
+                                if (profileTitle == null) profileTitle = profiles.get(i).getLocalPart();
+                                System.out.println("              <title>" + profileTitle + "</title>");
+                                String profileDescription = profileDescriptions.get(i);
+                                if (profileDescription != null) {
+                                    System.out.println("              <description>" + profileDescription + "</description>");
+                                }
                                 System.out.println("            </profile>");
                             }
                             System.out.println("          </revision>");
