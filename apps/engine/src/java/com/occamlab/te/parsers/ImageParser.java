@@ -38,6 +38,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.ImageObserver;
 import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
@@ -109,7 +111,14 @@ public class ImageParser {
                 } else if (node.getLocalName().equals("checksum")) {
                     CRC32 checksum = new CRC32();
                     Raster raster = buffimage.getRaster();
-                    DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
+                    DataBufferByte buffer;
+                    if (node.getParentNode().getLocalName().equals("subimage")) {
+                        WritableRaster outRaster = raster.createCompatibleWritableRaster();
+                        buffimage.copyData(outRaster);
+                        buffer = (DataBufferByte)outRaster.getDataBuffer();
+                    } else {
+                        buffer = (DataBufferByte)raster.getDataBuffer();
+                    }
                     int numbanks = buffer.getNumBanks();
                     for (int j = 0; j < numbanks; j++) {
                         checksum.update(buffer.getData(j));
@@ -189,8 +198,9 @@ public class ImageParser {
                     }
                     if (add) {
                         Integer count = (Integer) sampleMap.get(sampleObj);
-                        if (count == null)
+                        if (count == null) {
                             count = new Integer(0);
+                        }
                         count = new Integer(count.intValue() + 1);
                         sampleMap.put(sampleObj, count);
                     }
@@ -209,7 +219,6 @@ public class ImageParser {
                     if (sample.equals("all")) {
                         Node parent = node.getParentNode();
                         Node prevSibling = node.getPreviousSibling();
-                        // Node nextSibling = node.getNextSibling();
                         Iterator sampleIt = sampleMap.keySet().iterator();
                         Element countnode = null;
                         int digits;
