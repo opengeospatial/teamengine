@@ -482,7 +482,7 @@ public class TECore implements Runnable {
                                       "namespace-uri=\"" + test.getNamespaceURI() + "\" " +
                                       "path=\"" + testPath + "\" " +
                                       "file=\"" + test.getTemplateFile().getAbsolutePath() + "\">");
-            logger.println("<assertion>" + assertion + "</assertion>");
+            logger.println("<assertion>" + StringUtils.escapeXML(assertion) + "</assertion>");
             if (params != null) {
                 logger.println(params.toString());
             }
