@@ -14,6 +14,7 @@ import java.lang.Thread;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,7 +182,7 @@ public class SchematronValidatingParser {
             // Use ClassLoader to load schematron off classpath
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL url = loader.getResource(schemaFile);
-            this.schemaFile = new File(url.getFile());
+            this.schemaFile = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         } catch (Exception e) {
             assert false : "Entity body not found. " + e.toString();
         }
@@ -389,7 +390,8 @@ public class SchematronValidatingParser {
 	            this.schemaFile = new File(schemaLocation);
 	        } else if (type.equals("resource")) {
 	            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-	            this.schemaFile = new File(cl.getResource(schemaLocation).getFile());
+                    URL url = cl.getResource(schemaLocation);
+	            this.schemaFile = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
 	        }
 	}
 
@@ -467,7 +469,7 @@ public class SchematronValidatingParser {
             // Use ClassLoader to load schematron off classpath
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL url = loader.getResource(schemaFile);
-            schema = new File(url.getFile());
+            schema = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         } catch (Exception e) {
             assert false : "Entity body not found. " + e.toString();
         }
