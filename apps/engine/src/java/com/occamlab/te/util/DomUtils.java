@@ -1,8 +1,6 @@
 package com.occamlab.te.util;
 
-import java.io.File;
-import java.io.StringWriter;
-import java.io.ByteArrayOutputStream;
+import java.io.CharArrayWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +17,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -138,20 +134,20 @@ public class DomUtils {
      * Serializes a Node to a String
      */
     public static String serializeNode(Node node) {
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	CharArrayWriter caw = new CharArrayWriter();
 	try {
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer transformer = factory.newTransformer();
 
 		DOMSource src = new DOMSource(node);
-		StreamResult dest = new StreamResult(baos);
+		StreamResult dest = new StreamResult(caw);
                 transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(src, dest);
 	} catch (Exception e) {
 		System.out.println("Error serializing node.  "+e.getMessage());
 	}
 
-	return baos.toString();
+	return caw.toString();
     }
 
     /**
