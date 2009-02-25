@@ -778,6 +778,21 @@
 	</xsl:template>
 
 
+	<xsl:template match="xsl:variable">
+		<xsl:copy>
+			<xsl:call-template name="loc"/>
+			<xsl:apply-templates select="@*"/>
+			<xsl:apply-templates/>
+		</xsl:copy>
+		<!-- Use variables after they are set to ensure they are evaluated in document order -->
+		<txsl:value-of select="substring(${@name},1,0)">
+			<xsl:if test="contains(@name, ':')">
+				<xsl:variable name="prefix" select="substring-before(@name, ':')"/>
+				<xsl:copy-of select="namespace::*[name()=$prefix]"/>
+			</xsl:if>
+		</txsl:value-of>
+	</xsl:template>
+	
 	<!-- Handle generic xsl instructions -->
 
 	<!-- A loc attribute is added to XSL instructions -->
