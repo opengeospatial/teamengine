@@ -785,12 +785,13 @@
 			<xsl:apply-templates/>
 		</xsl:copy>
 		<!-- Use variables after they are set to ensure they are evaluated in document order -->
-		<txsl:value-of select="substring(${@name},1,0)">
+		<txsl:if test="string-length(substring(${@name},1,0))=1">
 			<xsl:if test="contains(@name, ':')">
 				<xsl:variable name="prefix" select="substring-before(@name, ':')"/>
 				<xsl:copy-of select="namespace::*[name()=$prefix]"/>
 			</xsl:if>
-		</txsl:value-of>
+			<xsl:text>x</xsl:text>
+		</txsl:if>
 	</xsl:template>
 	
 	<!-- Handle generic xsl instructions -->
