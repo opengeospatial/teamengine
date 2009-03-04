@@ -203,41 +203,47 @@ public class TECore implements Runnable {
 
     // Execute tests
     public void execute() throws Exception {
-        String sessionId = opts.getSessionId();
-//        File logDir = opts.getLogDir();
-        int mode = opts.getMode();
-//        String sourcesName = opts.getSourcesName();
-        ArrayList<String> params = opts.getParams();
-
-        if (mode == Test.RESUME_MODE) {
-            reexecute_test(sessionId);
-        } else if (mode == Test.RETEST_MODE) {
-            for (String testPath : opts.getTestPaths()) {
-                reexecute_test(testPath);
-            }
-        } else if (mode == Test.TEST_MODE) {
-            String testName = opts.getTestName();
-            if (testName != null) {
-                XdmNode contextNode = opts.getContextNode();
-                execute_test(testName, params, contextNode);
-            } else {
-                String suiteName = opts.getSuiteName();
-                List<String> profiles = opts.getProfiles();
-                if (suiteName != null || profiles.size() == 0) {
-                    execute_suite(suiteName, params);
+        try {
+            String sessionId = opts.getSessionId();
+    //        File logDir = opts.getLogDir();
+            int mode = opts.getMode();
+    //        String sourcesName = opts.getSourcesName();
+            ArrayList<String> params = opts.getParams();
+    
+            if (mode == Test.RESUME_MODE) {
+                reexecute_test(sessionId);
+            } else if (mode == Test.RETEST_MODE) {
+                for (String testPath : opts.getTestPaths()) {
+                    reexecute_test(testPath);
                 }
-                if (profiles.contains("*")) {
-                    for (String profile : index.getProfileKeys()) {
-                        execute_profile(profile, params, false);
-                    }
+            } else if (mode == Test.TEST_MODE) {
+                String testName = opts.getTestName();
+                if (testName != null) {
+                    XdmNode contextNode = opts.getContextNode();
+                    execute_test(testName, params, contextNode);
                 } else {
-                    for (String profile : profiles) {
-                        execute_profile(profile, params, true);
+                    String suiteName = opts.getSuiteName();
+                    List<String> profiles = opts.getProfiles();
+                    if (suiteName != null || profiles.size() == 0) {
+                        execute_suite(suiteName, params);
+                    }
+                    if (profiles.contains("*")) {
+                        for (String profile : index.getProfileKeys()) {
+                            execute_profile(profile, params, false);
+                        }
+                    } else {
+                        for (String profile : profiles) {
+                            execute_profile(profile, params, true);
+                        }
                     }
                 }
+            } else {
+                throw new Exception("Unsupported mode");
             }
-        } else {
-            throw new Exception("Unsupported mode");
+        } finally {
+            if (!web) {
+                SwingForm.destroy();
+            }
         }
     }
 
@@ -1347,7 +1353,7 @@ public class TECore implements Runnable {
             attr = (Attr) attrs.getNamedItem("height");
             if (attr != null)
                 height = Integer.parseInt(attr.getValue());
-            new SwingForm(name, width, height, this);
+            SwingForm.create(name, width, height, this);
         }
 
         while (formResults == null) {
