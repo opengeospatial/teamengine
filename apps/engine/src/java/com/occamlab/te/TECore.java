@@ -1335,6 +1335,7 @@ public class TECore implements Runnable {
         xt.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes" : "no"));
         xt.setParameter(new QName("thread"), new XdmAtomicValue(Long.toString(Thread.currentThread().getId())));
         xt.setParameter(new QName("method"), new XdmAtomicValue(method));
+        xt.setParameter(new QName("base"), new XdmAtomicValue(opts.getBaseURI()));
         StringWriter sw = new StringWriter();
         Serializer serializer = new Serializer();
         serializer.setOutputWriter(sw);

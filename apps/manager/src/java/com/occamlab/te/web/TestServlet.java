@@ -24,6 +24,7 @@ package com.occamlab.te.web;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -293,6 +294,11 @@ public class TestServlet extends HttpServlet {
                     s.setProfiles(profiles);
                     s.save(logdir);
                 }
+                String requestURI = request.getRequestURI();
+                String contextPath = requestURI.substring(0, requestURI.indexOf(request.getServletPath()) + 1);
+                URI baseURI = new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(), contextPath, null, null);
+                String base = baseURI.toString() + URLEncoder.encode(s.getSourcesName(), "UTF-8") + "/";
+                opts.setBaseURI(base);
 //System.out.println(opts.getSourcesName());
                 TECore core = new TECore(engine, indexes.get(opts.getSourcesName()), opts);
 //System.out.println(indexes.get(opts.getSourcesName()).toString());

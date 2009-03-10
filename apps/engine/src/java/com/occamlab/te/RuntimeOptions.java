@@ -39,9 +39,18 @@ public class RuntimeOptions {
     String testName = null;
     String suiteName = null;
     String sourcesName = "default";
+    String baseURI = "";
     ArrayList<String> profiles = new ArrayList<String>();
     ArrayList<String> testPaths = new ArrayList<String>();
     ArrayList<String> params = new ArrayList<String>();
+
+    public String getBaseURI() {
+        return baseURI;
+    }
+
+    public void setBaseURI(String baseURI) {
+        this.baseURI = baseURI;
+    }
 
     public String getSourcesName() {
         return sourcesName;

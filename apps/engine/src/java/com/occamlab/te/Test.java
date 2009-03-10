@@ -41,7 +41,7 @@ public class Test {
         System.out.println("Test mode:");
         System.out.println("  Use to start a test session.\n");
         System.out.println("  " + cmd + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
-        System.out.println("    [-workdir=dir] [-logdir=dir] [-session=session]");
+        System.out.println("    [-workdir=dir] [-logdir=dir] [-session=session] [-base=baseURI]");
         System.out.println("    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...\n");
         System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
         System.out.println("Resume mode:");
@@ -90,6 +90,8 @@ public class Test {
             } else if (args[i].startsWith("-session=")) {
                 session = args[i].substring(9); 
 //                runOpts.setSessionId(session);
+            } else if (args[i].startsWith("-base=")) {
+                runOpts.setBaseURI(args[i].substring(6));
             } else if (args[i].startsWith("-test=")) {
                 runOpts.setTestName(args[i].substring(6));
             } else if (args[i].startsWith("-suite=")) {

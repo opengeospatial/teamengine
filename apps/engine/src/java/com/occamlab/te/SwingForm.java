@@ -219,15 +219,19 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                 doc.processHTMLFrameHyperlinkEvent(evt);
             } else {
                 try {
+                    URL target = e.getURL();
+                    if (target == null) {
+                       target = new URL(new URL(core.opts.baseURI), e.getDescription());
+                    }
                     if (this == popupForm) {
-                        pane.setPage(e.getURL());
+                        pane.setPage(target);
                     } else {
                         if (popupForm == null) {
                             popupForm = new SwingForm(popupName);
                             popupForm.setSize(700, 500);
                             popupForm.setLocation(this.getX() + 30, this.getY() + 30);
                         }
-                        popupForm.jedit.setPage(e.getURL());
+                        popupForm.jedit.setPage(target);
                         popupForm.setVisible(true);
                     }
                 } catch (Throwable t) {
