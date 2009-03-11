@@ -27,6 +27,7 @@ public class ConfigEntry {
     public List<String> profileTitles = new ArrayList<String>();
     public List<String> profileDescriptions = new ArrayList<String>();
     public List<File> sources = new ArrayList<File>();
+    public String webdir;
     
     ConfigEntry(File file) throws Exception {
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -70,6 +71,12 @@ public class ConfigEntry {
         }
         for (Element sourceEl : DomUtils.getElementsByTagName(config, "source")) {
             sources.add(new File(file.getParentFile(), sourceEl.getTextContent()));
+        }
+        Element webdirEl = DomUtils.getElementByTagName(config, "webdir");
+        if (webdirEl == null ) {
+            webdir = file.getParentFile().getName();
+        } else {
+            webdir = webdirEl.getTextContent();
         }
     }
 }

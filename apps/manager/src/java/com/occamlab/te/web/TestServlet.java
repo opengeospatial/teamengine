@@ -294,11 +294,15 @@ public class TestServlet extends HttpServlet {
                     s.setProfiles(profiles);
                     s.save(logdir);
                 }
-                String requestURI = request.getRequestURI();
-                String contextPath = requestURI.substring(0, requestURI.indexOf(request.getServletPath()) + 1);
-                URI baseURI = new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(), contextPath, null, null);
-                String base = baseURI.toString() + URLEncoder.encode(s.getSourcesName(), "UTF-8") + "/";
-                opts.setBaseURI(base);
+                String webdir = conf.getWebDirs().get(s.getSourcesName());
+//                String requestURI = request.getRequestURI();
+//                String contextPath = requestURI.substring(0, requestURI.indexOf(request.getServletPath()) + 1);
+//                URI contextURI = new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(), contextPath, null, null);
+                URI contextURI = new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(), request.getRequestURI(), null, null);
+                opts.setBaseURI(new URL(contextURI.toURL(), webdir + "/").toString());
+//                URI baseURI = new URL(contextURI.toURL(), webdir).toURI();
+//                String base = baseURI.toString() + URLEncoder.encode(webdir, "UTF-8") + "/";
+//                opts.setBaseURI(base);
 //System.out.println(opts.getSourcesName());
                 TECore core = new TECore(engine, indexes.get(opts.getSourcesName()), opts);
 //System.out.println(indexes.get(opts.getSourcesName()).toString());

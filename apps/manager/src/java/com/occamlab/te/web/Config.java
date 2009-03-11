@@ -58,7 +58,8 @@ public class Config {
     private Map<String, List<String>> revisionMap;     // Key is org_std_ver, value is a list of revisions
     private Map<String, SuiteEntry> suites;            // Key is org_std_ver_rev, value is a SuiteEntry 
     private Map<String, List<ProfileEntry>> profiles;  // Key is org_std_ver_rev, value is a list of profiles 
-    private Map<String, List<File>> sources;           // Key is org_std_ver_rev, value is a list of sources 
+    private Map<String, List<File>> sources;           // Key is org_std_ver_rev, value is a list of sources
+    private Map<String, String> webdirs;               // Key is org_std_ver_rev, value a webdir
 
     public Config() {
         try {
@@ -94,6 +95,7 @@ public class Config {
             suites = new HashMap<String, SuiteEntry>(); 
             profiles = new HashMap<String, List<ProfileEntry>>(); 
             sources = new HashMap<String, List<File>>(); 
+            webdirs = new HashMap<String, String>(); 
 
             for (Element organizationEl : DomUtils.getElementsByTagName(configElem, "organization")) {
                 String organization = DomUtils.getElementByTagName(organizationEl, "name").getTextContent();
@@ -150,6 +152,10 @@ public class Config {
                                     list.add(new File(scriptsDir, sourceEl.getTextContent()));
                                 }
                                 sources.put(key, list);
+                                
+                                for (Element webdirEl : DomUtils.getElementsByTagName(el, "webdir")) {
+                                    webdirs.put(key, webdirEl.getTextContent());
+                                }
                                 
                                 ArrayList<ProfileEntry> profileList = new ArrayList<ProfileEntry>();
                                 for (Element profileEl : DomUtils.getElementsByTagName(el, "profile")) {
@@ -249,6 +255,10 @@ public class Config {
 
     public Map<String, List<String>> getVersionMap() {
         return versionMap;
+    }
+
+    public Map<String, String> getWebDirs() {
+        return webdirs;
     }
 
 //    public static LinkedHashMap<String, List<File>> getAvailableSuites() {

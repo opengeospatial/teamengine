@@ -106,6 +106,9 @@ public class ConfigFileBuilder {
                                 System.out.println("              <source>" + path + "</source>");
                             }
                             System.out.println("            </sources>");
+                            if (config.webdir != null) {
+                                System.out.println("            <webdir>" + config.webdir + "</webdir>");
+                            }
                             for (int i = 0; i < profiles.size(); i++) {
                                 System.out.println("            <profile>");
                                 System.out.println("              <namespace-uri>" + profiles.get(i).getNamespaceURI() + "</namespace-uri>");
