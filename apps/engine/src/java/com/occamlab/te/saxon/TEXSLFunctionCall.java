@@ -24,6 +24,7 @@ import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.instruct.ParameterSet;
+import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.EmptyIterator;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
@@ -86,11 +87,21 @@ public class TEXSLFunctionCall extends TEFunctionCall {
                         xml += " xmlns:" + attr.getPrefix() + "=\"" + attr.getNamespaceURI() + "\"";
                     }
                     xml += "/>\n";
-                } else if (type == Node.ELEMENT_NODE || type == Node.DOCUMENT_NODE) {
-                    xml += ">\n";
-                    xml += "<value>";
-                    xml += DomUtils.serializeNode(n);
-                    xml += "</value>\n";
+//                } else if (type == Node.ELEMENT_NODE || type == Node.DOCUMENT_NODE) {
+//                    xml += ">\n";
+//                    xml += "<value>";
+//                    xml += DomUtils.serializeNode(n);
+//                    xml += "</value>\n";
+                } else if (type == Node.ELEMENT_NODE) {
+                  xml += " type=\"node()\">\n";
+                  xml += "<value>";
+                  xml += DomUtils.serializeNode(n);
+                  xml += "</value>\n";
+                } else if (type == Node.DOCUMENT_NODE) {
+                  xml += " type=\"document-node()\">\n";
+                  xml += "<value>";
+                  xml += DomUtils.serializeNode(n);
+                  xml += "</value>\n";
                 } else {
                     ItemType it = v.getItemType(context.getConfiguration().getTypeHierarchy());
                     xml += " type=\"" + getTypeName(it) + "\">\n";
@@ -118,9 +129,9 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         if (result == null) {
             return EmptyIterator.getInstance();
         } else {
-//            Value v = Value.asValue(result.getUnderlyingValue());
-            Value v = Value.asValue(result);
-            return v.iterate();
+//            Value v = Value.asValue(result);
+//            return v.iterate();
+            return result.iterateAxis(Axis.CHILD);
         }
     }
 }

@@ -234,60 +234,63 @@
 				<txsl:param name="te:core"/>
 				<txsl:param name="te:params"/>
 				<xsl:if test="ctl:param">
-					<!-- Generate a function for parsing parameters -->
-					<txsl:function name="te:param-value" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-						<txsl:param name="local-name"/>
-						<txsl:param name="namespace-uri"/>
-						<txsl:for-each select="$te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri]">
-							<txsl:choose>
-								<txsl:when test="value/@*">
-									<!-- Attributes -->
-									<txsl:copy-of select="value/@*"/>
-								</txsl:when>
-								<txsl:when test="value/node() and starts-with(@type, 'xs:')">
-									<!-- Values cast to saved type -->
-									<txsl:copy-of select="saxon:evaluate(concat('$p1 cast as ', @type), value/node())"/>
-								</txsl:when>
-								<txsl:when test="starts-with(@type, 'xs:')">
-									<!-- Empty string cast to saved type -->
-									<txsl:copy-of select="saxon:evaluate(concat('&quot;&quot; cast as ', @type))"/>
-								</txsl:when>
-								<txsl:when test="starts-with(@type, 'document-node')">
-									<!-- Document node -->
-									<txsl:document>
-									<txsl:copy-of select="value/node()"/>
-									</txsl:document>
-								</txsl:when>
-								<txsl:otherwise>
-									<!-- Element or text nodes -->
-									<txsl:copy-of select="value/node()"/>
-								</txsl:otherwise>
-							</txsl:choose>
-						</txsl:for-each>
-						<xsl:if test="ctl:code/xsl:param">
-							<txsl:if test="not($te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri])">
+					<!-- Not used for tests that don't indicate they use CTL version 1, because in older versions of TEAM Engine documents were passed to tests as elements -->
+					<xsl:if test="not(self::ctl:test) or number(@version) &gt;= 1 or ancestor::ctl:package[number(@version) &gt;= 1]">
+						<!-- Generate a function for parsing parameters -->
+						<txsl:function name="te:param-value" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+							<txsl:param name="local-name"/>
+							<txsl:param name="namespace-uri"/>
+							<txsl:for-each select="$te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri]">
 								<txsl:choose>
-									<xsl:for-each select="ctl:code/xsl:param">
-										<xsl:variable name="param-qname">
-											<xsl:call-template name="parse-qname"/>
-										</xsl:variable>
-										<txsl:when test="$local-name='{$param-qname/local-name}' and $namespace-uri='{$param-qname/namespace-uri}'">
-											<xsl:choose>
-												<xsl:when test="@select">
-													<txsl:copy-of>
-														<xsl:apply-templates select="@select"/>
-													</txsl:copy-of>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:apply-templates select="*"/>
-												</xsl:otherwise>
-											</xsl:choose>
-										</txsl:when>
-									</xsl:for-each>
+									<txsl:when test="value/node() and starts-with(@type, 'xs:')">
+										<!-- Values cast to saved type -->
+										<txsl:copy-of select="saxon:evaluate(concat('$p1 cast as ', @type), value/node())"/>
+									</txsl:when>
+									<txsl:when test="starts-with(@type, 'xs:')">
+										<!-- Empty string cast to saved type -->
+										<txsl:copy-of select="saxon:evaluate(concat('&quot;&quot; cast as ', @type))"/>
+									</txsl:when>
+									<txsl:when test="value/@*">
+										<!-- Attributes -->
+										<txsl:copy-of select="value/@*"/>
+									</txsl:when>
+									<txsl:when test="starts-with(@type, 'document-node')">
+										<!-- Document node -->
+										<txsl:document>
+											<txsl:copy-of select="value/node()"/>
+										</txsl:document>
+									</txsl:when>
+									<txsl:otherwise>
+										<!-- Element or text nodes -->
+	 									<txsl:copy-of select="value/node()"/>
+									</txsl:otherwise>
 								</txsl:choose>
-							</txsl:if>
-						</xsl:if>
-					</txsl:function>
+							</txsl:for-each>
+							<xsl:if test="ctl:code/xsl:param">
+								<txsl:if test="not($te:params/params/param[@local-name=$local-name and @namespace-uri=$namespace-uri])">
+									<txsl:choose>
+										<xsl:for-each select="ctl:code/xsl:param">
+											<xsl:variable name="param-qname">
+												<xsl:call-template name="parse-qname"/>
+											</xsl:variable>
+											<txsl:when test="$local-name='{$param-qname/local-name}' and $namespace-uri='{$param-qname/namespace-uri}'">
+												<xsl:choose>
+													<xsl:when test="@select">
+														<txsl:copy-of>
+															<xsl:apply-templates select="@select"/>
+														</txsl:copy-of>
+													</xsl:when>
+													<xsl:otherwise>
+														<xsl:apply-templates select="*"/>
+													</xsl:otherwise>
+												</xsl:choose>
+											</txsl:when>
+										</xsl:for-each>
+									</txsl:choose>
+								</txsl:if>
+							</xsl:if>
+						</txsl:function>
+					</xsl:if>
 				</xsl:if>
 
 				<!-- Generate main template -->
@@ -303,7 +306,19 @@
 						<xsl:variable name="param-qname">
 							<xsl:call-template name="parse-qname"/>
 						</xsl:variable>
-						<txsl:param name="{@name}" select="te:param-value('{$param-qname/local-name}', '{$param-qname/namespace-uri}')"/>
+						<xsl:choose>
+							<xsl:when test="not(parent::ctl:test) or number(parent::ctl:test/@version) &gt;= 1 or ancestor::ctl:package[number(@version) &gt;= 1]">
+								<!-- Parameter style for all functions and for tests version 1 or higher.  Keeps the type of the parameter -->
+								<txsl:param name="{@name}" select="te:param-value('{$param-qname/local-name}', '{$param-qname/namespace-uri}')"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<!-- Old parameter style for tests lower than version 1.  Parameter type is lost.  Documents are passed as their root element -->
+								<txsl:variable name="te:param-{position()}">
+									<txsl:copy-of select="$te:params/params/param[@local-name='{$param-qname/local-name}' and @namespace-uri='{$param-qname/namespace-uri}']/value"/>
+								</txsl:variable>
+								<txsl:variable name="{@name}" select="$te:param-{position()}/value/node()|$te:param-{position()}/value/@*"/>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:for-each>
 
 					<txsl:for-each select="node()|@*">
@@ -785,7 +800,7 @@
 			<xsl:apply-templates/>
 		</xsl:copy>
 		<!-- Use variables after they are set to ensure they are evaluated in document order -->
-		<txsl:if test="string-length(substring(${@name},1,0))=1">
+		<txsl:if test="string-length(substring(name(${@name}),1,0))=1">
 			<xsl:if test="contains(@name, ':')">
 				<xsl:variable name="prefix" select="substring-before(@name, ':')"/>
 				<xsl:copy-of select="namespace::*[name()=$prefix]"/>
