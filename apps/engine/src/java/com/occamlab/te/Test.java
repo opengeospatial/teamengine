@@ -214,7 +214,8 @@ public class Test {
             
         masterIndex.setElements(null);
         
-        Engine engine = new Engine(masterIndex);
+        TEClassLoader cl = new TEClassLoader(null); 
+        Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
         
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
             engine.preload(masterIndex, setupOpts.getSourcesName());

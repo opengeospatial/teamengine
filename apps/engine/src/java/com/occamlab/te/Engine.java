@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,16 +85,21 @@ public class Engine {
     // Map of loaded executables, ordered by access order
     public Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
             new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true));
+    
+    public Map<String, TEClassLoader> classLoaders;
 
-    public Engine(Index index) throws Exception {
+    public Engine(Index index, String sourcesName, TEClassLoader cl) throws Exception {
         this();
         ArrayList<Index> indexes = new ArrayList<Index>();
         indexes.add(index);
+        classLoaders = new HashMap<String, TEClassLoader>();
+        classLoaders.put(sourcesName, cl);
         addFunctionLibrary(indexes);
     }
     
-    public Engine(Collection<Index> indexes) throws Exception {
+    public Engine(Collection<Index> indexes, Map<String, TEClassLoader> classLoaders) throws Exception {
         this();
+        this.classLoaders = classLoaders;
         addFunctionLibrary(indexes);
     }
     
@@ -134,7 +140,7 @@ public class Engine {
         Configuration config = processor.getUnderlyingConfiguration();
         FunctionLibraryList liblist = new FunctionLibraryList();
         for (Index index : indexes) {
-          TEFunctionLibrary telib = new TEFunctionLibrary(config, index);
+          TEFunctionLibrary telib = new TEFunctionLibrary(config, index, classLoaders);
           liblist.addFunctionLibrary(telib);
         }
         liblist.addFunctionLibrary(config.getExtensionBinder("java"));
@@ -204,6 +210,10 @@ public class Engine {
         return loadedExecutables;
     }
 
+    public TEClassLoader getClassLoader(String sourcesName) {
+        return classLoaders.get(sourcesName);
+    }
+
     public DocumentBuilder getBuilder() {
         return builder;
     }
@@ -231,4 +241,9 @@ public class Engine {
     public void setMemThreshhold(long memThreshhold) {
         this.memThreshhold = memThreshhold;
     }
+
+    public void setClassLoader(String sourcesName, TEClassLoader cl) {
+        classLoaders.put(sourcesName, cl);
+    }
+
 }

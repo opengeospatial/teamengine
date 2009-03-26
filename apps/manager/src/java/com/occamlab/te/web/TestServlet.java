@@ -64,6 +64,7 @@ import com.occamlab.te.Engine;
 import com.occamlab.te.Generator;
 import com.occamlab.te.RuntimeOptions;
 import com.occamlab.te.SetupOptions;
+import com.occamlab.te.TEClassLoader;
 import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
 import com.occamlab.te.TestDriverConfig;
@@ -111,6 +112,8 @@ public class TestServlet extends HttpServlet {
 
             indexes = new HashMap<String, Index>();
             
+            HashMap<String, TEClassLoader> classLoaders = new HashMap<String, TEClassLoader>();
+            
             Processor processor = new Processor(false);
             processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
             XsltCompiler sourceGeneratorCompiler = processor.newXsltCompiler();
@@ -155,6 +158,8 @@ public class TestServlet extends HttpServlet {
                         sourceGeneratorTransformer.transform();
                     }
                 }
+                
+                classLoaders.put(sourcesName, new TEClassLoader(conf.getResources().get(sourcesName)));
             }
 /*
             File scriptsDir = conf.getScriptsDir();
@@ -184,7 +189,7 @@ public class TestServlet extends HttpServlet {
                 indexes.put(sourcesName, index);
             }
 */
-            engine = new Engine(indexes.values());
+            engine = new Engine(indexes.values(), classLoaders);
         } catch (ServletException e) {
             throw e;
         } catch (Exception e) {

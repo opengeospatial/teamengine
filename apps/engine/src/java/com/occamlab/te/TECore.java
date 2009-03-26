@@ -622,7 +622,8 @@ public class TECore implements Runnable {
             if (fe.isJava()) {
                 int argCount = paramElements.size();
                 if (fe.getMinArgs() >= argCount && fe.getMaxArgs() <= argCount) {
-                    Method method = Misc.getMethod(fe.getClassName(), fe.getMethod(), argCount);
+                    TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
+                    Method method = Misc.getMethod(fe.getClassName(), fe.getMethod(), cl, argCount);
                     Class<?>[] types = method.getParameterTypes();
                     Object[] args = new Object[argCount];
                     for (int i = 0; i < argCount; i++) {
@@ -665,7 +666,7 @@ public class TECore implements Runnable {
                             instance = getFunctionInstance(fe.hashCode());
                             if (instance == null) {
                                 try {
-                                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams());
+                                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams(), cl);
                                     putFunctionInstance(fe.hashCode(), instance);
                                 } catch (Exception e) {
                                     throw new XPathException(e);
@@ -1209,7 +1210,8 @@ public class TECore implements Runnable {
                 instance = parserInstances.get(key);
                 if (instance == null) {
                     try {
-                        instance = Misc.makeInstance(pe.getClassName(), pe.getClassParams());
+                        TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
+                        instance = Misc.makeInstance(pe.getClassName(), pe.getClassParams(), cl);
                     } catch (Exception e) {
                         throw new Exception("Can't instantiate parser " + pe.getName(), e);
                     }
@@ -1218,7 +1220,8 @@ public class TECore implements Runnable {
             }
             Method method = parserMethods.get(key);
             if (method == null) {
-                method = Misc.getMethod(pe.getClassName(), pe.getMethod(), 3, 4);
+                TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
+                method = Misc.getMethod(pe.getClassName(), pe.getMethod(), cl, 3, 4);
                 parserMethods.put(key, method);
             }
             StringWriter swLogger = new StringWriter();
@@ -1473,6 +1476,10 @@ public class TECore implements Runnable {
 
     public Index getIndex() {
         return index;
+    }
+    
+    public RuntimeOptions getOpts() {
+        return opts;
     }
 //
 //    public String getSourcesName() {

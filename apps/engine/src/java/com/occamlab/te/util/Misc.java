@@ -40,6 +40,8 @@ import net.sf.saxon.trans.XPathException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.occamlab.te.TEClassLoader;
+
 public class Misc {
 
     // Deletes a directory and its contents
@@ -106,8 +108,9 @@ public class Misc {
         return cl.getResource(resource).toString();
     }
     
-    public static Method getMethod(String className, String methodName, int minArgs, int maxArgs) throws Exception {
-        Class c = Class.forName(className);
+    public static Method getMethod(String className, String methodName, TEClassLoader cl, int minArgs, int maxArgs) throws Exception {
+        cl.loadClass(className, false, false);
+        Class c = Class.forName(className, true, cl);
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
             Method m = methods[i];
@@ -126,8 +129,8 @@ public class Misc {
         throw new Exception("Error: Method " + methodName + " with " + argsDesc + " was not found in class " + className);
     }
 
-    public static Method getMethod(String className, String methodName, int argCount) throws Exception {
-        return getMethod(className, methodName, argCount, argCount);
+    public static Method getMethod(String className, String methodName, TEClassLoader cl, int argCount) throws Exception {
+        return getMethod(className, methodName, cl, argCount, argCount);
     }
     
 //    public static Method getMethod(String className, String methodName, int argCount) throws Exception {
@@ -143,8 +146,9 @@ public class Misc {
 //        throw new Exception("Error: Method " + methodName + " with " + Integer.toString(argCount) + " arguments was not found in class " + className);
 //    }
     
-    public static Object makeInstance(String className, List<Node> classParams) throws Exception {
-        Class c = Class.forName(className);
+    public static Object makeInstance(String className, List<Node> classParams, TEClassLoader cl) throws Exception {
+        cl.loadClass(className, false, false);
+        Class c = Class.forName(className, true, cl);
         Constructor[] constructors = c.getConstructors();
         int paramCount = 0;
         if (classParams != null) {

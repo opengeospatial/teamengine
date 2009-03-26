@@ -85,7 +85,7 @@ public class XMLValidatingParser {
             } else if (type.equals("file")) {
                 schema = new File(e.getTextContent());
             } else if (type.equals("resource")) {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                ClassLoader cl = getClass().getClassLoader();
                 String resource = e.getTextContent();
                 URL url = cl.getResource(resource);
                 if (url == null) {

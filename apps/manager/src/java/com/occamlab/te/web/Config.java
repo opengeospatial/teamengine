@@ -50,6 +50,7 @@ import com.occamlab.te.util.DomUtils;
 public class Config {
     private String home;
     private File scriptsDir;
+    private File resourcesDir;
     private File usersDir;
     private File workDir;
     private List<String> organizationList;             // A list of organizations
@@ -60,6 +61,7 @@ public class Config {
     private Map<String, List<ProfileEntry>> profiles;  // Key is org_std_ver_rev, value is a list of profiles 
     private Map<String, List<File>> sources;           // Key is org_std_ver_rev, value is a list of sources
     private Map<String, String> webdirs;               // Key is org_std_ver_rev, value a webdir
+    private Map<String, File> resources;               // Key is org_std_ver_rev, value a resource directory
 
     public Config() {
         try {
@@ -74,6 +76,12 @@ public class Config {
             scriptsDir = findFile(scriptsDirEl.getTextContent(), cl);
             if (!scriptsDir.isDirectory()) {
                 System.out.println("Error: Directory " + scriptsDirEl.getTextContent() + " does not exist.");
+            }
+
+            Element resourcesDirEl = DomUtils.getElementByTagName(configElem, "resourcesdir");
+            resourcesDir = findFile(resourcesDirEl.getTextContent(), cl);
+            if (!resourcesDir.isDirectory()) {
+                System.out.println("Error: Directory " + resourcesDirEl.getTextContent() + " does not exist.");
             }
 
             Element usersDirEl = DomUtils.getElementByTagName(configElem, "usersdir");
@@ -96,6 +104,7 @@ public class Config {
             profiles = new HashMap<String, List<ProfileEntry>>(); 
             sources = new HashMap<String, List<File>>(); 
             webdirs = new HashMap<String, String>(); 
+            resources = new HashMap<String, File>(); 
 
             for (Element organizationEl : DomUtils.getElementsByTagName(configElem, "organization")) {
                 String organization = DomUtils.getElementByTagName(organizationEl, "name").getTextContent();
@@ -153,6 +162,10 @@ public class Config {
                                 }
                                 sources.put(key, list);
                                 
+                                for (Element resourcesEl : DomUtils.getElementsByTagName(el, "resources")) {
+                                    resources.put(key, new File(resourcesDir, resourcesEl.getTextContent()));
+                                }
+                                
                                 for (Element webdirEl : DomUtils.getElementsByTagName(el, "webdir")) {
                                     webdirs.put(key, webdirEl.getTextContent());
                                 }
@@ -200,7 +213,6 @@ public class Config {
 //                    Element source = (Element) sourceList.item(j);
 //                    File f = findFile(source.getTextContent(), cl);
 //                    if (!f.exists()) {
-//                        // TODO: Log this
 //                        throw new FileNotFoundException("Source location "
 //                                + source.getTextContent() + " does not exist.");
 //                    }
@@ -259,6 +271,10 @@ public class Config {
 
     public Map<String, String> getWebDirs() {
         return webdirs;
+    }
+
+    public Map<String, File> getResources() {
+        return resources;
     }
 
 //    public static LinkedHashMap<String, List<File>> getAvailableSuites() {

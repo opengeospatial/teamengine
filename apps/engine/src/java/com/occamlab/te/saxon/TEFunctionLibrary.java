@@ -2,7 +2,9 @@ package com.occamlab.te.saxon;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
+import com.occamlab.te.TEClassLoader;
 import com.occamlab.te.Test;
 import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.index.Index;
@@ -21,10 +23,12 @@ import net.sf.saxon.value.Value;
 public class TEFunctionLibrary implements FunctionLibrary {
     Configuration config = null;
     Index index = null;
+    Map<String, TEClassLoader> classloaders;
     
-    public TEFunctionLibrary(Configuration config, Index index) {
+    public TEFunctionLibrary(Configuration config, Index index, Map<String, TEClassLoader> classloaders) {
         this.config = config;
         this.index = index;
+        this.classloaders = classloaders;
     }
 
     public Expression bind(StructuredQName functionName, Expression[] staticArgs, StaticContext env) throws XPathException {
@@ -40,7 +44,9 @@ public class TEFunctionLibrary implements FunctionLibrary {
             for (FunctionEntry fe : functions) {
                 if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
                     if (fe.isJava()) {
-                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env);
+                        String sourcesname = fe.getId().substring(0, fe.getId().indexOf(','));
+                        TEClassLoader cl = classloaders.get(sourcesname);
+                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env, cl);
                         return fc;
                     } else {
                         TEXSLFunctionCall fc = new TEXSLFunctionCall(fe, functionName, staticArgs, env);
@@ -56,7 +62,7 @@ public class TEFunctionLibrary implements FunctionLibrary {
     }
 
     public FunctionLibrary copy() {
-        return new TEFunctionLibrary(config, index);
+        return new TEFunctionLibrary(config, index, classloaders);
     }
 
     public boolean isAvailable(StructuredQName functionName, int arity) {

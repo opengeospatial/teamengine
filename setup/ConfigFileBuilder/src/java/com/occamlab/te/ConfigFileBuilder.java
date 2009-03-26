@@ -16,6 +16,7 @@ public class ConfigFileBuilder {
         String scriptsDir = "webapps/teamengine/WEB-INF/scripts";
         String workDir = "webapps/teamengine/WEB-INF/work";
         String usersDir = "webapps/teamengine/WEB-INF/users";
+        String resourcesDir = null;
 
         // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
@@ -23,11 +24,17 @@ public class ConfigFileBuilder {
                 home = args[i].substring(6);
             } else if (args[i].startsWith("-scriptsdir=")) {
                 scriptsDir = args[i].substring(12);
+            } else if (args[i].startsWith("-resourcesdir=")) {
+                scriptsDir = args[i].substring(14);
             } else if (args[i].startsWith("-usersdir=")) {
                 usersDir = args[i].substring(10);
             } else if (args[i].startsWith("-workdir=")) {
                 workDir = args[i].substring(9);
             }
+        }
+        
+        if (resourcesDir == null) {
+            resourcesDir = scriptsDir;
         }
         
         SortedSet<ConfigEntry> configs = new TreeSet<ConfigEntry>(new ConfigComparator());
@@ -43,6 +50,7 @@ public class ConfigFileBuilder {
         System.out.println("<config>");
         System.out.println("  <home>" + home + "</home>");
         System.out.println("  <scriptsdir>" + scriptsDir + "</scriptsdir>");
+        System.out.println("  <resourcesdir>" + resourcesDir + "</resourcesdir>");
         System.out.println("  <usersdir>" + usersDir + "</usersdir>");
         System.out.println("  <workdir>" + workDir + "</workdir>");
         System.out.println("  <scripts>");
@@ -106,6 +114,10 @@ public class ConfigFileBuilder {
                                 System.out.println("              <source>" + path + "</source>");
                             }
                             System.out.println("            </sources>");
+                            if (config.resources != null) {
+                                String path = config.resources.getPath().substring(2).replace('\\', '/');
+                                System.out.println("            <resources>" + path + "</resources>");
+                            }
                             if (config.webdir != null) {
                                 System.out.println("            <webdir>" + config.webdir + "</webdir>");
                             }

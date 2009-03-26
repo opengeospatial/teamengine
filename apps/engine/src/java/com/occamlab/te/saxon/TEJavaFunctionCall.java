@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+import com.occamlab.te.Engine;
+import com.occamlab.te.TEClassLoader;
 import com.occamlab.te.TECore;
 import com.occamlab.te.Test;
 import com.occamlab.te.index.FunctionEntry;
@@ -35,14 +37,16 @@ import net.sf.saxon.value.Value;
 public class TEJavaFunctionCall extends TEFunctionCall {
     FunctionEntry fe;
     Method[] methods;
+    TEClassLoader cl;
     
-    public TEJavaFunctionCall(FunctionEntry fe, StructuredQName functionName, Expression[] staticArgs, StaticContext env) throws XPathException {
+    public TEJavaFunctionCall(FunctionEntry fe, StructuredQName functionName, Expression[] staticArgs, StaticContext env, TEClassLoader cl) throws XPathException {
         super(functionName, staticArgs, env);
         this.fe = fe;
+        this.cl = cl;
         methods = new Method[fe.getMaxArgs() + 1];
         for (int i = fe.getMinArgs(); i <= fe.getMaxArgs(); i++) {
             try {
-                methods[i] = Misc.getMethod(fe.getClassName(), fe.getMethod(), i);
+                methods[i] = Misc.getMethod(fe.getClassName(), fe.getMethod(), cl, i);
             } catch (Exception e) {
                 throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName(), e);
             }
@@ -78,7 +82,7 @@ public class TEJavaFunctionCall extends TEFunctionCall {
             instance = core.getFunctionInstance(fe.hashCode());
             if (instance == null) {
                 try {
-                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams());
+                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams(), cl);
                     core.putFunctionInstance(fe.hashCode(), instance);
                 } catch (Exception e) {
                     throw new XPathException(e);

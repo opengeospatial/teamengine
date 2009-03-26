@@ -180,7 +180,7 @@ public class SchematronValidatingParser {
         // Load schematron file
         try {
             // Use ClassLoader to load schematron off classpath
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            ClassLoader loader = this.getClass().getClassLoader();
             URL url = loader.getResource(schemaFile);
             this.schemaFile = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         } catch (Exception e) {
@@ -389,7 +389,7 @@ public class SchematronValidatingParser {
 	        } else if (type.equals("file")) {
 	            this.schemaFile = new File(schemaLocation);
 	        } else if (type.equals("resource")) {
-	            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+	            ClassLoader cl = this.getClass().getClassLoader();
                     URL url = cl.getResource(schemaLocation);
 	            this.schemaFile = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
 	        }
@@ -467,7 +467,7 @@ public class SchematronValidatingParser {
         File schema = null;
         try {
             // Use ClassLoader to load schematron off classpath
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            ClassLoader loader = this.getClass().getClassLoader();
             URL url = loader.getResource(schemaFile);
             schema = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         } catch (Exception e) {

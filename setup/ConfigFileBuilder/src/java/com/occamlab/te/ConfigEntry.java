@@ -27,6 +27,7 @@ public class ConfigEntry {
     public List<String> profileTitles = new ArrayList<String>();
     public List<String> profileDescriptions = new ArrayList<String>();
     public List<File> sources = new ArrayList<File>();
+    public File resources;
     public String webdir;
     
     ConfigEntry(File file) throws Exception {
@@ -72,11 +73,17 @@ public class ConfigEntry {
         for (Element sourceEl : DomUtils.getElementsByTagName(config, "source")) {
             sources.add(new File(file.getParentFile(), sourceEl.getTextContent()));
         }
-        Element webdirEl = DomUtils.getElementByTagName(config, "webdir");
-        if (webdirEl == null ) {
-            webdir = file.getParentFile().getName();
-        } else {
-            webdir = webdirEl.getTextContent();
+        Element resourcesEl = DomUtils.getElementByTagName(config, "resources");
+        if (resourcesEl != null) {
+            resources = new File(file.getParentFile(), resourcesEl.getTextContent());
+        }
+        webdir = file.getParentFile().getName();
+        Element webEl = DomUtils.getElementByTagName(config, "web");
+        if (webEl != null) {
+            String dirname = webEl.getAttribute("dirname");
+            if (dirname.length() > 0) {
+                webdir = dirname;
+            }
         }
     }
 }
