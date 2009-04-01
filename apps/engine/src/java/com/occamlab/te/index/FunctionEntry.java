@@ -114,8 +114,7 @@ public class FunctionEntry extends TemplateEntry {
                 setMethod(e.getAttribute("method"));
                 setInitialized(Boolean.parseBoolean(e.getAttribute("initialized")));
                 nl = e.getElementsByTagName("with-param");
-                if (nl.getLength() > 0) {
-                    setInitialized(true);
+                if (initialized && nl.getLength() > 0) {
                     classParams = new ArrayList<Node>();
                     for (int i = 0; i < nl.getLength(); i++) {
                         Element el = (Element)nl.item(i);
