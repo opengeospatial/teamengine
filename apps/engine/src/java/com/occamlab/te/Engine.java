@@ -140,7 +140,7 @@ public class Engine {
         Configuration config = processor.getUnderlyingConfiguration();
         FunctionLibraryList liblist = new FunctionLibraryList();
         for (Index index : indexes) {
-          TEFunctionLibrary telib = new TEFunctionLibrary(config, index, classLoaders);
+          TEFunctionLibrary telib = new TEFunctionLibrary(config, index);
           liblist.addFunctionLibrary(telib);
         }
         liblist.addFunctionLibrary(config.getExtensionBinder("java"));

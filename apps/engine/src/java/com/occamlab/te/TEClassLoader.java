@@ -83,7 +83,7 @@ public class TEClassLoader extends ClassLoader {
         if (c == null && defer) {
             c = findSystemClass(name);
         }
-        if (c == null) {
+        if (c == null && !name.startsWith("java")) {
             String filename = name.replace('.', '/') + ".class";
             try {
                 InputStream in = getResourceAsStream(filename);
@@ -98,6 +98,9 @@ public class TEClassLoader extends ClassLoader {
                 c = defineClass(name, baos.toByteArray(), 0, baos.size());
             } catch (IOException ie) {
             }
+        }
+        if (c == null) {
+            c = findSystemClass(name);
         }
         if (c == null) {
             throw new ClassNotFoundException(name);

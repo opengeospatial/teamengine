@@ -23,12 +23,10 @@ import net.sf.saxon.value.Value;
 public class TEFunctionLibrary implements FunctionLibrary {
     Configuration config = null;
     Index index = null;
-    Map<String, TEClassLoader> classloaders;
     
-    public TEFunctionLibrary(Configuration config, Index index, Map<String, TEClassLoader> classloaders) {
+    public TEFunctionLibrary(Configuration config, Index index) {
         this.config = config;
         this.index = index;
-        this.classloaders = classloaders;
     }
 
     public Expression bind(StructuredQName functionName, Expression[] staticArgs, StaticContext env) throws XPathException {
@@ -44,9 +42,7 @@ public class TEFunctionLibrary implements FunctionLibrary {
             for (FunctionEntry fe : functions) {
                 if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
                     if (fe.isJava()) {
-                        String sourcesname = fe.getId().substring(0, fe.getId().indexOf(','));
-                        TEClassLoader cl = classloaders.get(sourcesname);
-                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env, cl);
+                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env);
                         return fc;
                     } else {
                         TEXSLFunctionCall fc = new TEXSLFunctionCall(fe, functionName, staticArgs, env);
@@ -62,7 +58,7 @@ public class TEFunctionLibrary implements FunctionLibrary {
     }
 
     public FunctionLibrary copy() {
-        return new TEFunctionLibrary(config, index, classloaders);
+        return new TEFunctionLibrary(config, index);
     }
 
     public boolean isAvailable(StructuredQName functionName, int arity) {

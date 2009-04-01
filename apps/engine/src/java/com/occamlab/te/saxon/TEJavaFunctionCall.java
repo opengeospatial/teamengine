@@ -36,46 +36,29 @@ import net.sf.saxon.value.Value;
 
 public class TEJavaFunctionCall extends TEFunctionCall {
     FunctionEntry fe;
-    Method[] methods;
-    TEClassLoader cl;
+    Method[] methods = null;
     
-    public TEJavaFunctionCall(FunctionEntry fe, StructuredQName functionName, Expression[] staticArgs, StaticContext env, TEClassLoader cl) throws XPathException {
+    public TEJavaFunctionCall(FunctionEntry fe, StructuredQName functionName, Expression[] staticArgs, StaticContext env) throws XPathException {
         super(functionName, staticArgs, env);
         this.fe = fe;
-        this.cl = cl;
-        methods = new Method[fe.getMaxArgs() + 1];
-        for (int i = fe.getMinArgs(); i <= fe.getMaxArgs(); i++) {
-            try {
-                methods[i] = Misc.getMethod(fe.getClassName(), fe.getMethod(), cl, i);
-            } catch (Exception e) {
-                throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName(), e);
-            }
-        }
-//        Class c;
-//        try {
-//            c = Class.forName(fe.getClassName());
-//        } catch (ClassNotFoundException e) {
-//            throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because class " + fe.getClassName() + " was not found.");
-//        }
-//        int argCount = staticArgs.length;
-//        if (fe.usesContext()) {
-//            argCount++;
-//        }
-//        Method[] methods = c.getMethods();
-//        for (int i = 0; i < methods.length; i++) {
-//            Method m = methods[i];
-//            if (m.getName().equals(fe.getMethod()) && m.getParameterTypes().length == argCount) {
-//                method = m;
-//                return;
-//            }
-//        }
-//        throw new XPathException("Error: Unable to bind function " + functionName.getDisplayName() + " because method" + fe.getMethod() + " with " + Integer.toString(argCount) + " argument(s) was not found in class " + fe.getClassName());
     }
     
     public SequenceIterator iterate(XPathContext context) throws XPathException {
         Controller controller = context.getController();
         ObjectValue ov = (ObjectValue)controller.getParameter("{" + Test.TE_NS + "}core");
         TECore core = (TECore)ov.getObject();
+        TEClassLoader cl = core.getEngine().getClassLoader(core.getOpts().getSourcesName());
+
+        if (methods == null) {
+            methods = new Method[fe.getMaxArgs() + 1];
+            for (int i = fe.getMinArgs(); i <= fe.getMaxArgs(); i++) {
+                try {
+                    methods[i] = Misc.getMethod(fe.getClassName(), fe.getMethod(), cl, i);
+                } catch (Exception e) {
+                    throw new XPathException("Error: Unable to bind function " + fe.getName(), e);
+                }
+            }
+        }
 
         Object instance = null;
         if (fe.isInitialized()) {
