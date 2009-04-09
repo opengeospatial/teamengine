@@ -44,26 +44,27 @@ public class TEClassLoader extends ClassLoader {
     }
 
     public URL getResource(String name) {
-        URL u = cl.getResource(name);
-        if (resourcesDir != null && u == null) {
+        if (resourcesDir != null) {
             File f = new File(resourcesDir, name);
             try {
-                u = f.toURI().toURL();
+                return f.toURI().toURL();
             } catch (MalformedURLException e) {
             }
         }
-        return u;
+        return cl.getResource(name);
     }
 
     public InputStream getResourceAsStream(String name) {
-        InputStream in = cl.getResourceAsStream(name);
-        if (resourcesDir != null && in == null) {
-            try {
-                return getResource(name).openStream();
-            } catch (IOException e) {
+        if (resourcesDir != null) {
+            URL u = getResource(name);
+            if (u != null) {
+                try {
+                    return u.openStream();
+                } catch (IOException e) {
+                }
             }
         }
-        return in;
+        return cl.getResourceAsStream(name);
     }
 
     public Enumeration<URL> getResources(String name) throws IOException {
@@ -71,11 +72,11 @@ public class TEClassLoader extends ClassLoader {
         URL u = getResource(name);
         if (resourcesDir != null && u != null) {
             Vector<URL> v = new Vector<URL>();
+            v.add(u);
             while (resources.hasMoreElements()) {
                 v.add(resources.nextElement());
             }
-            v.add(u);
-            resources = v.elements();
+            return v.elements();
         }
         return resources;
     }
@@ -86,18 +87,8 @@ public class TEClassLoader extends ClassLoader {
         }
     }
 
-//    public Class<?> loadClass(String name, boolean resolve, boolean defer) throws ClassNotFoundException {
-//        registerClass(name);
-//        return loadClass(name, resolve);
-//    }
-//    
     public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         Class<?> c = findLoadedClass(name);
-//        if (c == null && defer) {
-//            c = cl.loadClass(name);
-//        }
-//        if (c == null && !name.startsWith("java") && !name.startsWith("org.w3c.dom") && !name.startsWith("org.w3c.dom")) {
-//        if (c == null && name.startsWith("com.occamlab.te.parsers")) {
         if (c == null) {
             for (String registeredClass : registeredClasses) {
                 if (name.startsWith(registeredClass)) {
@@ -112,6 +103,7 @@ public class TEClassLoader extends ClassLoader {
                         }
                         in.close();
                         c = defineClass(name, baos.toByteArray(), 0, baos.size());
+                        break;
                     } catch (Exception e) {
                     }
                 }
@@ -129,5 +121,4 @@ public class TEClassLoader extends ClassLoader {
             return c;
         }
     }
-
 }
