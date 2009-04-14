@@ -41,9 +41,9 @@ public class TEClassLoader extends ClassLoader {
         this.resourcesDir = resourcesDir;
         cl = Thread.currentThread().getContextClassLoader();
         registeredClasses = new HashSet<String>();
-        registeredClasses.add("com.occamlab.te.HTTPParser");
-        registeredClasses.add("com.occamlab.te.SchematronValidatingParser");
-        registeredClasses.add("com.occamlab.te.XMLValidatingParser");
+        registeredClasses.add("com.occamlab.te.parsers.HTTPParser");
+        registeredClasses.add("com.occamlab.te.parsers.SchematronValidatingParser");
+        registeredClasses.add("com.occamlab.te.parsers.XMLValidatingParser");
     }
 
     public URL getResource(String name) {
