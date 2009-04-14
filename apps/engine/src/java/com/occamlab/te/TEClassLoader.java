@@ -41,6 +41,9 @@ public class TEClassLoader extends ClassLoader {
         this.resourcesDir = resourcesDir;
         cl = Thread.currentThread().getContextClassLoader();
         registeredClasses = new HashSet<String>();
+        registeredClasses.add("com.occamlab.te.HTTPParser");
+        registeredClasses.add("com.occamlab.te.SchematronValidatingParser");
+        registeredClasses.add("com.occamlab.te.XMLValidatingParser");
     }
 
     public URL getResource(String name) {
@@ -81,9 +84,26 @@ public class TEClassLoader extends ClassLoader {
         return resources;
     }
     
-    public void registerClass(String name) {
-        if (!registeredClasses.contains(name)) {
-            registeredClasses.add(name);
+//    public void registerClass(String name) {
+//        if (!registeredClasses.contains(name)) {
+//            registeredClasses.add(name);
+//        }
+//    }
+    
+    private Class<?> readClass(String name) {
+        String filename = name.replace('.', '/') + ".class";
+        try {
+            InputStream in = getResourceAsStream(filename);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024); 
+            int i = in.read();
+            while (i >= 0) {
+                baos.write(i);
+                i = in.read();
+            }
+            in.close();
+            return defineClass(name, baos.toByteArray(), 0, baos.size());
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -92,25 +112,16 @@ public class TEClassLoader extends ClassLoader {
         if (c == null) {
             for (String registeredClass : registeredClasses) {
                 if (name.startsWith(registeredClass)) {
-                    String filename = name.replace('.', '/') + ".class";
-                    try {
-                        InputStream in = getResourceAsStream(filename);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024); 
-                        int i = in.read();
-                        while (i >= 0) {
-                            baos.write(i);
-                            i = in.read();
-                        }
-                        in.close();
-                        c = defineClass(name, baos.toByteArray(), 0, baos.size());
-                        break;
-                    } catch (Exception e) {
-                    }
+                    c = readClass(name);
+                    break;
                 }
             }
         }
         if (c == null) {
             c = cl.loadClass(name);
+        }
+        if (c == null) {
+            c = readClass(name);
         }
         if (c == null) {
             throw new ClassNotFoundException(name);
