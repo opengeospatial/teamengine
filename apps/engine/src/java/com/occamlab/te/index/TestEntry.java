@@ -1,15 +1,6 @@
 package com.occamlab.te.index;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class TestEntry extends TemplateEntry {
     String assertion;

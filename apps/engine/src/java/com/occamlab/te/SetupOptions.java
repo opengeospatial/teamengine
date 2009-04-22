@@ -22,7 +22,6 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.w3c.dom.Element;
 

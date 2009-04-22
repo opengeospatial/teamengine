@@ -1,26 +1,15 @@
 package com.occamlab.te.index;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XsltExecutable;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.occamlab.te.Globals;
 
 public class TemplateEntry extends IndexEntry {
     File templateFile = null;

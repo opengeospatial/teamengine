@@ -21,6 +21,9 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import java.io.File;
+import java.net.URL;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,14 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import com.occamlab.te.Test;
 import com.occamlab.te.util.Misc;
-
-import java.io.File;
-import java.net.URL;
 
 /**
  * Handles (GET) requests to view a test case specification (from the test

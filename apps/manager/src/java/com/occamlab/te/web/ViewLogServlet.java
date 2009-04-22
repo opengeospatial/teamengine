@@ -21,6 +21,10 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,15 +33,6 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.FeatureKeys;
-import net.sf.saxon.dom.DocumentBuilderImpl;
-import net.sf.saxon.Configuration;
-
-import java.io.File;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-
-import com.occamlab.te.Test;
 import com.occamlab.te.ViewLog;
 import com.occamlab.te.util.Misc;
 

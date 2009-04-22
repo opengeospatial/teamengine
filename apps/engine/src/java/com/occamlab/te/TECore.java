@@ -21,14 +21,11 @@
  ****************************************************************************/
 package com.occamlab.te;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
@@ -43,13 +40,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.CRC32;
-import java.util.zip.CheckedInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -61,8 +55,6 @@ import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.instruct.Executable;
-import net.sf.saxon.om.AxisIterator;
-import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
@@ -100,6 +92,7 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
+import com.occamlab.te.web.TestServlet;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -985,7 +978,6 @@ public class TECore implements Runnable {
                         }
 
                         // Set headers for each part
-                    	ByteArrayOutputStream partBytes = new ByteArrayOutputStream();
                         String partHeaders = newline + prefix + boundary + newline;
                         partHeaders += "Content-Type: " + contentType + newline;
                         partHeaders += "Content-ID: <" + cid + ">" + newline + newline;
@@ -1164,7 +1156,7 @@ public class TECore implements Runnable {
         } else {
             t.transform(new DOMSource((Node) content), new StreamResult(temp));
         }
-        URLConnection uc = temp.toURL().openConnection();
+        URLConnection uc = temp.toURI().toURL().openConnection();
         Element result = parse(uc, parser_instruction);
         temp.delete();
         return result;

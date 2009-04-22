@@ -21,26 +21,16 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Map;
 
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.occamlab.te.Engine;
-import com.occamlab.te.RuntimeOptions;
-import com.occamlab.te.Test;
-import com.occamlab.te.TECore;
-import com.occamlab.te.TestDriverConfig;
-import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DomUtils;
 
 /**

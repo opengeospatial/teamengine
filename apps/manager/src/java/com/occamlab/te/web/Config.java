@@ -22,15 +22,11 @@
 package com.occamlab.te.web;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.lang.ClassLoader;
-import java.net.URLDecoder;
-import java.net.URL;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,7 +34,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.occamlab.te.index.ProfileEntry;
 import com.occamlab.te.index.SuiteEntry;

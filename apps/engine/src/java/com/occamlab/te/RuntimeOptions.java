@@ -21,15 +21,9 @@
 package com.occamlab.te;
 
 import java.io.File;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.XdmNode;
-
-import org.w3c.dom.Element;
 
 public class RuntimeOptions {
     int mode = Test.TEST_MODE;

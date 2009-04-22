@@ -1,9 +1,5 @@
 package com.occamlab.te.index;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
-
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;

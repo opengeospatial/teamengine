@@ -1,24 +1,17 @@
 package com.occamlab.te.saxon;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-
-import com.occamlab.te.TEClassLoader;
-import com.occamlab.te.Test;
-import com.occamlab.te.index.FunctionEntry;
-import com.occamlab.te.index.Index;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.expr.Expression;
-import net.sf.saxon.expr.Literal;
 import net.sf.saxon.expr.StaticContext;
-import net.sf.saxon.functions.ExtensionFunctionCall;
 import net.sf.saxon.functions.FunctionLibrary;
-import net.sf.saxon.functions.JavaExtensionFunctionFactory;
 import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.value.Value;
+
+import com.occamlab.te.Test;
+import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.index.Index;
 
 public class TEFunctionLibrary implements FunctionLibrary {
     Configuration config = null;

@@ -21,15 +21,14 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import java.io.File;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.occamlab.te.Test;
 import com.occamlab.te.util.Misc;
-
-import java.io.File;
 
 /**
  * Processes a request to delete an existing test session.

@@ -1,38 +1,27 @@
 package com.occamlab.te.saxon;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-
-import org.w3c.dom.Node;
-
-import com.occamlab.te.Engine;
-import com.occamlab.te.TEClassLoader;
-import com.occamlab.te.TECore;
-import com.occamlab.te.Test;
-import com.occamlab.te.index.FunctionEntry;
-import com.occamlab.te.util.Misc;
 
 import net.sf.saxon.Controller;
-import net.sf.saxon.expr.Atomizer;
-import net.sf.saxon.expr.AxisAtomizingIterator;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.AxisIterator;
 import net.sf.saxon.om.EmptyIterator;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.trans.XPathException;
-import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.ObjectValue;
 import net.sf.saxon.value.SequenceType;
 import net.sf.saxon.value.Value;
+
+import com.occamlab.te.TEClassLoader;
+import com.occamlab.te.TECore;
+import com.occamlab.te.Test;
+import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.util.Misc;
 
 public class TEJavaFunctionCall extends TEFunctionCall {
     FunctionEntry fe;

@@ -9,38 +9,30 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Node;
-
-import com.occamlab.te.Globals;
-import com.occamlab.te.TECore;
-import com.occamlab.te.Test;
-import com.occamlab.te.index.FunctionEntry;
-import com.occamlab.te.util.DomUtils;
-
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.instruct.ParameterSet;
 import net.sf.saxon.om.Axis;
 import net.sf.saxon.om.EmptyIterator;
-import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.om.ValueRepresentation;
-import net.sf.saxon.s9api.S9APIUtils;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.ItemType;
 import net.sf.saxon.type.SchemaType;
-import net.sf.saxon.type.Type;
 import net.sf.saxon.value.ObjectValue;
-import net.sf.saxon.value.SequenceType;
 import net.sf.saxon.value.Value;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Node;
+
+import com.occamlab.te.TECore;
+import com.occamlab.te.Test;
+import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.util.DomUtils;
 
 public class TEXSLFunctionCall extends TEFunctionCall {
     FunctionEntry fe;

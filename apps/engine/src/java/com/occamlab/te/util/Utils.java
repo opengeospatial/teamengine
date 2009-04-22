@@ -1,27 +1,24 @@
 package com.occamlab.te.util;
 
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
-import java.util.Random;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.List;
+import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.XMLConstants;
-
-import org.w3c.dom.Document;
-
-import org.xml.sax.InputSource;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 /**
  * Provides various utility methods (general collection).

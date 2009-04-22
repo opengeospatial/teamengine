@@ -22,7 +22,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmSequenceIterator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,8 +29,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.occamlab.te.Engine;
-import com.occamlab.te.Globals;
 import com.occamlab.te.TECore;
 
 public class LogUtils {

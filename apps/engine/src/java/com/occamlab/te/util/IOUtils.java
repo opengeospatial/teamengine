@@ -1,38 +1,25 @@
 package com.occamlab.te.util;
 
-import java.io.InputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
 
 /**
  * Provides various utility methods to read/write from files and streams.

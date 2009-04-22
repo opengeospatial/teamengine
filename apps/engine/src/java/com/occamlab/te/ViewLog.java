@@ -24,26 +24,21 @@ package com.occamlab.te;
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.FeatureKeys;
-import net.sf.saxon.dom.DocumentBuilderImpl;
-import net.sf.saxon.Configuration;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;

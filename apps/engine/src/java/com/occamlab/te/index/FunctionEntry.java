@@ -1,24 +1,11 @@
 package com.occamlab.te.index;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
-import net.sf.saxon.s9api.XdmItem;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.occamlab.te.util.DomUtils;
 
 public class FunctionEntry extends TemplateEntry {
     boolean java;

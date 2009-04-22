@@ -35,8 +35,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.trans.XPathException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

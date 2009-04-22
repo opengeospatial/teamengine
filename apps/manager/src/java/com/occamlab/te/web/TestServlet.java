@@ -29,9 +29,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,22 +52,20 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.FileItemFactory;
 
 import com.occamlab.te.Engine;
 import com.occamlab.te.Generator;
 import com.occamlab.te.RuntimeOptions;
 import com.occamlab.te.SetupOptions;
 import com.occamlab.te.TEClassLoader;
-import com.occamlab.te.Test;
 import com.occamlab.te.TECore;
-import com.occamlab.te.TestDriverConfig;
+import com.occamlab.te.Test;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.DomUtils;

@@ -5,7 +5,6 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.occamlab.te.Engine;
 import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
 

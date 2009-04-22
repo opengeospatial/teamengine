@@ -20,11 +20,7 @@
 
 package com.occamlab.te;
 
-import java.io.File;
 import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,44 +31,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.functions.FunctionLibraryList;
-import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
-import net.sf.saxon.s9api.XsltTransformer;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.index.Index;
-import com.occamlab.te.index.ProfileEntry;
-import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.TEFunctionLibrary;
-import com.occamlab.te.util.DomUtils;
-import com.occamlab.te.util.LogUtils;
-import com.occamlab.te.util.Misc;
 
 public class Engine {
     long memThreshhold = 0;
