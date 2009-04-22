@@ -92,7 +92,6 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
-import com.occamlab.te.web.TestServlet;
 
 /**
  * Provides various utility methods to support test execution and logging.
