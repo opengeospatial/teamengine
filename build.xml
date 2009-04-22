@@ -177,14 +177,14 @@
     <copy todir="webapps/teamengine">
       <fileset dir="apps/manager/web"/>
     </copy>
+
     <if>
-      <available file="custom/web"/>
+      <available file="custom/build.xml"/>
       <then>
-        <copy todir="webapps/teamengine" overwrite="true">
-          <fileset dir="custom/web"/>
-        </copy>
+        <ant dir="custom"/>
       </then>
     </if>
+
     <copy todir="webapps/teamengine/WEB-INF/classes">
       <fileset dir="apps/engine/resources">
         <exclude name="com/occamlab/te/scripts/*.dxsl"/>
@@ -256,12 +256,38 @@
     </foreach>
   </target>
 
+  <target name="webapp.profile">
+    <basename property="scriptname" file="${profile}/../.."/>
+    <basename property="profilename" file="${profile}"/>
+    <if>
+      <available file="${profile}/resources"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/classes">
+          <fileset dir="${profile}/resources" includes="**"/>
+        </copy>
+      </then>
+    </if>
+    <if>
+      <available file="${profile}/web"/>
+      <then>
+        <copy todir="webapps/teamengine/${scriptname}">
+          <fileset dir="${profile}/web" includes="**"/>
+        </copy>
+      </then>
+    </if>
+    <copy todir="webapps/teamengine/WEB-INF/scripts/${scriptname}/profiles/${profilename}/ctl">
+      <fileset dir="${profile}/ctl"/>
+    </copy>
+  </target>
+
   <target name="webapp.script">
     <basename property="scriptname" file="${script}"/>
+    <mkdir dir="webapps/teamengine/WEB-INF/scripts/${scriptname}"/>
     <if>
       <available file="${script}/resources"/>
       <then>
-        <copy todir="webapps/teamengine/WEB-INF/classes">
+        <mkdir dir="webapps/teamengine/WEB-INF/scripts/${scriptname}/resources"/>
+        <copy todir="webapps/teamengine/WEB-INF/scripts/${scriptname}/resources">
           <fileset dir="${script}/resources" includes="**"/>
         </copy>
       </then>
@@ -274,7 +300,6 @@
         </copy>
       </then>
     </if>
-    <mkdir dir="webapps/teamengine/WEB-INF/scripts/${scriptname}"/>
     <mkdir dir="webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl"/>
     <copy todir="webapps/teamengine/WEB-INF/scripts/${scriptname}/ctl">
       <fileset dir="${script}/ctl">
@@ -282,6 +307,16 @@
         <exclude name="**/*.txsl"/>
       </fileset>
     </copy>
+    <if>
+      <available file="${script}/profiles"/>
+      <then>
+        <foreach param="profile" target="webapp.profile">
+          <path>
+            <dirset dir="${script}/profiles" includes="*"/>
+          </path>
+        </foreach>
+      </then>
+    </if>
   </target>
 
   <target name="webapp.scripts" depends="build.scripts">
@@ -298,10 +333,15 @@
   <target name="webapps" depends="webapp.manager,webapp.components,webapp.scripts"/>
 
   <target name="war" depends="webapps">
-    <copy todir="webapps/teamengine/WEB-INF/lib">
-      <fileset dir="${common.lib.dir}" includes="*.jar" 
-               excludesfile="${common.lib.dir}/war-excludes.txt"/>
-    </copy>
+    <if>
+      <available file="${common.lib.dir}/war-excludes.txt"/>
+      <then>
+        <copy todir="webapps/teamengine/WEB-INF/lib">
+          <fileset dir="${common.lib.dir}" includes="*.jar" 
+                   excludesfile="${common.lib.dir}/war-excludes.txt"/>
+        </copy>
+      </then>
+    </if>
     <copy todir="webapps/teamengine/docs">
       <fileset dir="docs" includes="ctl/" />
     </copy>
@@ -412,6 +452,7 @@
     <basename property="scriptname" file="${script}"/>
     <zip destfile="zips/${scriptname}.zip" basedir=".">
       <include name="scripts/${scriptname}/**" /> 
+      <exclude name="scripts/${scriptname}/externals.txt"/>
       <exclude name="scripts/${scriptname}/**/*.dxsl"/>
       <exclude name="scripts/${scriptname}/**/*.txsl"/>
     </zip>
