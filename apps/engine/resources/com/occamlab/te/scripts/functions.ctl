@@ -2,7 +2,8 @@
 <!-- Global functions - these are always included when processing a test suite -->
 <ctl:package
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:ctl="http://www.occamlab.com/ctl">
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:te="http://www.occamlab.com/te">
    
 	<ctl:function name="ctl:getImageType">
 		<ctl:param name="image.uri"/>
@@ -38,7 +39,7 @@
 	  <ctl:description>Extracts the path portion of a filepath (minus the filename).</ctl:description>
 	  <ctl:java class="com.occamlab.te.util.StringUtils" 
 					method="getPathFromString"/>
-  </ctl:function>     
+  </ctl:function>
    
         <ctl:function name="ctl:getResourceURL">
                 <ctl:param name="resourcepath"/>
@@ -50,5 +51,12 @@
         <ctl:param name="s">String to encode</ctl:param>
                 <ctl:description>Returns the URL encoded form of a string.</ctl:description>
         <ctl:java class="java.net.URLEncoder" method="encode"/>
+    </ctl:function>
+
+    <ctl:function name="te:isWeb">
+        <ctl:description>Determines whether TEAM Engine is running as a web application.  Returns 'true' or 'false'.</ctl:description>
+        <ctl:code>
+            <xsl:value-of select="string(tec:isWeb($te:core))" xmlns:tec="java:com.occamlab.te.TECore"/>
+        </ctl:code>
     </ctl:function>
 </ctl:package>

@@ -59,6 +59,9 @@ public class TEFunctionLibrary implements FunctionLibrary {
         List<FunctionEntry> functions = index.getFunctions(key);
         if (functions != null) {
             for (FunctionEntry fe : functions) {
+                if (arity == -1) {
+                    return true;
+                }
                 if (arity >= fe.getMinArgs() && arity <= fe.getMaxArgs()) {
                     return true;
                 }
