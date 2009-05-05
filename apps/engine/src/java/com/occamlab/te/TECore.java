@@ -637,6 +637,8 @@ public class TECore implements Runnable {
                             args[i] = Short.parseShort(el.getTextContent());
                         } else if (types[i].toString().equals("int")) {
                             args[i] = Integer.parseInt(el.getTextContent());
+                        } else if (types[i].toString().equals("long")) {
+                            args[i] = Long.parseLong(el.getTextContent());
                         } else if (types[i].toString().equals("float")) {
                             args[i] = Float.parseFloat(el.getTextContent());
                         } else if (types[i].toString().equals("double")) {
