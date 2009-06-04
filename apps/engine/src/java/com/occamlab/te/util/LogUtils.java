@@ -14,10 +14,12 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.s9api.Axis;
@@ -153,8 +155,7 @@ public class LogUtils {
         return null;
     }
 
-    private static Element makeTestListElement(DocumentBuilder db, Document owner, File logdir,
-            String path, List<QName> pathQName, List<List<QName>> excludes) throws Exception {
+    private static Element makeTestListElement(DocumentBuilder db, Document owner, File logdir, String path) throws Exception {
         File log = new File(new File(logdir, path), "log.xml");
         Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
         if (logdoc == null) {
@@ -165,8 +166,6 @@ public class LogUtils {
             return null;
         }
         Element test = owner.createElement("test");
-        List<QName> testQName = new ArrayList<QName>();
-        testQName.addAll(pathQName);
         int result = TECore.PASS;
         boolean complete = false;
         boolean childrenFailed = false;
@@ -176,14 +175,7 @@ public class LogUtils {
                 for (int j = 0; j < atts.getLength(); j++) {
                     test.setAttribute(atts.item(j).getNodeName(), atts.item(j).getNodeValue());
                 }
-                String namespaceURI = test.getAttribute("namespace-uri");
-                String localPart = test.getAttribute("local-name");
-                String prefix = test.getAttribute("prefix");
-                QName qname = new QName(namespaceURI, localPart, prefix);
-                testQName.add(qname);
-                if (excludes.contains(testQName)) {
-                    return null;
-                }
+
             } else if (e.getNodeName().equals("endtest")) {
                 complete = true;
                 int code = Integer.parseInt(e.getAttribute("result"));
@@ -196,7 +188,7 @@ public class LogUtils {
                 }
             } else if (e.getNodeName().equals("testcall")) {
                 String newpath = e.getAttribute("path");
-                Element child = makeTestListElement(db, owner, logdir, newpath, testQName, excludes);
+                Element child = makeTestListElement(db, owner, logdir, newpath);
                 if (child != null) {
                     child.setAttribute("path", newpath);
                     int code = Integer.parseInt(child.getAttribute("result"));
@@ -216,19 +208,99 @@ public class LogUtils {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.newDocument();
-        Element test = makeTestListElement(db, doc, logdir, path, new ArrayList<QName>(), excludes);
-        if (test != null) {
-            doc.appendChild(test);
-            doc.getDocumentElement().setAttribute("path", path);
+        Document doc;
+        File testListFile = new File(logdir, path + File.separator + "testlist.xml");
+        long testListDate = testListFile.lastModified();
+        File rootlog = new File(logdir, path + File.separator + "log.xml");
+        boolean updated;
+        if (testListFile.exists() && testListDate >= rootlog.lastModified()) {
+            doc = db.parse(testListFile);
+            updated = (updateTestListElement(db, doc.getDocumentElement(), logdir, testListDate) != null);
+        } else {
+            doc = db.newDocument();
+            Element test = makeTestListElement(db, doc, logdir, path);
+            if (test != null) {
+                doc.appendChild(test);
+                doc.getDocumentElement().setAttribute("path", path);
+            }
+            updated = true;
+        }
+        if (updated) {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer t = tf.newTransformer();
+            t.setOutputProperty(OutputKeys.INDENT, "yes");
+            t.transform(new DOMSource(doc), new StreamResult(testListFile));
+        }
+        if (excludes.size() > 0) {
+            removeExcludes(doc.getDocumentElement(), new ArrayList<QName>(), excludes);
+            updateTestListElement(db, doc.getDocumentElement(), logdir, 0);
         }
         return doc;
     }
 
     public static Document makeTestList(File logdir, String path) throws Exception {
         List<List<QName>> excludes = new ArrayList<List<QName>>();
-        excludes.add(new ArrayList<QName>());
         return makeTestList(logdir, path, excludes);
+    }
+    
+    /* Recalculate each result.  If testListDate != 0, then reread new log files as well */ 
+    private static Element updateTestListElement(DocumentBuilder db, Element test, File logdir, long testListDate) throws Exception {
+        String path = test.getAttribute("path");
+        long logdate = 0;
+        if (testListDate > 0) {
+            logdate = new File(logdir, path + File.separator + "log.xml").lastModified();
+        }
+        if (logdate > testListDate) {
+            Element newtest = makeTestListElement(db, test.getOwnerDocument(), logdir, path);
+            test.getParentNode().replaceChild(newtest, test);
+            return newtest;
+        } else {
+            boolean updated = false;
+            boolean childrenFailed = false;
+            for (Element subtest : DomUtils.getChildElements(test)) {
+                Element newsubtest = updateTestListElement(db, subtest, logdir, testListDate);
+                if (newsubtest != null) {
+                    updated = true;
+                    int code = Integer.parseInt(newsubtest.getAttribute("result"));
+                    if (code == TECore.FAIL || code == TECore.INHERITED_FAILURE) {
+                        childrenFailed = true;
+                    }
+                }
+            }
+            if (updated || testListDate == 0) {
+                int result = Integer.parseInt(test.getAttribute("result"));
+                int newresult = TECore.PASS;
+                if (result == TECore.FAIL) {
+                    newresult = TECore.FAIL;
+                } else if (childrenFailed) {
+                    newresult = TECore.INHERITED_FAILURE;
+                } else if (result == TECore.WARNING) {
+                    newresult = TECore.WARNING;
+                }
+                if (newresult != result) {
+                    test.setAttribute("result", Integer.toString(newresult));
+                    return test;
+                }
+            }
+            return null;
+        }
+    }
+
+    private static void removeExcludes(Element test, List<QName> pathQName, List<List<QName>> excludes) throws Exception {
+        List<QName> testQName = new ArrayList<QName>();
+        testQName.addAll(pathQName);
+        String namespaceURI = test.getAttribute("namespace-uri");
+        String localPart = test.getAttribute("local-name");
+        String prefix = test.getAttribute("prefix");
+        QName qname = new QName(namespaceURI, localPart, prefix);
+        testQName.add(qname);
+        if (excludes.contains(testQName)) {
+            test.getParentNode().removeChild(test);
+        } else {
+            for (Element subtest : DomUtils.getChildElements(test)) {
+                removeExcludes(subtest, testQName, excludes);
+            }
+        }
     }
 
     /**
