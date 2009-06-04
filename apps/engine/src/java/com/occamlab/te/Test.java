@@ -25,6 +25,11 @@ import java.io.File;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.LogUtils;
 
+/**
+ * 
+ * The main class for the TEAM Engine command line interface. 
+ *
+ */
 public class Test {
     public static final int TEST_MODE = 0;
     public static final int RETEST_MODE = 1;
@@ -35,7 +40,12 @@ public class Test {
     public static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
     public static final String TE_NS = "http://www.occamlab.com/te";
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
-    
+
+    /**
+     * Displays startup command syntax
+     * 
+     * @param cmd Name of the startup command (i.e. test.bat or test.sh) 
+     */
     static void syntax(String cmd) {
         System.out.println();
         System.out.println("Test mode:");
@@ -56,6 +66,13 @@ public class Test {
 //        System.out.println("    [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
     }
 
+    /**
+     * The main TEAM Engine command line interface.
+     * 
+     * 
+     * @param args Command line arguments
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         SetupOptions setupOpts = new SetupOptions();
         RuntimeOptions runOpts = new RuntimeOptions();
@@ -82,14 +99,10 @@ public class Test {
                 }
             } else if (args[i].startsWith("-workdir=")) {
                 workDir = new File(args[i].substring(9));
-//                setupOpts.setWorkDir(workDir);
-//                runOpts.setWorkDir(workDir);
             } else if (args[i].startsWith("-logdir=")) {
                 logDir = new File(args[i].substring(8));
-//                runOpts.setLogDir(logDir);
             } else if (args[i].startsWith("-session=")) {
                 session = args[i].substring(9); 
-//                runOpts.setSessionId(session);
             } else if (args[i].startsWith("-base=")) {
                 runOpts.setBaseURI(args[i].substring(6));
             } else if (args[i].startsWith("-test=")) {
@@ -158,7 +171,6 @@ public class Test {
         runOpts.setLogDir(logDir);
 
         // Set mode
-//        setupOpts.setMode(mode);
         runOpts.setMode(mode);
         
         // Syntax checks
@@ -224,7 +236,6 @@ public class Test {
         if (mode != CHECK_MODE) {
             TECore core = new TECore(engine, masterIndex, runOpts);
             core.execute();
-//            engine.execute(runOpts, masterIndex, System.out, false);
         }
     }
 }

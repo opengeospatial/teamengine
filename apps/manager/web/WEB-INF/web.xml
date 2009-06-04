@@ -20,19 +20,6 @@
 		<servlet-class>com.occamlab.te.web.DeleteSessionServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>CallbackHandlerServlet</servlet-name>
-		<servlet-class>net.sf.teamengine.async.CallbackHandlerServlet</servlet-class>
-		<!-- XPointer expressions, which the CallbackHandler can use to determine where to store each response -->
-		<init-param>
-			<param-name>HarvestResponse</param-name>
-			<param-value>xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)xpointer(//csw:TransactionResponse/csw:TransactionSummary/@requestId)</param-value>
-		</init-param>
-		<init-param>
-			<param-name>GetRecordsResponse</param-name>
-			<param-value>xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)xpointer(//csw:RequestId)</param-value>
-		</init-param>
-	</servlet>
-	<servlet>
 		<servlet-name>renameSession</servlet-name>
 		<servlet-class>com.occamlab.te.web.RenameSessionServlet</servlet-class>
 	</servlet>
@@ -46,7 +33,7 @@
 		<init-param>
 			<description>SMTP Server</description>
 			<param-name>mail.smtp.host</param-name>
-			<param-value>smtpserver.ogc.com</param-value>
+			<param-value>smtpserver.example.com</param-value>
 		</init-param>
 		<init-param>
 			<description>SMTP UserId</description>
@@ -61,7 +48,7 @@
 		<init-param>
 			<description>Mail To Address</description>
 			<param-name>mail.to</param-name>
-			<param-value>approver@ogc.com</param-value>
+			<param-value>approver@example.com</param-value>
 		</init-param>
 	</servlet>	
 	<servlet>
@@ -72,10 +59,6 @@
 		<servlet-name>complianceTesting</servlet-name>
 		<servlet-class>com.occamlab.te.web.ComplianceTestingServlet</servlet-class>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>CallbackHandlerServlet</servlet-name>
-		<url-pattern>/callback/http</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>test</servlet-name>
 		<url-pattern>/test</url-pattern>
