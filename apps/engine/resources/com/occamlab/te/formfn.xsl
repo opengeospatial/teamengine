@@ -25,14 +25,12 @@
 	<xsl:param name="files"/>
 	<xsl:param name="thread"/>
 	<xsl:param name="method"/>
-	<xsl:param name="base"/>
 	<xsl:output method="html"/>
 
 	<xsl:template match="/">
 		<html>
 			<head>
 				<title><xsl:value-of select="$title"/></title>
-				<base href="{$base}"/>
 			</head>
 			<body>
 				<xsl:for-each select="*[local-name()='form']">
@@ -41,7 +39,7 @@
 							<xsl:attribute name="enctype">multipart/form-data</xsl:attribute>
 						</xsl:if>
 						<xsl:if test="$web = 'yes'">
-							<xsl:attribute name="action">../test</xsl:attribute>
+							<xsl:attribute name="action">test</xsl:attribute>
 							<input type="hidden" name="te-operation" value="SubmitForm"/>
 							<input type="hidden" name="te-thread" value="{$thread}"/>
 						</xsl:if>
