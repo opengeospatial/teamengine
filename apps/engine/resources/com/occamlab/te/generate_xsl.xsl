@@ -461,6 +461,18 @@
 		</suite>
 	</xsl:template>
 
+	<xsl:template name="soap-request" match="ctl:soap-request">
+		<!-- Expand any child CTL instructions into XSL instructions and store in generated variable -->
+		<txsl:variable name="te:soap-request-xml">
+			<xsl:copy>
+				<xsl:apply-templates select="@*"/>
+				<xsl:apply-templates/>
+			</xsl:copy>
+		</txsl:variable>
+		<!-- Generate request method call -->
+		<txsl:copy-of select="tec:soap_request($te:core, $te:soap-request-xml, concat('{generate-id()}_', position()))/node()"/>
+	</xsl:template>
+
 	<!-- Calls parse-qname -->
 	<xsl:template match="ctl:profile">
 		<xsl:variable name="qname">
