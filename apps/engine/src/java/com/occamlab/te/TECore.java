@@ -92,12 +92,16 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
+import com.occamlab.te.util.SoapUtils;
+import java.util.Date;
 
 /**
  * Provides various utility methods to support test execution and logging.
  *
  */
 public class TECore implements Runnable {
+    public static final String SOAP_V_1_1 = "1.1";
+    public static final String SOAP_V_1_2 = "1.2";
     Engine engine;                      // Engine object
     Index index;
     RuntimeOptions opts;
@@ -140,6 +144,7 @@ public class TECore implements Runnable {
     static final QName TEPARAMS_QNAME = new QName("te", TE_NS, "params");
     static final QName LOCALNAME_QNAME = new QName("local-name");
     static final QName LABEL_QNAME = new QName("label");
+    static final String HEADER_BLOCKS = "header-blocks";
 
 //    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
 //        this.engine = engine;
@@ -782,6 +787,176 @@ public class TECore implements Runnable {
             }
         }
         return file;
+    }
+
+    // BEGIN SOAP SUPPORT
+    public NodeList soap_request(Document ctlRequest, String id) throws Throwable {
+        Element request = (Element) ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "soap-request").item(0);
+        if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
+            for (Element request_e : DomUtils.getElementsByTagName(prevLog, "soap-request")) {
+                if (request_e.getAttribute("id").equals(fnPath + id)) {
+                    logger.println(DomUtils.serializeNode(request_e));
+                    logger.flush();
+                    Element response_e = DomUtils.getElementByTagName(request_e, "response");
+                    Element content_e = DomUtils.getElementByTagName(response_e, "content");
+                    return content_e.getChildNodes();
+//                    return DomUtils.getChildElement(content_e);
+                }
+            }
+        }
+
+        String logTag = "<soap-request id=\"" + fnPath + id + "\">\n";
+        logTag += DomUtils.serializeNode(request) + "\n";
+//        if (logger != null) {
+//            logger.println("<request id=\"" + fnPath + id + "\">");
+//            logger.println(DomUtils.serializeNode(request));
+//        }
+        Exception ex = null;
+        Element response = null;
+        Element parserInstruction = null;
+        NodeList nl = request.getChildNodes();
+        long elapsedTime = 0;
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE && !n.getNamespaceURI().equals(CTL_NS)) {
+                parserInstruction = (Element) n;
+            }
+        }
+        try {
+            Date before = new Date();
+            URLConnection uc = build_soap_request(request);
+            response = parse(uc, parserInstruction);
+            Date after = new Date();
+            elapsedTime = after.getTime()-before.getTime();
+            logTag += DomUtils.serializeNode(response) + "\n";
+//            if (logger != null) {
+//                logger.println(DomUtils.serializeNode(response));
+//            }
+        } catch (Exception e) {
+            ex = e;
+        }
+        logTag += "<!-- elapsed time :"+elapsedTime+" (milliseconds) -->";
+        logTag += "</soap-request>";
+        if (logger != null) {
+//            logger.println("</soap-request>");
+            logger.println(logTag);
+            logger.flush();
+        }
+        if (ex == null) {
+            Element parser = DomUtils.getElementByTagName(response, "parser");
+            if (parser != null) {
+                String text = parser.getTextContent();
+                if (text.length() > 0) {
+                    out.println(parser.getTextContent());
+                }
+            }
+            Element content = DomUtils.getElementByTagName(response, "content");
+            return content.getChildNodes();
+        } else {
+            throw ex;
+        }
+    }
+
+    // Create and send a soap request over HTTP then return an HttpResponse (HttpResponse)
+    /**
+     * Create  SOAP request, sends it and return an URL Connection ready to be parsed.
+     *
+     * @param xml the soap-request node (from CTL)
+     *
+     * @return The URL Connection
+     *
+     * @throws Exception the exception
+    
+     *<soap-request version="1.1|1.2" charset="UTF-8">
+     *  <url>http://blah</url>
+     *  <action>Some-URI</action>
+     *  <headers>
+     *    <header MutUnderstand="true" rely="true" role="http://etc">
+     *       <t:Transaction xmlns:t="some-URI" >5</t:Transaction>
+     *    </header>
+     *  </headers>
+     *  <body>
+     *    <m:GetLastTradePrice xmlns:m="Some-URI">
+     *      <symbol>DEF</symbol>
+     *    </m:GetLastTradePrice>
+     *  </body>
+     *  <parsers:SOAPParser return="content">
+     *    <parsers:XMLValidatingParser>
+     *      <parsers:schemas>
+     *      <parsers:schema type="url">http://blah/schema.xsd</parsers:schema>
+     *      </parsers:schemas>
+     *    </parsers:XMLValidatingParser>
+     *  </parsers:SOAPParser>
+     *</soap-request>
+     */
+    static public URLConnection build_soap_request(Node xml) throws Exception {
+        String sUrl = null;
+        String method = "POST";
+        String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml).getAttribute("charset") : "UTF-8";
+        String version = ((Element) xml).getAttribute("version");
+        String action = "";
+        Element body = null;
+        Element header = null;
+
+        // Read in the test information (from CTL)
+        NodeList nl = xml.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = (Node) nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                if (n.getLocalName().equals("url")) {
+                    sUrl = n.getTextContent();
+                } else if (n.getLocalName().equals("action")) {
+                    action = n.getTextContent();
+                } //else if (n.getLocalName().equals("header")) {
+                    //header = (org.w3c.dom.Element) n;
+                /*}*/ else if (n.getLocalName().equals("body")) {
+                    body = (org.w3c.dom.Element) n;
+                }
+            }
+        }
+
+        //Get the list of the header blocks needed to build the SOAP Header section
+        List headerBloks = DomUtils.getElementsByTagName(xml, HEADER_BLOCKS);
+        // Open the URLConnection
+        URLConnection uc = new URL(sUrl).openConnection();
+        if (uc instanceof HttpURLConnection) {
+            ((HttpURLConnection) uc).setRequestMethod(method);
+        }
+
+        uc.setDoOutput(true);
+        byte[] bytes = null;
+
+        // SOAP POST
+        bytes = SoapUtils.getSoapMessageAsByte(version, headerBloks, body, charset);
+//                System.out.println("SOAP MESSAGE  " + new String(bytes));
+
+        uc.setRequestProperty("User-Agent", "Team Engine 1.2");
+        uc.setRequestProperty("Cache-Control", "no-cache");
+        uc.setRequestProperty("Pragma", "no-cache");
+        uc.setRequestProperty("charset", charset);
+        uc.setRequestProperty("Content-Length", Integer.toString(bytes.length));
+
+        if (version.equals(SOAP_V_1_1)) {
+            //Handlinh HTTP binding for SOAP 1.1
+//            uc.setRequestProperty("Accept", "application/soap+xml");
+            uc.setRequestProperty("Accept", "text/xml");
+            uc.setRequestProperty("SOAPAction", action);
+            uc.setRequestProperty("Content-Type", "text/xml");
+
+        } else {
+            //Handl HTTP binding for SOAP 1.2
+            uc.setRequestProperty("Accept", "application/soap+xml");
+            if (!action.equals("")) {
+                uc.setRequestProperty("action", action);
+            }
+            uc.setRequestProperty("Content-Type", "application/soap+xml");
+        }
+
+
+        OutputStream os = uc.getOutputStream();
+        os.write(bytes);
+        return uc;
+
     }
 
     public NodeList request(Document ctlRequest, String id) throws Throwable {
