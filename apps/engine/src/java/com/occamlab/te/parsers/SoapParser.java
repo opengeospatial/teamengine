@@ -28,6 +28,9 @@ import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import org.xml.sax.ErrorHandler;
+
 import com.occamlab.te.ErrorHandlerImpl;
 import com.occamlab.te.util.*;
 import java.net.HttpURLConnection;
@@ -132,7 +135,8 @@ public class SoapParser {
             throw new Exception("Error: Invalid xml object");
         }
 
-        this.validateSoapMessage(soapMessage);
+        eh.setRole("Validation");
+        this.validateSoapMessage(soapMessage, eh);
 
         // Print errors
         int error_count = eh.getErrorCount();
@@ -156,7 +160,7 @@ public class SoapParser {
             soapMessage = null;
         }
 
-        if (isSoapFault(soapMessage)) {
+        if (soapMessage != null && isSoapFault(soapMessage)) {
             return parseSoapFault(soapMessage, logger);
         }
 
@@ -173,10 +177,12 @@ public class SoapParser {
      *
      * @param soapMessage
      *            the SOAP message to validate.
+     * @param eh
+     *            the error handler.
      *
      * @author Simone Gianfranceschi
      */
-    private void validateSoapMessage(Document soapMessage) throws Exception {
+    private void validateSoapMessage(Document soapMessage, ErrorHandler eh) throws Exception {
         String namespace = soapMessage.getDocumentElement().getNamespaceURI();
 
         if (namespace == null) {
@@ -193,8 +199,7 @@ public class SoapParser {
         }
 
         Validator soap_validator = soap_schema.newValidator();
-        XmlErrorHandler validation_eh = new XmlErrorHandler();
-        soap_validator.setErrorHandler(validation_eh);
+        soap_validator.setErrorHandler(eh);
         soap_validator.validate(new DOMSource(soapMessage));
     }
 
