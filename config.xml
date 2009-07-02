@@ -1,0 +1,20 @@
+<config>
+	<organization>
+		<name>OGC</name>
+	</organization>
+	<standard>
+		<name>CSW</name>
+	</standard>
+	<version>
+		<name>2.0.2</name>
+	</version>
+	<suite>
+		<namespace-uri>http://www.opengis.net/cat/csw/2.0.2</namespace-uri>
+		<prefix>csw</prefix>
+		<local-name>csw-2.0.2-compliance-suite</local-name>
+	</suite>
+	<source>ctl/all.xml</source>
+	<resources>resources</resources>
+	<web>web</web>
+</config>
+
