@@ -34,10 +34,22 @@ public class ConfigEntry {
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = db.parse(file);
         Element config = DomUtils.getElementByTagName(doc, "config");
-        organization = DomUtils.getElementByTagName(DomUtils.getElementByTagName(config, "organization"), "name").getTextContent();
-        standard = DomUtils.getElementByTagName(DomUtils.getElementByTagName(config, "standard"), "name").getTextContent();
-        version = DomUtils.getElementByTagName(DomUtils.getElementByTagName(config, "version"), "name").getTextContent();
-        revision = DomUtils.getElementByTagName(DomUtils.getElementByTagName(config, "revision"), "name").getTextContent();
+        Element organizationEl = DomUtils.getElementByTagName(config, "organization");
+        if (organizationEl != null) {
+            organization = DomUtils.getElementByTagName(organizationEl, "name").getTextContent();
+        }
+        Element standardEl = DomUtils.getElementByTagName(config, "standard");
+        if (standardEl != null) {
+            standard = DomUtils.getElementByTagName(standardEl, "name").getTextContent();
+        }
+        Element versionEl = DomUtils.getElementByTagName(config, "version");
+        if (versionEl != null) {
+            version = DomUtils.getElementByTagName(versionEl, "name").getTextContent();
+        }
+        Element revisionEl = DomUtils.getElementByTagName(config, "revision");
+        if (revisionEl != null) {
+          revision = DomUtils.getElementByTagName(revisionEl, "name").getTextContent();
+        }
         Element suiteEl = DomUtils.getElementByTagName(config, "suite");
         if (suiteEl != null) {
             String localName = DomUtils.getElementByTagName(suiteEl, "local-name").getTextContent();
@@ -85,5 +97,12 @@ public class ConfigEntry {
                 webdir = dirname;
             }
         }
+    }
+    
+    void add(ConfigEntry config) {
+        profiles.addAll(config.profiles);
+        profileTitles.addAll(config.profileTitles);
+        profileDescriptions.addAll(config.profileDescriptions);
+        sources.addAll(config.sources);
     }
 }

@@ -1,7 +1,9 @@
 package com.occamlab.te;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -17,6 +19,7 @@ public class ConfigFileBuilder {
         String workDir = "webapps/teamengine/WEB-INF/work";
         String usersDir = "webapps/teamengine/WEB-INF/users";
         String resourcesDir = null;
+        String defaultRevision = (new SimpleDateFormat("yyyy-MM-dd")).format(new Date());
 
         // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
@@ -30,6 +33,8 @@ public class ConfigFileBuilder {
                 usersDir = args[i].substring(10);
             } else if (args[i].startsWith("-workdir=")) {
                 workDir = args[i].substring(9);
+            } else if (args[i].startsWith("-defaultrev=")) {
+                defaultRevision = args[i].substring(12);
             }
         }
         
@@ -43,7 +48,18 @@ public class ConfigFileBuilder {
         for (File dir : scriptDirs) {
             File file = new File(dir, "config.xml");
             if (file.canRead()) {
-                configs.add(new ConfigEntry(file));
+                ConfigEntry config = new ConfigEntry(file); 
+                File profilesDir = new File(dir, "profiles");
+                if (profilesDir.isDirectory()) {
+                    File[] profileDirs = profilesDir.listFiles();
+                    for (File pdir : profileDirs) {
+                        File pfile = new File(pdir, "config.xml");
+                        if (pfile.canRead()) {
+                            config.add(new ConfigEntry(pfile));
+                        }
+                    }
+                }
+                configs.add(config);
             }
         }
 
@@ -106,6 +122,9 @@ public class ConfigFileBuilder {
                             profileDescriptions.addAll(config.profileDescriptions);
                             sources.addAll(config.sources);
                             String revision = config.revision;
+                            if (revision == null) {
+                                revision = defaultRevision;
+                            }
                             System.out.println("          <revision>");
                             System.out.println("            <name>" + revision + "</name>");
                             System.out.println("            <sources>");
