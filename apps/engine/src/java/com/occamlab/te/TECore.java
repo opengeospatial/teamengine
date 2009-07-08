@@ -916,7 +916,7 @@ public class TECore implements Runnable {
         }
 
         //Get the list of the header blocks needed to build the SOAP Header section
-        List headerBloks = DomUtils.getElementsByTagName(xml, HEADER_BLOCKS);
+        List headerBloks = DomUtils.getElementsByTagNameNS(xml,CTL_NS, HEADER_BLOCKS);
         // Open the URLConnection
         URLConnection uc = new URL(sUrl).openConnection();
         if (uc instanceof HttpURLConnection) {
