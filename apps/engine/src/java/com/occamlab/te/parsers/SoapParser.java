@@ -135,6 +135,10 @@ public class SoapParser {
             throw new Exception("Error: Invalid xml object");
         }
 
+        if (soapMessage != null && isSoapFault(soapMessage)) {
+            return parseSoapFault(soapMessage, logger);
+        }
+
         eh.setRole("Validation");
         this.validateSoapMessage(soapMessage, eh);
 
@@ -160,9 +164,6 @@ public class SoapParser {
             soapMessage = null;
         }
 
-        if (soapMessage != null && isSoapFault(soapMessage)) {
-            return parseSoapFault(soapMessage, logger);
-        }
 
         if (soapMessage != null && returnType.equals("content")) {
             return SoapUtils.getSoapBody(soapMessage);
