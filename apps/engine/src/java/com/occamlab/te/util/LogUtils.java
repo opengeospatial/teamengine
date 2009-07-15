@@ -4,18 +4,29 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -319,4 +330,117 @@ public class LogUtils {
         }
         return session;
     }
+    /**
+     * Generate a file in logDir referencing all reports log.
+     * Create a file called "report_logs.xml" in the log folder that 
+     * includes all logs listed inside the directory.
+     * 
+     * @param sessionLogDir considered log directory
+     * @throws Exception
+     */
+    public static void createFullReportLog(String sessionLogDir)  throws Exception {
+    	File xml_logs_report_file=new File(sessionLogDir+File.separator+"report_logs.xml");
+    	if (xml_logs_report_file.exists()) {
+    	   xml_logs_report_file.delete();	xml_logs_report_file.createNewFile();
+    	}
+    	xml_logs_report_file=new File(sessionLogDir+File.separator+"report_logs.xml");
+    	OutputStream report_logs = new FileOutputStream(xml_logs_report_file);
+    	List<File> files = null;
+    	Document result=null;
+
+    	files = getFileListing2(new File(sessionLogDir));
+
+    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    	factory.setNamespaceAware(true);
+    	DocumentBuilder builder = factory.newDocumentBuilder();
+
+    	// Create the document
+    	Document doc=builder.newDocument(); 
+    	// Fill the document
+    	Element execution= doc.createElement("execution");
+    	execution.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xi", "http://www.w3.org/2001/XInclude");
+    	doc.appendChild(execution);
+    	for (File file : files) {
+    		//all files are Sorted with CompareTO 
+    		Element include= doc.createElementNS("http://www.w3.org/2001/XInclude","xi:include");
+    		include.setAttribute("href", file.getAbsolutePath());
+    		execution.appendChild(include);
+    	}
+    	// Serialize the document into System.out
+    	TransformerFactory xformFactory = TransformerFactory.newInstance();  
+    	Transformer idTransform = xformFactory.newTransformer();
+    	Source input = new DOMSource(doc);
+    	Result output = new StreamResult(report_logs);
+    	idTransform.transform(input, output);
+    	result=doc; // actually we do not needs results
+    }
+
+    /**
+     * Recursively walk a directory tree and return a List of all log files found;
+	 * the List is sorted using "compareTo()" .
+	 * 
+     * @param logDir die to walk
+     * @return
+     * @throws Exception
+     */
+	private static List<File> getFileListing2(File logDir) throws Exception {
+		List<File> result = getFileListingLogs2(logDir);
+		//Collections.sort(result);
+		return result;
+	}
+
+
+	/**
+	 * Get all log files and directories and make recursive call.
+	 * 
+	 * @param aStartingDir
+	 * @return
+	 * @throws Exception
+	 */
+	static private List<File> getFileListingLogs2(File aStartingDir)
+			throws Exception {
+		List<File> result = new ArrayList<File>();
+		File[] logfiles = aStartingDir.listFiles(new FileFilter() {			
+			@Override
+			public boolean accept(File pathname) {				
+				return pathname.isFile();
+			}
+		});
+		List<File> logFilesList = Arrays.asList(logfiles);
+		File[] allDirs=  aStartingDir.listFiles(new FileFilter() {
+			
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.isDirectory();
+			}
+		});		
+		for (File file : logFilesList) {
+			if (file.getName().equals("log.xml")) {
+				result.add(file);
+			}			
+		}
+		List<File> allDirsList = Arrays.asList(allDirs);		
+		Collections.sort(allDirsList, new Comparator<File>()
+		{
+			public int compare(File o1, File o2) {
+			
+				if (o1.lastModified() > o2.lastModified()) {
+					return +1;
+				} else if (o1.lastModified() < o2.lastModified()) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+
+		});
+		for (File file : allDirsList) {				
+			if (!file.isFile()) {
+				List<File> deeperList = getFileListingLogs2(file);
+				result.addAll(deeperList);
+			}
+		}	
+		return result;
+	}
+ 
 }
