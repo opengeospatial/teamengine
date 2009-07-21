@@ -241,9 +241,7 @@ public class TECore implements Runnable {
             if (!web) {
                 SwingForm.destroy();
             }
-            //----
-            // Fabrizio Vitale: Creare il file di execution Report in xml
-            //-----
+            //Create xml execution report file
             LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()+File.separator+opts.getSessionId());
         }
     }

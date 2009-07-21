@@ -330,13 +330,15 @@ public class LogUtils {
         }
         return session;
     }
+    
     /**
-     * Generate a file in logDir referencing all reports log.
+     * Generate a file in logDir refererring all logfiles.
      * Create a file called "report_logs.xml" in the log folder that 
      * includes all logs listed inside the directory.
      * 
      * @param sessionLogDir considered log directory
      * @throws Exception
+     * @author F.Vitale vitale@imaa.cnr.it
      */
     public static void createFullReportLog(String sessionLogDir)  throws Exception {
     	File xml_logs_report_file=new File(sessionLogDir+File.separator+"report_logs.xml");
@@ -348,7 +350,7 @@ public class LogUtils {
     	List<File> files = null;
     	Document result=null;
 
-    	files = getFileListing2(new File(sessionLogDir));
+    	files = getFileListing(new File(sessionLogDir));
 
     	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     	factory.setNamespaceAware(true);
@@ -376,16 +378,15 @@ public class LogUtils {
     }
 
     /**
-     * Recursively walk a directory tree and return a List of all log files found;
-	 * the List is sorted using "compareTo()" .
+     * Recursively walk a directory tree and return a List of all log files found.
+	 *
 	 * 
      * @param logDir die to walk
      * @return
      * @throws Exception
      */
-	private static List<File> getFileListing2(File logDir) throws Exception {
-		List<File> result = getFileListingLogs2(logDir);
-		//Collections.sort(result);
+	private static List<File> getFileListing(File logDir) throws Exception {
+		List<File> result = getFileListingLogs(logDir);
 		return result;
 	}
 
@@ -397,7 +398,7 @@ public class LogUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	static private List<File> getFileListingLogs2(File aStartingDir)
+	static private List<File> getFileListingLogs(File aStartingDir)
 			throws Exception {
 		List<File> result = new ArrayList<File>();
 		File[] logfiles = aStartingDir.listFiles(new FileFilter() {			
@@ -436,7 +437,7 @@ public class LogUtils {
 		});
 		for (File file : allDirsList) {				
 			if (!file.isFile()) {
-				List<File> deeperList = getFileListingLogs2(file);
+				List<File> deeperList = getFileListingLogs(file);
 				result.addAll(deeperList);
 			}
 		}	
