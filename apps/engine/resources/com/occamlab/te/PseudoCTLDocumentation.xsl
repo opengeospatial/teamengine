@@ -39,32 +39,31 @@
     
     <xsl:template match="ctl:test">
         <div class="test">
-            <h2><xsl:element name="a">
-                <xsl:attribute name="name"><xsl:value-of select="./@name"/></xsl:attribute>
+            <h2><xsl:element name="a"><xsl:attribute name="name">
+                    <xsl:value-of select="./@name"/></xsl:attribute>
                 Test Name:  <xsl:value-of select="./@name"/>
             </xsl:element></h2> 
             <div> <p>
                 <b>Test Assertion: </b>
                 <xsl:value-of select="./ctl:assertion"/>
             </p>                
-                <xsl:if test="count(./ctl:comment) &gt; 0">
-                    <p>List of parameters
-                        <ul>
+                <xsl:if test="count(./ctl:param) &gt; 0">
+                        <ul><b>List of parameters:</b>
                             <xsl:apply-templates select="./ctl:param"/>
                         </ul>    
-                    </p>
                     <xsl:text>                
                     </xsl:text>
                 </xsl:if>
                 <xsl:if test="count(./ctl:comment) &gt; 0">
-                    <p><b>Test description</b>                        
+                    <p><b>Test description </b>                        
                         <xsl:value-of select="./ctl:comment"/>
                     </p>
                     <xsl:text>                
                     </xsl:text>    
                 </xsl:if>
                 <div>
-                    <xsl:apply-templates select="./ctl:code"/>
+                    <xsl:apply-templates select="./ctl:code">
+                    </xsl:apply-templates>
                 </div>
                 <ul>        
                     <xsl:apply-templates select=".//ctl:call-test"/>
@@ -94,10 +93,9 @@
         </xsl:text>
     </xsl:template>
     
-    <xsl:template match="ctl:code">
-        <xsl:if test="count(.//ctl:comment) &gt; 0">
-            <h3>Code comments</h3> 
-            <ol>Pseudocode
+    <xsl:template match="ctl:code" >
+        <xsl:if test="count(.//ctl:comment) &gt; 0">          
+            <ol><b>Pseudocode: </b>
                 <xsl:for-each select=".//ctl:comment">
                     <xsl:text>                
                     </xsl:text>
@@ -128,9 +126,18 @@
     <xsl:template name="testSuite">
         <xsl:param name="content"/>
         <xsl:param name="radice"/>
-        <xsl:value-of select="$content/@name"/>
-            <xsl:variable name="testla"><xsl:value-of select="string($content/ctl:starting-test)"/></xsl:variable>
-        <xsl:apply-templates select="$radice//ctl:test[@name=$testla]"/>
+        <div class="suite">
+            <h1>Test Suite name: <xsl:value-of select="$content/@name"/></h1>
+            <h2><xsl:value-of select="$content/ctl:title"/></h2>
+            <p><xsl:value-of select="$content/ctl:description"/></p>
+            <div> The root test is: <xsl:element name="a">
+                <xsl:attribute name="href"><xsl:value-of select="concat('#',string($content/ctl:starting-test))"/></xsl:attribute>
+                <xsl:value-of select="string($content/ctl:starting-test)"/> </xsl:element>
+            </div>               
+        </div>    
+        <xsl:variable name="testla"><xsl:value-of select="string($content/ctl:starting-test)"/></xsl:variable>            
+        <xsl:apply-templates select="$radice//ctl:test[@name=$testla]">
+        </xsl:apply-templates>
             <xsl:call-template name="testDocument">                
                 <xsl:with-param name="content" select="$radice//ctl:test[@name=$testla]"/>
                 <xsl:with-param name="radice" select="$radice"/>
@@ -140,14 +147,13 @@
     <xsl:template name="testDocument">
         <xsl:param name="content"/>
         <xsl:param name="radice"/>
-        <!--<xsl:value-of select="$content/@name"/>-->
-        <!--<xsl:apply-templates select="//ctl:test[@name='rim:conformance-test']"/>-->
         <xsl:for-each select="$content//ctl:call-test[not(@name= preceding::ctl:call-test/@name)]">
             <xsl:variable name="testla"><xsl:value-of select="string(./@name)"/></xsl:variable>
-            <xsl:apply-templates select="$radice//ctl:test[@name=$testla]"/>
+            <xsl:apply-templates select="$radice//ctl:test[@name=$testla]">
+            </xsl:apply-templates>
             <xsl:call-template name="testDocument">                
                 <xsl:with-param name="content" select="$radice//ctl:test[@name=$testla]"/>
-                <xsl:with-param name="radice" select="$radice"/>
+                <xsl:with-param name="radice" select="$radice"/>               
             </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
