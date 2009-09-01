@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
+    xmlns:ctl="http://www.occamlab.com/ctl">
 <!--
  The contents of this file are subject to the Mozilla Public License
  Version 1.1 (the "License"); you may not use this file except in
@@ -27,9 +28,19 @@
         <html>
             <head>
                 <title>Test execution report</title>
-                <meta name="generator" content="Ctl Report generator"/>
-                <meta name="date" content="2009-05-12T02:06:07+0200"/>
+                <meta name="generator" content="Ctl Report generator v2"/>                
+                <xsl:element name="meta">
+                    <xsl:attribute name="name">date</xsl:attribute>
+                    <xsl:attribute name="content"><xsl:value-of select="current-dateTime()"/></xsl:attribute>
+                </xsl:element>                
                 <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+                <style type="text/css">
+                    <xsl:text>
+                    ol { counter-reset: item }
+                    li { display: block }
+                    li:before { content: counters(item, ".") " "; counter-increment: item }
+                    </xsl:text>
+                </style>    
             </head>
             <body>
         <xsl:call-template name="tableoc"/>
@@ -130,9 +141,12 @@
     <xsl:template match="formresults" mode="call">
         <xsl:comment>FORM id=<xsl:value-of select="@id" /></xsl:comment>
         <p>Form data:
-        <pre>        
-        endpoint=<xsl:value-of select="values/value[@key='stringvalue.url']" />
-        item=<xsl:value-of select="values/value[@key='stringvalue.id']" />
+            <pre><xsl:if test="count(values/value) &gt; 0">                              
+                <xsl:for-each select="values/value">
+                    <xsl:text>                    </xsl:text><xsl:value-of select="current()/@key"/>=<xsl:value-of select="current()"/><xsl:text>
+</xsl:text>
+                </xsl:for-each>
+            </xsl:if>    
         </pre></p>    
     </xsl:template>
     <xsl:template match="testcall"  mode="call">
@@ -159,13 +173,21 @@
     </xsl:template>
     <xsl:template match="request"  mode="call">
         <p>Submitted request:<pre>
-        Method=<xsl:value-of select="current()/method"/>
-        URL=<xsl:value-of select="current()/url"/>
-        </pre>Request body: <xsl:if test="count(body) &lt; 1"> empty.</xsl:if></p>
+            Method=<xsl:value-of select="current()/ctl:request/ctl:method"/>            
+            URL=<xsl:value-of select="current()/ctl:request/ctl:url"/>
+            Parameters: <xsl:if test="count(current()/ctl:request/ctl:param) &lt; 1">NONE.</xsl:if>
+            <xsl:if test="count(current()/ctl:request/ctl:param) &gt; 0">                              
+                <xsl:for-each select="current()/ctl:request/ctl:param">
+                    <xsl:text>                            
+                </xsl:text><xsl:value-of select="current()/@name"/>=<xsl:value-of select="current()"/>
+                    </xsl:for-each>
+            </xsl:if>
+        </pre>Request body: <xsl:if test="count(current()/ctl:request/ctl:body/*) &lt; 1"> empty.</xsl:if></p>
         <pre>         
-            <xsl:apply-templates select="body/*" mode="escape-xml"/>
+            <xsl:apply-templates select="current()/ctl:request/ctl:body/*" mode="escape-xml"/>
         </pre>
     </xsl:template>    
+    
     <xsl:template match="response"  mode="call">
         Response: <pre>         
         <xsl:apply-templates select="content/*" mode="escape-xml"/>
