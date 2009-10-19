@@ -3,8 +3,7 @@
  The contents of this file are subject to the Mozilla Public License
  Version 1.1 (the "License"); you may not use this file except in
  compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/
-
+ http://www.mozilla.org/MPL/ 
  Software distributed under the License is distributed on an "AS IS" basis,
  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
  the specific language governing rights and limitations under the License.
@@ -94,6 +93,7 @@ import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
 import com.occamlab.te.util.SoapUtils;
 import java.util.Date;
+import org.w3c.dom.Comment;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -829,18 +829,32 @@ public class TECore implements Runnable {
             URLConnection uc = build_soap_request(request);
             response = parse(uc, parserInstruction);
             Date after = new Date();
-            elapsedTime = after.getTime()-before.getTime();
+            elapsedTime = after.getTime() - before.getTime();
+
+            // Adding the exchange time in the response as comment the format is the following
+            // <!--Response received in [XXX] milliseconds-->
+            // the comment is included in the first tag of the response
+            // SOAP:Envelope in case a SOAP message is returned the specific interface tag if a SOAP parser is applied
+            Element content = DomUtils.getElementByTagName(response, "content");
+            if (content != null) {
+                nl = content.getChildNodes();
+                for (int i = 0; i < nl.getLength(); i++) {
+                    Node n = nl.item(i);
+                    if (n.getNodeType() == Node.ELEMENT_NODE) {
+                        Document doc;
+                        doc = response.getOwnerDocument();
+                        Comment comm = doc.createComment("Response received in [" + elapsedTime + "] milliseconds");
+                        n.appendChild(comm);
+                    }
+                }
+            }
+
             logTag += DomUtils.serializeNode(response) + "\n";
-//            if (logger != null) {
-//                logger.println(DomUtils.serializeNode(response));
-//            }
         } catch (Exception e) {
             ex = e;
         }
-        logTag += "<!-- elapsed time :"+elapsedTime+" (milliseconds) -->";
         logTag += "</soap-request>";
         if (logger != null) {
-//            logger.println("</soap-request>");
             logger.println(logTag);
             logger.flush();
         }
@@ -982,6 +996,7 @@ public class TECore implements Runnable {
 //            logger.println("<request id=\"" + fnPath + id + "\">");
 //            logger.println(DomUtils.serializeNode(request));
 //        }
+        long elapsedTime = 0;
         Exception ex = null;
         Element response = null;
         Element parserInstruction = null;
@@ -992,9 +1007,31 @@ public class TECore implements Runnable {
                 parserInstruction = (Element)n;
             }
         }
+
         try {
+            Date before = new Date();
             URLConnection uc = build_request(request);
             response = parse(uc, parserInstruction);
+            Date after = new Date();
+            elapsedTime = after.getTime()-before.getTime();
+
+            // Adding the exchange time in the response as comment the format is the following
+            // <!--Response received in [XXX] milliseconds-->
+            // the comment is included in the first tag of the response
+            Element content = DomUtils.getElementByTagName(response, "content");
+            if (content != null) {
+                nl = content.getChildNodes();
+                for (int i = 0; i < nl.getLength(); i++) {
+                    Node n = nl.item(i);
+                    if (n.getNodeType() == Node.ELEMENT_NODE) {
+                        Document doc;
+                        doc = response.getOwnerDocument();
+                        Comment comm = doc.createComment("Response received in [" + elapsedTime + "] milliseconds");
+                        n.appendChild(comm);
+                    }
+                }
+            }
+
             logTag += DomUtils.serializeNode(response) + "\n";
 //            if (logger != null) {
 //                logger.println(DomUtils.serializeNode(response));
@@ -1002,6 +1039,7 @@ public class TECore implements Runnable {
         } catch (Exception e) {
             ex = e;
         }
+//        logTag += "<!-- elapsed time :"+elapsedTime+" (milliseconds) -->";
         logTag += "</request>";
         if (logger != null) {
 //            logger.println("</request>");
@@ -1024,7 +1062,8 @@ public class TECore implements Runnable {
     }
 
     // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
-    static public URLConnection build_request(Node xml) throws Exception {
+//    static public URLConnection build_request(Node xml) throws Exception {
+    public URLConnection build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
         ArrayList<Node> parts = new ArrayList<Node>();
@@ -1470,6 +1509,7 @@ public class TECore implements Runnable {
 
         String name = Thread.currentThread().getName();
         Element form = (Element)ctlForm.getElementsByTagNameNS(CTL_NS, "form").item(0);
+
         NamedNodeMap attrs = form.getAttributes();
         Attr attr = (Attr) attrs.getNamedItem("name");
         if (attr != null) {
