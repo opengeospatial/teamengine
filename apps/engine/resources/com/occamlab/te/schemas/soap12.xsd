@@ -15,7 +15,7 @@ described in the FAQ [2].
 [2] http://www.w3.org/Consortium/Legal/IPR-FAQ-20000620.html#DTD
 -->
 <xs:schema elementFormDefault="qualified" targetNamespace="http://www.w3.org/2003/05/soap-envelope" xmlns:tns="http://www.w3.org/2003/05/soap-envelope" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
     <!-- Envelope, header and body -->
     <xs:element name="Envelope" type="tns:Envelope"/>
     <xs:complexType name="Envelope">
