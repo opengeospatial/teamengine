@@ -908,7 +908,7 @@ public class TECore implements Runnable {
     static public URLConnection build_soap_request(Node xml) throws Exception {
         String sUrl = null;
         String method = "POST";
-        String charset = ((Element) xml).getAttribute("charset").equals("") ? "; charset="+((Element) xml).getAttribute("charset") : "; charset=UTF-8";
+        String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml).getAttribute("charset") : "UTF-8";
         String version = ((Element) xml).getAttribute("version");
         String action = "";
         String contentType = "";
