@@ -15,7 +15,7 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): S. Gianfranceschi (Intecs): Added the SOAP suport
 
  ****************************************************************************/
 package com.occamlab.te;
@@ -908,9 +908,10 @@ public class TECore implements Runnable {
     static public URLConnection build_soap_request(Node xml) throws Exception {
         String sUrl = null;
         String method = "POST";
-        String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml).getAttribute("charset") : "UTF-8";
+        String charset = ((Element) xml).getAttribute("charset").equals("") ? "; charset="+((Element) xml).getAttribute("charset") : "; charset=UTF-8";
         String version = ((Element) xml).getAttribute("version");
         String action = "";
+        String contentType = "";
         Element body = null;
         Element header = null;
 
@@ -944,31 +945,33 @@ public class TECore implements Runnable {
 
         // SOAP POST
         bytes = SoapUtils.getSoapMessageAsByte(version, headerBloks, body, charset);
-//                System.out.println("SOAP MESSAGE  " + new String(bytes));
-
+//        System.out.println("SOAP MESSAGE  " + new String(bytes));
         uc.setRequestProperty("User-Agent", "Team Engine 1.2");
         uc.setRequestProperty("Cache-Control", "no-cache");
         uc.setRequestProperty("Pragma", "no-cache");
-        uc.setRequestProperty("charset", charset);
         uc.setRequestProperty("Content-Length", Integer.toString(bytes.length));
 
         if (version.equals(SOAP_V_1_1)) {
             //Handlinh HTTP binding for SOAP 1.1
-//            uc.setRequestProperty("Accept", "application/soap+xml");
             uc.setRequestProperty("Accept", "text/xml");
             uc.setRequestProperty("SOAPAction", action);
-            uc.setRequestProperty("Content-Type", "text/xml");
-
+            contentType = "text/xml";
+            if (!charset.equals("")) {
+                contentType = contentType + "; charset=" + charset;
+            }
+            uc.setRequestProperty("Content-Type", contentType);
         } else {
             //Handl HTTP binding for SOAP 1.2
             uc.setRequestProperty("Accept", "application/soap+xml");
-            if (!action.equals("")) {
-                uc.setRequestProperty("action", action);
+            contentType = "application/soap+xml";
+            if (!charset.equals("")) {
+                contentType = contentType + "; charset=" + charset;
             }
-            uc.setRequestProperty("Content-Type", "application/soap+xml");
+            if (!action.equals("")) {
+                contentType = contentType + "; action=" + action;
+            }
+            uc.setRequestProperty("Content-Type", contentType);
         }
-
-
         OutputStream os = uc.getOutputStream();
         os.write(bytes);
         return uc;
@@ -1142,16 +1145,6 @@ public class TECore implements Runnable {
                                 new StreamResult(baos));
                         bodyContent = baos.toString();
                         bytes = baos.toByteArray();
-
-/*
-                        // Determine if we need to set a different Content-Type value (SOAP)
-			for (int j = 0; j < headers.size(); j++) {
-				String[] header = (String[]) headers.get(j);
-				if (header[0].toLowerCase().equals("content-type")) {
-					mime = header[1];
-				}
-			}
-*/
 
                         if (mime == null) {
                         	mime = "application/xml; charset=" + charset;
