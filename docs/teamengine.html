@@ -1,12 +1,12 @@
 <html>
 
 <head>
-  <title>TEAM Engine</title>
+  <title>TEAM Engine 2.0</title>
 </head>
 
 <body>
 
-<h1>TEAM Engine</h1>
+<h1>TEAM Engine 2.0</h1>
 
 <h2>Overview</h2>
 
@@ -53,27 +53,21 @@ below:
 Test mode:
   Use to start a test session.
 
-  test [-mode=test] -source={ctlfile|dir} [-source={ctlfile|dir}] ...
-    [-suite=[{namespace_uri,|prefix:}]suite_name] [-logdir=dir] [-session=session]
+  bin\test [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...
+    [-workdir=dir] [-logdir=dir] [-session=session] [-base=baseURI]
+    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...
+
+    qname=[namespace_uri,|prefix:]local_name]
 
 Resume mode:
   Use to resume a test session that was interrupted before completion.
 
-  test -mode=resume -source={ctlfile|dir} [-source={ctlfile|dir}] ...
-    -logdir=dir -session=session
+  bin\test -mode=resume -logdir=dir -session=session
 
 Retest mode:
   Use to reexecute individual tests.
 
-  test -mode=retest -source={ctlfile|dir} [-source={ctlfile|dir}] ...
-    -logdir=dir test1 [test2] ...
-
-Doc mode:
-  Use to generate a list of assertions.
-
-  test -mode=doc -source={ctlfile|dir} [-source={ctlfile|dir}] ...
-    [-suite=[{namespace_uri,|prefix:}]suite_name]
-</pre>
+  bin\test -mode=retest -logdir=dir -session=session testpath1 [testpath2] ...</pre>
 
 <p>
 In this synopsis, optional items are enclosed in brackets ([]).  Braces ({}) are used to 
@@ -92,25 +86,14 @@ Use test mode to start a new test session.  You may specify test mode using para
 Supply the source CTL file(s) to execute using a -source parameter.  Its value may 
 specify a CTL file, or may specify a directory containing multiple CTL files.  If it 
 specifies a directory, each file in the directory with a .ctl or a .xml extension is assumed 
-to be a CTL file.  Be aware that for each of these files the test tool will create 
-intermediate stylesheet files in the source directory with either .txsl (test, resume, and 
-retest modes) or .dxsl (doc mode) extensions.
-</p>
-
-<p>
+to be a CTL file.
 You may supply more than one -source parameter.  If there are tests in multiple sources 
 with the same qualified name, the tests in the later source location will take precedence.
 </p>
 
 <p>
-In test mode, execution begins with one of the test suite elements in the source CTL.  If 
-there is just one suite in the CTL sources, the test tool will start there, but if there are 
-multiple suites, you will need to supply a -suite parameter.  The suite name may be 
-specified using the suite element’s unqualified name, its prefix qualified name, or its 
-namespace qualified name.  For the prefix qualified form, use the same namespace prefix 
-used in the CTL file, followed by a colon, followed by the base suite name.  For the 
-namespace qualified form, use the full namespace URI, followed by a comma, followed 
-by the base suite name.
+The workdir option specifies a working directory for temporary files. A system appropriate
+default will be used if none is specified.
 </p>
 
 <p>
@@ -127,18 +110,44 @@ log files for the new test session.  You may supply a name for this directory us
 already exists, its contents will be overridden.
 </p>
 
+<p>
+The -base option can be used to specify the base URI used in any forms that are displayed.
+</p>
+
+<p>
+Execution normally begins with one of the test suite elements in the source CTL.  If 
+there is just one suite in the CTL sources, the test tool will start there, but if there are 
+multiple suites, you will need to supply a -suite or -test parameter.  The suite name may be 
+specified using the suite element’s unqualified name, its prefix qualified name, or its 
+namespace qualified name.  For the prefix qualified form, use the same namespace prefix 
+used in the CTL file, followed by a colon, followed by the base suite name.  For the 
+namespace qualified form, use the full namespace URI, followed by a comma, followed 
+by the base suite name.
+</p>
+
+<p>
+Use the -test option instead of the -suite option to start execution with a specific test.
+The test name may be specified using the suite element’s unqualified name, its prefix
+qualified name, or its namespace qualified name.  Test parameters may be supplied using
+prarameter name=value pairs.
+</p>
+
+<p>
+If you are executing a test suite that has profiles, you can indicate the profiles to
+execute using the -profile option.  Supply multiple -profile parameters to execute more than
+one named profile, or specify -profile=* to execute all available profiles.  When you
+execute profiles, a -logdir option must also be supplied.
+</p>
+
+
 <h4>Resume Mode</h4>
 
 <p>
 Occasionally, a test session may get interrupted.  This could happen if the JVM process 
 dies or a test produces a Java exception that halts the test process.  If this happens to a test 
 session that is being logged, you can run the test tool again using parameter 
--mode=resume to continue the process where it left off.
-</p>
-
-<p>
-In resume mode, you must supply the same -source parameter(s) and -logdir parameter 
-that were used when the session was started in test mode.  You must also identify the 
+-mode=resume to continue the process where it left off.  Supply the same -logdir parameter 
+that was used when the session was started in test mode, and identify the 
 session to be resumed with the -session parameter.
 </p>
 
@@ -146,27 +155,12 @@ session to be resumed with the -session parameter.
 
 <p>
 If for any reason you would like to reexecute any of the tests in a logged test session, run 
-the test tool again using parameter -mode=retest.  Supply the same -source parameter(s) 
-and -logdir parameter that were used when the session was started in test mode.
-</p>
-
-<p>
-Following the named parameters, supply a list of the test(s) to be reexecuted.  The tests 
+the test tool again using parameter -mode=retest.  Supply the same -logdir parameter 
+that was used when the session was started in test mode, and identify the 
+session to be resumed with the -session parameter.  Then supply a list of the test(s) to be reexecuted.  The tests 
 should be identified by their logged test path, which starts with the session identifier.  
 This is the value shown in parenthesis following the test name in the test results or test 
 summary log.
-</p>
-
-<h4>Doc Mode</h4>
-
-<p>
-Doc mode does not actually execute any of the CTL code.  It produces a list of the 
-assertions in a test suite for documentation purposes.
-</p>
-
-<p>
-To run the tool in doc mode, specify parameter -mode=doc.  Supply -source 
-parameter(s) and, if necessary, a -suite parameter as in test mode.
 </p>
 
 <h2>Log Viewer</h2>
@@ -222,11 +216,11 @@ listed below.
 
 <table>
 <tr>
-<td><a href="http://saxon.sourceforge.net">Saxon 8.6.1</a> &nbsp;</td>
+<td><a href="http://saxon.sourceforge.net">Saxon 9.0.0.6</a> &nbsp;</td>
 <td><a href="http://www.mozilla.org/MPL/MPL-1.0.html">Mozilla Public License, Version 1.0</a></td>
 </tr>
 <tr>
-<td><a href="http://xerces.apache.org/">Xerces J 2.8.0</a> &nbsp;</td>
+<td><a href="http://xerces.apache.org/">Xerces J 2.9.0</a> &nbsp;</td>
 <td><a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License, Version 2.0</a></td>
 </tr>
 </table>

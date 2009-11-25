@@ -387,6 +387,7 @@
         <include name="apps/engine/test/**"/>
         <include name="apps/engine/build.properties.example"/>
         <include name="apps/engine/build.xml"/>
+        <include name="docs/TEAM2Design.html"/>
         <include name="setup/ant-contrib/**"/>
         <include name="build.properties.example"/>
         <include name="build.xml"/>
@@ -409,7 +410,7 @@
         <include name="apps/manager/web/**"/>
         <include name="apps/manager/build.properties.example"/>
         <include name="apps/manager/build.xml"/>
-        <include name="docs/manager.txt"/>
+        <include name="docs/manager.html"/>
         <include name="setup/UserFilesRealm/src/**"/>
         <include name="setup/UserFilesRealm/build.xml"/>
         <include name="setup/ConfigFileBuilder/src/**"/>
