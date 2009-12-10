@@ -3,6 +3,6 @@ CSW 2.0.2 Test Suite Release Notes
 
 Changes included in latest revision:
 
-2009-07-09 (kstegemoller):
-- tag r0
+2009-12-10 (cmorris):
+- Correct schematron file for checking PostEncoding constraints (issue 453)
 

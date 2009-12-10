@@ -96,12 +96,12 @@
     <sch:rule id="RequiredConstraints" context="/csw:Capabilities/ows:OperationsMetadata">
       <sch:assert id="GetRecordsPostEncoding" 
         test="(ows:Constraint[@name='PostEncoding']/ows:Value = 'XML') or 
-        (ows:Operation[@name='GetRecords']/ows:Constraint[@name='PostEncoding']/ows:Value = 'XML')">
+        (ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post/ows:Constraint[@name='PostEncoding']/ows:Value = 'XML')">
 	Missing mandatory PostEncoding constraint for GetRecords POST, "XML".
       </sch:assert>
       <sch:assert id="DescribeRecordPostEncoding" 
         test="(ows:Constraint[@name='PostEncoding']/ows:Value = 'XML') or 
-        (ows:Operation[@name='DescribeRecord']/ows:Constraint[@name='PostEncoding']/ows:Value = 'XML')">
+        (ows:Operation[@name='DescribeRecord']/ows:DCP/ows:HTTP/ows:Post/ows:Constraint[@name='PostEncoding']/ows:Value = 'XML')">
 	Missing mandatory PostEncoding constraint for DescribeRecord POST, "XML".
       </sch:assert>        
    </sch:rule>      
