@@ -187,7 +187,13 @@ public class TestServlet extends HttpServlet {
                 indexes.put(sourcesName, index);
             }
 */
-            engine = new Engine(indexes.values(), classLoaders);
+            int cacheSize = 0;
+            String s = getServletConfig().getInitParameter("cacheSize");
+            if (s != null) {
+                cacheSize = Integer.parseInt(s);
+                System.out.println("Set cacheSize to " + s);
+            }
+            engine = new Engine(indexes.values(), classLoaders, cacheSize);
         } catch (ServletException e) {
             throw e;
         } catch (Exception e) {

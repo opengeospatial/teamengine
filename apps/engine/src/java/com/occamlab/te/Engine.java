@@ -49,7 +49,7 @@ import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.TEFunctionLibrary;
 
 public class Engine {
-    long memThreshhold = 0;
+    int cacheSize = 50;
     Processor processor = null;
     XsltCompiler compiler = null;
     DocumentBuilder builder = null;
@@ -71,20 +71,19 @@ public class Engine {
         addFunctionLibrary(indexes);
     }
     
-    public Engine(Collection<Index> indexes, Map<String, TEClassLoader> classLoaders) throws Exception {
+    public Engine(Collection<Index> indexes, Map<String, TEClassLoader> classLoaders, int cacheSize) throws Exception {
         this();
         this.classLoaders = classLoaders;
+        if (cacheSize > 0) {
+            this.cacheSize = cacheSize;
+        }
         addFunctionLibrary(indexes);
     }
     
     public Engine() throws Exception {
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        if (maxMemory >= 32768*1024) {
-            // Set threshhold at 16K if there is 32K or more available
-            memThreshhold = maxMemory - 16384*1024;
-        } else {
-            // Otherwise, set it at half the memory available
-            memThreshhold = maxMemory / 2;
+        String s = System.getProperty("te.cacheSize");
+        if (s != null) {
+            cacheSize = Integer.parseInt(s);
         }
 
         // Create processor
@@ -154,6 +153,9 @@ public class Engine {
     
     public XsltExecutable loadExecutable(TemplateEntry entry, String sourcesName) throws SaxonApiException {
         String key = sourcesName + "," + entry.getId();
+        if (entry instanceof FunctionEntry) {
+            key += "_" + Integer.toString(((FunctionEntry)entry).getMinArgs());
+        }
         XsltExecutable executable = loadedExecutables.get(key);
         while (executable == null) {
             try {
@@ -168,9 +170,7 @@ public class Engine {
                 }
             }
         }
-
-        Runtime rt = Runtime.getRuntime();
-        while (rt.totalMemory() - rt.freeMemory() > memThreshhold) {
+        while (loadedExecutables.size() > cacheSize) {
             boolean freed = freeExecutable();
             if (!freed) {
                 break;
@@ -204,16 +204,8 @@ public class Engine {
         return formExecutable;
     }
 
-    public long getMemThreshhold() {
-        return memThreshhold;
-    }
-
     public Processor getProcessor() {
         return processor;
-    }
-
-    public void setMemThreshhold(long memThreshhold) {
-        this.memThreshhold = memThreshhold;
     }
 
     public void setClassLoader(String sourcesName, TEClassLoader cl) {
