@@ -3,7 +3,14 @@ CSW 2.0.2 Test Suite Release Notes
 
 Changes included in latest revision:
 
-2010-05-11 (kstegemoller)
+2010-08-05 (kstegemoller):
+- created tag csw-2.0.2 r2
+- updated release notes.
+
+2010-07-09 (aschmitz):
+- applied change as outlined in issue #374
+
+2010-05-11 (kstegemoller):
 - released to beta
 
 2009-12-10 (cmorris):
