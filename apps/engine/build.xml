@@ -23,7 +23,8 @@
       <mkdir dir="${basedir}/dist"/>
       <jar
         jarfile="${basedir}/dist/${ant.project.name}.jar"
-        basedir="build/classes"  />
+        basedir="build/classes" excludes="**/protocols/data/Handler*.class" />
+      <jar jarfile="${basedir}/dist/handler.jar" basedir="build/classes" includes="**/*protocols/data/Handler*.class" />
     </target>
 
         <target name="javadoc" description="Creates javadocs from the java source">
