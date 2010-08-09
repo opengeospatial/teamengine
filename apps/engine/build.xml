@@ -1,23 +1,23 @@
 <project name="teamengine" basedir="." default="jar">
-	<description>Main TEAM Engine application</description>
+        <description>Main TEAM Engine application</description>
 
-	<!-- The build.properties file(s) must contain the path location of the Java JRE, as well as the Tomcat installation -->
-	<!-- Load property overrides from user home -->
+        <!-- The build.properties file(s) must contain the path location of the Java JRE, as well as the Tomcat installation -->
+        <!-- Load property overrides from user home -->
     <property file="${user.home}/${ant.project.name}.properties"/>
-	<property file="./build.properties"/>
+        <property file="./build.properties"/>
     <property file="../../build.properties"/>
 
-	<path id="classpath">
-		<fileset dir="lib" includes="*.jar" excludes="${ant.project.name}.jar"/>
-	</path>
-	<property name="lib.dir" value="${basedir}/lib"/>
+        <path id="classpath">
+                <fileset dir="lib" includes="*.jar" excludes="${ant.project.name}.jar"/>
+        </path>
+        <property name="lib.dir" value="${basedir}/lib"/>
 
-	<target name="compile">
-		<mkdir dir="build/classes"/>
-		<javac srcdir="src/java" destdir="build/classes" classpathref="classpath" debug="true">
-			<compilerarg value="-Xlint:none"/>
-		</javac>
-	</target>
+        <target name="compile">
+                <mkdir dir="build/classes"/>
+                <javac srcdir="src/java" destdir="build/classes" classpathref="classpath" debug="true" source="1.5" target="1.5">
+                        <compilerarg value="-Xlint:none"/>
+                </javac>
+        </target>
 
     <target name="jar" depends="compile" description="Creates the JAR file for distribution.">
       <mkdir dir="${basedir}/dist"/>
@@ -26,19 +26,19 @@
         basedir="build/classes"  />
     </target>
 
-	<target name="javadoc" description="Creates javadocs from the java source">
-		<mkdir dir="build"/>
-		<javadoc destdir="build/javadocs" author="true" version="true" use="true" windowtitle="Team Engine API">
-			<fileset dir="${basedir}/src/java/com/occamlab/te" defaultexcludes="yes"/>
-		</javadoc>
-	</target>
+        <target name="javadoc" description="Creates javadocs from the java source">
+                <mkdir dir="build"/>
+                <javadoc destdir="build/javadocs" author="true" version="true" use="true" windowtitle="Team Engine API">
+                        <fileset dir="${basedir}/src/java/com/occamlab/te" defaultexcludes="yes"/>
+                </javadoc>
+        </target>
 
-	<target name="clean">
-		<delete dir="build"/>
+        <target name="clean">
+                <delete dir="build"/>
         <delete dir="dist"/>
-	    <delete>
-		  <fileset dir="${basedir}/resources/com/occamlab/te/scripts" includes="*.txsl,*.dxsl"/>
-	    </delete>
-	</target>
+            <delete>
+                  <fileset dir="${basedir}/resources/com/occamlab/te/scripts" includes="*.txsl,*.dxsl"/>
+            </delete>
+        </target>
 
 </project>

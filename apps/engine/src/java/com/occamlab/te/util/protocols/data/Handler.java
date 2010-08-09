@@ -89,7 +89,7 @@ public class Handler extends URLStreamHandler {
                                    + "Only base64 and the default of url-encoded is allowed." );
         }
 
-        final String contentType = mime.isEmpty() ? "text/plain" : mime;
+        final String contentType = mime.length() == 0 ? "text/plain" : mime;
         final String characterEncoding = charset;
 
         if ( encoding == null ) {
@@ -156,7 +156,7 @@ public class Handler extends URLStreamHandler {
     private static String[] cleanup( String[] ss ) {
         ArrayList<String> list = new ArrayList<String>();
         for ( String s : ss ) {
-            if ( !s.isEmpty() ) {
+            if ( s.length() > 0 ) {
                 list.add( s );
             }
         }
