@@ -30,5 +30,5 @@ if [ ! -x $java ]
 then
   java=java
 fi
-$java -cp $cp -Djava.protocol.handler.pkgs=com.occamlab.te.util.protocols $JAVA_OPTS com.occamlab.te.Test -cmd=$0 $*
+$java -cp $cp -Djava.protocol.handler.pkgs=com.occamlab.te.util.protocols $JAVA_OPTS com.occamlab.te.Test -cmd="$0" "$*"
 
