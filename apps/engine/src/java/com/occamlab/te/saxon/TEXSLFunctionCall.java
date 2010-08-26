@@ -74,7 +74,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
                 if (type == Node.ATTRIBUTE_NODE) {
                     xml += ">\n";
                     Attr attr = (Attr)n;
-                    xml += "<value " + attr.getNodeName() + "=\"" + attr.getValue() + "\"";
+                    xml += "<value " + attr.getNodeName() + "=\"" + attr.getValue().replace( "&", "&amp;" ) + "\"";
                     if (attr.getPrefix() != null) {
                         xml += " xmlns:" + attr.getPrefix() + "=\"" + attr.getNamespaceURI() + "\"";
                     }
