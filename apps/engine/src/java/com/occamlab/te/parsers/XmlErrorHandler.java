@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,6 +31,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /** Collection of reported validation errors. */
     private List<ValidationError> errors = new ArrayList<ValidationError>();
+    private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.XmlErrorHandler");
 
     /**
      * Indicates whether any validation errors have been reported.
@@ -175,6 +178,8 @@ public class XmlErrorHandler implements ErrorHandler {
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		doc = db.newDocument();
 	} catch (Exception e) {
+        jlogger.log(Level.SEVERE,"validate",e);
+
 		e.printStackTrace();
 	}
 

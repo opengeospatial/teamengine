@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -131,6 +133,7 @@ public class TECore implements Runnable {
 
     public static final int PASS = 0;
     public static final int WARNING = 1;
+	public static final int CONTINUE = -1;
     public static final int INHERITED_FAILURE = 2;
     public static final int FAIL = 3;
 
@@ -145,6 +148,8 @@ public class TECore implements Runnable {
     static final QName LOCALNAME_QNAME = new QName("local-name");
     static final QName LABEL_QNAME = new QName("label");
     static final String HEADER_BLOCKS = "header-blocks";
+
+    private static Logger jlogger = Logger.getLogger("com.occamlab.te.TECore");
 
 //    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
 //        this.engine = engine;
@@ -403,6 +408,7 @@ public class TECore implements Runnable {
             try {
                 childItem = value.axisIterator(Axis.CHILD).next();
             } catch (Exception e) {
+                jlogger.log(Level.SEVERE,"getLabel",e);
             }
             if (childItem == null) {
                 XdmSequenceIterator it = value.axisIterator(Axis.ATTRIBUTE);
@@ -456,6 +462,8 @@ public class TECore implements Runnable {
             return ("generated a Warning.");
         } else if (result == INHERITED_FAILURE){
             return "Failed (Inherited failure)";
+		}else if (result == CONTINUE){
+			return "Inconclusive! Continue Test";
         } else {
             return "Failed";
         }
@@ -516,6 +524,8 @@ public class TECore implements Runnable {
         try {
             executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
+            jlogger.log(Level.SEVERE,"SaxonApiException",e);
+
             out.println(e.getMessage());
             if (logger != null) {
                 logger.println("<exception><![CDATA[" + e.getMessage() + "]]></exception>");
@@ -556,6 +566,8 @@ public class TECore implements Runnable {
                 out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
                 if (result == WARNING) {
                     warning();
+				} else if (result == CONTINUE){
+					throw new Exception("Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
                 } else if (result != PASS){
                     inheritedFailure();
                 }
@@ -568,7 +580,11 @@ public class TECore implements Runnable {
         testPath += "/" + callId;
         executeTest(test, S9APIUtils.makeNode(params), context);
         testPath = oldTestPath;
-        if (result < oldResult) {
+
+		if (result == CONTINUE){
+			throw new Exception("Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
+			
+		}else if (result < oldResult) {
             // Restore parent result if the child results aren't worse
             result = oldResult;
         } else if (result == FAIL && oldResult != FAIL) {
@@ -578,6 +594,79 @@ public class TECore implements Runnable {
             // Keep child result as parent result
         }
     }
+
+	public void repeatTest(XPathContext context, String localName,
+			String NamespaceURI, NodeInfo params, String callId, int count,
+			int pause) throws Exception {
+		String key = "{" + NamespaceURI + "}" + localName;
+		TestEntry test = index.getTest(key);
+		
+		if (logger != null) {
+			logger.println("<testcall path=\"" + testPath + "/" + callId
+					+ "\"/>");
+			logger.flush();
+		}
+		if (opts.getMode() == Test.RESUME_MODE) {
+			Document doc = LogUtils.readLog(opts.getLogDir(), testPath + "/"
+					+ callId);
+			int result = LogUtils.getResultFromLog(doc);
+			if (result >= 0) {
+				out.println(indent + "Test " + test.getName() + " "
+						+ getResultDescription(result));
+				if (result == WARNING) {
+					warning();
+				} else if (result != PASS) {
+					inheritedFailure();
+				}
+				return;
+			}
+		}
+		int oldResult = result;
+		String oldTestPath = testPath;
+		
+		testPath += "/" + callId;
+		
+		for (int i = 0; i < count; i++) {
+                       
+			
+			executeTest(test, S9APIUtils.makeNode(params), context);
+			
+			testPath = oldTestPath;
+			
+
+			if (result == FAIL && oldResult != FAIL) {
+				// If the child result was FAIL and parent hasn't directly failed,
+				// set parent result to INHERITED_FAILURE
+				result = INHERITED_FAILURE;
+				
+				return;
+			} else if (result == CONTINUE) {
+				//System.out.println("Pausing for..."+pause);
+				if (pause > 0 && i < count-1){
+					
+					try{
+						
+						Thread.sleep(pause);
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+				}
+				
+			}else if (result <= oldResult) {
+				// Restore parent result if the child results aren't worse
+				result = oldResult;
+				return;
+				
+			}
+		}
+		result = FAIL;
+		if (oldResult != FAIL) {
+			// If the child result was FAIL and parent hasn't directly failed,
+			// set parent result to INHERITED_FAILURE
+			result = INHERITED_FAILURE;
+		}
+
+	}
 
     public NodeInfo executeXSLFunction(XPathContext context, FunctionEntry fe, NodeInfo params) throws Exception {
         String oldFnPath = fnPath;
@@ -681,6 +770,8 @@ public class TECore implements Runnable {
                         if (cause.getMessage() != null) {
                             msg += ": " + cause.getMessage();
                         }
+                        jlogger.log(Level.SEVERE,"InvocationTargetException",e);
+
                         throw new Exception(msg, cause);
                     }
                 }
@@ -706,6 +797,10 @@ public class TECore implements Runnable {
             result = FAIL;
         }
     }
+
+	public void _continue() {
+		result = CONTINUE;
+	}
 
     public void setContextLabel(String label) {
         contextLabel = label;
@@ -785,6 +880,8 @@ public class TECore implements Runnable {
                 }
             } catch (Exception exception) {
             	System.err.println("Error getting file. " + exception.getMessage());
+                jlogger.log(Level.SEVERE,"Error getting file. " + exception.getMessage(),e);
+
             	return null;
             }
         }
@@ -850,9 +947,11 @@ public class TECore implements Runnable {
             }
 
             logTag += DomUtils.serializeNode(response) + "\n";
+		jlogger.log(Level.FINE,DomUtils.serializeNode(response));
         } catch (Exception e) {
             ex = e;
         }
+		logTag += "<!-- elapsed time :" + elapsedTime + " (milliseconds) -->";
         logTag += "</soap-request>";
         if (logger != null) {
             logger.println(logTag);
@@ -946,13 +1045,16 @@ public class TECore implements Runnable {
         // SOAP POST
         bytes = SoapUtils.getSoapMessageAsByte(version, headerBloks, body, charset);
 //        System.out.println("SOAP MESSAGE  " + new String(bytes));
+
         uc.setRequestProperty("User-Agent", "Team Engine 1.2");
         uc.setRequestProperty("Cache-Control", "no-cache");
         uc.setRequestProperty("Pragma", "no-cache");
+		uc.setRequestProperty("charset", charset);
         uc.setRequestProperty("Content-Length", Integer.toString(bytes.length));
 
         if (version.equals(SOAP_V_1_1)) {
             //Handlinh HTTP binding for SOAP 1.1
+			// uc.setRequestProperty("Accept", "application/soap+xml");
             uc.setRequestProperty("Accept", "text/xml");
             uc.setRequestProperty("SOAPAction", action);
             contentType = "text/xml";
@@ -1395,6 +1497,8 @@ public class TECore implements Runnable {
                 InputStream is = uc.getInputStream();
                 t.transform(new StreamSource(is), new DOMResult(content_e));
             } catch (Exception e) {
+                jlogger.log(Level.SEVERE,"parse Error",e);
+
                 parser_e.setTextContent(e.getClass().getName() + ": " + e.getMessage());
             }
         } else {
@@ -1445,6 +1549,8 @@ public class TECore implements Runnable {
                 if (cause.getMessage() != null) {
                     msg += ": " + cause.getMessage();
                 }
+                jlogger.log(Level.SEVERE,msg,e);
+
                 throw new Exception(msg, cause);
             }
             pwLogger.close();
@@ -1480,7 +1586,7 @@ public class TECore implements Runnable {
     /**
      * Converts CTL input form data to generate a Swing-based or XHTML form and
      * reports the results of processing the submitted form. The results document
-     * is produced in {@link TestServlet#processFormData} (web context) or
+     * is produced in  (web context) or
      * {@link SwingForm.CustomFormView#submitData}.
      *
      * @param ctlForm
@@ -1619,8 +1725,8 @@ public class TECore implements Runnable {
             execute();
             out.close();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
+            jlogger.log(Level.SEVERE,"",e);
+         }
 //        activeThread = null;
         threadComplete = true;
     }

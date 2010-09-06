@@ -30,11 +30,14 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TEClassLoader extends ClassLoader {
     File resourcesDir;
     ClassLoader cl;
-    HashSet<String> registeredClasses; 
+    HashSet<String> registeredClasses;
+    private static Logger logger = Logger.getLogger("com.occamlab.te.TEClassLoader");
     
     public TEClassLoader(File resourcesDir) {
         this.resourcesDir = resourcesDir;
@@ -51,6 +54,7 @@ public class TEClassLoader extends ClassLoader {
             try {
                 return f.toURI().toURL();
             } catch (MalformedURLException e) {
+                logger.log(Level.SEVERE,"getResource",e);
             }
         }
         return cl.getResource(name);
@@ -63,6 +67,8 @@ public class TEClassLoader extends ClassLoader {
                 try {
                     return u.openStream();
                 } catch (IOException e) {
+                    logger.log(Level.SEVERE,"IOException",e);
+
                 }
             }
         }
@@ -102,6 +108,7 @@ public class TEClassLoader extends ClassLoader {
             in.close();
             return defineClass(name, baos.toByteArray(), 0, baos.size());
         } catch (Exception e) {
+            logger.log(Level.SEVERE,"readClass",e);
             return null;
         }
     }

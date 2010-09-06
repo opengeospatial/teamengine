@@ -9,6 +9,8 @@ import java.io.InputStream;
 
 import java.net.URLConnection;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.Random;
@@ -45,6 +47,7 @@ public class ZipParser {
             { "txt", "text/plain" }, { "jpg", "image/jpeg" },
             { "jpeg", "image/jpeg" }, { "gif", "image/gif" },
             { "png", "image/png" } };
+     private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.ZipParser");
 
     /**
      * Returns the mime media type value for the given extension
@@ -188,6 +191,8 @@ public class ZipParser {
 		zis = new ZipInputStream(is);
 	}
 	catch (Exception e) {
+        jlogger.log(Level.SEVERE,"saveZipFile",e);
+
 		System.out.println("ERROR: "+e.getMessage());
 		return null;
 	}
