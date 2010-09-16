@@ -246,8 +246,10 @@ public class TECore implements Runnable {
             if (!web) {
                 SwingForm.destroy();
             }
-            //Create xml execution report file
-            LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()+File.separator+opts.getSessionId());
+            if (opts.getLogDir() != null) {
+	            //Create xml execution report file
+	            LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()+File.separator+opts.getSessionId());
+            }
         }
     }
 
