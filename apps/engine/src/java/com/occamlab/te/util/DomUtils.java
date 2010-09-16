@@ -1,6 +1,8 @@
 package com.occamlab.te.util;
 
-import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +19,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -65,7 +69,7 @@ public class DomUtils {
 
 	Transformer identity = null;
 	try {
-    	    	TransformerFactory TF = TransformerFactory.newInstance();
+    	TransformerFactory TF = TransformerFactory.newInstance();
 		identity = TF.newTransformer();
 		identity.transform(new DOMSource(doc), new DOMResult(newDoc));
 	} catch (Exception ex) {
@@ -134,20 +138,20 @@ public class DomUtils {
      * Serializes a Node to a String
      */
     public static String serializeNode(Node node) {
-	CharArrayWriter caw = new CharArrayWriter();
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	try {
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer transformer = factory.newTransformer();
 
 		DOMSource src = new DOMSource(node);
-		StreamResult dest = new StreamResult(caw);
+		StreamResult dest = new StreamResult(baos);
                 transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		transformer.transform(src, dest);
 	} catch (Exception e) {
 		System.out.println("Error serializing node.  "+e.getMessage());
 	}
 
-	return caw.toString();
+	return baos.toString();
     }
 
     /**

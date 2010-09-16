@@ -24,6 +24,8 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -46,6 +48,8 @@ import com.occamlab.te.util.Misc;
 public class Generator {
     // Generates XSL template files from CTL sources and a master index
     // of metadata about the CTL objects
+    private static Logger logger = Logger.getLogger("com.occamlab.te.Generator");
+
     public static Index generateXsl(SetupOptions opts) throws Exception {
         Index masterIndex = new Index();
         
@@ -135,6 +139,7 @@ public class Generator {
                 boolean validationErrors = false;
                 if (opts.isValidate()) {
                     int old_count = validation_eh.getErrorCount();
+                    logger.log(Level.INFO,"Validating " + sourceFile);
                     ctl_validator.validate(new StreamSource(sourceFile));
                     validationErrors = (validation_eh.getErrorCount() > old_count);
                 }

@@ -15,14 +15,19 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 2009         F. Vitale     vitale@imaa.cnr.it
+           
  */
 
 package com.occamlab.te;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import com.occamlab.te.index.Index;
+import com.occamlab.te.util.DocumentationHelper;
 import com.occamlab.te.util.LogUtils;
 
 /**
@@ -36,6 +41,7 @@ public class Test {
     public static final int RESUME_MODE = 2;
     public static final int DOC_MODE = 4;
     public static final int CHECK_MODE = 5;
+    public static final int PRETTYLOG_MODE = 6;
 
     public static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
     public static final String TE_NS = "http://www.occamlab.com/te";
@@ -60,10 +66,12 @@ public class Test {
         System.out.println("Retest mode:");
         System.out.println("  Use to reexecute individual tests.\n");
         System.out.println("  " + cmd + " -mode=retest -logdir=dir -session=session testpath1 [testpath2] ...\n");
-//        System.out.println("Doc mode:");
-//        System.out.println("  Use to generate a list of assertions.\n");
-//        System.out.println("  " + cmd + " -mode=doc -source={ctlfile|dir} [-source={ctlfile|dir}] ...");
-//        System.out.println("    [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
+        System.out.println("Doc mode:");
+        System.out.println("  Use to generate documentation of tests.\n");
+        System.out.println("  " + cmd + " -mode=doc -source=<main ctl file> [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
+        System.out.println("PPLogs mode:");
+        System.out.println("  Pretty Print Logs mode is used to generate a readable HTML report of execution.\n");
+        System.out.println("  " + cmd + " -mode=pplogs -logdir=<dir of a session log>  \n");        
     }
 
     /**
@@ -121,6 +129,8 @@ public class Test {
                 mode = RESUME_MODE;
             } else if (args[i].equals("-mode=doc")) {
                 mode = DOC_MODE;
+            } else if (args[i].equals("-mode=pplogs")){
+            	mode = PRETTYLOG_MODE;
             } else if (args[i].startsWith("-mode=")) {
                 System.out.println("Error: Invalid mode.");
                 return;
@@ -185,6 +195,10 @@ public class Test {
             System.out.println("Error: A -logdir parameter is required for testing profiles");
             return;
         }
+        if (mode == PRETTYLOG_MODE && logDir == null) {
+            System.out.println("Error: A -logdir parameter is required to create report");
+            return;
+        }
 
         // Set session
         if (session == null) {
@@ -208,6 +222,26 @@ public class Test {
             indexFile = new File(dir, "index.xml");
         }
 
+        if (mode == DOC_MODE) {
+        	ClassLoader cl = Thread.currentThread().getContextClassLoader();           
+        	DocumentationHelper docCode= new DocumentationHelper(cl.getResource("com/occamlab/te/PseudoCTLDocumentation.xsl"));
+        	File html_output_documentation_file=new File(workDir.getAbsolutePath()+File.separator+"documentation.html");
+    		if (html_output_documentation_file.exists())
+    			throw new Exception("Error: Documentation file already exists, check the file " + html_output_documentation_file.getAbsolutePath() + " ");
+        	
+        	//docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(),runOpts.getSuiteName(),System.out);
+        	docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(),new FileOutputStream(html_output_documentation_file));
+        	System.out.println("Test documentation file \""+html_output_documentation_file.getAbsolutePath()+"\" created!");
+        	return;
+        }
+        
+
+        if (mode == PRETTYLOG_MODE) {
+        	ClassLoader cl = Thread.currentThread().getContextClassLoader();           
+        	DocumentationHelper docLogs= new DocumentationHelper(cl.getResource("com/occamlab/te/test_report_html.xsl"));
+        	docLogs.prettyPrintsReport(logDir);        	
+        	return;
+        }
         if (mode == TEST_MODE || mode == CHECK_MODE) {
             masterIndex = Generator.generateXsl(setupOpts);
             if (indexFile != null) {
@@ -223,7 +257,7 @@ public class Test {
                 System.out.println("Warning: Scripts have changed since this session was first executed.");
             }
         }
-            
+
         masterIndex.setElements(null);
         
         TEClassLoader cl = new TEClassLoader(null); 
@@ -234,8 +268,9 @@ public class Test {
         }
         
         if (mode != CHECK_MODE) {
-            TECore core = new TECore(engine, masterIndex, runOpts);
+        	TECore core = new TECore(engine, masterIndex, runOpts);
             core.execute();
         }
+       
     }
 }

@@ -31,6 +31,8 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -65,6 +67,7 @@ public class XMLValidatingParser {
     static DocumentBuilderFactory dtdValidatingDBF = null;
     ArrayList<Object> schemaList = new ArrayList<Object>();
     ArrayList<Object> dtdList = new ArrayList<Object>();
+    private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
     private void loadSchemaList(Document schemaLinks, ArrayList<Object> schemas, String schemaType) throws Exception {
         NodeList nodes = schemaLinks.getElementsByTagNameNS("http://www.occamlab.com/te/parsers", schemaType);
@@ -219,11 +222,14 @@ public class XMLValidatingParser {
             try {
                 doc = db.parse((InputStream) xml);
             } catch (Exception e) {
+                jlogger.log(Level.SEVERE,"error parsing",e);
+
 //                logger.println(e.getMessage());
             }
         } else if (xml instanceof Document) {
             doc = (Document) xml;
         } else {
+
             throw new Exception("Error: Invalid xml object");
         }
 
@@ -363,6 +369,8 @@ public class XMLValidatingParser {
             try {
                 db.parse(new ByteArrayInputStream(baos.toByteArray()));
             } catch (Exception e) {
+                jlogger.log(Level.SEVERE,"validate",e);
+
             }
         }
     }

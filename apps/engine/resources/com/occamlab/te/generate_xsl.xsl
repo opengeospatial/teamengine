@@ -461,6 +461,18 @@
 		</suite>
 	</xsl:template>
 
+	<xsl:template name="soap-request" match="ctl:soap-request">
+		<!-- Expand any child CTL instructions into XSL instructions and store in generated variable -->
+		<txsl:variable name="te:soap-request-xml">
+			<xsl:copy>
+				<xsl:apply-templates select="@*"/>
+				<xsl:apply-templates/>
+			</xsl:copy>
+		</txsl:variable>
+		<!-- Generate request method call -->
+		<txsl:copy-of select="tec:soap_request($te:core, $te:soap-request-xml, concat('{generate-id()}_', position()))/node()"/>
+	</xsl:template>
+
 	<!-- Calls parse-qname -->
 	<xsl:template match="ctl:profile">
 		<xsl:variable name="qname">
@@ -641,6 +653,25 @@
 		<txsl:value-of select="tec:callTest($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params, concat('{generate-id()}_', position()))"/> <!-- Last param is the log file directory name -->
 	</xsl:template>
 
+	<xsl:template match="ctl:repeat-test">
+		<xsl:variable name="qname">
+			<xsl:call-template name="parse-qname"/>
+		</xsl:variable>
+		<!-- TODO: Raise error unless this is inside a test -->
+		<xsl:call-template name="make-params-var"/>
+		<xsl:apply-templates select="@select"/>
+		<xsl:choose>
+			<xsl:when test="@pause">
+				<txsl:value-of select="tec:repeatTest($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params, concat('{generate-id()}_', position()), {@count}, {@pause})"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<txsl:value-of select="tec:repeatTest($te:core, '{$qname/local-name}', '{$qname/namespace-uri}', $te:params, concat('{generate-id()}_', position()), {@count}, 0)"/>
+			</xsl:otherwise>
+		</xsl:choose>
+		<xsl:apply-templates/>
+		<!-- Last param is the log file directory name -->
+	</xsl:template>
+
 	<!-- Calls parse-qname, make-params-var -->
 	<xsl:template name="call-function" match="ctl:call-function">
 		<xsl:variable name="qname">
@@ -692,6 +723,10 @@
 
 	<xsl:template match="ctl:warning">
 		<txsl:value-of select="tec:warning($te:core)"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:continue">
+		<txsl:value-of select="tec:_continue($te:core)"/>
 	</xsl:template>
 
 	<xsl:template match="ctl:form">

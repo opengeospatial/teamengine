@@ -26,6 +26,8 @@ import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
@@ -40,6 +42,7 @@ public class TeErrorListener implements ErrorListener {
     private int ErrorCount = 0;
     private int WarningCount = 0;
     private boolean active = true;
+    private static Logger logger = Logger.getLogger("com.occamlab.te.TeErrorListener");
 
     public TeErrorListener() {
     }
@@ -101,6 +104,8 @@ public class TeErrorListener implements ErrorListener {
                     + " in intermediate stylesheet"
                     + exception.getLocationAsString());
         } catch (Exception e) {
+            logger.log(Level.SEVERE,"",e);
+
             System.err.println(type + ": " + exception.getMessageAndLocation());
         }
     }

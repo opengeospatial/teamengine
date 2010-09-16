@@ -30,6 +30,8 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 import java.awt.Graphics2D;
@@ -58,6 +60,7 @@ import org.w3c.dom.*;
  * 
  */
 public class ImageParser {
+    private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.ImageParser");
 
     private static class ImageTracker implements ImageObserver {
         volatile boolean done = false;
@@ -83,6 +86,7 @@ public class ImageParser {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
+            // not an error
         }
     }
 
@@ -248,7 +252,7 @@ public class ImageParser {
                             countnode.appendChild(textnode);
                             parent.insertBefore(countnode, node);
                             if (sampleIt.hasNext()) {
-                                if (prevSibling.getNodeType() == Node.TEXT_NODE) {
+                                if (prevSibling != null && prevSibling.getNodeType() == Node.TEXT_NODE) {
                                     parent.insertBefore(prevSibling.cloneNode(false), node);
                                 }
                             }
@@ -284,6 +288,8 @@ public class ImageParser {
             URL imageUrl = imageUri.toURL();
             is = imageUrl.openStream();
         } catch (Exception e) {
+            jlogger.log(Level.SEVERE,"getImageType",e);
+
             return null;
         }
 
@@ -307,6 +313,8 @@ public class ImageParser {
             // Return the format name
             return reader.getFormatName();
         } catch (IOException e) {
+            jlogger.log(Level.SEVERE,"getImageType",e);
+
         }
 
         // The image could not be read
@@ -485,6 +493,8 @@ public class ImageParser {
                             framesRead++;
                         }
                     } catch (Exception e) {
+                        jlogger.log(Level.SEVERE,"",e);
+
                         frames = framesRead + 1;
                     }
                 }
@@ -509,6 +519,8 @@ public class ImageParser {
         try {
             xml_url = new java.net.URL(args[0]);
         } catch (Exception e) {
+            jlogger.log(Level.INFO,"Error building xmlurl, will prefix file://",e);
+
             xml_url = new java.net.URL("file://" + args[0]);
         }
 
@@ -516,6 +528,8 @@ public class ImageParser {
         try {
             image_url = new java.net.URL(args[1]);
         } catch (Exception e) {
+            jlogger.log(Level.INFO,"Error building xmlurl, will prefix file://",e);
+
             image_url = new java.net.URL("file://" + args[1]);
         }
 
@@ -537,6 +551,8 @@ public class ImageParser {
             try {
                 tf.setAttribute("http://saxon.sf.net/feature/strip-whitespace", "all");
             } catch (IllegalArgumentException e) {
+                jlogger.log(Level.INFO,"setAttribute(\"http://saxon.sf.net/feature/strip-whitespace\", \"all\");",e);
+
             }
             Transformer t = tf.newTransformer();
             t.setOutputProperty(OutputKeys.INDENT, "yes");
