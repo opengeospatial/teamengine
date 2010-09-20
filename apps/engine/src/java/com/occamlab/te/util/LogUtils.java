@@ -403,7 +403,7 @@ public class LogUtils {
 		List<File> result = new ArrayList<File>();
 		File[] logfiles = aStartingDir.listFiles(new FileFilter() {			
 			@Override
-			 boolean accept(File pathname) {				
+			public boolean accept(File pathname) {				
 				return pathname.isFile();
 			}
 		});
@@ -411,7 +411,7 @@ public class LogUtils {
 		File[] allDirs=  aStartingDir.listFiles(new FileFilter() {
 			
 			@Override
-			 boolean accept(File pathname) {
+			public boolean accept(File pathname) {
 				return pathname.isDirectory();
 			}
 		});		
