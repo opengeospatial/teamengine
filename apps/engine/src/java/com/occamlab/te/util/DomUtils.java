@@ -3,6 +3,7 @@ package com.occamlab.te.util;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -138,20 +140,27 @@ public class DomUtils {
      * Serializes a Node to a String
      */
     public static String serializeNode(Node node) {
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try {
-		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer = factory.newTransformer();
+        return serializeSource(new DOMSource(node));
+    }
+    
+    public static String serializeSource(Source source){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer();
 
-		DOMSource src = new DOMSource(node);
-		StreamResult dest = new StreamResult(baos);
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		transformer.transform(src, dest);
-	} catch (Exception e) {
-		System.out.println("Error serializing node.  "+e.getMessage());
-	}
+            StreamResult dest = new StreamResult(baos);
+                    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.transform(source, dest);
+        } catch (Exception e) {
+            System.out.println("Error serializing node.  "+e.getMessage());
+        }
 
-	return baos.toString();
+        try {
+            return baos.toString("UTF-8");
+        } catch ( UnsupportedEncodingException e ) {
+            return baos.toString();
+        }
     }
 
     /**

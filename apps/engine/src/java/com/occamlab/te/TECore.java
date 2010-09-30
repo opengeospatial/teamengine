@@ -512,7 +512,7 @@ public class TECore implements Runnable {
                     logger.println("/>");
                 } else if (kind == Type.ELEMENT || kind == Type.DOCUMENT) {
                     logger.println("<value>");
-                    logger.println(engine.getBuilder().build(contextNode).toString());
+                    logger.println(DomUtils.serializeSource(engine.getBuilder().build(contextNode).asSource()));
                     logger.println("</value>");
                 }
                 logger.println("</context>");
