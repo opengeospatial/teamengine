@@ -82,14 +82,15 @@ Java servlets and JSP.  Its authentication code depends on Apache Tomcat
 
 <p class=MsoNormal>Here is the one paragraph explanation of how TEAM Engine
 works.  When a test suite is executed, the source CTL files are converted into
-XSL files, a separate XSL file for each test.  A Saxon XSL transformation is
-performed using the generated XSL file for the starting test associated with
-the suite as the stylesheet, and an instance of the TECore java object as a
-transformation parameter.  During the transformation process, the stylesheet
-code calls methods on the TECore object.  These include a method for calling a subtest,
-which works by performing another Saxon transformation using the XSL that was generated
-for the subtest.  The transformations write output to the console and generate
-log files as they progress.</p>
+XSL files, a separate XSL file for each test.  TEAM Engine presents the form for
+the test suite to the user.  The values the user enters are parameters to the
+starting test, and they are converted into parameter XML.  Then the starting test
+is executed by starting a Saxon transformation using the parameter XML as input
+and the XSL file that was generated for the starting test as the stylesheet.
+The XSL code makes calls to java extension functions.  These include a method for
+calling a subtest, which works by performing another Saxon transformation using the
+XSL that was generated for the subtest.  The transformations write output to the
+console and generate log files as they progress.</p>
 
 <p class=MsoNormal>&nbsp;</p>
 
