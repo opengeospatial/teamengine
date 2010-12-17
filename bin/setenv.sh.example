@@ -1,0 +1,3 @@
+#JAVA_HOME=/opt/jdk1.5.0_11
+JAVA_OPTS=-Xmx256m
+#JAVA_OPTS=-Xmx256m -Dhttp.proxyHost=www.xxx.com -Dhttp.proxyPort=80 -Dhttp.nonProxyHosts=*.xxx.com

@@ -1,0 +1,33 @@
+<project name="manager" basedir="." default="jar">
+  <description>TEAM Engine web interface servlets</description>
+
+  <property file="${user.home}/${ant.project.name}.properties"/>
+  <property file="../../build.properties"/>
+  <property file="build.properties"/>
+
+  <path id="classpath">
+    <fileset dir="${tomcat.dir}/common/lib" includes="servlet-api.jar"/>
+    <fileset dir="../engine/lib" includes="*.jar"/>
+    <fileset dir="../engine/dist" includes="*.jar"/>
+    <fileset dir="lib" includes="*.jar"/>
+  </path>
+
+  <target name="compile">
+    <mkdir dir="build"/>
+    <javac srcdir="src/java" destdir="build" classpathref="classpath" debug="true" source="1.5" target="1.5">
+       <compilerarg value="-Xlint:none"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="dist"/>
+    <jar destfile="dist/te-manager.jar">
+      <fileset dir="build" excludes=".*"/>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete dir="dist"/>
+  </target>
+</project>
