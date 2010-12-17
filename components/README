@@ -1,3 +1,0 @@
-The components directory contains modules that extend the capabilities of the 
-test harness. Any required third-party libraries must be added to the common 
-lib directory (../lib).
