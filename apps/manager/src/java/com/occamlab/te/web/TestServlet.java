@@ -218,7 +218,7 @@ public class TestServlet extends HttpServlet {
                 
                 for (File ctlFile: index.getDependencies()) {
                     String encodedName = URLEncoder.encode(ctlFile.getAbsolutePath(), "UTF-8");
-                    encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
+                  //  encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
                     String basename = encodedName;
                     int i = basename.lastIndexOf('.');
                     if (i > 0) {
