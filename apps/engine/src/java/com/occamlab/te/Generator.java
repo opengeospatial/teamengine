@@ -86,7 +86,7 @@ public class Generator {
 //          appLogger.log(Level.INFO, "Processing source(s) at: " + source.getAbsolutePath());
 
             String encodedName = URLEncoder.encode(source.getAbsolutePath(), "UTF-8");
-            encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
+           // encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
             File workingDir = new File(opts.getWorkDir(), encodedName);
             workingDir.mkdir();
             
