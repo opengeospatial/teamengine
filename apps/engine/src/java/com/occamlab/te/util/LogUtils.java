@@ -401,13 +401,16 @@ public class LogUtils {
 	static private List<File> getFileListingLogs(File aStartingDir)
 			throws Exception {
 		List<File> result = new ArrayList<File>();
-		File[] logfiles = aStartingDir.listFiles(new FileFilter() {			
+		File[] logfiles = aStartingDir.listFiles(new FileFilter() {		
+			
+			@Override
 			public boolean accept(File pathname) {				
 				return pathname.isFile();
 			}
 		});
 		List<File> logFilesList = Arrays.asList(logfiles);
 		File[] allDirs=  aStartingDir.listFiles(new FileFilter() {
+			@Override
 			public boolean accept(File pathname) {
 				return pathname.isDirectory();
 			}
