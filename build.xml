@@ -144,6 +144,18 @@
         </java>
       </else>
     </if>
+  	
+  	<xmlvalidate failonerror="true" 
+  	             lenient="true" 
+  	             warn="true"> 
+  	  <attribute name="http://xml.org/sax/features/validation" value="false" /> 
+  	  <attribute 
+  	name="http://apache.org/xml/features/nonvalidating/load-external-dtd" 
+  	value="false" /> 
+
+  	  <fileset dir="." file="${configfile}"/> 
+  	</xmlvalidate> 
+  	
   </target>
 
   <target name="context.xml">
