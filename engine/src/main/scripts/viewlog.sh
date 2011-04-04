@@ -4,12 +4,7 @@ if [ -r $base/setenv.sh ]
 then
   . $base/setenv.sh
 fi
-cp=$base/../apps/engine/resources
-for x in $base/../apps/engine/dist/*.jar
-do
-  cp=$cp:$x
-done
-for x in $base/../apps/engine/lib/*.jar
+for x in $base/../repo/*.jar
 do
   cp=$cp:$x
 done
