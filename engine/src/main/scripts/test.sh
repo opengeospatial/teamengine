@@ -4,6 +4,7 @@ if [ -r $base/setenv.sh ]
 then
   . $base/setenv.sh
 fi
+cp=$base/../resources/
 for x in $base/../repo/*.jar
 do
   cp=$cp:$x

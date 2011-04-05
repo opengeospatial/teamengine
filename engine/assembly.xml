@@ -21,6 +21,10 @@
       <directory>src/main/components</directory>
       <outputDirectory>components</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>src/main/resources</directory>
+      <outputDirectory>resources</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
