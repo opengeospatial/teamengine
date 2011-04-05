@@ -152,7 +152,7 @@ public class TestServlet extends HttpServlet {
 			XsltCompiler sourceGeneratorCompiler = processor.newXsltCompiler();
 			URL sourceGeneratorStylesheet = TestServlet.class.getResource("/com/occamlab/te/generate_source_html.xsl");
 			is = sourceGeneratorStylesheet.openStream();
-			XsltExecutable sourceGeneratorXsltExecutable = sourceGeneratorCompiler.compile(new StreamSource(is));
+			XsltExecutable sourceGeneratorXsltExecutable = sourceGeneratorCompiler.compile(new StreamSource(is, sourceGeneratorStylesheet.toExternalForm()));
 			XsltTransformer sourceGeneratorTransformer = sourceGeneratorXsltExecutable.load();
 
 			File listings = new File(getServletConfig().getServletContext().getRealPath("/"), "listings");
@@ -188,7 +188,7 @@ public class TestServlet extends HttpServlet {
 					if (needsGenerating) {
 						InputStream in = null;
 						try {
-							sourceGeneratorTransformer.setSource(new StreamSource(in = ctlFile.openStream()));
+							sourceGeneratorTransformer.setSource(new StreamSource(in = ctlFile.openStream(), ctlFile.toExternalForm()));
 							Serializer sourceGeneratorSerializer = new Serializer();
 							sourceGeneratorSerializer.setOutputFile(htmlFile);
 							sourceGeneratorTransformer.setDestination(sourceGeneratorSerializer);
