@@ -24,6 +24,7 @@
   <modules>
     <module>team-engine</module>
     <module>team-manager</module>
+    <module>team-userfilesrealm</module>
   </modules>
 
 </project>
