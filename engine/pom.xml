@@ -4,7 +4,7 @@
   <groupId>org.opengeospatial</groupId>
   <artifactId>team-engine</artifactId>
   <packaging>jar</packaging>
-  <version>2.0-pre1-SNAPSHOT</version>
+  <version>3.0-pre1-SNAPSHOT</version>
   <name>TEAM engine</name>
   <url>http://www.opengeospatial.org</url>
 

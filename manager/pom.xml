@@ -4,7 +4,7 @@
   <groupId>org.opengeospatial</groupId>
   <artifactId>team-manager</artifactId>
   <packaging>war</packaging>
-  <version>2.0-pre1-SNAPSHOT</version>
+  <version>3.0-pre1-SNAPSHOT</version>
   <name>TEAM manager</name>
   <url>http://www.opengeospatial.org</url>
 
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.opengeospatial</groupId>
       <artifactId>team-engine</artifactId>
-      <version>2.0-pre1-SNAPSHOT</version>
+      <version>3.0-pre1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
