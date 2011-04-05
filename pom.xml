@@ -22,8 +22,8 @@
   </repositories>
 
   <modules>
-    <module>engine</module>
-    <module>manager</module>
+    <module>team-engine</module>
+    <module>team-manager</module>
   </modules>
 
 </project>
