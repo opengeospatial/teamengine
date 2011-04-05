@@ -21,14 +21,11 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -49,21 +46,12 @@ import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.FeatureKeys;
-import net.sf.saxon.dom.NodeOverNodeInfo;
-import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
@@ -74,7 +62,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import com.occamlab.te.Engine;
 import com.occamlab.te.Generator;
@@ -87,7 +74,6 @@ import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
-import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
 
 /**
@@ -181,6 +167,7 @@ public class TestServlet extends HttpServlet {
      * Generates executable test suites from available CTL sources.
      */
     public void init() throws ServletException {
+        InputStream is = null;
         try {
             conf = new Config();
 
@@ -197,8 +184,9 @@ public class TestServlet extends HttpServlet {
             Processor processor = new Processor(false);
             processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
             XsltCompiler sourceGeneratorCompiler = processor.newXsltCompiler();
-            File sourceGeneratorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_source_html.xsl");
-            XsltExecutable sourceGeneratorXsltExecutable = sourceGeneratorCompiler.compile(new StreamSource(sourceGeneratorStylesheet));
+            URL sourceGeneratorStylesheet = TestServlet.class.getResource("/com/occamlab/te/generate_source_html.xsl");
+            is = sourceGeneratorStylesheet.openStream();
+            XsltExecutable sourceGeneratorXsltExecutable = sourceGeneratorCompiler.compile(new StreamSource(is));
             XsltTransformer sourceGeneratorTransformer = sourceGeneratorXsltExecutable.load();
 
             File listings = new File(getServletConfig().getServletContext().getRealPath("/"), "listings");
@@ -280,6 +268,14 @@ public class TestServlet extends HttpServlet {
             throw e;
         } catch (Exception e) {
             throw new ServletException(e);
+        }finally{
+            if(is != null){
+                try {
+                    is.close();
+                } catch ( IOException e ) {
+                    // ignore exception when closing stream
+                }
+            }
         }
     }
 

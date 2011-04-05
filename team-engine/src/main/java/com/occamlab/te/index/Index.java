@@ -61,7 +61,7 @@ public class Index {
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(indexFile);
-        Element index = (Element)doc.getDocumentElement();
+        Element index = doc.getDocumentElement();
         NodeList nodes = index.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
