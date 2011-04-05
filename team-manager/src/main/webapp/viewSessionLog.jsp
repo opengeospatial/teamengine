@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.net.URL, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
 DocumentBuilderImpl DB;
@@ -10,8 +10,8 @@ Templates ViewLogTemplates;
 public void jspInit() {
 	try {
 		Conf = new Config();
-		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
-		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
+		URL stylesheet = Misc.class.getResource("/com/occamlab/te/web/viewlog.xsl");
+		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet.openStream(), stylesheet.toExternalForm()));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
 	}
