@@ -22,6 +22,8 @@ package com.occamlab.te.index;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,218 +44,225 @@ import org.w3c.dom.NodeList;
 import com.occamlab.te.util.DomUtils;
 
 public class Index {
-    File indexFile = null;
-    List<File> dependencies = new ArrayList<File>();
-    Map<String, List<FunctionEntry>> functionsMap = new HashMap<String, List<FunctionEntry>>();
-    Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
-    Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
-    Map<String, ProfileEntry> profileMap = new HashMap<String, ProfileEntry>();
-    Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
+	File indexFile = null;
+	List<URL> dependencies = new ArrayList<URL>();
+	Map<String, List<FunctionEntry>> functionsMap = new HashMap<String, List<FunctionEntry>>();
+	Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
+	Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
+	Map<String, ProfileEntry> profileMap = new HashMap<String, ProfileEntry>();
+	Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
 
-    List<Element> elements = new ArrayList<Element>();
-    
-    public Index() {
-    }
-    
-    public Index(File indexFile) throws Exception {
-        this.indexFile = indexFile;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(indexFile);
-        Element index = doc.getDocumentElement();
-        NodeList nodes = index.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element)node;
-                elements.add(el);
-                String name = el.getNodeName();
-                if (name.equals("dependency")) {
-                    File file = new File(el.getAttribute("file").substring(5));
-                    dependencies.add(file);
-                } else if (name.equals("suite")) {
-                    SuiteEntry se = new SuiteEntry(el);
-                    suiteMap.put(se.getId(), se);
-                } else if (name.equals("profile")) {
-                    ProfileEntry pe = new ProfileEntry(el);
-                    profileMap.put(pe.getId(), pe);
-                } else if (name.equals("test")) {
-                    TestEntry te = new TestEntry(el);
-                    testMap.put(te.getId(), te);
-                } else if (name.equals("function")) {
-                    FunctionEntry fe = new FunctionEntry(el);
-                    List<FunctionEntry> functions = functionsMap.get(fe.getId());
-                    if (functions == null) {
-                        functions = new ArrayList<FunctionEntry>();
-                        functions.add(fe);
-                        functionsMap.put(fe.getId(), functions);
-                    } else {
-                        functions.add(fe);
-                    }
-                } else if (name.equals("parser")) {
-                    ParserEntry pe = new ParserEntry(el);
-                    parserMap.put(pe.getId(), pe);
-                }
-            }
-        }
-    }
-    
-    public void persist(File file) throws Exception {
-        file.getParentFile().mkdirs();
-        PrintWriter out = new PrintWriter(file);
-        out.println("<index>");
-        for (Element el : elements) {
-            out.println(DomUtils.serializeNode(el));
-        }
-        out.println("</index>");
-        out.close();
-    }
-    
-    public boolean outOfDate() {
-        if (indexFile != null) {
-            long indexDate = indexFile.lastModified();
-            for (File file : dependencies) {
-                if (file.lastModified() + 1000 > indexDate) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    public void add(Index index) {
-        elements.addAll(index.elements);
-        dependencies.addAll(index.dependencies);
-        functionsMap.putAll(index.functionsMap);
-        suiteMap.putAll(index.suiteMap);
-        profileMap.putAll(index.profileMap);
-        testMap.putAll(index.testMap);
-        parserMap.putAll(index.parserMap);
-    }
-    
-    public List<FunctionEntry> getFunctions(String name) {
-        if (name.startsWith("{")) {
-            return functionsMap.get(name);
-        }
-        throw new RuntimeException("Invalid function name");
-    }
-    
-    public List<FunctionEntry> getFunctions(QName qname) {
-        return getFunctions("{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
-    }
-    
-    public Set<String> getFunctionKeys() {
-        return functionsMap.keySet();
-    }
-    
-    public ParserEntry getParser(String name) {
-        return (ParserEntry)getEntry(parserMap, name);
-    }
+	List<Element> elements = new ArrayList<Element>();
 
-    public ParserEntry getParser(QName qname) {
-        return (ParserEntry)getEntry(parserMap, qname);
-    }
-    
-    public Set<String> getParserKeys() {
-        return parserMap.keySet();
-    }
-    
-    public SuiteEntry getSuite(String name) {
-        return (SuiteEntry)getEntry(suiteMap, name);
-    }
+	public Index() {
+	}
 
-    public SuiteEntry getSuite(QName qname) {
-        return (SuiteEntry)getEntry(suiteMap, qname);
-    }
-    
-    public Set<String> getSuiteKeys() {
-        return suiteMap.keySet();
-    }
+	public Index(File indexFile) throws Exception {
+		this.indexFile = indexFile;
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(indexFile);
+		Element index = doc.getDocumentElement();
+		NodeList nodes = index.getChildNodes();
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node node = nodes.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				Element el = (Element) node;
+				elements.add(el);
+				String name = el.getNodeName();
+				if (name.equals("dependency")) {
+					URL file = new URL(el.getAttribute("file"));
+					dependencies.add(file);
+				} else if (name.equals("suite")) {
+					SuiteEntry se = new SuiteEntry(el);
+					suiteMap.put(se.getId(), se);
+				} else if (name.equals("profile")) {
+					ProfileEntry pe = new ProfileEntry(el);
+					profileMap.put(pe.getId(), pe);
+				} else if (name.equals("test")) {
+					TestEntry te = new TestEntry(el);
+					testMap.put(te.getId(), te);
+				} else if (name.equals("function")) {
+					FunctionEntry fe = new FunctionEntry(el);
+					List<FunctionEntry> functions = functionsMap.get(fe.getId());
+					if (functions == null) {
+						functions = new ArrayList<FunctionEntry>();
+						functions.add(fe);
+						functionsMap.put(fe.getId(), functions);
+					} else {
+						functions.add(fe);
+					}
+				} else if (name.equals("parser")) {
+					ParserEntry pe = new ParserEntry(el);
+					parserMap.put(pe.getId(), pe);
+				}
+			}
+		}
+	}
 
-    public ProfileEntry getProfile(String name) {
-        return (ProfileEntry)getEntry(profileMap, name);
-    }
+	public void persist(File file) throws Exception {
+		file.getParentFile().mkdirs();
+		PrintWriter out = new PrintWriter(file);
+		out.println("<index>");
+		for (Element el : elements) {
+			out.println(DomUtils.serializeNode(el));
+		}
+		out.println("</index>");
+		out.close();
+	}
 
-    public ProfileEntry getProfile(QName qname) {
-        return (ProfileEntry)getEntry(profileMap, qname);
-    }
-    
-    public Set<String> getProfileKeys() {
-        return profileMap.keySet();
-    }
+	public boolean outOfDate() {
+		if (indexFile != null) {
+			long indexDate = indexFile.lastModified();
+			for (URL file : dependencies) {
+				if (file.getProtocol().equals("file")) {
+					try {
+						if (new File(file.toURI()).lastModified() + 1000 > indexDate) {
+							return true;
+						}
+					} catch (URISyntaxException e) {
+						return true;
+					}
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-    public Collection<ProfileEntry> getProfiles() {
-        return profileMap.values();
-    }
+	public void add(Index index) {
+		elements.addAll(index.elements);
+		dependencies.addAll(index.dependencies);
+		functionsMap.putAll(index.functionsMap);
+		suiteMap.putAll(index.suiteMap);
+		profileMap.putAll(index.profileMap);
+		testMap.putAll(index.testMap);
+		parserMap.putAll(index.parserMap);
+	}
 
-    public TestEntry getTest(String name) {
-        return (TestEntry)getEntry(testMap, name);
-    }
+	public List<FunctionEntry> getFunctions(String name) {
+		if (name.startsWith("{")) {
+			return functionsMap.get(name);
+		}
+		throw new RuntimeException("Invalid function name");
+	}
 
-    public TestEntry getTest(QName qname) {
-        return (TestEntry)getEntry(testMap, qname);
-    }
+	public List<FunctionEntry> getFunctions(QName qname) {
+		return getFunctions("{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
+	}
 
-    public Set<String> getTestKeys() {
-        return testMap.keySet();
-    }
-    
-    private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, QName qname) {
-        return getEntry(map, "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
-    }
+	public Set<String> getFunctionKeys() {
+		return functionsMap.keySet();
+	}
 
-    private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, String name) {
-        if (name == null) {
-            return map.values().iterator().next();
-        }
-        
-        if (name.startsWith("{")) {
-            return map.get(name);
-        }
+	public ParserEntry getParser(String name) {
+		return (ParserEntry) getEntry(parserMap, name);
+	}
 
-        int i = name.lastIndexOf(',');
-        if (i >= 0) {
-            String key = "{" + name.substring(0, i) + "}" + name.substring(i + 1);
-            return map.get(key);
-        }
+	public ParserEntry getParser(QName qname) {
+		return (ParserEntry) getEntry(parserMap, qname);
+	}
 
-        String prefix = null;
-        String localName = name;
-        i = name.indexOf(':');
-        if (i >= 0) {
-            prefix = name.substring(0, i);
-            localName = name.substring(i + 1);
-        }
-        
-        Iterator<? extends IndexEntry> it = map.values().iterator();
-        while (it.hasNext()) {
-            IndexEntry entry = it.next();
-            if (entry.getLocalName().equals(localName)) {
-                if (prefix == null) {
-                    return entry;
-                } else {
-                    if (entry.getPrefix().equals(prefix)) {
-                        return entry;
-                    }
-                }
-            }
-        }
+	public Set<String> getParserKeys() {
+		return parserMap.keySet();
+	}
 
-        return null;
-    }
+	public SuiteEntry getSuite(String name) {
+		return (SuiteEntry) getEntry(suiteMap, name);
+	}
 
-    public void setElements(List<Element> elements) {
-        this.elements = elements;
-    }
+	public SuiteEntry getSuite(QName qname) {
+		return (SuiteEntry) getEntry(suiteMap, qname);
+	}
 
-    public List<File> getDependencies() {
-        return dependencies;
-    }
+	public Set<String> getSuiteKeys() {
+		return suiteMap.keySet();
+	}
 
-    public void setDependencies(List<File> dependencies) {
-        this.dependencies = dependencies;
-    }
-    
-    
+	public ProfileEntry getProfile(String name) {
+		return (ProfileEntry) getEntry(profileMap, name);
+	}
+
+	public ProfileEntry getProfile(QName qname) {
+		return (ProfileEntry) getEntry(profileMap, qname);
+	}
+
+	public Set<String> getProfileKeys() {
+		return profileMap.keySet();
+	}
+
+	public Collection<ProfileEntry> getProfiles() {
+		return profileMap.values();
+	}
+
+	public TestEntry getTest(String name) {
+		return (TestEntry) getEntry(testMap, name);
+	}
+
+	public TestEntry getTest(QName qname) {
+		return (TestEntry) getEntry(testMap, qname);
+	}
+
+	public Set<String> getTestKeys() {
+		return testMap.keySet();
+	}
+
+	private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, QName qname) {
+		return getEntry(map, "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
+	}
+
+	private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, String name) {
+		if (name == null) {
+			return map.values().iterator().next();
+		}
+
+		if (name.startsWith("{")) {
+			return map.get(name);
+		}
+
+		int i = name.lastIndexOf(',');
+		if (i >= 0) {
+			String key = "{" + name.substring(0, i) + "}" + name.substring(i + 1);
+			return map.get(key);
+		}
+
+		String prefix = null;
+		String localName = name;
+		i = name.indexOf(':');
+		if (i >= 0) {
+			prefix = name.substring(0, i);
+			localName = name.substring(i + 1);
+		}
+
+		Iterator<? extends IndexEntry> it = map.values().iterator();
+		while (it.hasNext()) {
+			IndexEntry entry = it.next();
+			if (entry.getLocalName().equals(localName)) {
+				if (prefix == null) {
+					return entry;
+				} else {
+					if (entry.getPrefix().equals(prefix)) {
+						return entry;
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public void setElements(List<Element> elements) {
+		this.elements = elements;
+	}
+
+	public List<URL> getDependencies() {
+		return dependencies;
+	}
+
+	public void setDependencies(List<URL> dependencies) {
+		this.dependencies = dependencies;
+	}
+
 }
