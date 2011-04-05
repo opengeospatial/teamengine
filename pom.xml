@@ -23,8 +23,8 @@
 
   <modules>
     <module>team-engine</module>
-    <module>team-manager</module>
     <module>team-userfilesrealm</module>
+    <module>team-manager</module>
   </modules>
 
 </project>
