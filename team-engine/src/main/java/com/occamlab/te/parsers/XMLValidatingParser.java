@@ -88,7 +88,7 @@ public class XMLValidatingParser {
                 if (url == null) {
                     throw new Exception("Can't find resource " + resource);
                 }
-                schema = new File(url.getFile());
+                schema = new File(url.toURI());
             } else {
                 throw new Exception("Unknown schema resource type " + type);
             }
