@@ -16,6 +16,7 @@
    <xi:include href="common.xml"/>
    <xi:include href="capability-tests.xml"/>
    
+   <!-- -->
    <ctl:suite name="csw:csw-2.0.2-compliance-suite">
        <ctl:title>CSW 2.0.2 Compliance Test Suite</ctl:title>
        <ctl:description>
