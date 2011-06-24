@@ -34,7 +34,7 @@ if (request.getParameter("error") != null) {
 	out.println("<span style=\"color: red\">The username and/or password did not match.  Please try again.</span>");
 }
 %>
-		<form method="POST" action="j_security_check">
+		<form method="post" action="j_security_check">
 			<p>
 				Enter your username and password:<br/>
 				<br/>

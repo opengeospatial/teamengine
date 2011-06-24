@@ -51,5 +51,10 @@
 	<ctl:parser name="parsers:SchematronValidatingParser">
 		<ctl:java class="com.occamlab.te.parsers.SchematronValidatingParser" method="parse" initialized="true"/>
 	</ctl:parser>
+
+	<ctl:parser name="parsers:SOAPParser">
+		<ctl:java class="com.occamlab.te.parsers.SoapParser" method="parse" initialized="true"/>
+	</ctl:parser>
+
 	
 </ctl:package>

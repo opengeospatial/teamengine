@@ -1,0 +1,17 @@
+<project name="team" default="compile">
+  <property file="../../build.properties"/>
+  <property file="build.properties"/>
+
+  <path id="classpath">
+    <dirset dir="../../apps/engine/build/classes"/>
+  </path>
+
+  <target name="compile">
+    <mkdir dir="build"/>
+    <javac srcdir="src/java" destdir="build" classpathref="classpath" debug="true" source="1.5" target="1.5"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+</project>

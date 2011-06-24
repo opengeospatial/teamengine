@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
 DocumentBuilderImpl DB;
@@ -11,9 +11,7 @@ String sessionId;
 public void jspInit() {
 	try {
 		Conf = new Config();
-		DB = new DocumentBuilderImpl();      
-		DB.setConfiguration((Configuration) ViewLog.transformerFactory.getAttribute(FeatureKeys.CONFIGURATION));  		
-		File stylesheet = Test.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
@@ -56,7 +54,7 @@ public void jspInit() {
       sessionId = (i > 0) ? test.substring(0, i) : test;
       ArrayList tests = new ArrayList();
       tests.add(test);
-      boolean complete = ViewLog.view_log(DB, userlog, sessionId, tests, ViewLogTemplates, out);
+      boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);
       out.println("<br/>");
       if (!complete) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");

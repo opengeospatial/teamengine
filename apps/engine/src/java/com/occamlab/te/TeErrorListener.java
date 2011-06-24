@@ -26,6 +26,8 @@ import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
@@ -36,11 +38,14 @@ import javax.xml.transform.TransformerException;
  * 
  */
 public class TeErrorListener implements ErrorListener {
-    private char[] scriptChars;
-
+    private char[] scriptChars = null;
     private int ErrorCount = 0;
-
     private int WarningCount = 0;
+    private boolean active = true;
+    private static Logger logger = Logger.getLogger("com.occamlab.te.TeErrorListener");
+
+    public TeErrorListener() {
+    }
 
     public TeErrorListener(char[] script_chars) {
         scriptChars = script_chars;
@@ -55,6 +60,13 @@ public class TeErrorListener implements ErrorListener {
     }
 
     private void error(String type, TransformerException exception) {
+        if (scriptChars == null) {
+            if (active) {
+                System.err.println(type + ": " + exception.getMessageAndLocation());
+            }
+            return;
+        }
+        
         try {
             String systemId = exception.getLocator().getSystemId();
             BufferedReader in;
@@ -92,6 +104,8 @@ public class TeErrorListener implements ErrorListener {
                     + " in intermediate stylesheet"
                     + exception.getLocationAsString());
         } catch (Exception e) {
+            logger.log(Level.SEVERE,"",e);
+
             System.err.println(type + ": " + exception.getMessageAndLocation());
         }
     }
@@ -109,5 +123,13 @@ public class TeErrorListener implements ErrorListener {
     public void warning(TransformerException exception) {
         error("Warning Error", exception);
         WarningCount++;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

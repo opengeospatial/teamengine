@@ -21,6 +21,9 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import java.io.File;
+import java.net.URL;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,13 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import com.occamlab.te.Test;
-
-import java.io.File;
-import java.net.URL;
+import com.occamlab.te.util.Misc;
 
 /**
  * Handles (GET) requests to view a test case specification (from the test
@@ -43,36 +43,36 @@ import java.net.URL;
  */
 public class ViewTestServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -1396673675342836097L;
+    private static final long serialVersionUID = -1396673675342836097L;
 
-	Templates viewTestTemplates;
+    Templates viewTestTemplates;
 
-	public void init() throws ServletException {
-		try {
-			File stylesheet = Test
-					.getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
-			viewTestTemplates = TransformerFactory.newInstance().newTemplates(
-					new StreamSource(stylesheet));
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
+    public void init() throws ServletException {
+        try {
+            File stylesheet = Misc
+                    .getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
+            viewTestTemplates = TransformerFactory.newInstance().newTemplates(
+                    new StreamSource(stylesheet));
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
-		try {
-			File file = new File(request.getParameter("file"));
-			Transformer t = viewTestTemplates.newTransformer();
-			t.setParameter("namespace-uri", request.getParameter("namespace"));
-			t.setParameter("local-name", request.getParameter("name"));
-			URL url = new URL(request.getScheme(), request.getServerName(),
-					request.getServerPort(), request.getContextPath());
-			t.setParameter("baseURL", url.toString());
-			t.setParameter("user", request.getRemoteUser());
-			t.transform(new StreamSource(file), new StreamResult(response
-					.getOutputStream()));
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+        try {
+            File file = new File(request.getParameter("file"));
+            Transformer t = viewTestTemplates.newTransformer();
+            t.setParameter("namespace-uri", request.getParameter("namespace"));
+            t.setParameter("local-name", request.getParameter("name"));
+            URL url = new URL(request.getScheme(), request.getServerName(),
+                    request.getServerPort(), request.getContextPath());
+            t.setParameter("baseURL", url.toString());
+            t.setParameter("user", request.getRemoteUser());
+            t.transform(new StreamSource(file), new StreamResult(response
+                    .getOutputStream()));
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
 }

@@ -23,6 +23,7 @@
 <xsl:transform
  xmlns:te="java:com.occamlab.te.TECore"
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+ xmlns:ctl="http://www.occamlab.com/ctl"
  version="2.0">
 	<xsl:output method="text"/>
 	<xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
@@ -75,6 +76,19 @@
 		<xsl:value-of select="saxon:serialize(., 'xml')" xmlns:saxon="http://saxon.sf.net/"/>
 	</xsl:template>
 
+	<xsl:template name="result-text">
+		<xsl:param name="result-code" select="@result"/>
+		<xsl:param name="complete" select="not(@complete='no')"/>
+		<xsl:choose>
+			<xsl:when test="$result-code=3 and not($complete)">Failed and did not complete</xsl:when>
+			<xsl:when test="$result-code=3">Failed</xsl:when>
+			<xsl:when test="not($complete)">Did not complete</xsl:when>
+			<xsl:when test="$result-code=2">Failed (Inherited Failure)</xsl:when>
+			<xsl:when test="$result-code=1">Warning</xsl:when>
+			<xsl:otherwise>Passed</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
 <!--
 	<xsl:template name="literal">
 		<xsl:value-of select="concat('&lt;', name())"/>
@@ -107,14 +121,7 @@
 		<xsl:param name="indent" select="''"/>
 <!--		<xsl:value-of select="saxon:serialize(/, 'xml')" xmlns:saxon="http://saxon.sf.net/"/> -->
 		<xsl:variable name="result">
-			<xsl:choose>
-				<xsl:when test="@failed='yes' and @complete='no'">Failed and did not complete</xsl:when>
-				<xsl:when test="@failed='yes'">Failed</xsl:when>
-				<xsl:when test="@complete='no'">Did not complete</xsl:when>
-				<xsl:when test="descendant::test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
-				<xsl:when test="@warning='yes'">Warning</xsl:when>
-				<xsl:otherwise>Passed</xsl:otherwise>
-			</xsl:choose>
+			<xsl:call-template name="result-text"/>
 		</xsl:variable>
 		<xsl:value-of select="concat($indent, 'Test ', @prefix, ':', @local-name, ' (', @path, ') ', $result, '&#xa;')"/>
 		<xsl:for-each select="test">
@@ -127,13 +134,9 @@
 	<xsl:template match="log">
 		<xsl:apply-templates select="*"/>
 		<xsl:variable name="result">
-			<xsl:choose>
-				<xsl:when test="endtest/@result = 3">Failed</xsl:when>
-				<xsl:when test="$index//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
-				<xsl:when test="endtest/@result = 1">Warning</xsl:when>		
-				<xsl:when test="endtest">Passed</xsl:when>
-				<xsl:otherwise>Test execution did not complete</xsl:otherwise>
-			</xsl:choose>
+			<xsl:for-each select="$index/test">
+				<xsl:call-template name="result-text"/>
+			</xsl:for-each>
 		</xsl:variable>
 		<xsl:value-of select="concat('Result: ', $result, '&#xa;')"/>
 	</xsl:template>
@@ -185,37 +188,41 @@
 		<xsl:text>Request </xsl:text>
 		<xsl:value-of select="@id"/>
 		<xsl:text>:&#xa;</xsl:text>
+		<xsl:apply-templates select="*"/>
+	</xsl:template>
+
+	<xsl:template match="ctl:request">
 		<xsl:text>   Method: </xsl:text>
-		<xsl:value-of select="method"/>
+		<xsl:value-of select="ctl:method"/>
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:text>   URL: </xsl:text>
 		<xsl:choose>
-			<xsl:when test="translate(method, 'GET', 'get') = 'get'">
+			<xsl:when test="translate(ctl:method, 'GET', 'get') = 'get'">
 				<xsl:call-template name="build-url">
-					<xsl:with-param name="url" select="url"/>
-					<xsl:with-param name="params" select="param"/>
+					<xsl:with-param name="url" select="ctl:url"/>
+					<xsl:with-param name="params" select="ctl:param"/>
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="url"/>
+				<xsl:value-of select="ctl:url"/>
 			</xsl:otherwise>
 		</xsl:choose>
 		<xsl:text>&#xa;</xsl:text>
-		<xsl:if test="translate(method, 'POST', 'post') = 'post'">
+		<xsl:if test="translate(ctl:method, 'POST', 'post') = 'post'">
 			<xsl:text>   Body: </xsl:text>
 			<xsl:choose>
-				<xsl:when test="body">
+				<xsl:when test="ctl:body">
 					<xsl:text>&#xa;</xsl:text>
-					<xsl:for-each select="body/*">
+					<xsl:for-each select="ctl:body/*">
 						<xsl:call-template name="literal"/>
 					</xsl:for-each>
-					<xsl:if test="not(body/*)">
-						<xsl:value-of select="body"/>
+					<xsl:if test="not(ctl:body/*)">
+						<xsl:value-of select="ctl:body"/>
 					</xsl:if>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:call-template name="build-param-string">
-						<xsl:with-param name="params" select="param"/>
+						<xsl:with-param name="params" select="ctl:param"/>
 					</xsl:call-template>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -252,14 +259,9 @@
 	<xsl:template match="testcall">
 		<xsl:variable name="path" select="@path"/>
 		<xsl:variable name="result">
-			<xsl:choose>
-				<xsl:when test="$index//test[@path=$path and @failed='yes' and @complete='no']">Failed and did not complete</xsl:when>
-				<xsl:when test="$index//test[@path=$path and @failed='yes']">Failed</xsl:when>
-				<xsl:when test="$index//test[@path=$path and @complete='no']">Did not complete</xsl:when>
-				<xsl:when test="$index//test[@path=$path]//test[@failed='yes']">Failed (Inherited Failure)</xsl:when>
-				<xsl:when test="$index//test[@path=$path and @warning='yes']">Warning</xsl:when>		
-				<xsl:otherwise>Passed</xsl:otherwise>
-			</xsl:choose>
+			<xsl:for-each select="$index//test[@path=$path]">
+				<xsl:call-template name="result-text"/>
+			</xsl:for-each>
 		</xsl:variable>
 		<xsl:value-of select="concat('Subtest ', @path, ' ', $result, '&#xa;&#xa;')"/>
 	</xsl:template>

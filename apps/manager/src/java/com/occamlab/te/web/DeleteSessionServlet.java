@@ -21,14 +21,14 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import java.io.File;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.occamlab.te.Test;
-
-import java.io.File;
+import com.occamlab.te.util.Misc;
 
 /**
  * Processes a request to delete an existing test session.
@@ -50,7 +50,7 @@ public class DeleteSessionServlet extends HttpServlet {
 			String sessionId = request.getParameter("session");
 			File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
 			File sessiondir = new File(userdir, sessionId);
-			Test.deleteDir(sessiondir);
+			Misc.deleteDir(sessiondir);
 			response.sendRedirect("sessionDeleted.jsp");
 		} catch (Exception e) {
 			throw new ServletException(e);

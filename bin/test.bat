@@ -9,7 +9,7 @@ for /d %%a in ("%home%..\components"\*) do call :addcomponent "%%a"
 for /d %%a in ("%home%..\scripts"\*) do call :addscript "%%a"
 set java="%JAVA_HOME%\bin\java.exe"
 if not exist %java% set java=java
-%java% -cp %cp% %JAVA_OPTS% com.occamlab.te.Test -cmd=%0 %*
+%java% -cp %cp% -Djava.protocol.handler.pkgs=com.occamlab.te.util.protocols %JAVA_OPTS% com.occamlab.te.Test -cmd=%0 %*
 endlocal
 goto:eof
 

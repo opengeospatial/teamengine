@@ -2,43 +2,35 @@ package com.occamlab.te.parsers;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedOutputStream;
 import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-
-import java.lang.ClassLoader;
-import java.lang.Thread;
-
 import java.net.URL;
 import java.net.URLConnection;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URLDecoder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.NodeList;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.occamlab.te.ErrorHandlerImpl;
 import com.thaiopensource.util.PropertyMapBuilder;
 import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.SchemaReaderLoader;
+import com.thaiopensource.validate.ValidateProperty;
 import com.thaiopensource.validate.ValidationDriver;
 import com.thaiopensource.validate.schematron.SchematronProperty;
-import com.thaiopensource.validate.ValidateProperty;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.DOMSource;
-
-import com.occamlab.te.ErrorHandlerImpl;
 
 /**
  * Validates the given XML resource against the rules specified in a Schematron
@@ -179,9 +171,9 @@ public class SchematronValidatingParser {
         // Load schematron file
         try {
             // Use ClassLoader to load schematron off classpath
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            ClassLoader loader = this.getClass().getClassLoader();
             URL url = loader.getResource(schemaFile);
-            this.schemaFile = new File(url.getFile());
+            this.schemaFile = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         } catch (Exception e) {
             assert false : "Entity body not found. " + e.toString();
         }
@@ -388,8 +380,9 @@ public class SchematronValidatingParser {
 	        } else if (type.equals("file")) {
 	            this.schemaFile = new File(schemaLocation);
 	        } else if (type.equals("resource")) {
-	            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-	            this.schemaFile = new File(cl.getResource(schemaLocation).getFile());
+	            ClassLoader cl = this.getClass().getClassLoader();
+                    URL url = cl.getResource(schemaLocation);
+	            this.schemaFile = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
 	        }
 	}
 
@@ -459,15 +452,15 @@ public class SchematronValidatingParser {
 	NodeList errorStrings = null;
 	XmlErrorHandler eh = new XmlErrorHandler();
 
-	PrintWriter logger = new PrintWriter(System.out);
+//	PrintWriter logger = new PrintWriter(System.out);
 
         // Get schematron file
         File schema = null;
         try {
             // Use ClassLoader to load schematron off classpath
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            ClassLoader loader = this.getClass().getClassLoader();
             URL url = loader.getResource(schemaFile);
-            schema = new File(url.getFile());
+            schema = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         } catch (Exception e) {
             assert false : "Entity body not found. " + e.toString();
         }

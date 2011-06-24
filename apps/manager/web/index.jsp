@@ -1,26 +1,6 @@
 <%@ page
  language="java"
  session="false"
- import="java.net.URL, java.util.*, com.occamlab.te.*, com.occamlab.te.web.*"
-%><%!
-LinkedHashMap SuiteCollectionHash;
-URL Url;
-
-public void jspInit() {
-	try {
-		Config conf = new Config();
-		SuiteCollectionHash = new LinkedHashMap();
-		LinkedHashMap sourcesHash = conf.getAvailableSuites();
-		Iterator it = sourcesHash.keySet().iterator();
-		while (it.hasNext()) {
-			String sourcesId = (String)it.next();
-			ArrayList sources = (ArrayList)sourcesHash.get(sourcesId);
-			SuiteCollectionHash.put(sourcesId, ListSuites.getSuites(sources));
-		}
-	} catch (Exception e) {
-		e.printStackTrace(System.out);
-	}
-}
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -51,51 +31,8 @@ public void jspInit() {
 	<body>
 		<%@ include file="header.jsp" %>
 		<h2>Welcome</h2>
-		<p>
-			The Test, Evaluation, And Measurement (TEAM) Engine is a test script interpreter.
-			It executes test scripts written using the 
-			<a href="docs/ctl/ctl.html">Compliance Test Language (CTL)</a>
-			to verify that an implementation of a specification complies with the specification.
-		</p>
-		<p>
-			The following test suites are available:
-			<ul>
-<%
-Iterator it1 = SuiteCollectionHash.keySet().iterator();
-while (it1.hasNext()) {
-	String sourcesId = (String)it1.next();
-	Collection suiteCollection = (Collection)SuiteCollectionHash.get(sourcesId);
-	Iterator it2 = suiteCollection.iterator();
-	while (it2.hasNext()) {
-		Suite suite = (Suite)it2.next();
-		out.print("<li>");
-		String link = suite.getLink();
-		if (link == null) {
-			out.print(suite.getTitle());
-		} else {
-			out.print("<a href=\"" + link + "\">" + suite.getTitle() + "</a>");
-		}
-		out.println("<br/>");
-		String desc = suite.getDescription();
-		if (desc != null) {
-			out.println(desc);
-		}
-        out.println("<br />");
-        if (null != suite.getDataLink()) {
-			out.print("<a href=\"" + suite.getDataLink() + "\">" + "Test data</a>");
-		}
-	}
-}
-
-Url = new URL(request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath());
-%>
-			</ul>
-		</p>
-        <p>
-        <img alt="WARNING!" src="images/warn.png" align="bottom" hspace="4" />
-        It may be necessary to load test data before running a test suite!
-        </p>
-		<a href="viewSessions.jsp"/>Start Testing</a>
+		<%@ include file="welcome.jsp" %>
+		<a href="viewSessions.jsp">Start Testing</a>
 		<%@ include file="footer.jsp" %>
 	</body>
 </html>

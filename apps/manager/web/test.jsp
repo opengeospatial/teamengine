@@ -26,6 +26,7 @@ String sessionId;
   Contributor(s): No additional contributors to date
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<%@page import="java.net.URLEncoder"%>
 <html>
 	<head>
 		<title>Executing Tests</title>
@@ -65,12 +66,26 @@ if (mode.equals("retest") || mode.equals("resume")) {
   params += "&suite=" + request.getParameter("suite");
   params += "&description=" + request.getParameter("description");
 }
+if (mode.equals("test") || mode.equals("retest")) {
+  String profile = request.getParameter("profile_0");
+  int i = 0;
+  while (profile != null) {
+      params += "&profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile, "UTF-8");
+      i++;
+      profile = request.getParameter("profile_" + Integer.toString(i));
+  }
+}
 %>
 				var url = "test?te-operation=Test&<%=params%>&t=" + d.getTime();
 				xhr.open("get", url, false);
 				xhr.send(null);
 				var xml = xhr.responseXML;
-				var thread = xml.getElementsByTagName("thread")[0];
+				var threadNodes = xml.getElementsByTagName("thread");
+				if (threadNodes.length != 1) {
+					alert("Error " + url + " did not return a thread element");
+					return;
+				}
+				var thread = threadNodes[0];
 				threadId = thread.getAttribute("id");
 				sessionId = thread.getAttribute("sessionId");
 
@@ -102,8 +117,14 @@ if (mode.equals("retest") || mode.equals("resume")) {
 			    var url = "test?te-operation=GetStatus&thread=" + threadId + "&t=" + d.getTime();
 				xhr.open("get", url, false);
 				xhr.send(null);
+				xhr
 				var xml = xhr.responseXML;
-				var status = xml.getElementsByTagName("status")[0];
+				var statusNodes = xml.getElementsByTagName("status");
+				if (statusNodes.length != 1) {
+					alert("Error " + url + " did not return a status element");
+					return;
+				}
+				var status = statusNodes[0];
 				var node = status.firstChild;
 				var s = "";
 				while(node) {
@@ -113,7 +134,7 @@ if (mode.equals("retest") || mode.equals("resume")) {
 					node = node.nextSibling;
 				}
 				if (console && console.write && s != "") {
-					console.write(s);
+					console.write(decodeURIComponent(s).replace(/\n\r?/g, '\n\r'));
 				}
 				var form = status.getAttribute("form");
 				if (form) {

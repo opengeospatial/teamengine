@@ -1,0 +1,142 @@
+<config>
+	<home></home>
+	<scriptsdir>C:\</scriptsdir>
+	<usersdir>C:\team_work\users</usersdir>
+	<workdir>C:\team_work</workdir>
+	<scripts>
+		<organization>
+			<name>OGC</name>
+			<title>Open Geospatial Consortium</title>
+			<standard>
+				<name>WMS</name>
+				<title>Web Map Service</title>
+				<version>
+					<name>1.1.1</name>
+					<suite>
+						<namespace-uri>http://www.opengis.net/wms</namespace-uri>
+						<prefix>wms</prefix>
+						<local-name>main_wms</local-name>
+						<title>Web Map Service (WMS) 1.1.1</title>
+						<description>Validates that a WMS 1.1.1 is compliant.</description>
+					</suite>
+					<revision>
+						<name>A</name>
+						<sources>
+							<source>teamengine-0.9/scripts/wms-1.1.1/ctl</source>
+						</sources>
+						<profile>
+							<namespace-uri>http://www.opengis.net/wms</namespace-uri>
+							<prefix>wms</prefix>
+							<local-name>main_wms</local-name>
+							<title>name</title>
+							<description>description</description>
+							<revision>A</revision>
+						</profile>
+					</revision>
+				</version>
+				<version>
+					<name>1.3.0</name>
+					<suite>
+						<namespace-uri>https://cite.opengeospatial.org/wms-1.3.0/src/ctl</namespace-uri>
+						<prefix>wms-1.3.0</prefix>
+						<local-name>compliance_suite</local-name>
+						<title>Web Map Service (WMS) 1.3.0 Test Suite, Rev A</title>
+						<description>Validates that a WMS 1.3.0 is compliant.</description>
+						<link>docs/wms/1.3.0/</link>
+						<link>data/data-wms-1.3.0.zip</link>
+					</suite>
+					<revision>
+						<name>A</name>
+						<sources>
+							<source>teamengine-0.9/scripts/wms-1.3.0/ctl</source>
+						</sources>
+					</revision>
+				</version>
+			</standard>
+		</organization>
+		<organization>
+			<name>NSG</name>
+			<title>NSG</title>
+			<standard>
+				<name>WMS</name>
+				<title>Web Map Service</title>
+				<version>
+					<name>1.1.1</name>
+					<suite>
+						<namespace-uri>http://www.opengis.net/wms</namespace-uri>
+						<prefix>wms</prefix>
+						<local-name>main_wms</local-name>
+						<title>Web Map Service (WMS) 1.1.1</title>
+						<description>Validates that a WMS 1.1.1 is compliant.</description>
+					</suite>
+					<revision>
+						<name>A</name>
+						<sources>
+							<source>nsg/ctl</source>
+						</sources>
+					</revision>
+				</version>
+			</standard>
+		</organization>
+		<organization>
+			<name>NGC</name>
+			<standard>
+				<name>ProfileTest</name>
+				<version>
+					<name>1.0</name>
+					<suite>
+						<namespace-uri>uri:test</namespace-uri>
+						<prefix>test</prefix>
+						<local-name>base</local-name>
+						<title>Profile Test Suite</title>
+						<description></description>
+					</suite>
+					<revision>
+						<name>A</name>
+						<sources>
+							<source>work/tests/profiles.ctl</source>
+						</sources>
+						<profile>
+							<namespace-uri>uri:test</namespace-uri>
+							<prefix>test</prefix>
+							<local-name>profile_a</local-name>
+							<title>Profile A</title>
+							<description></description>
+							<revision>A</revision>
+						</profile>
+						<profile>
+							<namespace-uri>uri:test</namespace-uri>
+							<prefix>test</prefix>
+							<local-name>profile_b</local-name>
+							<title>Profile B</title>
+							<description></description>
+							<revision>A</revision>
+						</profile>
+					</revision>
+				</version>
+			</standard>
+		</organization>
+		<organization>
+			<name>*</name>
+			<standard>
+				<name>*</name>
+				<version>
+					<name>*</name>
+					<suite>
+						<namespace-uri>https://cite.opengeospatial.org/wms-1.3.0/src/ctl</namespace-uri>
+						<prefix>wms-1.3.0</prefix>
+						<local-name>compliance_suite</local-name>
+						<title>Web Map Service (WMS) 1.3.0 Test Suite</title>
+						<description>Validates that a WMS 1.3.0 is compliant.</description>
+					</suite>
+					<revision>
+						<name>*</name>
+						<sources>
+							<source>teamengine-0.9/scripts/wms-1.3.0/ctl</source>
+						</sources>
+					</revision>
+				</version>
+			</standard>
+		</organization>
+	</scripts>
+</config>

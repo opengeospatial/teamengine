@@ -1,27 +1,27 @@
 package com.occamlab.te.util;
 
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
-import java.util.Random;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.XMLConstants;
-
-import org.w3c.dom.Document;
-
-import org.xml.sax.InputSource;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 /**
  * Provides various utility methods (general collection).
@@ -29,6 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
  * @author jparrpearson
  */
 public class Utils {
+    private static Logger jlogger = Logger.getLogger("com.occamlab.te.util.Utils");
 
 	/**
 	 * Returns a random string of a certain length
@@ -70,7 +71,9 @@ public class Utils {
 			md.update(text.getBytes("iso-8859-1"), 0, text.length());
 			md5hash = md.digest();
 		} catch (Exception e) {
-			System.out.println("Error generating MD5: "+e.getMessage());
+            jlogger.log(Level.SEVERE,"Error generating MD5: "+e.getMessage(),e);
+
+				System.out.println("Error generating MD5: "+e.getMessage());
 			return "";
 		}
 		return convertToHex(md5hash);
@@ -126,6 +129,8 @@ public class Utils {
 	         	results = (String) xpath.evaluate(xpathStr, src);
 	         	//System.out.println("results: "+results);
 	        } catch (Exception e) {
+                jlogger.log(Level.SEVERE,"Error in evaluating XPointer.  "+e.getMessage(),e);
+
 	        	System.out.println("Error in evaluating XPointer.  "+e.getMessage());
 	        } 
 		return results;
@@ -135,7 +140,10 @@ public class Utils {
 		InputStream is = null;
 		try {
 			is = IOUtils.DocumentToInputStream(doc);
-		} catch (Exception e) {}
+		} catch (IOException e) {
+            jlogger.log(Level.SEVERE,"evaluateXPointer",e);
+
+        }
 
 		return evaluateXPointer(xpointer, is);
 	}
@@ -149,7 +157,10 @@ public class Utils {
 			dbf.setNamespaceAware(true);
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(baip);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+            jlogger.log(Level.SEVERE,"evaluateXPointer",e);
+
+        }
 
 		return evaluateXPointer(xpointer, doc);
 	}

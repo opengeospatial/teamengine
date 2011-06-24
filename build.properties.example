@@ -1,7 +1,4 @@
-version.stamp -0.3
-home http://localhost/teamengine
-usersdir ${catalina.base}/users
-tomcat.dir C:/Program Files/apache-tomcat-5.5.20
-java.dir C:/Program Files/java/jdk1.5.0_10/jre
-ets.base.dir C:/Dev/ogc.cite/wfs/1.1.0/ets
-session.id s0001
+usersdir c:\\team\\users
+workdir c:\\team\\work
+tomcat.dir C:\\apache-tomcat-5.5.20
+

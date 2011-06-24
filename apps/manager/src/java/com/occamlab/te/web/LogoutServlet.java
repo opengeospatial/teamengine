@@ -32,21 +32,21 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class LogoutServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 2713575227560756943L;
+    private static final long serialVersionUID = 2713575227560756943L;
 
-	Config Conf;
+    Config Conf;
 
-	public void init() throws ServletException {
-		Conf = new Config();
-	}
+    public void init() throws ServletException {
+        Conf = new Config();
+    }
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
-		try {
-			request.getSession().invalidate();
-			response.sendRedirect(Conf.getHome());
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-	}
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+        try {
+            request.getSession().invalidate();
+            response.sendRedirect(Conf.getHome());
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
 }

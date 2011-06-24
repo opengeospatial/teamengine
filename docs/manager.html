@@ -1,0 +1,166 @@
+<html>
+<head>
+<title>TEAM Engine 2.0 Web Application</title>
+</head>
+<body>
+
+<h1>TEAM Engine 2.0 Web Application</h1>
+
+<p>TEAM Engine 2.0 comes with a web application to enable users
+to execute test suites online. The web application runs as a set of
+servlets in Apache Tomcat.</p>
+
+<h2>Building the Web Application</h2>
+
+<p>The web application is distributed
+in source format only.  You must rebuild
+it with the CTL test suite scripts you want to deploy to create a complete webapp
+that can be deployed in Tomcat.</p>
+
+<ol>
+
+<li>
+<p>Obtain the source code and binary dependencies.  There are two ways to do this:</p>
+<ol>
+<li>
+<p>Obtain the source from the subversion repository on SourceForge.  Check out this URL:<p>
+<pre>https://teamengine.svn.sourceforge.net/svnroot/teamengine/branches/team2</pre>
+</li>
+<li>
+Download the necessary packages from <a href="https://sourceforge.net/projects/teamengine/files/">SourceForge download page</a>.
+You will need all three distribution
+files, teamengine-bin.zip, teamengine-src.zip, and teamengine-manager-src.zip.  Unpack them
+all into the same location.
+</li>
+</ol>
+<p></p>
+</li>
+
+<li>
+<p>Add your custom CTL scripts.
+Unzip the script packages that you want to
+install inside the teamengine directory.
+This should create or add to a scripts
+directory, at the same level as the apps directory.</p>
+</li>
+
+<li>
+<p>If necessary, add custom java components.
+Unzip the component packages that you want to
+install inside the teamengine directory.
+This should create or add to a components directory,
+at the same level as the apps directory.</p>
+</li>
+
+<li>
+<p>Set user-specific properties.
+Create a build.properties
+file in the teamengine directory, using build.properties.example
+from the SVN repository as an example.
+You may set the following properties:</p>
+
+<table border=1 cellspacing=0 cellpadding=0>
+ <tr>
+  <td width=104 valign=top>
+  <p><b>Property</b></p>
+  </td>
+  <td width=88 valign=top>
+  <p><b>Required</b></p>
+  </td>
+  <td width=343 valign=top>
+  <p><b>Description</b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=104 valign=top>
+  <p>version.stamp</p>
+  </td>
+  <td width=88 valign=top>
+  <p>No</p>
+  </td>
+  <td>
+  <p>Version number used in teamengine directory and .zip archives.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width=104 valign=top>
+  <p>usersdir</p>
+  </td>
+  <td>
+  <p>No</p>
+  </td>
+  <td>
+  <p>Users directory on the server to
+  be used by the webapp.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width=104 valign=top>
+  <p>workdir</p>
+  </td>
+  <td>
+  <p>Yes</p>
+  </td>
+  <td>
+  <p>Working directory on the server to be used by
+  the webapp.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width=104 valign=top>
+  <p>tomcat.dir</p>
+  </td>
+  <td width=88 valign=top>
+  <p>Yes</p>
+  </td>
+  <td width=343 valign=top>
+  <p>Location of a local tomcat installation (for locating dependency
+  jar files necessary for building the webapp)</p>
+  </td>
+ </tr>
+</table>
+<p></p>
+</li>
+
+<li>
+<p>Run Apache ant on the main build file.  The following distribution files are generated.</p>
+<ul>
+<li>zips/teamengine{version}-bin.zip</li>
+<li>zips/teamengine{version}-src.zip</li>
+<li>zips/teamengine-manager{version}-src.zip</li>
+<li>zips/teamengine-manager{version}-bin.zip</li>
+<li>zips/ccc.zip (An archive is created for each installed component)</li>
+<li>zips/sss.zip (An archive is created for each installed script)</li>
+</ul>
+</li>
+</ol>
+
+<h2>Installing the Web Application</h2>
+
+<ol>
+<li>Install JDK 1.5.0 or greater.</li>
+
+<li>Install Tomcat 5.x or greater.</li>
+
+<li>Create a working directory, corresponding
+to the workdir setting used in the build.properties file.</li>
+
+<li>If you specified a usersdir setting
+used in the build.properties file, create the
+corresponding directory.</li>
+
+<li>Copy the UserFilesRealm.jar file from the setup directory
+into the Tomcat server/lib directory.</li>
+
+<li>Copy teamengine.war from the
+setup directory into the Tomcat webapps directory.</li>
+
+<li>Restart Tomcat.</li>
+</ol>
+
+<p>The TEAM Engine Manager web application should now be
+running at http://localhost:8080/teamengine.</p>
+
+</body>
+
+</html>
