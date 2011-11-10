@@ -1,4 +1,5 @@
-usersdir c:\\team\\users
-workdir c:\\team\\work
-tomcat.dir C:\\apache-tomcat-5.5.20
+usersdir /Users/bermud/Documents/teamengine/users
+workdir /Users/bermud/Documents/teamengine/work
+tomcat.dir /Applications/apache-tomcat-6.0.33
+
 
