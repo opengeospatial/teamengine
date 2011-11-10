@@ -11,7 +11,8 @@
 	<property file="${user.home}/${ant.project.name}.properties" />
 	<property file="build.properties" />
 
-	<property name="common.lib.dir" value="${basedir}/lib" />
+	<!-- Good for Tomcat 6 -->
+	<property name="common.lib.dir" value="${tomcat.dir}/lib" />
 	<property name="usersdir" value="webapps/teamengine/WEB-INF/users" />
 	<property name="workdir" value="webapps/teamengine/WEB-INF/work" />
 	<property name="scriptsdir" value="webapps/teamengine/WEB-INF/scripts" />
@@ -496,6 +497,11 @@
 				<antcall target="zip.manager.bin" />
 			</then>
 		</if>
+	</target>
+	
+	<target name="tomcat.send" depends="init.version.stamp">
+		<copy todir="${tomcat.dir}/webapps/" file="build/teamengine${version.stamp}/setup/teamengine.war"/>
+		<copy todir="${tomcat.dir}/lib" file="build/teamengine${version.stamp}/setup/UserFilesRealm/UserFilesRealm.jar"/>
 	</target>
 
 </project>
