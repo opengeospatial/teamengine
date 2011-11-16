@@ -177,19 +177,33 @@ public class LogUtils {
             return null;
         }
         Element test = owner.createElement("test");
-        int result = TECore.PASS;
+        int result = TECore.PASS; 
+        String type = "Mandatory"; // 2011-03-07 PwD
         boolean complete = false;
         boolean childrenFailed = false;
+        boolean hasCache = false; // 2011-06-27 PwD
         for (Element e : DomUtils.getChildElements(log_e)) {
             if (e.getNodeName().equals("starttest")) {
                 NamedNodeMap atts = e.getAttributes();
                 for (int j = 0; j < atts.getLength(); j++) {
-                    test.setAttribute(atts.item(j).getNodeName(), atts.item(j).getNodeValue());
+                	// begin 2011-04-01 PwD
+                    // was test.setAttribute(atts.item(j).getNodeName(), atts.item(j).getNodeValue());
+                   	String nodeName = atts.item(j).getNodeName();
+                   	String nodeValue = atts.item(j).getNodeValue();
+                   	if ("defaultResult".equals(nodeName)) {
+                   		result = Integer.parseInt(nodeValue);
+                   	} else if ("type".equals(nodeName)) {  // 2011-03-07 PwD
+                   		type = nodeValue;
+                   	}
+                   	test.setAttribute(nodeName, nodeValue);
+                   	// end 2011-04-01 PwD
                 }
 
             } else if (e.getNodeName().equals("endtest")) {
                 complete = true;
                 int code = Integer.parseInt(e.getAttribute("result"));
+                // begin 2011-04-01 PwD
+                /*
                 if (code == TECore.FAIL) {
                     result = TECore.FAIL;
                 } else if (childrenFailed) {
@@ -197,6 +211,18 @@ public class LogUtils {
                 } else if (code == TECore.WARNING) {
                     result = TECore.WARNING;
                 }
+                */
+                // begin 2011-04-07 PwD
+                //if (childrenFailed) {
+                if ("Optional".equals(type)) {
+                	result = code;
+                } else if (childrenFailed) {
+                // end 2011-04-07 PwD
+                    result = TECore.INHERITED_FAILURE;
+                } else {
+                	result = code;
+                }
+                // end 2011-04-01 PwD
             } else if (e.getNodeName().equals("testcall")) {
                 String newpath = e.getAttribute("path");
                 Element child = makeTestListElement(db, owner, logdir, newpath);
@@ -208,10 +234,16 @@ public class LogUtils {
                     }
                     test.appendChild(child);
                 }
+            } 
+            // start 2011-06-27 PwD
+              else if (e.getNodeName().equals("cache")) {
+            	hasCache = true;
             }
+            // end 2011-06-27 PwD
         }
         test.setAttribute("result", Integer.toString(result));
         test.setAttribute("complete", complete ? "yes" : "no");
+        test.setAttribute("hasCache", hasCache ? "yes" : "no"); // 2011-06-27 PwD
         return test;
     }
 

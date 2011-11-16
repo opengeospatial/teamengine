@@ -16,7 +16,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): Paul Daisey Image Matters LLC
+  	2011-08-31  Use URLConnectionUtils.getInputStream(uc);
 
  ****************************************************************************/
 package com.occamlab.te.parsers;
@@ -54,6 +55,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 
 import com.occamlab.te.ErrorHandlerImpl;
+import com.occamlab.te.util.URLConnectionUtils;  // 2011-08-31 PwD
 
 /**
  * Validates an XML resource using a set of W3C XML Schema documents.
@@ -167,7 +169,11 @@ public class XMLValidatingParser {
     }
 
     public Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
-        return parse(uc.getInputStream(), instruction, logger);
+    	// begin 2011-08-31 PwD
+    	// was return parse(uc.getInputStream(), instruction, logger);
+		InputStream is = URLConnectionUtils.getInputStream(uc);
+    	return parse(is, instruction, logger);
+    	// end 2011-08-31 PwD
     }
 
     /*

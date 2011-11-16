@@ -35,7 +35,7 @@ public void jspInit() {
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): No additional contributors to date
+  Contributor(s): Paul Daisey (Image Matters LLC) add cache mode
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
@@ -92,9 +92,23 @@ public void jspInit() {
       String sessionId = request.getParameter("session");
       TestSession ts = new TestSession();
       ts.load(userlog, sessionId);
-
-      out.println("<h3>Test Suite: " + (Conf.getSuites().get(ts.getSourcesName())).getTitle() + "</h3>");
-
+      // begin 2011-06-27 PwD
+      String suiteName = "null";
+      String sourcesName = ts.getSourcesName();
+      if (sourcesName == null) {
+    	  suiteName = "error: sourcesName is null";
+      } else {
+    	  SuiteEntry se = Conf.getSuites().get(sourcesName);
+    	  if (se == null) {
+    		 suiteName = "error: suitEntry is null";
+    	  } else {
+    		  String title = se.getTitle();
+    	  	  suiteName = (title == null) ? "error: suiteEntry title is null" : title;
+    	  }
+      }
+      //out.println("<h3>Test Suite: " + (Conf.getSuites().get(ts.getSourcesName())).getTitle() + "</h3>");
+      out.println("<h3>Test Suite: " + suiteName + "</h3>");
+      // end 2011-06-27 PwD
       ArrayList tests = new ArrayList();
       boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
@@ -134,6 +148,17 @@ public void jspInit() {
 --%>
 		<br/>
 		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%><%=profileParams%>'"/>
+		<!-- begin 2011-06-10 PwD 
+		<input type="button" value="Redo using cached values" onclick="window.location = 'test.jsp?mode=cache&amp;session=<%=request.getParameter("session")%>'"/>
+		     end 2011-06-10 PwD -->
+		<!-- begin 2011-06-27 PwD -->
+<%
+      boolean hasCache = ViewLog.hasCache();
+      if (hasCache) {
+          out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + "'\"/>");
+      }
+%>
+		<!-- end 2011-06-27 PwD -->
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
 		<input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>

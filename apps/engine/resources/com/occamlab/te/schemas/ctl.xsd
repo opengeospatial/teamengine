@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Change log 
+[2011.04]
+* added ctl:test/ctl:defaultResult
+* changed version to 2011.04
+[2011.03]
+* added ctl:suite/ctl:defaultResult, ctl:profile/ctl:defaultResult and ctl:DefaultResultStatusType
+* added ctl:test/@type attribute and ctl:TestTypeNameType
+* changed version to 2011.03
 [2007.08]
  * added ctl:suite/@version attribute (optional)
 -->
-<xs:schema xmlns:ctl="http://www.occamlab.com/ctl" 
-  xmlns:xi="http://www.w3.org/2001/XInclude" 
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-  targetNamespace="http://www.occamlab.com/ctl" 
-  elementFormDefault="qualified"
-  version="2007.08">
+<xs:schema xmlns:ctl="http://www.occamlab.com/ctl" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" targetNamespace="http://www.occamlab.com/ctl" elementFormDefault="qualified" version="2011.04">
 	<!-- CTL supports XSLT 1.0 instructions, but since the W3C has not published an XSLT 1.0 schema
 	     and 1.0 instructions are forwards-compatible with 2.0 instructions, include the XSLT 2.0 schema -->
 	<xs:import namespace="http://www.w3.org/1999/XSL/Transform" schemaLocation="xslt20.xsd"/>
@@ -72,9 +73,15 @@
 			<xs:element name="assertion" type="xs:string"/>
 			<xs:element name="comment" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="link" type="ctl:linkType" minOccurs="0" maxOccurs="unbounded"/>
+			<!-- begin 2011-04-07 PwD -->
+			<xs:element name="defaultResult" type="ctl:DefaultResultStatusType" minOccurs="0"/>
+			<!-- end 2011-04-07 PwD -->
 			<xs:element name="code" type="ctl:codeType"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:QName" use="required"/>
+		<!-- begin 2011-03-31 PwD -->
+		<xs:attribute name="type" type="ctl:TestTypeNameType" default="Mandatory"/>
+		<!-- end 2011-03-31 PwD -->
 	</xs:complexType>
 	<xs:element name="suite" type="ctl:suiteType"/>
 	<xs:complexType name="suiteType">
@@ -82,6 +89,9 @@
 			<xs:element name="title" type="xs:string"/>
 			<xs:element name="description" type="xs:string" minOccurs="0"/>
 			<xs:element name="link" type="ctl:linkType" minOccurs="0" maxOccurs="unbounded"/>
+			<!-- begin 2011-03-31 PwD -->
+			<xs:element name="defaultResult" type="ctl:DefaultResultStatusType" minOccurs="0"/>
+			<!-- end 2011-03-31 PwD -->
 			<xs:element name="starting-test" type="xs:QName"/>
 			<xs:element name="form" minOccurs="0">
 				<xs:complexType mixed="true">
@@ -92,8 +102,8 @@
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:QName" use="required"/>
-        <xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
-        <xs:attribute name="version" type="xs:string" use="optional"/>
+		<xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
+		<xs:attribute name="version" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:element name="profile" type="ctl:profileType"/>
 	<xs:complexType name="profileType">
@@ -101,6 +111,7 @@
 			<xs:element name="title" type="xs:string"/>
 			<xs:element name="description" type="xs:string" minOccurs="0"/>
 			<xs:element name="link" type="ctl:linkType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="defaultResult" type="ctl:DefaultResultStatusType" minOccurs="0"/>
 			<xs:element name="base" type="xs:QName"/>
 			<xs:element name="exclude" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="starting-test" type="xs:QName"/>
@@ -113,8 +124,8 @@
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:QName" use="required"/>
-        <xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
-        <xs:attribute name="version" type="xs:string" use="optional"/>
+		<xs:attribute name="requires-modules" type="ctl:ModuleListType" use="optional"/>
+		<xs:attribute name="version" type="xs:string" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="paramType">
 		<xs:simpleContent>
@@ -151,12 +162,30 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
-    <xs:simpleType name="ModuleListType">
-      <xs:annotation>
-      <xs:documentation>
+	<xs:simpleType name="ModuleListType">
+		<xs:annotation>
+			<xs:documentation>
       A whitespace-delimited list of extension modules required by this test suite.
       </xs:documentation>
-      </xs:annotation>
-      <xs:list itemType="xs:string" />
-  	</xs:simpleType>
+		</xs:annotation>
+		<xs:list itemType="xs:string"/>
+	</xs:simpleType>
+	<!-- begin 2011-03-31 PwD -->
+	<xs:simpleType name="TestTypeNameType">
+		<xs:annotation>
+			<xs:documentation>Name of the type of a test.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Mandatory"/>
+			<xs:enumeration value="MandatoryIfImplemented"/>
+			<xs:enumeration value="Optional"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DefaultResultStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BestPractice"/>
+			<xs:enumeration value="Pass"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- end 2011-03-31 PwD -->
 </xs:schema>

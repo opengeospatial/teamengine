@@ -16,7 +16,7 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): Paul Daisey (Image Matters LLC) add hasCache for cache mode
 
  ****************************************************************************/
 package com.occamlab.te;
@@ -55,6 +55,8 @@ public class ViewLog {
 //    static public int failCount = 0;
 //    static public int warnCount = 0;
 
+	static public boolean hasCache = false; // 2011-06-27 PwD
+	
     public static TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
 //    static void increment_counts(Element test) {
@@ -121,6 +123,7 @@ public class ViewLog {
 //        passCount = 0;
 //        failCount = 0;
 //        warnCount = 0;
+    	hasCache = false; // 2011-06-27 PwD
         Transformer t = templates.newTransformer();
         t.setParameter("logdir", logdir.getAbsolutePath());
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -152,6 +155,7 @@ public class ViewLog {
             if (testElement == null) {
                 return false;
             } else {
+            	setHasCache(testElement); // 2011-06-27 PwD
                 return testElement.getAttribute("complete").equals("yes");
             }
         } else {
@@ -162,6 +166,12 @@ public class ViewLog {
                 File f = new File(new File(logdir, test), "log.xml");
                 if (f.exists()) {
                     Document doc = LogUtils.makeTestList(logdir, test);
+                    // begin 2011-06-27 PwD
+                    Element testElement = DomUtils.getElementByTagName(doc, "test");
+                    if (testElement != null) {
+                    	setHasCache(testElement);
+                    }
+                    // end 2011-06-27 PwD
                     t.setParameter("index", doc);
                     // t.transform(new StreamSource(f), new StreamResult(System.out));
                     Document log = LogUtils.readLog(logdir, test);
@@ -177,7 +187,20 @@ public class ViewLog {
             return ret;
         }
     }
-
+    
+ // begin 2011-06-27 PwD
+    static void setHasCache(Element testElement) {
+    	String hasCacheAttributeValue = testElement.getAttribute("hasCache");
+    	hasCache = (hasCacheAttributeValue == null) ? false 
+    			 : (hasCacheAttributeValue.equals("yes") ? true : false);
+    	
+    }
+    
+    public static boolean hasCache() {
+    	return hasCache;
+    }
+ // end 2011-06-27 PwD
+    
     public static void main(String[] args) throws Exception {
         File logdir = null;
         String session = null;

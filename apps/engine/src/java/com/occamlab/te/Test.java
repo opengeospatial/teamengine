@@ -17,6 +17,7 @@
 
  Contributor(s): 
  2009         F. Vitale     vitale@imaa.cnr.it
+ 2011         Paul Daisey   pauld@imagemattersllc.com  
            
  */
 
@@ -28,7 +29,14 @@ import java.io.InputStream;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DocumentationHelper;
-import com.occamlab.te.util.LogUtils;
+import com.occamlab.te.util.LogUtils; 
+
+import java.io.*;                    // 2011-06-27 PwD
+import java.util.*;                  // 2011-06-27 PwD
+import javax.xml.transform.*;        // 2011-06-27 PwD
+import javax.xml.transform.stream.*; // 2011-06-27 PwD
+import com.occamlab.te.util.Misc;    // 2011-06-27 PwD
+
 
 /**
  * 
@@ -39,6 +47,7 @@ public class Test {
     public static final int TEST_MODE = 0;
     public static final int RETEST_MODE = 1;
     public static final int RESUME_MODE = 2;
+    public static final int REDO_FROM_CACHE_MODE = 3; // 2011-06-09 PwD    
     public static final int DOC_MODE = 4;
     public static final int CHECK_MODE = 5;
     public static final int PRETTYLOG_MODE = 6;
@@ -48,6 +57,30 @@ public class Test {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
     public static final String CTLP_NS = "http://www.occamlab.com/te/parsers";
 
+    /**
+     * Returns name of mode
+     * @param mode
+     */
+    public static String getModeName(int mode) {
+    	switch (mode){
+    	case 0:
+    		return "Test Mode";
+    	case 1:
+    		return "Retest Mode";
+    	case 2:
+    		return "Resume Mode";
+    	case 3:
+    		return "Redo From Cache Mode";
+    	case 4:
+    		return "Doc Mode";
+    	case 5: 
+    		return "Check Mode";
+    	case 6:
+    		return "Pretty Log Mode";
+    	default:
+    		return "Invalid Mode";
+    	}
+    }
     /**
      * Displays startup command syntax
      * 
@@ -72,7 +105,10 @@ public class Test {
         System.out.println("  " + cmd + " -mode=doc -source=<main ctl file> [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
         System.out.println("PPLogs mode:");
         System.out.println("  Pretty Print Logs mode is used to generate a readable HTML report of execution.\n");
-        System.out.println("  " + cmd + " -mode=pplogs -logdir=<dir of a session log>  \n");        
+        System.out.println("  " + cmd + " -mode=pplogs -logdir=<dir of a session log>  \n");
+        // Start PwD 2011-06-09 addition
+        System.out.println("  " + cmd + "-mode=cache -logdir=dir -session=session\n");
+        // End PwD 2011-06-09 addition
     }
 
     /**
@@ -134,6 +170,10 @@ public class Test {
                 mode = CHECK_MODE;
             } else if (args[i].equals("-mode=pplogs")){
             	mode = PRETTYLOG_MODE;
+            // Start PwD 2011-06-09 addition
+            } else if (args[i].equals("-mode=cache")) {
+            	mode = REDO_FROM_CACHE_MODE;
+            // End PwD 2011-06-09 addition
             } else if (args[i].startsWith("-mode=")) {
                 System.out.println("Error: Invalid mode.");
                 return;
@@ -189,7 +229,12 @@ public class Test {
         // Syntax checks
         if ((mode == TEST_MODE && !sourcesSupplied) ||
             (mode == RETEST_MODE && (logDir == null || session == null)) ||
-            (mode == RESUME_MODE && (logDir == null || session == null))
+            // Start PwD 2011-06-09 addition
+            //(mode == RESUME_MODE && (logDir == null || session == null))
+            (mode == RESUME_MODE && (logDir == null || session == null)) ||
+            (mode == REDO_FROM_CACHE_MODE && (logDir == null || session == null))
+            
+            // End PwD 2011-06-09 addition
             ) {
             syntax(cmd);
             return;
@@ -218,7 +263,7 @@ public class Test {
 
         Thread.currentThread().setName("TEAM Engine");
         
-        Index masterIndex;
+        Index masterIndex = null;  // 2011-06-30 PwD
         File indexFile = null;
         if (logDir != null && session != null) {
             File dir = new File(logDir, runOpts.getSessionId());
@@ -250,6 +295,27 @@ public class Test {
             if (indexFile != null) {
                 masterIndex.persist(indexFile);
             }
+        // begin 2011-06-30 PwD 
+        } else if (mode == REDO_FROM_CACHE_MODE) {
+        	boolean regenerate = false;
+        	if (indexFile.canRead()) {
+        		masterIndex = new Index(indexFile);
+        		if (masterIndex.outOfDate()) {
+        			System.out.println("Warning: Scripts have changed since this session was first executed.");
+        			regenerate = true;
+        		}
+        	} else {
+        		System.out.println("Error: Can't read index file.");
+        		regenerate = true;
+        	}
+        	if (regenerate) {
+        		System.out.println("Regenerating masterIndex from source scripts");
+                masterIndex = Generator.generateXsl(setupOpts);
+                if (indexFile != null) {
+                    masterIndex.persist(indexFile);
+                }		
+        	}
+        // end 2011-06-30 PwD
         } else {
             if (!indexFile.canRead()) {
               System.out.println("Error: Can't read index file.");
@@ -261,6 +327,22 @@ public class Test {
             }
         }
 
+        // begin 2011-06-27 PwD
+        if (mode == REDO_FROM_CACHE_MODE) {
+    		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+    		Templates ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
+    	    ArrayList tests = new ArrayList();
+    	    File userlog = logDir;
+    	    StringWriter sw= new StringWriter();
+    	    boolean complete = ViewLog.view_log(userlog, session, tests, ViewLogTemplates, sw);     
+    	    boolean hasCache = ViewLog.hasCache();
+    	    if (!hasCache) {
+                File dir = new File(logDir, runOpts.getSessionId());
+    	    	throw new Exception("Error: no cache for " + dir.getAbsolutePath());
+    	    }
+        }
+        // end 2011-06-27 PwD
+        
         masterIndex.setElements(null);
         
         TEClassLoader cl = new TEClassLoader(null); 

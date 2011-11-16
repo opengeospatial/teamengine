@@ -16,8 +16,9 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
-
+ Contributor(s): Paul Daisey (Image Matters LLC) : 
+ 					enable ViewSessionLog.jsp to find listing files
+					add cache mode
  ****************************************************************************/
 package com.occamlab.te.web;
 
@@ -39,8 +40,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -98,8 +97,6 @@ import com.occamlab.te.util.StringUtils;
  */
 public class TestServlet extends HttpServlet {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
-    
-    private static Logger logger = Logger.getLogger("com.occamlab.te.web.TestServlet");
 
     DocumentBuilder DB;
     Transformer identityTransformer;
@@ -210,7 +207,7 @@ public class TestServlet extends HttpServlet {
 
             for (Entry<String, List<File>> sourceEntry : conf.getSources().entrySet()) {
                 String sourcesName = sourceEntry.getKey();
-                logger.info("TestServlet - Processing Test Suite: " + sourcesName);
+//              System.out.println("TestServlet: " + sourcesName);
                 SetupOptions setupOpts = new SetupOptions();
                 setupOpts.setWorkDir(conf.getWorkDir());
                 setupOpts.setSourcesName(sourcesName);
@@ -222,8 +219,11 @@ public class TestServlet extends HttpServlet {
                 
                 for (File ctlFile: index.getDependencies()) {
                     String encodedName = URLEncoder.encode(ctlFile.getAbsolutePath(), "UTF-8");
-                    encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
-                    String basename = encodedName;
+                    // encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
+                    // begin 2011-04-06 PwD  replace the following line because ViewSessionLog.jsp cannot find listing files
+                    // String basename = encodedName;
+                    String basename = encodedName.replace('%', '~');
+                    // end 2011-04-06 PwD
                     int i = basename.lastIndexOf('.');
                     if (i > 0) {
                         basename = basename.substring(0, i);
@@ -466,6 +466,14 @@ public class TestServlet extends HttpServlet {
                     opts.setSessionId(sessionid);
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
+// begin 2011-06-10 PwD
+                } else if (mode.equals("cache")) {
+                    opts.setMode(Test.REDO_FROM_CACHE_MODE);
+                    String sessionid = params.get("session");
+                    opts.setSessionId(sessionid);
+                    s.load(logdir, sessionid);
+                    opts.setSourcesName(s.getSourcesName());
+// end 2011-06-10 PwD
                 } else {
                     opts.setMode(Test.TEST_MODE);
                     String sessionid = LogUtils.generateSessionId(logdir);

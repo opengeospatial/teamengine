@@ -16,13 +16,19 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): Paul Daisey Image Matters LLC
+ 	2011-08-12  modify parse() to avoid NullPointerException when server resets connection
+ 	2011-08-28  Use URLConnectionUtils.getInputStream(uc);
+ 	2011-08-28  Return complete HTTP status message
+ 	2011-09-01  trim() HTTP status message
+ 	2011-09-08  Correct / add JavaDoc and comments
 
  ****************************************************************************/
 package com.occamlab.te.parsers;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
@@ -42,11 +48,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
+import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.URLConnectionUtils;  // 2011-08-29 PwD
 
 
 /**
- * Parses an HTTP response message and produces a DOM Document representation of
- * the message content.
+ * HTTPParser returns HTTP status and header information.
+ * It uses other parser(s) to parse the content; TECore by default if others are not specified. 
+ * It supports multipart messages.
+ * It returns a DOM Document representation of the message status, headers, and content.
  * 
  */
 public class HTTPParser {
@@ -73,6 +83,10 @@ public class HTTPParser {
         }
     }
 
+    /*
+     * Select a parser for message part based on part number and MIME format type, 
+     * if supplied in instructions.
+     */
     private static Node select_parser(int partnum, String mime, Element instruction) {
         NodeList instructions = instruction.getElementsByTagNameNS(PARSERS_NS, "parse");
         for (int i = 0; i < instructions.getLength(); i++) {
@@ -156,8 +170,12 @@ public class HTTPParser {
         return temp;
     }
 
+    /**
+     * Invocation point: Method called by TECore for request or soap-request.
+     */
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
+    	// DomUtils.displayNode(instruction); // 2011-09-08 PwD education
         uc.connect();
         String mime = uc.getContentType();
         boolean multipart = (mime != null && mime.startsWith("multipart"));
@@ -166,8 +184,10 @@ public class HTTPParser {
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.newDocument();
         Element root = doc.createElement(multipart ? "multipart-response" : "response");
-
+        String httpStatusCode = "200"; // 2011-10-07 PwD
+        
         if (uc.getHeaderFieldKey(0) == null) {
+        	/*  2011-08-12 PwD was
             String status_line = uc.getHeaderField(0);
             String status_array[] = status_line.split("\\s");
             Element status = doc.createElement("status");
@@ -177,14 +197,49 @@ public class HTTPParser {
             if (status_array.length > 1) {
                 status.setAttribute("code", status_array[1]);
             }
-            if (status_array.length > 2) {
+            if (status_array.length > 2) {  
                 status.appendChild(doc.createTextNode(status_array[2]));
             }
+            */
+        	Element status = doc.createElement("status");
+        	String status_line = uc.getHeaderField(0);
+        	if (status_line != null) {
+                String status_array[] = status_line.split("\\s");
+                if (status_array.length > 0) {
+                    status.setAttribute("protocol", status_array[0]);
+                }
+                if (status_array.length > 1) {
+                    status.setAttribute("code", status_array[1]);
+                    httpStatusCode = status_array[1]; // 2011-10-07 PwD
+                }
+/*  2011-08-29 Pwd was              
+                if (status_array.length > 2) {  // this truncates multi-word descriptions
+                    status.appendChild(doc.createTextNode(status_array[2]));
+                }      
+*/ 		
+                if (status_array.length > 2) {
+                	StringBuilder sb = new StringBuilder();
+                	for (int i = 2; i < status_array.length; i++) {
+                		sb.append(status_array[i]);
+                		sb.append(" ");
+                	}
+                	status.appendChild(doc.createTextNode(sb.toString().trim()));
+        		}
+                // end 2011-08-29 PwD
+        	}
             root.appendChild(status);
         }
 
         append_headers(uc, root);
 
+        /* begin 2011-10-07 PwD
+        if (httpStatusCode.equals("404")) {
+        	// chained parser will fail; don't bother; return status code for ctl:script to check / report
+            doc.appendChild(root);
+            return doc;
+        }
+        end 2011-10-07 PwD */
+        
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
         if (multipart) {
@@ -197,7 +252,11 @@ public class HTTPParser {
             }
             int end = mime2.indexOf(endchar, start);
             String boundary = mime2.substring(start, end);
-            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+            // begin 2022-08-29 PwD  
+            // was BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+    		InputStream is = URLConnectionUtils.getInputStream(uc);
+    		BufferedReader in = new BufferedReader(new InputStreamReader(is));
+    		// end 2011-08-29 PwD 
             File temp = create_part_file(in, boundary);
             temp.delete();
             String line = in.readLine();
@@ -226,6 +285,7 @@ public class HTTPParser {
                 URLConnection pc = temp.toURI().toURL().openConnection();
                 pc.setRequestProperty("Content-type", mime);
                 Node parser = select_parser(num, contentType, instruction);
+                // use TECore to invoke any chained parsers
                 Element response_e = core.parse(pc, parser);
                 temp.delete();
                 Element parser_e = (Element) (response_e.getElementsByTagName("parser").item(0));
@@ -240,6 +300,7 @@ public class HTTPParser {
             }
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
+            // use TECore to invoke any chained parsers
             Element response_e = core.parse(uc, parser);
             Element parser_e = (Element) (response_e.getElementsByTagName("parser").item(0));
             if (parser_e != null) {

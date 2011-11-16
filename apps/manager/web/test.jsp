@@ -23,7 +23,7 @@ String sessionId;
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): No additional contributors to date
+  Contributor(s): Paul Daisey (Image Matters LLC) add cache mode
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
@@ -55,7 +55,10 @@ mode = request.getParameter("mode");
 test = request.getParameter("test");
 sessionId = request.getParameter("session");
 String params = "mode=" + mode;
-if (mode.equals("retest") || mode.equals("resume")) {
+//begin 2011-06-10 PwD
+//if (mode.equals("retest") || mode.equals("resume")) {
+if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
+//end 2011-06-10 PwD
   if (test != null) {
     params += "&test=" + test;
   }
@@ -160,7 +163,10 @@ if (mode.equals("test") || mode.equals("retest")) {
 			function loadLog() {
 			    var d = new Date();
 <%
-if (mode.equals("retest") || mode.equals("resume")) {
+//begin 2011-06-10 PwD
+//if (mode.equals("retest") || mode.equals("resume")) {
+if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
+//end 2011-06-10 PwD
   if (test == null) {
     out.println("\t\t\t\tvar url = \"viewSessionLog.jsp?session=" + sessionId + "\";");
   } else {

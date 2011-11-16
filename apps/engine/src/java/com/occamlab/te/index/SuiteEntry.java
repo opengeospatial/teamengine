@@ -9,6 +9,7 @@ import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
 
 public class SuiteEntry extends IndexEntry {
+	String defaultResult = "Pass"; // 2011-03-31 PwD
     QName startingTest;
     Document form = null;
     String title = null;
@@ -28,6 +29,9 @@ public class SuiteEntry extends IndexEntry {
         String prefix = e.getAttribute("prefix");
         String namespaceUri = e.getAttribute("namespace-uri");
         String localName = e.getAttribute("local-name");
+        // begin 2011-03-31 PwD
+        setDefaultResult(DomUtils.getElementByTagName(suite, "defaultResult").getTextContent());
+        // end 2011-03-31 PwD
         startingTest = new QName(namespaceUri, localName, prefix);
         Element form_e = DomUtils.getElementByTagNameNS(suite, Test.CTL_NS, "form");
         if (form_e != null) {
@@ -82,5 +86,13 @@ public class SuiteEntry extends IndexEntry {
     public void setLink(String link) {
         this.link = link;
     }
-
+    // begin 2011-03-31 PwD
+    public String getDefaultResult() {
+    	return defaultResult;
+    }
+    
+    public void setDefaultResult(String defaultResult) {
+    	this.defaultResult = defaultResult;
+    }
+    // end 2011-03-31 PwD
 }

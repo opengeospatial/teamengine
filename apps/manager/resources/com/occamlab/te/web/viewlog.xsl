@@ -17,7 +17,8 @@
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): No additional contributors to date
+  Contributor(s): Paul Daisey (Image Matters LLC): Added support for:
+				 test status: Best Practice, Not Tested, Skipped, Continue.
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <xsl:transform
@@ -37,6 +38,7 @@
 	<xsl:param name="logdir"/>
 	<xsl:param name="index"/>
 
+<!-- 2011-04-06 PwD
 	<xsl:template name="result-filename">
 		<xsl:param name="result-code" select="@result"/>
 		<xsl:param name="complete" select="not(@complete='no')"/>
@@ -50,6 +52,35 @@
 		</xsl:choose>
 		<xsl:text>.png</xsl:text>
 	</xsl:template>
+replaced by the following, which returns the name of the status icon to display: -->
+
+	<xsl:template name="result-filename">
+		<xsl:param name="result-code" select="@result"/>
+		<xsl:param name="complete" select="not(@complete='no')"/>
+		<!-- Following values from java.com.occamlab.te.TECore.java -->
+		<xsl:param name="continue">-1</xsl:param>
+		<xsl:param name="bestPractice">0</xsl:param>
+		<xsl:param name="pass">1</xsl:param>
+		<xsl:param name="notTested">2</xsl:param>
+		<xsl:param name="skipped">3</xsl:param>
+		<xsl:param name="warning">4</xsl:param>
+		<xsl:param name="inheritedFailure">5</xsl:param>
+		<xsl:param name="fail">6</xsl:param>
+		<xsl:text>images/</xsl:text>		
+		<xsl:choose>
+			<xsl:when test="$result-code=$fail">fail</xsl:when>
+			<xsl:when test="not($complete)">incomplete</xsl:when>
+			<xsl:when test="$result-code=$inheritedFailure">inheritedFailure</xsl:when>
+			<xsl:when test="$result-code=$warning">warn</xsl:when>
+			<xsl:when test="$result-code=$skipped">skipped</xsl:when>
+			<xsl:when test="$result-code=$notTested">notTested</xsl:when>
+			<xsl:when test="$result-code=$pass">pass</xsl:when>
+			<xsl:when test="$result-code=$continue">continue</xsl:when>
+			<xsl:otherwise>bestPractice</xsl:otherwise>
+		</xsl:choose>
+		<xsl:text>.png</xsl:text>
+	</xsl:template>
+	
 	
 	<xsl:function name="viewlog:encode">
 		<xsl:param name="str"/>
@@ -90,7 +121,11 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<a href="listings/{$dir}.html#{@prefix}:{@local-name}">
+		<!-- begin 2011-04-06 PwD replace next line with following to find listings with ~ instead of % in filenames 
+		<a href="listings/{$dir}.html#{@prefix}:{@local-name}"> -->		
+		<xsl:variable name="dirTilde" select="replace($dir,'%', '~')"/>
+		<a href="listings/{$dirTilde}.html#{@prefix}:{@local-name}">
+		<!-- end 2011-04-06 PwD -->
 			<xsl:value-of select="concat('Test ', @prefix, ':', @local-name)"/>
 		</a>
 <!--
@@ -138,9 +173,20 @@
 	</xsl:template>
 
 	<xsl:template match="/">
+		<!-- begin 2011-04-06 PwD -->
+		<xsl:param name="continue">-1</xsl:param>
+		<xsl:param name="bestPractice">0</xsl:param>
+		<xsl:param name="pass">1</xsl:param>
+		<xsl:param name="notTested">2</xsl:param>
+		<xsl:param name="skipped">3</xsl:param>
+		<xsl:param name="warning">4</xsl:param>
+		<xsl:param name="inheritedFailure">5</xsl:param>
+		<xsl:param name="fail">6</xsl:param>		
+		<!-- end 2011-04-06 PwD -->
 		<xsl:apply-templates/>
 		<xsl:if test="test">
 			<br/>
+<!-- 2011-04-06 PwD			
 			<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
 				<tr>
 					<th align="left">
@@ -160,6 +206,48 @@
 					</td>
 				</tr>
 			</table>
+	replaced by the following: -->
+	
+			<table id="summary" border="0" bgcolor="#EEEEEE">
+				<tr>
+					<th align="left">
+						<font color="#000099">Summary</font>
+					</th>
+					<td align="right"><img src="images/bestPractice.png" hspace="4"/>Best Practice:</td>
+					<td id="nPass" align="center" bgcolor="#00FF00">
+						<xsl:value-of select="count(//test[@result=$bestPractice and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td>
+					<td id="nPass" align="center" bgcolor="#00FF00">
+						<xsl:value-of select="count(//test[@result=$pass and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/continue.png" hspace="4"/>Continue:</td>
+					<td id="nWarn" align="center" bgcolor="#FFFF00">
+						<xsl:value-of select="count(//test[@result=$continue or @complete='no'])"/>
+					</td>
+					<td align="right"><img src="images/notTested.png" hspace="4"/>Not Tested:</td>
+					<td id="nWarn" align="center" bgcolor="#FFFF00">
+						<xsl:value-of select="count(//test[@result=$notTested and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td>
+					<td id="nWarn" align="center" bgcolor="#FFFF00">
+						<xsl:value-of select="count(//test[@result=$warning and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/skipped.png" hspace="4"/>Skipped:</td>
+					<td id="nWarn" align="center" bgcolor="#FFFF00">
+						<xsl:value-of select="count(//test[@result=$skipped and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/inheritedFailure.png" hspace="4"/>Inherited Failure:</td>
+					<td id="nFail" align="center" bgcolor="#FF0000">
+						<xsl:value-of select="count(//test[@result=$inheritedFailure and @complete='yes'])"/>
+					</td>
+					<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td>
+					<td id="nFail" align="center" bgcolor="#FF0000">
+						<xsl:value-of select="count(//test[@result=$fail and @complete='yes'])"/>
+					</td>
+				</tr>
+			</table>
+			
 		</xsl:if>
 	</xsl:template>
 </xsl:transform>
