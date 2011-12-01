@@ -1,0 +1,4040 @@
+<?xml version="1.0" encoding="UTF-8"?><ctl:package xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ctl="http://www.occamlab.com/ctl" xmlns:parsers="http://www.occamlab.com/te/parsers" xmlns:p="http://teamengine.sourceforge.net/parsers" xmlns:saxon="http://saxon.sf.net/" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ows="http://www.opengis.net/ows" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+   <ctl:package xmlns:ctlp="http://www.occamlab.com/te/parsers">
+	
+    <ctl:package xmlns:gml="http://www.opengis.net/gml">
+	
+    <ctl:function name="ctl:CallXMLValidatingParser">
+		<ctl:param name="doc"/>
+		<ctl:param name="instruction"/>
+		<ctl:description>Invokes the XML Schema validator.</ctl:description>
+		<ctl:java class="com.occamlab.te.parsers.XMLValidatingParser" method="checkXMLRules" initialized="true"/>
+	</ctl:function>
+    
+    <ctl:function name="ctl:CallSchematronValidatingParser">
+		<ctl:param name="doc"/>
+		<ctl:param name="schema"/>
+		<ctl:param name="phase"/>
+		<ctl:description>Invokes the Schematron validator.</ctl:description>
+		<ctl:java class="com.occamlab.te.parsers.SchematronValidatingParser" method="checkSchematronRules" initialized="true"/>
+    </ctl:function>
+
+  <ctl:function name="ctl:XMLValidator">
+		<ctl:param name="doc"/>
+		<ctl:param name="instruction"/>
+		<ctl:return>A list of errors (NodeList of "error" elements).</ctl:return>
+		<ctl:description>Invokes the XML Schema validator.</ctl:description>
+		<ctl:java class="com.occamlab.te.parsers.XMLValidatingParser" method="validate" initialized="true"/>
+  </ctl:function>
+
+	<ctl:function name="ctl:SchematronValidator">
+		<ctl:param name="doc"/>
+		<ctl:param name="schema"/>
+		<ctl:param name="phase"/>
+		<ctl:return>A list of errors (NodeList of "error" elements).</ctl:return>
+		<ctl:description>Invokes the Schematron validator.</ctl:description>
+		<ctl:java class="com.occamlab.te.parsers.SchematronValidatingParser" method="validate" initialized="true"/>
+	</ctl:function>
+    
+    <ctl:function name="ctl:version-as-integer">
+      <ctl:param name="version-string">Version String</ctl:param>
+      <ctl:description>Gets the integer value of a version number</ctl:description>
+      <ctl:code>
+         <xsl:variable name="major" select="substring-before($version-string, '.')"/>
+         <xsl:variable name="minor" select="substring-before(substring-after($version-string, '.'), '.')"/>
+         <xsl:variable name="patch" select="substring-after(substring-after($version-string, '.'), '.')"/>
+         <xsl-value-of select="$major * 10000 + $minor * 100 + $patch"/>
+      </ctl:code>
+   </ctl:function>
+   
+   <ctl:function name="csw:disjoint-envelopes">
+      <ctl:param name="env">The gml:Envelope specifying the area of interest</ctl:param>
+      <ctl:param name="bbox">The ows:BoundingBox describing some csw:Record</ctl:param>
+      <ctl:return>
+      Returns '1' if the envelopes are disjoint or '0' if they are not (i.e. they 
+      intersect). Returns '-1' if the CRS references do not match.
+      </ctl:return>
+      <ctl:description>Determines if two envelopes are disjoint. If not, they intersect.</ctl:description>
+      <ctl:code>
+         <xsl:variable name="minX1" select="xsd:decimal(substring-before($env//gml:lowerCorner, ' '))"/>
+         <xsl:variable name="maxX1" select="xsd:decimal(substring-before($env//gml:upperCorner, ' '))"/>
+         <xsl:variable name="minY1" select="xsd:decimal(substring-after($env//gml:lowerCorner, ' '))"/>
+         <xsl:variable name="maxY1" select="xsd:decimal(substring-after($env//gml:upperCorner, ' '))"/>
+         <xsl:variable name="minX2" select="xsd:decimal(substring-before($bbox//ows:LowerCorner, ' '))"/>
+         <xsl:variable name="maxX2" select="xsd:decimal(substring-before($bbox//ows:UpperCorner, ' '))"/>
+         <xsl:variable name="minY2" select="xsd:decimal(substring-after($bbox//ows:LowerCorner, ' '))"/>
+         <xsl:variable name="maxY2" select="xsd:decimal(substring-after($bbox//ows:UpperCorner, ' '))"/>
+         <xsl:choose>
+            <xsl:when test="$env//@srsName != $bbox//@crs">-1</xsl:when>
+            <xsl:when test="($minX2 gt $maxX1) or ($minY2 gt $maxY1) or ($maxX2 lt $minX1) or ($maxY2 lt $minY1)">1</xsl:when>
+            <xsl:otherwise>0</xsl:otherwise>
+         </xsl:choose>
+      </ctl:code>
+   </ctl:function>
+</ctl:package>
+    
+	<!-- Sample usage:
+	<ctl:call-test name="ctl:SchematronValidatingParser">
+		<ctl:with-param name="doc" select="$response"/>
+		<ctl:with-param name="schema">sch/csw/2.0.2/CSWCapabilities.sch</ctl:with-param>
+		<ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	</ctl:call-test>
+    -->
+	<ctl:test name="ctl:SchematronValidatingParser">
+			<ctl:param name="doc"/>
+			<ctl:param name="schema"/>
+			<ctl:param name="phase"/>
+			<ctl:assertion>Validate an XML instance against a Schematron schema using the given phase.</ctl:assertion>
+			<ctl:code>
+				<xsl:choose>
+					<xsl:when test="not($doc)">
+						<ctl:message>Error: Null input document.</ctl:message>
+						<ctl:fail/>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:variable name="results">
+							<ctl:call-function name="ctl:SchematronValidator">
+								<ctl:with-param name="doc"><xsl:copy-of select="$doc"/></ctl:with-param>
+								<ctl:with-param name="schema" select="string($schema)"/>
+								<ctl:with-param name="phase" select="string($phase)"/>
+							</ctl:call-function>
+						</xsl:variable>
+						<xsl:if test="count($results/*) &gt; 0">
+							<ctl:message>Total number of errors detected: <xsl:copy-of select="count($results/*)"/></ctl:message>
+							<xsl:for-each select="$results/*">
+								<ctl:message><xsl:value-of select="concat('Error ', position())"/>: <xsl:copy-of select="."/></ctl:message>
+							</xsl:for-each>
+							<ctl:fail/>
+						</xsl:if>
+					</xsl:otherwise>
+				</xsl:choose>
+			</ctl:code>
+	</ctl:test>	
+
+	<!-- Sample usage:
+	<ctl:call-test name="ctl:XMLValidatingParser">
+			<ctl:with-param name="doc"><xsl:copy-of select="$response"/></ctl:with-param>
+			<ctl:with-param name="instruction">
+				<ctlp:schemas>
+					<ctlp:schema type="resource">xsd/ogc/csw/2.0.2/csw-2.0.2.xsd</ctlp:schema>
+				</ctlp:schemas>
+			</ctl:with-param>
+	</ctl:call-test>
+    -->
+  <ctl:test name="ctl:XMLValidatingParser">
+    <ctl:param name="doc"/>
+    <ctl:param name="instruction"/>
+    <ctl:assertion>Validates the XML instance against the set of XML Schemas specified using the given instruction parameter.</ctl:assertion>
+    <ctl:code>
+		<xsl:choose>
+			<xsl:when test="not($doc)">
+				<ctl:message>Error: Null input document.</ctl:message>
+				<ctl:fail/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:variable name="results">
+					<ctl:call-function name="ctl:XMLValidator">
+						<ctl:with-param name="doc"><xsl:copy-of select="$doc"/></ctl:with-param>
+						<ctl:with-param name="instruction"><xsl:copy-of select="$instruction"/></ctl:with-param>
+					</ctl:call-function>
+				</xsl:variable>
+				<xsl:if test="count($results/*) &gt; 0">
+					<ctl:message>Total number of errors detected: <xsl:copy-of select="count($results/*)"/></ctl:message>
+					<xsl:for-each select="$results/*">
+						<ctl:message><xsl:value-of select="concat('Error ', position())"/>: <xsl:copy-of select="."/></ctl:message>
+					</xsl:for-each>
+					<ctl:fail/>
+				</xsl:if>
+			</xsl:otherwise>
+		</xsl:choose>
+    </ctl:code>
+  </ctl:test>
+
+	<!-- Sample usage:
+	<ctl:call-test name="ctl:XMLValidatingParser.CSW">
+	    <ctl:with-param name="doc"><xsl:copy-of select="$response//content/*"/></ctl:with-param>
+	</ctl:call-test>
+    -->
+	<ctl:test name="ctl:XMLValidatingParser.CSW">
+			<ctl:param name="doc"/>
+			<ctl:assertion>
+            Validates a given XML document against the CSW 2.0.2 schema set.
+            </ctl:assertion>
+			<ctl:code>
+				<ctl:call-test name="ctl:XMLValidatingParser">
+					<ctl:with-param name="doc"><xsl:copy-of select="$doc"/></ctl:with-param>
+					<ctl:with-param name="instruction">				
+						<ctlp:schemas>
+							<ctlp:schema type="resource">xsd/ogc/csw/2.0.2/csw-2.0.2.xsd</ctlp:schema>
+						</ctlp:schemas>
+					</ctl:with-param>
+				</ctl:call-test>
+			</ctl:code>
+	</ctl:test>	
+	
+	<ctl:parser name="p:XMLValidatingParser.CSW">
+		<ctl:java class="com.occamlab.te.parsers.XMLValidatingParser" method="parse" initialized="true">
+			<ctl:with-param name="schemas_links">
+				<ctlp:schemas>
+					<ctlp:schemas>
+							<ctlp:schema type="resource">xsd/ogc/csw/2.0.2/csw-2.0.2.xsd</ctlp:schema>
+						</ctlp:schemas>
+				</ctlp:schemas>
+			</ctl:with-param>
+		</ctl:java>
+	</ctl:parser>	
+
+	<ctl:parser name="p:XMLValidatingParser.OWS">
+		<ctl:java class="com.occamlab.te.parsers.XMLValidatingParser" method="parse" initialized="true">
+			<ctl:with-param name="schemas_links">
+				<ctlp:schemas>
+					<ctlp:schema type="resource">xsd/ogc/ows/1.0.0/ows-1.0.0.xsd</ctlp:schema>
+				</ctlp:schemas>
+			</ctl:with-param>
+		</ctl:java>
+	</ctl:parser>	
+	
+	<ctl:parser name="p:XMLValidatingParser.XMLSchema">
+		<ctl:java class="com.occamlab.te.parsers.XMLValidatingParser" method="parse" initialized="true">
+			<ctl:with-param name="schemas_links">
+				<ctlp:schemas>
+					<ctlp:schema type="resource">xsd/w3c/xmlschema/1.0/XMLSchema.xsd</ctlp:schema>
+				</ctlp:schemas>
+			</ctl:with-param>
+		</ctl:java>
+	</ctl:parser>		
+	
+	<!-- Sample usage:
+	<p:SchematronValidatingParser>
+	    <ctlp:schemas>
+		    <ctlp:schema type="resource" phase="Default">sch/csw/2.0.2/CSWCapabilities.sch</ctlp:schema>
+	    </ctlp:schemas>
+	</p:SchematronValidatingParser>
+    -->
+	<ctl:parser name="p:SchematronValidatingParser">
+		<ctl:param name="schema_link"/>
+		<ctl:java class="com.occamlab.te.parsers.SchematronValidatingParser" method="parse" initialized="true"/>
+	</ctl:parser>		
+	
+	<!-- Sample usage:
+	<p:SchematronValidatingParser.CSWCapabilities />
+    -->
+	<ctl:parser name="p:SchematronValidatingParser.CSWCapabilities">
+		<ctl:java class="com.occamlab.te.parsers.SchematronValidatingParser" method="parse" initialized="true">
+			<ctl:with-param name="schema_link">
+					<ctlp:schemas>
+						<ctlp:schema type="resource" phase="DefaultPhase">sch/csw/2.0.2/Capabilities.sch</ctlp:schema>
+					</ctlp:schemas>
+			</ctl:with-param>
+		</ctl:java>
+	</ctl:parser>	
+	
+</ctl:package>
+   <ctl:package>
+
+   <!-- include test groups -->
+   <ctl:package xmlns="http://www.occamlab.com/ctl">
+
+    <ctl:test name="csw:GetCapabilities-GET">
+      <param name="csw.capabilities.doc"/>
+      <ctl:assertion>
+      Run test group for GetCapabilities requests using the GET method.
+      </ctl:assertion>
+      <ctl:code>
+        <xsl:variable name="csw.GetCapabilities.get.url">
+		    <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='GetCapabilities']/ows:DCP/ows:HTTP/ows:Get/@xlink:href"/>
+		</xsl:variable>
+        <ctl:message>Target endpoint is <xsl:value-of select="$csw.GetCapabilities.get.url"/></ctl:message>
+        
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc1.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc1.2">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc1.3">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc2.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc3.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc4.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc5.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc5.2">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc6.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc7.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc7.2">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetCapabilities-tc8.1">
+    <ctl:with-param name="csw.GetCapabilities.get.url" select="$csw.GetCapabilities.get.url"/>
+    <ctl:with-param name="csw.GetCapabilities.formats" select="$csw.capabilities.doc//ows:Operation[@name='GetCapabilities']/ows:Parameter[lower-case(@name)='acceptformats']"/>
+  </ctl:call-test>
+      </ctl:code>
+    </ctl:test>
+   
+    <test name="csw:csw-2.0.2-GetCapabilities-tc1.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      All OGC web services must implement GetCapabilities using the GET method. 
+      The response to a GetCapabilities request without the optional version 
+      parameter must include a complete representation of the capabilities 
+      document corresponding to the latest supported version.
+      </assertion>
+      <comment>Pass if the response is schema valid and has no missing elements.</comment>
+      <link>OGC 05-008c1: 7.1 (p.10)</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">CSW</param>
+					<param name="request">GetCapabilities</param>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc1.2">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a GetCapabilities request with the ACCEPTVERSIONS parameter 
+      must include a complete representation of the capabilities document corresponding 
+      to the first supported version in the list.
+      </assertion>
+      <comment>Same pass criteria as for csw-2.0.2-GetCapabilities-tc1.1</comment>
+      <link>OGC-05-008, 7.3.2</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="SERVICE">CSW</param>
+					<param name="REQUEST">GetCapabilities</param>
+                    <param name="ACCEPTVERSIONS">2.0.2,2.0.0</param>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc1.3">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a GetCapabilities request containing an ACCEPTVERSIONS 
+      parameter that DOES NOT list a supported version must include an exception 
+      with exceptionCode="VersionNegotiationFailed".
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response 
+      entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
+      ows:Exception/@exceptionCode="VersionNegotiationFailed".
+      </comment>
+      <link>OGC-05-008, 7.3.2</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="SERVICE">CSW</param>
+					<param name="REQUEST">GetCapabilities</param>
+                    <param name="ACCEPTVERSIONS">2006.10.29</param>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">VersionNegotiationFailedPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc2.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a GetCapabilities request that omits a required parameter 
+      name or value must include an exception with exceptionCode="MissingParameterValue".
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response 
+      entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
+      ows:Exception/@exceptionCode="MissingParameterValue".
+      </comment>
+      <link>OGC-05-008, 7.4.1</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="request">GetCapabilities</param>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">MissingParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'service')">
+                  <ctl:message>
+                  FAILURE: ows:Exception/@locator is absent or does not identify the missing 'service' parameter.
+                  </ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc3.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a KVP request that includes an invalid parameter 
+      value must include an exception with exceptionCode="InvalidParameterValue".
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response 
+      entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
+      ows:Exception/@exceptionCode="InvalidParameterValue".
+      </comment>
+      <link>OGC-05-008, 7.4.1</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">FOO</param>
+					<param name="request">GetCapabilities</param>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'service')">
+                  <ctl:message>
+                  FAILURE: ows:Exception/@locator is absent or does not identify the invalid 'service' parameter.
+                  </ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+	<test name="csw:csw-2.0.2-GetCapabilities-tc4.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      Parameter names in KVP strings shall be handled in a case-insensitive manner.
+      </assertion>
+      <comment>Same pass criteria as for csw-2.0.2-GetCapabilities-tc1.1</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="sErViCe">CSW</param>
+					<param name="REQUEST">GetCapabilities</param>
+                    <param name="version">2.0.2</param>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc5.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      Unrecognized query parameters must be ignored.
+      </assertion>
+      <comment>Same pass criteria as for csw-2.0.2-GetCapabilities-tc1.1.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">CSW</param>
+					<param name="request">GetCapabilities</param>
+                    <param name="acceptversions">2.0.2</param>
+                    <param name="date">2006-10-20</param>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc5.2">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a GetCapabilities request that includes an unsupported 
+      AcceptFormats parameter value must include the default XML representation 
+      of the capabilities document.
+      </assertion>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">CSW</param>
+					<param name="request">GetCapabilities</param>
+                    <param name="acceptformats">message/example</param>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc6.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      A response message containing an entity body must contain a Content-Type entity 
+      header field that correctly indicates the media type of the message body.
+      </assertion>
+      <comment>Pass if the Content-Type entity header field indicates an XML media type.</comment>
+      <link>OGC 05-008: 11.7 (p.61)</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">CSW</param>
+					<param name="request">GetCapabilities</param>
+					<parsers:HTTPParser/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="content-type" select="$response//headers/header[@name='Content-Type']"/>
+                <xsl:if test="matches($content-type,'.+/xml') != true()">
+                    <ctl:message>FAILURE: Content-Type response header does not indicate an XML media type (<xsl:value-of select="$content-type"/>)</ctl:message>
+                    <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc7.1">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a GetCapabilities request that includes a sections parameter 
+      with NO VALUE provided shall include an abbreviated capabilities document 
+      that omits all optional sections.
+      </assertion>
+      <comment>Pass if the response is schema valid and omits all optional 
+      top-level elements.</comment>
+      <link>OGC 05-008: 7.3.3 (p.17)</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">CSW</param>
+					<param name="request">GetCapabilities</param>
+                    <param name="sections"/>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		            <ctl:with-param name="phase">AbbreviatedContentPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetCapabilities-tc7.2">
+      <param name="csw.GetCapabilities.get.url"/>
+      <assertion>
+      The response to a GetCapabilities request that includes a sections parameter 
+      listing optional elements shall include only the requested elements in the 
+      response entity.
+      </assertion>
+      <comment>
+      Pass if the response is schema valid and includes only the requested optional 
+      elements.
+      </comment>
+      <link>OGC 05-008: 7.3.3 (p.17)</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</url>
+					<method>GET</method>
+					<param name="service">CSW</param>
+					<param name="request">GetCapabilities</param>
+                    <param name="sections">OperationsMetadata,ServiceIdentification</param>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>FAILURE: Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="not($response//ows:OperationsMetadata)">
+                    <ctl:message>FAILURE: ows:OperationsMetadata element is missing</ctl:message>
+                    <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="not($response//ows:ServiceIdentification)">
+                    <ctl:message>FAILURE: ows:ServiceIdentification element is missing</ctl:message>
+                    <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="$response//ows:ServiceProvider">
+                    <ctl:message>FAILURE: ows:ServiceProvider element is included</ctl:message>
+                    <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <ctl:test name="csw:csw-2.0.2-GetCapabilities-tc8.1">
+      <ctl:param name="csw.GetCapabilities.get.url"/>
+      <ctl:param name="csw.GetCapabilities.formats"/>
+      <ctl:assertion>
+      The response to a GetCapabilities request containing an AcceptFormats 
+      parameter specifying a supported format must include a response entity 
+      that corresponds to the requested media type.
+      </ctl:assertion>
+      <ctl:link>OGC 05-008, 7.3.5</ctl:link>
+		<ctl:code>
+          <xsl:for-each select="$csw.GetCapabilities.formats//ows:Value">
+            <xsl:variable name="format" select="./text()"/>
+            <xsl:variable name="response">
+				<ctl:request>
+					<ctl:url>
+						<xsl:value-of select="$csw.GetCapabilities.get.url"/>
+					</ctl:url>
+					<ctl:method>GET</ctl:method>
+					<ctl:param name="service">CSW</ctl:param>
+					<ctl:param name="request">GetCapabilities</ctl:param>
+                    <ctl:param name="acceptformats"><xsl:value-of select="$format"/></ctl:param>
+					<parsers:HTTPParser/>
+				</ctl:request>
+			</xsl:variable>
+            <xsl:variable name="content-type" select="$response//headers/header[@name='Content-Type']"/>
+			<xsl:if test="not(starts-with($content-type, $format))">
+				<ctl:message>FAILURE: Unexpected content type for response entity (Request: <xsl:value-of select="$format"/>, Response: <xsl:value-of select="$content-type"/>).</ctl:message>
+				<ctl:fail/>
+			</xsl:if>
+          </xsl:for-each>
+		</ctl:code>
+	</ctl:test>
+</ctl:package>
+   <ctl:package xmlns="http://www.occamlab.com/ctl">
+
+    <ctl:test name="csw:DescribeRecord-POST">
+      <param name="csw.capabilities.doc"/>
+      <ctl:assertion>
+      A conforming implementation must support DescribeRecord XML requests using the POST method.
+      </ctl:assertion>
+      <ctl:code>
+        <xsl:variable name="csw.DescribeRecord.post.url">
+		    <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='DescribeRecord']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+		</xsl:variable>
+        <ctl:message>Target endpoint is <xsl:value-of select="$csw.DescribeRecord.post.url"/></ctl:message>
+        
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc1.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc2.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc3.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc4.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc5.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc6.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc7.1">
+    <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
+  </ctl:call-test>
+
+      </ctl:code>
+    </ctl:test>
+   
+    <test name="csw:csw-2.0.2-DescribeRecord-tc1.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      The response to a DescribeRecord request that does not include any TypeName 
+      elements and does not specify a schema language must produce a response that 
+      describes all supported record types using the XML Schema language.
+      </assertion>
+      <comment>
+      Pass if the response is valid and contains XML Schema components for all 
+      supported record types.
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2"/>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-DescribeRecord-tc2.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      The response to a DescribeRecord request containing TypeName elements must 
+      include schema components for each requested record type.
+      </assertion>
+      <comment>
+      Pass if the response is valid and contains XML Schema components (i.e., 
+      element declarations or a schema containing element declarations) for 
+      the record types in the correct target namespaces.
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
+    <csw:TypeName>csw:Record</csw:TypeName>
+</csw:DescribeRecord>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:variable name="element" select="$response//csw:SchemaComponent/xsd:element/@name = 'Record'"/>
+                <xsl:variable name="schema" select="$response//csw:SchemaComponent/xsd:schema/xsd:element/@name = 'Record'"/>
+                <xsl:if test="not($element or $schema)">
+                  <ctl:message>[FAILURE] Missing element declaration for csw:Record</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-DescribeRecord-tc3.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      The response to a DescribeRecord request that contains an unknown TypeName 
+      element must not include any csw:SchemaComponent elements.
+      </assertion>
+      <comment>
+      Pass if the response is valid and contains no csw:SchemaComponent elements.
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
+    <csw:TypeName>csw:DummyRecord</csw:TypeName>
+</csw:DescribeRecord>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
+		            <ctl:with-param name="phase">NoSchemaComponentsPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-DescribeRecord-tc4.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      A response message containing an entity body must contain a Content-Type entity 
+      header field that correctly indicates the media type of the message body.
+      </assertion>
+      <comment>Pass if the Content-Type entity header field indicates an XML media type.</comment>
+      <link>OGC 05-008: 11.7 (p.61)</link>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
+    <csw:TypeName>csw:Record</csw:TypeName>
+</csw:DescribeRecord>
+					</body>
+					<parsers:HTTPParser/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="content-type" select="$response//headers/header[@name='Content-Type']"/>
+                <xsl:if test="matches($content-type,'.+/xml') != true()">
+                    <ctl:message>[FAILURE] Content-Type response header does not indicate an XML media type (<xsl:value-of select="$content-type"/>)</ctl:message>
+                    <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-DescribeRecord-tc5.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      The response to a DescribeRecord request that specifies an unsupported 
+      output format must include an exception report.
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response 
+      entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
+      ows:Exception/@exceptionCode="InvalidParameterValue" (@outputFormat).
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema" outputFormat="text/sgml">
+    <csw:TypeName>csw:Record</csw:TypeName>
+</csw:DescribeRecord>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'outputformat')">
+                  <ctl:message>
+                  [FAILURE] ows:Exception/@locator is absent or does not identify the invalid 'outputFormat' attribute.
+                  </ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-DescribeRecord-tc6.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      The response to a DescribeRecord request that specifies an unsupported 
+      schema language must include an exception report.
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response 
+      entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
+      ows:Exception/@exceptionCode="InvalidParameterValue".
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2" schemaLanguage="http://purl.oclc.org/dsdl/schematron">
+    <csw:TypeName>csw:Record</csw:TypeName>
+</csw:DescribeRecord>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'schemalanguage')">
+                  <ctl:message>
+                  [FAILURE] ows:Exception/@locator is absent or does not identify the invalid 'schemaLanguage' attribute.
+                  </ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-DescribeRecord-tc7.1">
+      <param name="csw.DescribeRecord.post.url"/>
+      <assertion>
+      The response to an invalid DescribeRecord request must include an exception report.
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response 
+      entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
+      ows:Exception/@exceptionCode="InvalidParameterValuePhase" (csw:TypeName not qualified).
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.DescribeRecord.post.url"/>
+					</url>
+					<method>POST</method>
+					<body>
+<csw:DescribeRecord service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
+    <csw:TypeName>Record</csw:TypeName>
+</csw:DescribeRecord>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+</ctl:package>
+   <ctl:package xmlns="http://www.occamlab.com/ctl">
+
+    <ctl:test name="csw:GetRecordById-GET">
+      <param name="csw.capabilities.doc"/>
+      <ctl:assertion>
+      Run test group for GetRecordById requests using the GET method.
+      </ctl:assertion>
+      <ctl:code>
+        <xsl:variable name="csw.GetRecordById.get.url">
+                    <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Get/@xlink:href"/>
+                </xsl:variable>
+        <xsl:variable name="csw.GetRecords.post.url">
+            <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+            </xsl:variable>
+        <ctl:message>Target endpoint is <xsl:value-of select="$csw.GetRecordById.get.url"/></ctl:message>
+
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc1.1">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc1.2">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc2.1">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc2.2">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc3.1">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc4.1">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc5.1">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecordById-tc6.1">
+    <ctl:with-param name="csw.GetRecordById.get.url" select="$csw.GetRecordById.get.url"/>
+  </ctl:call-test>
+      </ctl:code>
+    </ctl:test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc1.1">
+      <param name="csw.GetRecordById.get.url"/>
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      All CSW-based catalogue services must implement getRecordById using the
+      GET method. A GetRecordById request without the ElementSetName parameter
+      must produce a response containing a summary view of all matching records.
+      </assertion>
+      <comment>
+      Pass if the response is schema valid and includes a csw:BriefRecord representation of all matching records.
+      </comment>
+                <code>
+            <xsl:variable name="response0">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$csw.GetRecords.post.url"/>
+                                        </ctl:url>
+                    <ctl:method>POST</ctl:method>
+                                        <ctl:body>
+                      <csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+                        <csw:Query typeNames="csw:Record">
+                          <csw:ElementSetName>brief</csw:ElementSetName>
+                        </csw:Query>
+                      </csw:GetRecords>
+                                        </ctl:body>
+                                        <p:XMLValidatingParser.CSW/>
+                                </ctl:request>
+                        </xsl:variable>
+            <xsl:variable name="id.1">
+              <xsl:value-of select="$response0//csw:SearchResults/*[1]/dc:identifier"/>
+            </xsl:variable>
+                        <xsl:variable name="response">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </ctl:url>
+                                        <ctl:method>GET</ctl:method>
+                                        <ctl:param name="service">CSW</ctl:param>
+                    <ctl:param name="version">2.0.2</ctl:param>
+                                        <ctl:param name="request">GetRecordById</ctl:param>
+                    <ctl:param name="id"><xsl:value-of select="encode-for-uri($id.1)"/></ctl:param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </ctl:request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="$response//csw:SummaryRecord/dc:identifier != $id.1">
+                  <ctl:message>
+                  [FAILURE] Expected csw:SummaryRecord with dc:identifier = <xsl:value-of select="$id.1"/>.
+                  </ctl:message>
+                                  <ctl:fail/>
+                            </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc1.2">
+      <param name="csw.GetRecordById.get.url"/>
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecordById request without the ElementSetName parameter
+      must produce a response containing a summary view of all matching records.
+      </assertion>
+      <comment>
+      Pass if the response is schema valid and includes only 1 csw:BriefRecord element.
+      </comment>
+                <code>
+            <xsl:variable name="response0">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$csw.GetRecords.post.url"/>
+                                        </ctl:url>
+                    <ctl:method>POST</ctl:method>
+                                        <ctl:body>
+                      <csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+                        <csw:Query typeNames="csw:Record">
+                          <csw:ElementSetName>brief</csw:ElementSetName>
+                        </csw:Query>
+                      </csw:GetRecords>
+                                        </ctl:body>
+                                        <p:XMLValidatingParser.CSW/>
+                                </ctl:request>
+                        </xsl:variable>
+            <xsl:variable name="id.2">
+              <xsl:value-of select="$response0//csw:SearchResults/*[2]/dc:identifier"/>
+            </xsl:variable>
+                        <xsl:variable name="response">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </ctl:url>
+                                        <ctl:method>GET</ctl:method>
+                                        <ctl:param name="service">CSW</ctl:param>
+                    <ctl:param name="version">2.0.2</ctl:param>
+                                        <ctl:param name="request">GetRecordById</ctl:param>
+                    <ctl:param name="id">urn:uuid:ce8627a0-685c-11db-bd13-0800200c9a66,<xsl:value-of select="escape-html-uri($id.2)"/></ctl:param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </ctl:request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response/csw:GetRecordByIdResponse/csw:SummaryRecord) != 1">
+                  <ctl:message>
+                  [FAILURE] Expected one record in response.
+                  </ctl:message>
+                                  <ctl:fail/>
+                            </xsl:if>
+                <xsl:if test="$response//csw:SummaryRecord/dc:identifier != $id.2">
+                  <ctl:message>
+                  [FAILURE] Expected csw:SummaryRecord with dc:identifier = <xsl:value-of select="$id.2"/>.
+                  </ctl:message>
+                                  <ctl:fail/>
+                            </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc2.1">
+      <param name="csw.GetRecordById.get.url"/>
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecordById request containing the ElementSetName parameter
+      must produce a response containing the corresponding view of all matching
+      records.
+      </assertion>
+      <comment>
+      Pass if the response is schema valid and includes a csw:BriefRecord representation.
+      </comment>
+                <code>
+            <xsl:variable name="response0">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$csw.GetRecords.post.url"/>
+                                        </ctl:url>
+                    <ctl:method>POST</ctl:method>
+                                        <ctl:body>
+                      <csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+                        <csw:Query typeNames="csw:Record">
+                          <csw:ElementSetName>brief</csw:ElementSetName>
+                        </csw:Query>
+                      </csw:GetRecords>
+                                        </ctl:body>
+                                        <p:XMLValidatingParser.CSW/>
+                                </ctl:request>
+                        </xsl:variable>
+            <xsl:variable name="id.3">
+              <xsl:value-of select="$response0//csw:SearchResults/*[3]/dc:identifier"/>
+            </xsl:variable>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </url>
+                                        <method>GET</method>
+                                        <param name="Service">CSW</param>
+                    <param name="Version">2.0.2</param>
+                                        <param name="Request">GetRecordById</param>
+                    <param name="ElementSetName">brief</param>
+                    <param name="ID"><xsl:value-of select="encode-for-uri($id.3)"/></param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="nBriefRecords" select="count($response/csw:GetRecordByIdResponse/csw:BriefRecord)"/>
+                <xsl:variable name="nRecords" select="count($response/csw:GetRecordByIdResponse/*)"/>
+                <xsl:if test="($nBriefRecords != $nRecords) and ($nRecords != 1)">
+                  <ctl:message>[FAILURE] Expected one csw:BriefRecord element in response.</ctl:message>
+                                  <ctl:fail/>
+                            </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc2.2">
+      <param name="csw.GetRecordById.get.url"/>
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecordById request containing the ElementSetName parameter
+      must produce a response containing the corresponding view of all matching
+      records.
+      </assertion>
+      <comment>
+      Pass if the response is schema valid and includes a csw:Record representation.
+      </comment>
+                <code>
+            <xsl:variable name="response0">
+                                <ctl:request>
+                                        <ctl:url>
+                                                <xsl:value-of select="$csw.GetRecords.post.url"/>
+                                        </ctl:url>
+                    <ctl:method>POST</ctl:method>
+                                        <ctl:body>
+                      <csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+                        <csw:Query typeNames="csw:Record">
+                          <csw:ElementSetName>brief</csw:ElementSetName>
+                        </csw:Query>
+                      </csw:GetRecords>
+                                        </ctl:body>
+                                        <p:XMLValidatingParser.CSW/>
+                                </ctl:request>
+                        </xsl:variable>
+            <xsl:variable name="id.4">
+              <xsl:value-of select="$response0//csw:SearchResults/*[4]/dc:identifier"/>
+            </xsl:variable>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </url>
+                                        <method>GET</method>
+                                        <param name="Service">CSW</param>
+                    <param name="Version">2.0.2</param>
+                                        <param name="Request">GetRecordById</param>
+                    <param name="ElementSetName">full</param>
+                    <param name="ID"><xsl:value-of select="encode-for-uri($id.4)"/></param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="nFullRecords" select="count($response/csw:GetRecordByIdResponse/csw:Record)"/>
+                <xsl:variable name="nRecords" select="count($response/csw:GetRecordByIdResponse/*)"/>
+                <xsl:if test="($nFullRecords != $nRecords) and ($nRecords != 1)">
+                  <ctl:message>[FAILURE] Expected one csw:Record element in response.</ctl:message>
+                                  <ctl:fail/>
+                            </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc3.1">
+      <param name="csw.GetRecordById.get.url"/>
+      <assertion>
+      The response to a GetRecordById request containing no matching identifiers
+      must be empty.
+      </assertion>
+      <comment>
+      Pass if the response entity is schema valid and includes no records.
+      </comment>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </url>
+                                        <method>GET</method>
+                                        <param name="service">CSW</param>
+                    <param name="version">2.0.2</param>
+                                        <param name="request">GetRecordById</param>
+                    <param name="id">urn:uuid:ce8627a0-685c-11db-bd13-0800200c9a66</param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response/csw:GetRecordByIdResponse/*) != 0">
+                  <ctl:message>
+                  [FAILURE] Expected empty csw:GetRecordByIdResponse element.
+                  </ctl:message>
+                                  <ctl:fail/>
+                            </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc4.1">
+      <param name="csw.GetRecordById.get.url"/>
+      <assertion>
+      The response to a GetRecordById request missing the required Id parameter
+      must include an exception report.
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response is a
+      valid ows:ExceptionReport; (2) the reported exceptionCode is "MissingParameterValue".
+      </comment>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </url>
+                                        <method>GET</method>
+                                        <param name="service">CSW</param>
+                    <param name="version">2.0.2</param>
+                                        <param name="request">GetRecordById</param>
+                                        <p:XMLValidatingParser.OWS/>
+                                </request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+                            <ctl:with-param name="doc" select="$response"/>
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">MissingParameterValuePhase</ctl:with-param>
+                    </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'id')">
+                  <ctl:message>
+                  [WARNING] ows:Exception/@locator is absent or does not refer to the missing 'id' parameter.
+                  </ctl:message>
+                  <ctl:warning/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc5.1">
+      <param name="csw.GetRecordById.get.url"/>
+      <assertion>
+      The response to a GetRecordById request with an unsupported OutputFormat
+      parameter value must include an exception report.
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response is a
+      valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValue".
+      </comment>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </url>
+                                        <method>GET</method>
+                                        <param name="Service">CSW</param>
+                    <param name="Version">2.0.2</param>
+                                        <param name="Request">GetRecordById</param>
+                    <param name="OutputFormat">application/bogus+xml</param>
+                    <param name="id">urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2,urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f,urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a</param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+                            <ctl:with-param name="doc" select="$response"/>
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+                    </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'outputformat')">
+                  <ctl:message>
+                  [WARNING] ows:Exception/@locator is absent or does not refer to the invalid 'OutputFormat' parameter.
+                  </ctl:message>
+                  <ctl:warning/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+
+    <test name="csw:csw-2.0.2-GetRecordById-tc6.1">
+      <param name="csw.GetRecordById.get.url"/>
+      <assertion>
+      The response to a GetRecordById request with an unsupported OutputSchema
+      parameter value must include an exception report.
+      </assertion>
+      <comment>
+      Pass if all of the following conditions are true: (1) the response is a
+      valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValue".
+      </comment>
+                <code>
+                        <xsl:variable name="response">
+                                <request>
+                                        <url>
+                                                <xsl:value-of select="$csw.GetRecordById.get.url"/>
+                                        </url>
+                                        <method>GET</method>
+                                        <param name="Service">CSW</param>
+                    <param name="Version">2.0.2</param>
+                                        <param name="Request">GetRecordById</param>
+                    <param name="OutputSchema">http://www.w3.org/2005/Atom</param>
+                    <param name="Id">urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f</param>
+                                        <p:XMLValidatingParser.CSW/>
+                                </request>
+                        </xsl:variable>
+
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+                            <ctl:with-param name="doc" select="$response"/>
+                            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+                            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+                    </ctl:call-test>
+                <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'outputschema')">
+                  <ctl:message>
+                  [WARNING] ows:Exception/@locator is absent or does not refer to the invalid 'OutputSchema' parameter.
+                  </ctl:message>
+                  <ctl:warning/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+                </code>
+        </test>
+</ctl:package>
+   <ctl:package xmlns="http://www.occamlab.com/ctl" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc">
+
+  <ctl:test name="csw:GetRecords-POST">
+    <param name="csw.capabilities.doc"/>
+    <ctl:assertion>
+    A conforming implementation must satisfy all assertions for GetRecords XML requests using the POST method.
+    </ctl:assertion>
+    <ctl:code>
+      <xsl:variable name="csw.GetRecords.post.url">
+        <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='GetRecords']/ows:DCP/ows:HTTP/ows:Post/@xlink:href"/>
+	  </xsl:variable>
+      <ctl:message>Target endpoint is <xsl:value-of select="$csw.GetRecords.post.url"/></ctl:message>
+        
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc1.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>  
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc2.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>  
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc2.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc3.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc4.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc4.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc5.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc5.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc6.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc6.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc7.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc8.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc8.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc9.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc10.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc11.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc11.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc12.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc13.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc14.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc14.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc15.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc16.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc16.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc17.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc17.2">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc18.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc19.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc20.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc21.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc22.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc23.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc24.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc25.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc26.1">
+    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
+  </ctl:call-test>
+      </ctl:code>
+    </ctl:test>
+   
+    <test name="csw:csw-2.0.2-GetRecords-tc1.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      A GetRecords request that omits all optional elements must produce a response containing only a summary of the result set.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element is empty.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>brief</csw:ElementSetName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc2.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies a "summary" view must 
+      include the corresponding record representations not exeeding the value 
+      of the default maxRecords attribute (10).
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly 10 
+      csw:SummaryRecord child elements.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>summary</csw:ElementSetName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">TenRecordsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="count($response/csw:GetRecordsResponse/csw:SearchResults/csw:SummaryRecord) != 10">
+                  <ctl:message>[FAILURE] 10 csw:SummaryRecord elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc2.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies a "brief" view must 
+      include the corresponding record representations not exeeding the value 
+      of the default maxRecords attribute (10).
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly 10 
+      csw:BriefRecord child elements.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>brief</csw:ElementSetName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">TenRecordsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="count($response/csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord) != 10">
+                  <ctl:message>[FAILURE] 10 csw:BriefRecord elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc3.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies an ad hoc view must 
+      include the corresponding csw:Record representations not exeeding the value 
+      of the default maxRecords attribute (10).
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly 10 
+      csw:Record child elements, each containing only the requested elements.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementName>dc:identifier</csw:ElementName>
+    <csw:ElementName>dc:type</csw:ElementName>
+    <csw:ElementName>dc:date</csw:ElementName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:for-each select="$response//csw:Record/*">
+                  <xsl:variable name="local-name" select="local-name(.)"/>
+                  <xsl:if test="empty(index-of(('identifier', 'type', 'date'), $local-name))">
+                    <ctl:message>[FAILURE] Unexpected record property: <xsl:value-of select="$local-name"/> (<xsl:value-of select="../dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc4.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies sorting criteria
+      must include the corresponding record representations in the correct 
+      sort order.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly 10 
+      csw:BriefRecord child elements; (3) the records are sorted by dc:identifier 
+      in ascending order.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>brief</csw:ElementSetName>
+      <ogc:SortBy>
+        <ogc:SortProperty>
+          <ogc:PropertyName>dc:identifier</ogc:PropertyName>
+          <ogc:SortOrder>ASC</ogc:SortOrder>
+        </ogc:SortProperty>
+      </ogc:SortBy>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">TenRecordsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="count($response/csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord) != 10">
+                  <ctl:message>[FAILURE] 10 csw:BriefRecord elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:variable name="r1.id" select="$response//csw:SearchResults/*[1]/dc:identifier"/> 
+                <xsl:variable name="r2.id" select="$response//csw:SearchResults/*[2]/dc:identifier"/>
+                <xsl:variable name="r3.id" select="$response//csw:SearchResults/*[3]/dc:identifier"/>
+                <xsl:if test="(compare($r1.id,$r2.id) ne -1) or (compare($r2.id,$r3.id) ne -1)">
+                  <ctl:message>[FAILURE] Search results are not sorted correctly by dc:identifier in ascending order.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc4.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies an ad hoc view and 
+      sorting criteria must include the corresponding csw:Record representations 
+      in the correct sort order.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly 10 
+      csw:Record child elements, each containing only the requested elements; 
+      (3) the records are sorted by dc:date in descending order.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>dc:type</csw:ElementName>
+      <csw:ElementName>dc:date</csw:ElementName>
+      <ogc:SortBy>
+        <ogc:SortProperty>
+          <ogc:PropertyName>dc:date</ogc:PropertyName>
+          <ogc:SortOrder>DESC</ogc:SortOrder>
+        </ogc:SortProperty>
+      </ogc:SortBy>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:for-each select="$response//csw:Record/*">
+                  <xsl:variable name="local-name" select="local-name(.)"/>
+                  <xsl:if test="empty(index-of(('identifier', 'type', 'date'), $local-name))">
+                    <ctl:message>[FAILURE] Unexpected record property: <xsl:value-of select="$local-name"/> (<xsl:value-of select="../dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+                <xsl:choose>
+                  <xsl:when test="$response//csw:SearchResults/*[1]/dc:date">
+                    <xsl:variable name="r1.date" select="$response//csw:SearchResults/*[1]/dc:date"/>
+                    <xsl:variable name="r2.date" select="$response//csw:SearchResults/*[2]/dc:date"/>
+                    <xsl:variable name="r3.date" select="$response//csw:SearchResults/*[3]/dc:date"/>
+                    <xsl:if test="not(xsd:date($r1.date) gt xsd:date($r2.date)) or not(xsd:date($r2.date) gt xsd:date($r3.date))">
+                        <ctl:message>[FAILURE] Search results are not sorted correctly by dc:date in descending order.</ctl:message>
+                        <ctl:message><xsl:value-of select="$r1.date"/>, <xsl:value-of select="$r2.date"/>, <xsl:value-of select="$r3.date"/></ctl:message>
+                        <ctl:fail/>
+                    </xsl:if>
+                  </xsl:when>
+                  <xsl:otherwise> 
+                    <!-- sorted records appear last in result set --> 
+                    <xsl:variable name="nMatches">
+                      <xsl:value-of select="$response//csw:SearchResults/@numberOfRecordsMatched"/>
+                    </xsl:variable>
+                    <xsl:variable name="startPosition" select="xsd:integer($nMatches) - 2"/>
+<xsl:variable name="response1">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" startPosition="{$startPosition}" maxRecords="3">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>dc:type</csw:ElementName>
+      <csw:ElementName>dc:date</csw:ElementName>
+      <ogc:SortBy>
+        <ogc:SortProperty>
+          <ogc:PropertyName>dc:date</ogc:PropertyName>
+          <ogc:SortOrder>DESC</ogc:SortOrder>
+        </ogc:SortProperty>
+      </ogc:SortBy>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+                    <xsl:variable name="r1.date" select="$response1//csw:SearchResults/*[1]/dc:date"/>
+                    <xsl:variable name="r2.date" select="$response1//csw:SearchResults/*[2]/dc:date"/>
+                    <xsl:variable name="r3.date" select="$response1//csw:SearchResults/*[3]/dc:date"/>
+                    <xsl:if test="not(xsd:date($r1.date) gt xsd:date($r2.date)) or not(xsd:date($r2.date) gt xsd:date($r3.date))">
+                        <ctl:message>[FAILURE] Search results are not sorted correctly by dc:date in descending order.</ctl:message>
+                        <ctl:message><xsl:value-of select="$r1.date"/>, <xsl:value-of select="$r2.date"/>, <xsl:value-of select="$r3.date"/> </ctl:message>
+                        <ctl:fail/>
+                    </xsl:if>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc5.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      BBOX operator must include all matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 1-10 matching 
+      csw:Record child elements.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>ows:BoundingBox</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:BBOX>
+            <ogc:PropertyName>/ows:BoundingBox</ogc:PropertyName>
+            <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+              <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+              <gml:upperCorner>52.0 1.0</gml:upperCorner>
+            </gml:Envelope>
+          </ogc:BBOX>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">OneToTenRecordsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:if test="count($response//csw:SearchResults/csw:Record) != count($response//csw:SearchResults/*)">
+                  <ctl:message>[FAILURE] Only csw:Record elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:variable name="env">
+                  <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+                    <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+                    <gml:upperCorner>52.0 1.0</gml:upperCorner>
+                  </gml:Envelope>
+                </xsl:variable>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="csw:disjoint-envelopes($env,ows:BoundingBox) != 0">
+                    <ctl:message>[FAILURE] Envelopes do NOT intersect or @srsName value does not match 'urn:x-ogc:def:crs:EPSG:6.11:4326'(<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc5.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      spatial operator that does not refer to a geometry-valued property must 
+      include an exception report.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is a valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValuePhase".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>brief</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:BBOX>
+            <ogc:PropertyName>dct:spatial</ogc:PropertyName>
+            <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+              <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+              <gml:upperCorner>52.0 1.0</gml:upperCorner>
+            </gml:Envelope>
+          </ogc:BBOX>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc6.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsEqualTo predicate (case-sensitive by default) must include all 
+      matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly one 
+      matching csw:BriefRecord instance; (3) csw:SearchResults/@nextRecord="0" </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+   <csw:Query typeNames="csw:Record">
+     <csw:ElementSetName>brief</csw:ElementSetName>
+     <csw:Constraint version="1.1.0">
+       <ogc:Filter>
+         <ogc:PropertyIsEqualTo>
+           <ogc:PropertyName>dc:title</ogc:PropertyName>
+           <ogc:Literal>Fuscé vitae ligulä</ogc:Literal>
+         </ogc:PropertyIsEqualTo>
+       </ogc:Filter>
+     </csw:Constraint>
+   </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="$response//csw:SearchResults//dc:identifier != 'urn:uuid:e9330592-0932-474b-be34-c3a3bb67c7db'">
+                  <ctl:message>[FAILURE] Expected record is missing (urn:uuid:e9330592-0932-474b-be34-c3a3bb67c7db).</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="$response//csw:SearchResults/@nextRecord != 0">
+                  <ctl:message>[FAILURE] Expected csw:SearchResults/@nextRecord = 0.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc6.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsEqualTo predicate (case-insensitive) must include all matching 
+      record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly one 
+      matching csw:BriefRecord instance.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>brief</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsEqualTo matchCase="false">
+            <ogc:PropertyName>dc:subject</ogc:PropertyName>
+            <ogc:Literal>pHYSIOGRAPHy</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:choose>
+                  <xsl:when test="$response/csw:GetRecordsResponse/csw:SearchResults//dc:identifier='urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a'"/>
+                  <xsl:otherwise>
+                    <ctl:message>[FAILURE] Expected record is missing (urn:uuid:ab42a8c4-95e8-4630-bf79-33e59241605a).</ctl:message>
+                    <ctl:fail/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc7.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an unsupported function 
+      must include an exception report.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is a valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValue" 
+      (ogc:Function/@name).</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>brief</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsEqualTo>
+            <ogc:PropertyName>dc:title</ogc:PropertyName>
+            <ogc:Function name="DummyFunction">
+              <ogc:Literal>input.argument</ogc:Literal>
+            </ogc:Function>
+          </ogc:PropertyIsEqualTo>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc8.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsNotEqualTo predicate (case-sensitive by default) must exclude  
+      matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element does NOT contain any 
+      records with a matching title.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" maxRecords="100">
+   <csw:Query typeNames="csw:Record">
+     <csw:ElementSetName>brief</csw:ElementSetName>
+     <csw:Constraint version="1.1.0">
+       <ogc:Filter>
+         <ogc:PropertyIsNotEqualTo>
+           <ogc:PropertyName>dc:title</ogc:PropertyName>
+           <ogc:Literal>Fuscé vitae ligulä</ogc:Literal>
+         </ogc:PropertyIsNotEqualTo>
+       </ogc:Filter>
+     </csw:Constraint>
+     <ogc:SortBy>
+       <ogc:SortProperty>
+         <ogc:PropertyName>dc:format</ogc:PropertyName>
+         <ogc:SortOrder>DESC</ogc:SortOrder>
+       </ogc:SortProperty>
+     </ogc:SortBy>
+   </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="dc:identifier = 'urn:uuid:e9330592-0932-474b-be34-c3a3bb67c7db'">
+                    <ctl:message>[FAILURE] Unexpected record is included (urn:uuid:e9330592-0932-474b-be34-c3a3bb67c7db).</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc8.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsNotEqualTo predicate (case-insensitive) must exclude matching 
+      record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element does NOT contain any 
+      records with a matching subject.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" maxRecords="20">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>brief</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsNotEqualTo matchCase="false">
+            <ogc:PropertyName>dc:subject</ogc:PropertyName>
+            <ogc:Literal>pHYSIOGRAPHy</ogc:Literal>
+          </ogc:PropertyIsNotEqualTo>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="recordCount" select="count($response//csw:SearchResults/csw:BriefRecord)"/>
+                <xsl:if test="$recordCount gt 20">
+                  <ctl:message>[FAILURE] A maximum of 20 csw:BriefRecord elements expected in response (<xsl:value-of select="$recordCount"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="compare(upper-case(dc:subject),'PHYSIOGRAPHY') = 0">
+                    <ctl:message>[FAILURE] Unexpected record having dc:subject matching 'pHYSIOGRAPHy' (case-insensitive) - (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc9.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsGreaterThan predicate must include matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 1-10 csw:Record 
+      child elements having dc:date values occurring after 2004-01-01.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>dc:type</csw:ElementName>
+      <csw:ElementName>dc:date</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsGreaterThan>
+            <ogc:PropertyName>dc:date</ogc:PropertyName>
+            <ogc:Literal>2004-01-01Z</ogc:Literal>
+          </ogc:PropertyIsGreaterThan>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">OneToTenAdHocRecordsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:choose>
+                    <xsl:when test="contains(dc:date, 'T')">
+                      <xsl:if test="xsd:dateTime(dc:date) le xsd:dateTime('2004-01-01T23:59:59Z')">
+                        <ctl:message>[FAILURE] dc:dateTime value occurs at or before 2004-01-01T23:59:59Z (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:if test="xsd:date(dc:date) le xsd:date('2004-01-01Z')">
+                        <ctl:message>[FAILURE] Included record dated on or before 2004-01-01Z (<xsl:value-of select="dc:date"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc10.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsLessThan predicate must include matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 1-10 csw:Record 
+      child elements having dc:date values occurring before 2006-05-01.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>dc:type</csw:ElementName>
+      <csw:ElementName>dc:date</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsLessThan>
+            <ogc:PropertyName>dc:date</ogc:PropertyName>
+            <ogc:Literal>2006-05-01Z</ogc:Literal>
+          </ogc:PropertyIsLessThan>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">OneToTenAdHocRecordsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:choose>
+                    <xsl:when test="contains(dc:date, 'T')">
+                      <xsl:if test="xsd:dateTime(dc:date) ge xsd:dateTime('2006-05-01T00:00:00Z')">
+                        <ctl:message>[FAILURE] dc:dateTime value at or after 2006-05-01T00:00:00Z (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:if test="xsd:date(dc:date) ge xsd:date('2006-05-01Z')">
+                        <ctl:message>[FAILURE] Included record dated on or after 2006-05-01Z (<xsl:value-of select="dc:date"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc11.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsLike predicate must include matching record representations.
+      </assertion>
+      <comment>Pass if the csw:SearchResults element contains only csw:SummaryRecord 
+      instances having a dc:title value starting with the string "Lorem ipsum".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>summary</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
+            <ogc:PropertyName>dc:title</ogc:PropertyName>
+            <ogc:Literal>Lorem ipsum*</ogc:Literal>
+          </ogc:PropertyIsLike>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response//csw:SearchResults/csw:SummaryRecord) lt 2">
+                  <ctl:message>[FAILURE] At least two csw:SummaryRecord elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="starts-with(dc:title,'Lorem ipsum') != true()">
+                    <ctl:message>[FAILURE] Unexpected record is included (dc:title does not match expression "Lorem ipsum*")</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc11.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsLike predicate must include matching record representations.
+      </assertion>
+      <comment>Pass if the csw:SearchResults element contains only csw:SummaryRecord 
+      instances having a dc:date value satisfying the expression 200?-10-*.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>full</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
+            <ogc:PropertyName>dc:date</ogc:PropertyName>
+            <ogc:Literal>200?-10-*</ogc:Literal>
+          </ogc:PropertyIsLike>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response//csw:SearchResults/csw:Record) lt 1">
+                  <ctl:message>[FAILURE] AT least one csw:Record element expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="matches(dc:date,'200\d-10-.*') != true()">
+                    <ctl:message>[FAILURE] Unexpected record is included (dc:date value does not match expression "200?-10-*")</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc12.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsLessThanOrEqualTo predicate must include matching record 
+      representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains at least two 
+      csw:Record elements having dc:date values occurring on or before 
+      2005-10-24.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>dc:type</csw:ElementName>
+      <csw:ElementName>dc:date</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsLessThanOrEqualTo>
+            <ogc:PropertyName>dc:date</ogc:PropertyName>
+            <ogc:Literal>2005-10-24Z</ogc:Literal>
+          </ogc:PropertyIsLessThanOrEqualTo>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response//csw:SearchResults/csw:Record) lt 2">
+                  <ctl:message>[FAILURE] AT least two csw:Record elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:choose>
+                    <xsl:when test="contains(dc:date, 'T')">
+                      <xsl:if test="xsd:dateTime(dc:date) gt xsd:dateTime('2005-10-24T00:00:00Z')">
+                        <ctl:message>[FAILURE] Record dated after 2005-10-24T00:00:00Z (<xsl:value-of select="dc:date"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:if test="xsd:date(dc:date) gt xsd:date('2005-10-24Z')">
+                        <ctl:message>[FAILURE] Record dated after 2005-10-24Z (<xsl:value-of select="dc:date"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc13.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsGreaterThanOrEqualTo predicate must include matching record 
+      representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains at least two 
+      csw:Record elements having dc:date values occurring on or after 2006-03-26.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>dc:type</csw:ElementName>
+      <csw:ElementName>dc:date</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:PropertyIsGreaterThanOrEqualTo>
+            <ogc:PropertyName>dc:date</ogc:PropertyName>
+            <ogc:Literal>2006-03-26Z</ogc:Literal>
+          </ogc:PropertyIsGreaterThanOrEqualTo>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response//csw:SearchResults/csw:Record) lt 2">
+                  <ctl:message>[FAILURE] AT least two csw:Record elements expected in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:choose>
+                    <xsl:when test="contains(dc:date, 'T')">
+                      <xsl:if test="xsd:dateTime(dc:date) lt xsd:dateTime('2006-03-26T00:00:00Z')">
+                        <ctl:message>[FAILURE] Included record dated before 2006-03-26T00:00:00Z (<xsl:value-of select="dc:date"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:if test="xsd:date(dc:date) lt xsd:date('2006-03-26Z')">
+                        <ctl:message>[FAILURE] Included record dated before 2006-03-26Z (<xsl:value-of select="dc:date"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc14.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      Not logical predicate must include only matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 10-20 
+      csw:SummaryRecord elements having titles that do not start with the string 
+      "Lorem ipsum".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" maxRecords="20">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>summary</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:Not>
+          <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
+            <ogc:PropertyName>dc:title</ogc:PropertyName>
+            <ogc:Literal>Lorem ipsum*</ogc:Literal>
+          </ogc:PropertyIsLike>
+          </ogc:Not>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="summaryRecCount" select="count($response//csw:SearchResults/csw:SummaryRecord)"/>
+                <xsl:if test="($summaryRecCount &lt; 10) or ($summaryRecCount &gt; 20)">
+                  <ctl:message>[FAILURE] 10-20 csw:SummaryRecord elements expected in response (<xsl:value-of select="$summaryRecCount"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="starts-with(dc:title,'Lorem ipsum') = true()">
+                    <ctl:message>[FAILURE] Unexpected record is included (dc:title starts with "Lorem ipsum*")</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc14.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      Not logical predicate must include only matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 11-20 csw:Record 
+      elements having extents that are either disjoint from the given bounding 
+      box or have no ows:BoundingBox child element.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" maxRecords="20">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>ows:BoundingBox</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:Not>
+           <ogc:BBOX>
+             <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
+             <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+               <gml:lowerCorner>60.0 12.0</gml:lowerCorner>
+               <gml:upperCorner>70.0 20.0</gml:upperCorner>
+             </gml:Envelope>
+           </ogc:BBOX>
+         </ogc:Not>
+       </ogc:Filter>
+     </csw:Constraint>
+   </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="recordCount" select="count($response//csw:SearchResults/csw:Record)"/>
+                <xsl:if test="($recordCount lt 11) or ($recordCount gt 20)">
+                  <ctl:message>[FAILURE] 11-20 csw:Record elements expected in response (<xsl:value-of select="$recordCount"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:variable name="env">
+                  <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+                    <gml:lowerCorner>60.0 12.0</gml:lowerCorner>
+                    <gml:upperCorner>70.0 20.0</gml:upperCorner>
+                  </gml:Envelope>
+                </xsl:variable>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="ows:BoundingBox">
+                      <xsl:if test="csw:disjoint-envelopes($env,ows:BoundingBox) != 1">
+						<ctl:message>[FAILURE] Envelopes intersect (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+						<ctl:fail/>
+					  </xsl:if>
+				  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc15.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an invalid filter 
+      expression must include an exception report.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is a valid ows:ExceptionReport; (2) the reported exceptionCode is "NoApplicableCode".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="hits">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementSetName>brief</csw:ElementSetName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter xmlns:ogc="http://www.opengis.net/foo">
+          <ogc:PropertyIsEqualTo>
+            <ogc:PropertyName>dc:title</ogc:PropertyName>
+            <ogc:Literal>Maecenas enim</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
+        </ogc:Filter>
+      </csw:Constraint>
+    </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">NoApplicableCodePhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc16.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having 
+      the Or logical predicate must include only matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 1-10 
+      csw:SummaryRecord elements that have dc:type = "http://purl.org/dc/dcmitype/Image" 
+      OR dc:format = "application/*xml".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+   <csw:Query typeNames="csw:Record">
+     <csw:ElementSetName>summary</csw:ElementSetName>
+     <csw:Constraint version="1.1.0">
+       <ogc:Filter>
+         <ogc:Or>
+           <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
+             <ogc:PropertyName>dc:format</ogc:PropertyName>
+             <ogc:Literal>application/*xml</ogc:Literal>
+           </ogc:PropertyIsLike>
+           <ogc:PropertyIsEqualTo>
+             <ogc:PropertyName>dc:type</ogc:PropertyName>
+             <ogc:Literal>http://purl.org/dc/dcmitype/Image</ogc:Literal>
+           </ogc:PropertyIsEqualTo>
+         </ogc:Or>
+       </ogc:Filter>
+     </csw:Constraint>
+   </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="phase">TypeFormatElementsPhase</ctl:with-param>
+	            </ctl:call-test>
+                <xsl:for-each select="$response//csw:SummaryRecord">
+                  <xsl:if test="not(dc:format or dc:type)">
+                    <ctl:message>[FAILURE] csw:Record is missing an expected property: dc:format or dc:type (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                  <xsl:choose>
+                    <xsl:when test="dc:format and dc:type">
+                      <xsl:if test="(dc:type/text() != 'http://purl.org/dc/dcmitype/Image') and (matches(dc:format/text(),'application/.*\+?xml') != true())">
+                        <ctl:message>[FAILURE] dc:type != "http://purl.org/dc/dcmitype/Image" AND dc:format does not match expression "application/*xml" (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:when test="dc:format">
+                      <xsl:if test="matches(dc:format/text(),'application/.*\+?xml') != true()">
+                          <ctl:message>[FAILURE] dc:format does not match expression "application/*xml" (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                          <ctl:fail/>
+                        </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:if test="dc:type/text() != 'http://purl.org/dc/dcmitype/Image'">
+                          <ctl:message>[FAILURE] dc:type != "http://purl.org/dc/dcmitype/Image" (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                          <ctl:fail/>
+                        </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc16.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having 
+      the Or logical predicate must include only matching record representations.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains 1-10 csw:Record 
+      child elements that have a matching extent OR were time stamped after 2006-01-01.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+   <csw:Query typeNames="csw:Record">
+     <csw:ElementName>dc:identifier</csw:ElementName>
+     <csw:ElementName>dc:date</csw:ElementName>
+     <csw:ElementName>ows:BoundingBox</csw:ElementName>
+     <csw:Constraint version="1.1.0">
+       <ogc:Filter>
+         <ogc:Or>
+           <ogc:BBOX>
+             <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
+             <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+               <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+               <gml:upperCorner>52.0 1.0</gml:upperCorner>
+             </gml:Envelope>
+           </ogc:BBOX>
+           <ogc:PropertyIsGreaterThan>
+             <ogc:PropertyName>dc:date</ogc:PropertyName>
+             <ogc:Literal>2006-01-01Z</ogc:Literal>
+           </ogc:PropertyIsGreaterThan>
+         </ogc:Or>
+       </ogc:Filter>
+     </csw:Constraint>
+   </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="env">
+                  <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+                    <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+                    <gml:upperCorner>52.0 1.0</gml:upperCorner>
+                  </gml:Envelope>
+                </xsl:variable>
+                <xsl:for-each select="$response//csw:Record">
+                  <xsl:if test="not(dc:date or ows:BoundingBox)">
+                    <ctl:message>[FAILURE] csw:Record is missing an expected property: dc:date or ows:BoundingBox (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                  <xsl:choose>
+                    <xsl:when test="dc:date and ows:BoundingBox">
+                      <xsl:if test="(xsd:date(dc:date) le xsd:date('2006-01-01Z')) and (csw:disjoint-envelopes($env,ows:BoundingBox) != 0)">
+                        <ctl:message>[FAILURE] Record dated on or before 2006-01-01Z AND envelopes do not intersect (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:when test="dc:date">
+                      <xsl:if test="xsd:date(dc:date) le xsd:date('2006-01-01Z')">
+                          <ctl:message>[FAILURE] Record dated on or before 2006-01-01Z (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                          <ctl:fail/>
+                        </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:if test="csw:disjoint-envelopes($env,ows:BoundingBox) != 0">
+                          <ctl:message>[FAILURE] envelopes do not intersect (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                          <ctl:fail/>
+                        </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc17.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having 
+      the And logical predicate must include only matching record representations.
+      </assertion>
+      <comment>
+      Pass if the csw:SearchResults element contains 1-10 csw:SummaryRecord 
+      elements that have dc:format="image/*" AND are related to the given record.
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>summary</csw:ElementSetName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
+            <ogc:PropertyName>dc:format</ogc:PropertyName>
+            <ogc:Literal>image/*</ogc:Literal>
+          </ogc:PropertyIsLike>
+          <ogc:PropertyIsEqualTo>
+            <ogc:PropertyName>dc:relation</ogc:PropertyName>
+            <ogc:Literal>urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
+        </ogc:And>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="recordCount" select="count($response//csw:SearchResults/csw:SummaryRecord)"/>
+                <xsl:if test="($recordCount lt 1) or ($recordCount gt 10)">
+                  <ctl:message>[FAILURE] 1-10 csw:SummaryRecord elements expected in response (<xsl:value-of select="$recordCount"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="dc:relation != 'urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc'">
+                    <ctl:message>[FAILURE] Record not related to 'urn:uuid:9a669547-b69b-469f-a11f-2d875366bbdc' (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="matches(dc:format,'image/.*') != true()">
+                    <ctl:message>[FAILURE] dc:format does not match expression "image/*" (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc17.2">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having 
+      the And logical predicate must include only matching record representations.
+      </assertion>
+      <comment>
+      Pass if the csw:SearchResults element contains 1-10 csw:Record elements 
+      that have envelopes intersecting the given bounding box AND were dated 
+      after 2006-01-01.
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementName>dc:identifier</csw:ElementName>
+    <csw:ElementName>dc:date</csw:ElementName>
+    <csw:ElementName>ows:BoundingBox</csw:ElementName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:BBOX>
+            <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
+            <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+              <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+              <gml:upperCorner>52.0 1.0</gml:upperCorner>
+            </gml:Envelope>
+          </ogc:BBOX> 
+          <ogc:PropertyIsGreaterThan>
+            <ogc:PropertyName>dc:date</ogc:PropertyName>
+            <ogc:Literal>2006-01-01Z</ogc:Literal>
+          </ogc:PropertyIsGreaterThan>
+        </ogc:And>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+         
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="recordCount" select="count($response//csw:SearchResults/csw:Record)"/>
+                <xsl:if test="($recordCount &lt; 1) or ($recordCount &gt; 10)">
+                  <ctl:message>[FAILURE] 1-10 csw:Record elements expected in response (<xsl:value-of select="$recordCount"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:variable name="env">
+                  <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+                    <gml:lowerCorner>47.0 -4.5</gml:lowerCorner>
+                    <gml:upperCorner>52.0 1.0</gml:upperCorner>
+                  </gml:Envelope>
+                </xsl:variable>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:choose>
+                    <xsl:when test="contains(dc:date, 'T')">
+                      <!-- date is a top-open interval of exactly one day in length, up to but not including 24:00:00 -->
+                      <xsl:if test="xsd:dateTime(dc:date) le xsd:dateTime('2006-01-01T23:59:59Z')">
+                        <ctl:message>[FAILURE] dc:date value occurs at or before 2006-01-01T23:59:59Z (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:if test="xsd:date(dc:date) le xsd:date('2006-01-01Z')">
+                        <ctl:message>[FAILURE] dc:date value on or before 2006-01-01Z (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                  <xsl:if test="csw:disjoint-envelopes($env,ows:BoundingBox) != 0">
+                    <ctl:message>[FAILURE] Envelopes do NOT intersect (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc18.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having 
+      the And logical predicate must include the specified view of records that 
+      satisfy all constraints.
+      </assertion>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementName>dc:identifier</csw:ElementName>
+    <csw:ElementName>dc:type</csw:ElementName>
+    <csw:ElementName>ows:BoundingBox</csw:ElementName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:Not>
+            <ogc:BBOX>
+              <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
+              <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+                <gml:lowerCorner>40.0 -9.0</gml:lowerCorner>
+                <gml:upperCorner>50.0 -5.0</gml:upperCorner>
+              </gml:Envelope>
+            </ogc:BBOX>
+          </ogc:Not>
+          <ogc:PropertyIsEqualTo matchCase="false">
+            <ogc:PropertyName>dc:type</ogc:PropertyName>
+            <ogc:Literal>HTTP://purl.org/dc/dcmitype/dataset</ogc:Literal>
+          </ogc:PropertyIsEqualTo>
+        </ogc:And>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="recordCount" select="count($response//csw:SearchResults/csw:Record)"/>
+                <xsl:if test="($recordCount &lt; 1) or ($recordCount &gt; 10)">
+                  <ctl:message>[FAILURE] 1-10 csw:Record elements expected in response (<xsl:value-of select="$recordCount"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:variable name="env">
+                  <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+                    <gml:lowerCorner>40.0 -9.0</gml:lowerCorner>
+                    <gml:upperCorner>50.0 -5.0</gml:upperCorner>
+                  </gml:Envelope>
+                </xsl:variable>
+                <xsl:for-each select="$response//csw:SearchResults/*">
+                  <xsl:if test="compare(lower-case(dc:type),'http://purl.org/dc/dcmitype/dataset') != 0">
+                    <ctl:message>[FAILURE] Unexpected record having dc:type not matching 'HTTP://purl.org/dc/dcmitype/dataset' (case-insensitive) - (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                    <ctl:fail/>
+                  </xsl:if>
+                  <xsl:if test="ows:BoundingBox">
+                      <xsl:if test="csw:disjoint-envelopes($env,ows:BoundingBox) != 1">
+                        <ctl:message>[FAILURE] Envelopes intersect (<xsl:value-of select="dc:identifier"/>)</ctl:message>
+                        <ctl:fail/>
+                      </xsl:if>
+				  </xsl:if>
+                </xsl:for-each>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc19.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes an ogc:Filter having a
+      PropertyIsLike predicate must include the specified view of all matching 
+      records. If a PropertyName value is not supplied, the predicate is evaluated 
+      against all applicable record properties.
+      </assertion>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>full</csw:ElementSetName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="\">
+          <ogc:PropertyName>csw:AnyText</ogc:PropertyName>
+          <ogc:Literal>*lorem*</ogc:Literal>
+        </ogc:PropertyIsLike>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>  
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="count($response//csw:SearchResults/csw:Record) lt 5">
+                  <ctl:message>[FAILURE] Expected at least 5 csw:Record elements with property values matching the expression "*lorem*".</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc20.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The csw:SummaryRecord view type cannot be queried. The response shall include 
+      an exception having @exceptionCode = "InvalidParameterValue" [10.2.5.3.3].
+      </assertion>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:SummaryRecord">
+    <csw:ElementSetName>summary</csw:ElementSetName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="\">
+          <ogc:PropertyName>/dc:title</ogc:PropertyName>
+          <ogc:Literal>*lorem*</ogc:Literal>
+        </ogc:PropertyIsLike>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>  
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                  <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	              </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc21.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The csw:BriefRecord view type cannot be queried. The response shall include 
+      an exception having @exceptionCode = "InvalidParameterValue" [10.2.5.3.4].
+      </assertion>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results">
+  <csw:Query typeNames="csw:BriefRecord">
+    <csw:ElementSetName>brief</csw:ElementSetName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="\">
+          <ogc:PropertyName>/dc:title</ogc:PropertyName>
+          <ogc:Literal>*lorem*</ogc:Literal>
+        </ogc:PropertyIsLike>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>  
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                  <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	              </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc22.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that includes the startPosition 
+      parameter must include the corresponding slice of the result set.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is schema valid; (2) the csw:SearchResults element contains exactly 5 
+      csw:SummaryRecord child elements; (3) csw:SearchResults/@nextRecord = 8.</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" startPosition="3" maxRecords="5">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>summary</csw:ElementSetName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="nSummaryRecord" select="count($response//csw:SearchResults/csw:SummaryRecord)"/>
+                <xsl:if test="nSummaryRecord != 5">
+                  <ctl:message>[FAILURE] 5 csw:SummaryRecord elements expected (<xsl:value-of select="$nSummaryRecord"/> returned).</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="$response//csw:SearchResults/@numberOfRecordsReturned != 5">
+                  <ctl:message>[FAILURE] @numberOfRecordsReturned != 5.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="$response//csw:SearchResults/@nextRecord != 8">
+                  <ctl:message>[FAILURE] @nextRecord != 8.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc23.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies maxRecords="0" must 
+      not include any results.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: 
+      (1) the response is schema valid; 
+      (2) the csw:SearchResults element is empty; 
+      (3) csw:SearchResults/@numberOfRecordsMatched &gt; 10; 
+      (4) csw:SearchResults/@nextRecord = 1
+      </comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" maxRecords="0">
+    <csw:Query typeNames="csw:Record">
+      <csw:ElementName>dc:identifier</csw:ElementName>
+      <csw:ElementName>ows:BoundingBox</csw:ElementName>
+      <csw:Constraint version="1.1.0">
+        <ogc:Filter>
+          <ogc:Not>
+           <ogc:BBOX>
+             <ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
+             <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:6.11:4326">
+               <gml:lowerCorner>60.0 12.0</gml:lowerCorner>
+               <gml:upperCorner>70.0 20.0</gml:upperCorner>
+             </gml:Envelope>
+           </ogc:BBOX>
+         </ogc:Not>
+       </ogc:Filter>
+     </csw:Constraint>
+   </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="nRecords" select="count($response//csw:SearchResults/*)"/>
+                <xsl:if test="$nRecords gt 0">
+                  <ctl:message>[FAILURE] csw:SearchResults should be empty (<xsl:value-of select="$nRecords"/> included)</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="xsd:integer($response//csw:SearchResults/@numberOfRecordsMatched) le 1">
+                  <ctl:message>[FAILURE] Expected @numberOfRecordsMatched &gt; 1</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                <xsl:if test="$response//csw:SearchResults/@nextRecord != 1">
+                  <ctl:message>[FAILURE] Expected csw:SearchResults/@nextRecord = 1.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc24.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies resultType="validate"
+      must include an Acknowledgement if the request entity is valid.
+      </assertion>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="validate">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>full</csw:ElementSetName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:PropertyIsLike wildCard="*" singleChar="." escapeChar="\">
+          <ogc:PropertyName>csw:AnyText</ogc:PropertyName>
+          <ogc:Literal>*lorem*</ogc:Literal>
+        </ogc:PropertyIsLike>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>  
+					</body>
+					<p:XMLValidatingParser.CSW/>
+				</request>
+			</xsl:variable>
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:if test="not($response//csw:Acknowledgement)">
+                  <ctl:message>[FAILURE] Expected csw:Acknowledgement in response.</ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc25.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies an unsupported 
+      outputFormat value must include an exception report.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is a valid ows:ExceptionReport; (2) the reported exceptionCode is 
+      "InvalidParameterValue".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" outputFormat="application/xhtml+xml" maxRecords="5">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>summary</csw:ElementSetName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+    
+    <test name="csw:csw-2.0.2-GetRecords-tc26.1">
+      <param name="csw.GetRecords.post.url"/>
+      <assertion>
+      The response to a GetRecords request that specifies an unsupported 
+      outputSchema value must include an exception report.
+      </assertion>
+      <comment>Pass if all of the following conditions are true: (1) the response 
+      is a valid ows:ExceptionReport; (2) the reported exceptionCode is 
+      "InvalidParameterValue".</comment>
+		<code>
+			<xsl:variable name="response">
+				<request>
+					<url>
+						<xsl:value-of select="$csw.GetRecords.post.url"/>
+					</url>
+                    <method>POST</method>
+					<body>
+<csw:GetRecords service="CSW" version="2.0.2" resultType="results" outputSchema="http://www.w3.org/2005/Atom" maxRecords="5">
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>summary</csw:ElementSetName>
+  </csw:Query>
+</csw:GetRecords>
+					</body>
+					<p:XMLValidatingParser.OWS/>
+				</request>
+			</xsl:variable>
+			
+            <xsl:choose>
+              <xsl:when test="not($response/*)">
+                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <ctl:call-test name="ctl:SchematronValidatingParser">
+		            <ctl:with-param name="doc" select="$response"/>
+		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
+	            </ctl:call-test>
+              </xsl:otherwise>
+            </xsl:choose>
+		</code>
+	</test>
+</ctl:package>
+
+   <ctl:test name="csw:capability-tests">
+      <ctl:param name="csw.capabilities.doc"/>
+      <ctl:assertion>Run all applicable capability tests.</ctl:assertion>
+      <ctl:code>
+          <!-- run mandatory test groups -->
+          <ctl:call-test name="csw:GetCapabilities-GET">
+            <ctl:with-param name="csw.capabilities.doc" select="$csw.capabilities.doc"/>
+          </ctl:call-test>
+          <ctl:call-test name="csw:DescribeRecord-POST">
+            <ctl:with-param name="csw.capabilities.doc" select="$csw.capabilities.doc"/>
+          </ctl:call-test>
+          <ctl:call-test name="csw:GetRecordById-GET">
+            <ctl:with-param name="csw.capabilities.doc" select="$csw.capabilities.doc"/>
+          </ctl:call-test>
+          <ctl:call-test name="csw:GetRecords-POST">
+            <ctl:with-param name="csw.capabilities.doc" select="$csw.capabilities.doc"/>
+          </ctl:call-test>
+      </ctl:code>
+   </ctl:test>
+</ctl:package>
+   
+   <ctl:suite name="csw:csw-2.0.2-compliance-suite">
+       <ctl:title>CSW 2.0.2 Compliance Test Suite</ctl:title>
+       <ctl:description>
+       Verifies a CSW 2.0.2 catalogue implementation against all applicable 
+       abstract test suites. No specific CSW application profile is presumed.
+       These tests are intended to be incorporated into profile-specific test 
+       suites.
+       </ctl:description>
+       <ctl:link>data/data-csw-2.0.2.zip</ctl:link>
+       <ctl:link>docs/csw/2.0.2/</ctl:link>
+      <ctl:starting-test>csw:Main</ctl:starting-test>
+   </ctl:suite>
+   
+   <ctl:test name="csw:Main">
+      <ctl:assertion>The implementation under test minimally conforms to the CSW 
+      part (Clause 10) of Catalogue 2.0.2 (OGC 07-006r1).</ctl:assertion>
+      <ctl:code>         
+         <xsl:variable name="form-values">
+            <ctl:form height="600" width="800">
+               <body>
+                  <h2>CSW Catalogue 2.0.2 - Test setup</h2>
+                  <h3>Service metadata</h3>
+                  <p>
+                  Please provide a URL from which a capabilities document for 
+                  the CSW implementation under test can be retrieved (this can 
+                  refer to a static document or to a service endpoint).
+                  </p>
+                  <br/>
+                  <table border="2" padding="4" bgcolor="#00ffff">
+                    <tr>
+                      <td align="left">Capabilities URL</td>
+                      <td align="center">
+                          <input name="capabilities.url" size="128" type="text" value="http://"/>
+                      </td>
+                    </tr>
+                  </table>
+                  <p>
+                  <div bgcolor="#ffffcc"><strong> WARNING </strong> Don't forget to add the test data!</div>
+                  </p>
+                  <br/>
+                  <input type="submit" value="Start"/>
+               </body>
+            </ctl:form>
+         </xsl:variable>
+
+		<!-- Populate global variables from form data -->
+		<xsl:variable name="csw.capabilities.url" select="$form-values/values/value[@key='capabilities.url']"/>
+
+		<!-- Attempt to retrieve capabilities document -->
+		<xsl:variable name="csw.capabilities.doc">
+			<ctl:request>
+				<ctl:url>
+					<xsl:value-of select="$csw.capabilities.url"/>
+				</ctl:url>
+				<ctl:method>GET</ctl:method>
+			</ctl:request>
+		</xsl:variable>
+        
+        <xsl:choose>
+          <xsl:when test="not($csw.capabilities.doc/csw:Capabilities)">
+		    <ctl:message>[FAILURE] Did not obtain a csw:Capabilities document! Skipping remaining tests.</ctl:message>	
+			<ctl:fail/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:variable name="SmokeTest.result">
+              <ctl:call-test name="csw:SmokeTest">
+                <ctl:with-param name="csw.capabilities.doc" select="$csw.capabilities.doc"/>
+              </ctl:call-test>
+            </xsl:variable>
+            <xsl:if test="not($SmokeTest.result/*)">
+               <ctl:call-test name="csw:capability-tests">
+			     <ctl:with-param name="csw.capabilities.doc" select="$csw.capabilities.doc"/>															
+		       </ctl:call-test>
+            </xsl:if>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ctl:code>
+   </ctl:test>
+   
+   <ctl:test name="csw:SmokeTest">
+		<ctl:param name="csw.capabilities.doc"/>
+		<ctl:assertion>Confirm that the IUT is ready to undergo testing.</ctl:assertion>
+        <ctl:comment>
+        Check all of the following conditions:
+        (1) the service is available;
+        (2) the capabilities document is valid;
+        (3) test data have been loaded.
+        If any of these checks fail, the test run is aborted.
+        </ctl:comment>
+		<ctl:code>
+            <ctl:call-test name="ctl:SchematronValidatingParser">
+		        <ctl:with-param name="doc" select="$csw.capabilities.doc"/>
+		        <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		        <ctl:with-param name="phase">RequiredElementsPhase</ctl:with-param>
+	        </ctl:call-test>
+
+            <xsl:variable name="GetCapabilities.get.endpoint">
+		        <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='GetCapabilities']/ows:DCP/ows:HTTP/ows:Get/@xlink:href"/>
+		    </xsl:variable>
+            <xsl:variable name="GetRecordById.get.endpoint">
+			    <xsl:value-of select="$csw.capabilities.doc//ows:OperationsMetadata/ows:Operation[@name='GetRecordById']/ows:DCP/ows:HTTP/ows:Get/@xlink:href"/>
+		    </xsl:variable>
+            <xsl:choose>
+              <xsl:when test="not(starts-with($GetCapabilities.get.endpoint,'http'))">
+                  <ctl:message>
+                  [FAILURE] Required endpoint for GetCapabilities using GET method not found in capabilities document.
+                  </ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:when test="not(starts-with($GetRecordById.get.endpoint,'http'))">
+                  <ctl:message>
+                  [FAILURE] Required endpoint for GetRecordById using GET method not found in capabilities document.
+                  </ctl:message>
+                  <ctl:fail/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="GetCapabilitiesRsp"> 
+				  <ctl:request>
+					<ctl:url>
+						<xsl:value-of select="$GetCapabilities.get.endpoint"/>
+					</ctl:url>
+					<ctl:method>GET</ctl:method>
+					<ctl:param name="service">CSW</ctl:param>
+					<ctl:param name="version">2.0.2</ctl:param>
+					<ctl:param name="request">GetCapabilities</ctl:param>
+					<p:XMLValidatingParser.CSW/>
+				  </ctl:request>
+			    </xsl:variable>
+
+                <xsl:variable name="GetRecordByIdRsp">
+                  <ctl:request>
+                    <ctl:url>
+						<xsl:value-of select="$GetRecordById.get.endpoint"/>
+					</ctl:url>
+					<ctl:method>GET</ctl:method>
+					<ctl:param name="service">CSW</ctl:param>
+					<ctl:param name="version">2.0.2</ctl:param>
+					<ctl:param name="request">GetRecordById</ctl:param>
+                    <ctl:param name="id">urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63</ctl:param>
+					<p:XMLValidatingParser.CSW/>
+				  </ctl:request>
+			    </xsl:variable>
+              
+                <xsl:if test="not($GetCapabilitiesRsp/csw:Capabilities)">
+                  <ctl:message>
+                  [FAILURE] The response entity is NOT a csw:Capabilities document.
+                  The document element has [local name] = <xsl:value-of select="local-name($GetCapabilitiesRsp/*[1])"/> and [namespace name] = <xsl:value-of select="namespace-uri($GetCapabilitiesRsp/*[1])"/>.
+                  </ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+                
+                <xsl:if test="count($GetRecordByIdRsp/csw:GetRecordByIdResponse/*) != 1">
+                  <ctl:message>
+                  [FAILURE] The GetRecordByIdResponse entity does NOT include only one matching item from the test data set (id = urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63).
+                  </ctl:message>
+                  <ctl:fail/>
+                </xsl:if>
+              </xsl:otherwise>
+            </xsl:choose>
+		</ctl:code>
+	</ctl:test>
+</ctl:package>
