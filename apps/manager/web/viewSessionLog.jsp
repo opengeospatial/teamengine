@@ -35,7 +35,9 @@ public void jspInit() {
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): Paul Daisey (Image Matters LLC) add cache mode
+  Contributor(s): Paul Daisey (Image Matters LLC) 
+  					2011-06-10, 2011-06-27, 2011-12-10	add cache mode
+  					2011-12-20 add testnum param to view_log() call for profiles so toggles will work
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
@@ -75,8 +77,7 @@ public void jspInit() {
 			    }
 			  }
 			}
-
-
+			
 			function deleteSession() {
 				if (confirm("Are you sure you want to delete session <%=request.getParameter("session")%>?")) {
 					window.location = "deleteSession?session=<%=request.getParameter("session")%>"
@@ -124,7 +125,8 @@ public void jspInit() {
 	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
 	          if (ts.getProfiles().contains(profile.getId())) {
 	        	  String path = sessionId + "/" + profile.getLocalName();
-	    	      complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out);
+	    	      // 2011-12-20 PwD was complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out);
+	    	      complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out, (i+2)); // 2011-12-20 PwD
 				  out.println("<br/>");
 	//        	  if (!complete) {
 	//    	          out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
@@ -155,7 +157,10 @@ public void jspInit() {
 <%
       boolean hasCache = ViewLog.hasCache();
       if (hasCache) {
-          out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + "'\"/>");
+    	  // begin 2011-12-10 PwD>
+          // out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + "'\"/>");
+          out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + profileParams + "'\"/>");
+          // end 2011-12-10 PwD
       }
 %>
 		<!-- end 2011-06-27 PwD -->
