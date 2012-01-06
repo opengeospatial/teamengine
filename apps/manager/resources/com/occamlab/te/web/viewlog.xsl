@@ -17,8 +17,9 @@
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): Paul Daisey (Image Matters LLC): Added support for:
-				 test status: Best Practice, Not Tested, Skipped, Continue.
+  Contributor(s): Paul Daisey (Image Matters LLC): 
+		2011-04-06 Added support for:test status: Best Practice, Not Tested, Skipped, Continue.
+		2011-12-20 Added testnum transform param for use by test template to disambiguate tests from multiple profiles
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <xsl:transform
@@ -37,6 +38,7 @@
 
 	<xsl:param name="logdir"/>
 	<xsl:param name="index"/>
+	<xsl:param name="testnum">1</xsl:param>  <!-- 2011-12-20 PwD -->
 
 <!-- 2011-04-06 PwD
 	<xsl:template name="result-filename">
@@ -90,7 +92,8 @@ replaced by the following, which returns the name of the status icon to display:
 	</xsl:function>
 
 	<xsl:template name="test" match="test">
-		<xsl:param name="testnum" select="1"/>
+		<!-- <xsl:param name="testnum" select="1"/>  -->
+		<xsl:param name="testnum" select="$testnum"/> <!-- 2011-12-20 PwD -->
 		<xsl:text>&#xa;</xsl:text>
 		<xsl:if test="test">
 			<img src="images/minus.png" name="image{$testnum}" onclick="toggle('{$testnum}', event)" title="Click to toggle.  Ctrl+Click for a deep toggle."/>

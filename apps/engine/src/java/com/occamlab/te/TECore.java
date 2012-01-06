@@ -31,6 +31,7 @@
 				 Use URLConnectionUtils.getInputStream(uc);
 				 URLEncode request parameters
 				 Add some JavaDoc
+				 Add try/catch blocks for profile execution to run more than one profile
  ****************************************************************************/
 package com.occamlab.te;
 
@@ -152,6 +153,7 @@ public class TECore implements Runnable {
     int defaultResult = PASS;			// Default result for current test          2011-03-31 PwD
     int result;                         // Result for current test
     Document prevLog = null;            // Log document for current test from previous  test execution (resume and retest modes only)
+    Document suiteLog = null;			// Log document for suite to enable use of getLogCache by profile test  2011-12-06 PwD
     PrintWriter logger = null;          // Logger for current test
     volatile String formHtml;                    // HTML representation for an active form
     volatile Document formResults;               // Holds form results until they are retrieved
@@ -290,11 +292,19 @@ public class TECore implements Runnable {
                     }
                     if (profiles.contains("*")) {
                         for (String profile : index.getProfileKeys()) {
-                            execute_profile(profile, params, false);
+                        	try {  // 2011-12-21 PwD 
+                        		execute_profile(profile, params, false);
+                        	} catch (Exception e) {
+                            	//	e.printStackTrace();   parser errors so more than one profile may be executed
+                            }
                         }
                     } else {
                         for (String profile : profiles) {
+                        	try {  // 2011-12-21 PwD 
                             execute_profile(profile, params, true);
+                        	} catch (Exception e) {
+                        	//	e.printStackTrace();   parser errors so more than one profile may be executed
+                        	}
                         }
                     }
                 }
@@ -322,6 +332,30 @@ public class TECore implements Runnable {
         XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
         setTestPath(testPath);
         executeTest(test, paramsNode, context); 
+        // begin 2011-12-08 PwD
+        	if (testPath.equals(opts.getSessionId())) {
+        		suiteLog = LogUtils.readLog(opts.getLogDir(), testPath); // 2011-12-12 PwD  Profile not executed in retest mode
+                ArrayList<String> params = opts.getParams();
+                List<String> profiles = opts.getProfiles();
+                if (profiles.contains("*")) {
+                    for (String profile : index.getProfileKeys()) {
+                    	try {  // 2011-12-21 PwD 
+                    		execute_profile(profile, params, false);
+                    	} catch (Exception e) {
+                        	//	e.printStackTrace();   parser errors so more than one profile may be executed
+                        }
+                    }
+                } else {
+                    for (String profile : profiles) {
+                    	try {  // 2011-12-21 PwD 
+                    		execute_profile(profile, params, true);
+                    	} catch (Exception e) {
+                        	//	e.printStackTrace();   parser errors so more than one profile may be executed
+                        }
+                    }
+                }
+        	}
+        // end 2011-12-08 PwD
     }
 
     public int execute_test(String testName, List<String> params, XdmNode contextNode) throws Exception {
@@ -421,12 +455,19 @@ public class TECore implements Runnable {
             execute_suite(suite.getId(), params);
             log = LogUtils.readLog(opts.getLogDir(), sessionId);
         }
+        suiteLog = log; // 2011-12-06 PwD  So Profile test can call getLogCache
         String testId = LogUtils.getTestIdFromLog(log);
         List<String> baseParams = LogUtils.getParamListFromLog(engine.getBuilder(), log);
+        // begin 2011-12-06 PwD
+/*        String testCallPath = LogUtils.getTestCallPathFromLog(log);
+        Document secondTestLog = LogUtils.readLog(opts.getLogDir(), testCallPath);
+        List<String> secondTestParams = LogUtils.getParamListFromLog(engine.getBuilder(), secondTestLog);
+*/        // end 2011-12-06 PwD
         TestEntry test = index.getTest(testId);
         if (suite.getStartingTest().equals(test.getQName())) {
             ArrayList<String> kvps = new ArrayList<String>();
             kvps.addAll(baseParams);
+            // kvps.addAll(secondTestParams);  // 2011-12-06 PwD
             kvps.addAll(params);
             Document form = profile.getForm();
             if (form != null) {
@@ -621,7 +662,7 @@ public class TECore implements Runnable {
 
         PrintWriter oldLogger = logger;
         if (opts.getLogDir() != null) {
-            logger = createLog();
+            logger = createLog();  // replaces prevLog
             logger.println("<log>");
             // begin 2011-04-01 PwD
             /* was
@@ -1931,7 +1972,16 @@ public class TECore implements Runnable {
                     child_e = DomUtils.getChildElement(cache_e);
                 }
             }
+        } 
+        // begin 2011-12-09 PwD
+        if (suiteLog != null && child_e == null) {
+            for (Element cache_e : DomUtils.getElementsByTagName(suiteLog, "cache")) {
+                if (cache_e.getAttribute("id").equals(id)) {
+                    child_e = DomUtils.getChildElement(cache_e);
+                }
+            }
         }
+        // end 2011-12-09 PwD
         return (child_e == null) ? null : child_e;
     }
     // end 2011-06-09 PwD

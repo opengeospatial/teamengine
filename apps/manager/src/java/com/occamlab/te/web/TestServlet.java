@@ -19,6 +19,8 @@
  Contributor(s): Paul Daisey (Image Matters LLC) : 
  					enable ViewSessionLog.jsp to find listing files
 					add cache mode
+					enable execution of profiles in retest and cache modes
+					sort profiles with TreeSet()s so they are executed in order
  ****************************************************************************/
 package com.occamlab.te.web;
 
@@ -451,13 +453,20 @@ public class TestServlet extends HttpServlet {
                     } else {
                         opts.addTestPath(test);
                     }
+                    /* begin 2011-12-21 PwD
                     for (Entry<String,String> entry : params.entrySet()) {
                         if(entry.getKey().startsWith("profile_")) {
                             String profileId = entry.getValue();
+                    */
+                    for (String key : new java.util.TreeSet<String>(params.keySet())) {
+                    	if (key.startsWith("profile_")) {
+                    		String profileId = params.get(key);
+                    // end 2011-12-21 PwD
                             int i = profileId.indexOf("}");
                             opts.addTestPath(sessionid + "/" + profileId.substring(i + 1));
                         }
                     }
+
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
                 } else if (mode.equals("resume")) {
@@ -474,6 +483,26 @@ public class TestServlet extends HttpServlet {
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
 // end 2011-06-10 PwD
+// begin 2011-12-10 PwD
+                    ArrayList<String> profiles = new ArrayList<String>();
+                    /* begin 2011-12-21 PwD
+                    for (Entry<String,String> entry : params.entrySet()) {
+                        if(entry.getKey().startsWith("profile_")) {
+                            profiles.add(entry.getValue());
+                            opts.addProfile(entry.getValue());
+                        }
+                    }                    
+                    */
+                    for (String key : new java.util.TreeSet<String>(params.keySet())) {
+                    	if (key.startsWith("profile_")) {
+                    		String profileId = params.get(key);
+                    		profiles.add(profileId);
+                    		opts.addProfile(profileId);
+                    	}
+                    }
+                    // end 2011-12-21 PwD
+                    s.setProfiles(profiles);
+// end 2011-12-10 PwD
                 } else {
                     opts.setMode(Test.TEST_MODE);
                     String sessionid = LogUtils.generateSessionId(logdir);
@@ -490,12 +519,22 @@ public class TestServlet extends HttpServlet {
                     opts.setSourcesName(sources);
                     opts.setSuiteName(suite.getId());
                     ArrayList<String> profiles = new ArrayList<String>();
+                    /* begin 2011-12-21 PwD
                     for (Entry<String,String> entry : params.entrySet()) {
                         if(entry.getKey().startsWith("profile_")) {
                             profiles.add(entry.getValue());
                             opts.addProfile(entry.getValue());
                         }
                     }
+                    */
+                    for (String key : new java.util.TreeSet<String>(params.keySet())) {
+                    	if (key.startsWith("profile_")) {
+                    		String profileId = params.get(key);
+                    		profiles.add(profileId);
+                    		opts.addProfile(profileId);
+                    	}
+                    }
+                    // end 2011-12-21 PwD
                     s.setProfiles(profiles);
                     s.save(logdir);
                 }
