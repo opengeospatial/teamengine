@@ -16,7 +16,9 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): Paul Daisey (Image Matters LLC) add hasCache for cache mode
+ Contributor(s): Paul Daisey (Image Matters LLC) 
+ 					2011-06-27 add hasCache for cache mode
+ 					2011-12-20 overload view_log with additional testnum param to handle profiles
 
  ****************************************************************************/
 package com.occamlab.te;
@@ -120,12 +122,18 @@ public class ViewLog {
 //    }
 
     public static boolean view_log(File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
+    	return view_log(logdir, session, tests, templates, out, 1);
+    }
+    
+// 2011-12-20 was    public static boolean view_log(File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
+    public static boolean view_log(File logdir, String session, ArrayList tests, Templates templates, Writer out, int testnum) throws Exception {
 //        passCount = 0;
 //        failCount = 0;
 //        warnCount = 0;
     	hasCache = false; // 2011-06-27 PwD
         Transformer t = templates.newTransformer();
         t.setParameter("logdir", logdir.getAbsolutePath());
+        t.setParameter("testnum", Integer.toString(testnum));  // 2011-12-20 PwD
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
         if (tests.size() == 0 && session == null) {
