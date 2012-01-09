@@ -12,6 +12,16 @@
                   method="getImageType"/>
 	</ctl:function>   
    
+   <!-- Start PwD additions 2011-11-30 -->
+   <ctl:function name="ctl:ParseBase64ImageData">
+		<ctl:param name="base64Data">Base 64 image data, e.g. from wmts:BinaryPayload/wmts:BinaryContent returned by SOAPParser as unwrapped content from SOAP GetTile response, or from ImageParser parsers:base64Data instruction from a GetTile image. </ctl:param>
+		<ctl:param name="instruction">parsers:ImageParser element containing a list of parsers:* instruction child elements (any or all of type, height, width, metadata) for the ImageParser</ctl:param>
+		<ctl:return>Requested parsers:* elements with requested data</ctl:return>
+		<ctl:description>Invokes the ImageParser on the specified base64Data using the parsers:* elements specified in the instruction.</ctl:description>
+		<ctl:java class="com.occamlab.te.parsers.ImageParser" method="parseBase64" initialized="false"/>
+  </ctl:function>
+   <!-- end PwD additions 2011-11-30 -->
+   
 	<ctl:function name="ctl:getBeginningDateTime">
 		<ctl:param name="timestamp"/>
 		<ctl:description>
