@@ -3,9 +3,12 @@ CSW 2.0.2 Test Suite Release Notes
 
 Changes included in latest revision:
 
+--- revision R3 -----------
 2011-12-01 (lbermudez):
-- fixed minor typo in all.xml (lbigagli)
+- fixed minor typo in all.xml (lbigagli)§
 - created tag csw-2.0.2 r3
+
+---------------------------
 
 2010-08-05 (kstegemoller):
 - created tag csw-2.0.2 r2
