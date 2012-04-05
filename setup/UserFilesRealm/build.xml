@@ -5,7 +5,7 @@
   <property file="build.properties"/>
 
   <path id="classpath">
-    <fileset dir="${tomcat.dir}/server/lib" includes="catalina.jar"/>
+    <fileset dir="${tomcat.dir}/lib" includes="catalina.jar"/>
   </path>
 
   <target name="compile">
