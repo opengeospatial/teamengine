@@ -16,22 +16,7 @@
  Grumman Corporation. All Rights Reserved.
 
  Contributor(s): S. Gianfranceschi (Intecs): Added the SOAP suport
- 
-				 Paul Daisey (Image Matters LLC): Added support for:
-				 test context specified via ctl:context;				 
-				 test types:  Mandatory, Mandatory if Implemented, Optional;
-				 test status: Best Practice, Not Tested, Skipped;
-				 no inheritance of Skipped status to/from Mandatory if Implemented tests; 
-				 no inheritance of Continue, Warning, Not Tested, 
-				   Skipped, Fail, or Inherited Failure status to/from Optional tests.
-				 Add getResult()
-				 Add putLogCache(), getLogCache(), getMode()
-				 Make changes for Test.REDO_FROM_CACHE_MODE
-				 Add support for ctl:dynamicParam inside ctl:request
-				 Use URLConnectionUtils.getInputStream(uc);
-				 URLEncode request parameters
-				 Add some JavaDoc
-				 Add try/catch blocks for profile execution to run more than one profile
+
  ****************************************************************************/
 package com.occamlab.te;
 
@@ -49,13 +34,11 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.LinkedList; // 2011-04-07 PwD
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -113,22 +96,11 @@ import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
 import com.occamlab.te.util.SoapUtils;
-import com.occamlab.te.util.URLConnectionUtils; // PwD
-// PwD
-import java.io.InputStreamReader;
-import java.io.CharArrayWriter;
-import java.io.StringBufferInputStream;
-
-
 import java.util.Date;
 import org.w3c.dom.Comment;
 
 /**
  * Provides various utility methods to support test execution and logging.
- * Primary ones include implementation and execution of 
- * ctl:suite, ctl:profile, ctl:test, ctl:function,
- * ctl:request and ctl:soap-request instructions, 
- * and invocation of any parsers specified therein.
  *
  */
 public class TECore implements Runnable {
@@ -148,12 +120,8 @@ public class TECore implements Runnable {
     String fnPath = "";                 // Uniquely identifies an XSL function instance within a test instance
     String indent = "";                 // Contains the appropriate number of spaces for the current indent level
     String contextLabel = "";           // Current context label set by ctl:for-each
-    String testType = "Mandatory";      // Type of current test                     2011-04-07 PwD
-    String defaultResultName = "Pass";  // Default result name for current test     2011-04-01 PwD
-    int defaultResult = PASS;			// Default result for current test          2011-03-31 PwD
     int result;                         // Result for current test
     Document prevLog = null;            // Log document for current test from previous  test execution (resume and retest modes only)
-    Document suiteLog = null;			// Log document for suite to enable use of getLogCache by profile test  2011-12-06 PwD
     PrintWriter logger = null;          // Logger for current test
     volatile String formHtml;                    // HTML representation for an active form
     volatile Document formResults;               // Holds form results until they are retrieved
@@ -161,24 +129,17 @@ public class TECore implements Runnable {
     Map<Integer, Object>functionInstances = new HashMap<Integer, Object>();
     Map<String, Object>parserInstances = new HashMap<String, Object>();
     Map<String, Method>parserMethods = new HashMap<String, Method>();
-    LinkedList<TestEntry>testStack = new LinkedList<TestEntry>(); // 2011-04-07 PwD
+
     volatile boolean threadComplete = false;
     volatile boolean stop = false;
     volatile ByteArrayOutputStream threadOutput;
 
-	public static final int CONTINUE = -1;  		// 2011-03-30 PwD moved
-    public static final int BEST_PRACTICE = 0; 		// 2011-03-31 PwD
-    public static final int PASS = 1;				// 2011-03-31 PwD was 0;
-    public static final int NOT_TESTED = 2; 		// 2011-03-30 PwD
-    public static final int SKIPPED = 3;			// 2011-03-30 PwD
-    public static final int WARNING = 4;			// 2011-03-30 PwD was 1;
-    public static final int INHERITED_FAILURE = 5; 	// 2011-03-30 PwD was 2;
-    public static final int FAIL = 6;				// 2011-03-30 PwD was 3;
+    public static final int PASS = 0;
+    public static final int WARNING = 1;
+	public static final int CONTINUE = -1;
+    public static final int INHERITED_FAILURE = 2;
+    public static final int FAIL = 3;
 
-    public static final int MANDATORY = 0;					// 2011-03-31 PwD
-    public static final int MANDATORY_IF_IMPLEMENTED = 1; 	// 2011-03-31 PwD
-    public static final int OPTIONAL = 2;					// 2011-03-31 PwD
-    
     static final String XSL_NS = Test.XSL_NS;
     static final String CTL_NS = Test.CTL_NS;
     static final String TE_NS = Test.TE_NS;
@@ -214,16 +175,6 @@ public class TECore implements Runnable {
         out = System.out;
     }
 
-    // begin 2011-04-07 PwD
-    public TestEntry getParentTest() {
-    	if (testStack.size() < 2) {
-    		return testStack.peek();
-    	} else {
-    		return testStack.get(1);
-    	}
-    }
-    // end 2011-04-07 PwD
-    
     public String getParamsXML(List<String> params) throws Exception {
         String paramsXML = "<params>";
         for (int i = 0; i < params.size(); i++){
@@ -258,11 +209,6 @@ public class TECore implements Runnable {
     // Execute tests
     public void execute() throws Exception {
         try {
-        	// begin 2011-05-07 PwD
-        	TestEntry grandParent = new TestEntry();
-        	grandParent.setType("Mandatory");
-        	testStack.push(grandParent);
-        	// end 2011-05-07 PwD
             String sessionId = opts.getSessionId();
     //        File logDir = opts.getLogDir();
             int mode = opts.getMode();
@@ -271,10 +217,6 @@ public class TECore implements Runnable {
     
             if (mode == Test.RESUME_MODE) {
                 reexecute_test(sessionId);
-            // begin 2011-06-09 PwD
-            } else if (mode == Test.REDO_FROM_CACHE_MODE) {
-                reexecute_test(sessionId);
-            // end 2011-06-09 PwD
             } else if (mode == Test.RETEST_MODE) {
                 for (String testPath : opts.getTestPaths()) {
                     reexecute_test(testPath);
@@ -282,8 +224,8 @@ public class TECore implements Runnable {
             } else if (mode == Test.TEST_MODE) {
                 String testName = opts.getTestName();
                 if (testName != null) {
-                    XdmNode contextNode = opts.getContextNode();  // 2011-03-30 this is null!  PwD
-                    execute_test(testName, params, contextNode);  // line 300
+                    XdmNode contextNode = opts.getContextNode();
+                    execute_test(testName, params, contextNode);
                 } else {
                     String suiteName = opts.getSuiteName();
                     List<String> profiles = opts.getProfiles();
@@ -292,19 +234,11 @@ public class TECore implements Runnable {
                     }
                     if (profiles.contains("*")) {
                         for (String profile : index.getProfileKeys()) {
-                        	try {  // 2011-12-21 PwD 
-                        		execute_profile(profile, params, false);
-                        	} catch (Exception e) {
-                            	//	e.printStackTrace();   parser errors so more than one profile may be executed
-                            }
+                            execute_profile(profile, params, false);
                         }
                     } else {
                         for (String profile : profiles) {
-                        	try {  // 2011-12-21 PwD 
                             execute_profile(profile, params, true);
-                        	} catch (Exception e) {
-                        	//	e.printStackTrace();   parser errors so more than one profile may be executed
-                        	}
                         }
                     }
                 }
@@ -331,31 +265,7 @@ public class TECore implements Runnable {
         XdmNode contextNode = LogUtils.getContextFromLog(builder, log);
         XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
         setTestPath(testPath);
-        executeTest(test, paramsNode, context); 
-        // begin 2011-12-08 PwD
-        	if (testPath.equals(opts.getSessionId())) {
-        		suiteLog = LogUtils.readLog(opts.getLogDir(), testPath); // 2011-12-12 PwD  Profile not executed in retest mode
-                ArrayList<String> params = opts.getParams();
-                List<String> profiles = opts.getProfiles();
-                if (profiles.contains("*")) {
-                    for (String profile : index.getProfileKeys()) {
-                    	try {  // 2011-12-21 PwD 
-                    		execute_profile(profile, params, false);
-                    	} catch (Exception e) {
-                        	//	e.printStackTrace();   parser errors so more than one profile may be executed
-                        }
-                    }
-                } else {
-                    for (String profile : profiles) {
-                    	try {  // 2011-12-21 PwD 
-                    		execute_profile(profile, params, true);
-                    	} catch (Exception e) {
-                        	//	e.printStackTrace();   parser errors so more than one profile may be executed
-                        }
-                    }
-                }
-        	}
-        // end 2011-12-08 PwD
+        executeTest(test, paramsNode, context);
     }
 
     public int execute_test(String testName, List<String> params, XdmNode contextNode) throws Exception {
@@ -364,17 +274,8 @@ public class TECore implements Runnable {
             throw new Exception("Error: Test " + testName + " not found.");
         }
         XdmNode paramsNode = engine.getBuilder().build(new StreamSource(new StringReader(getParamsXML(params))));
-        // begin 2011-03-30 PwD
-        if (contextNode == null && test.usesContext()) {
-        	// begin 2011-06-07 PwD
-        	// String contextNodeXML = "<context>" + test.getContext() + "</context>";
-        	String contextNodeXML = "<context><value><context>" + test.getContext() + "</context></value></context>";
-        	// end 2011-06-07 PwD
-        	contextNode = engine.getBuilder().build(new StreamSource(new StringReader(contextNodeXML)));
-        }
-        // end 2011-03-30 PwD
         XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
-        return executeTest(test, paramsNode, context);  // line 586
+        return executeTest(test, paramsNode, context);
     }
 
     public void execute_suite(String suiteName, List<String> params) throws Exception {
@@ -394,14 +295,6 @@ public class TECore implements Runnable {
                 throw new Exception("Error: Suite " + suiteName + " not found.");
             }
         }
-        // begin 2011-03-31 PwD
-        defaultResultName = suite.getDefaultResult();
-        defaultResult = defaultResultName.equals("BestPractice") ? BEST_PRACTICE : PASS;
-        // end 2011-03-31 PwD
-        // begin 2011-04-07 PwD
-    	testStack.peek().setDefaultResult(defaultResult);
-    	testStack.peek().setResult(defaultResult);
-        // end 2011-04-07 PwD
         ArrayList<String> kvps = new ArrayList<String>();
         kvps.addAll(params);
         Document form = suite.getForm();
@@ -412,23 +305,13 @@ public class TECore implements Runnable {
             }
         }
         String name = suite.getPrefix() + ":" + suite.getLocalName();
-        // begin 2011-06-09 PwD
-        // was out.println("Testing suite " + name + "...");
-        // 2011-03-31 was out.println("Testing suite " + name + " with defaultResult of " + defaultResultName + " ...");
-        out.println("Testing suite " + name + " in " + getMode() + " with defaultResult of " + defaultResultName + " ...");
-        // end 2011-06-09 PwD
+        out.println("Testing suite " + name + "...");
         setIndentLevel(1);
-        int result = execute_test(suite.getStartingTest().toString(), kvps, null);  // line 327
+        int result = execute_test(suite.getStartingTest().toString(), kvps, null);
         out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName() + " ");
         if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
             out.println("Failed");
-        } 
-        // begin 2011-03-31 PwD
-        else if (result == TECore.BEST_PRACTICE){
-        	out.println("Passed as Best Practice");
-        }
-        // end 2011-03-31 PwD
-        else {
+        } else {
             out.println("Passed");
         }
     }
@@ -455,19 +338,12 @@ public class TECore implements Runnable {
             execute_suite(suite.getId(), params);
             log = LogUtils.readLog(opts.getLogDir(), sessionId);
         }
-        suiteLog = log; // 2011-12-06 PwD  So Profile test can call getLogCache
         String testId = LogUtils.getTestIdFromLog(log);
         List<String> baseParams = LogUtils.getParamListFromLog(engine.getBuilder(), log);
-        // begin 2011-12-06 PwD
-/*        String testCallPath = LogUtils.getTestCallPathFromLog(log);
-        Document secondTestLog = LogUtils.readLog(opts.getLogDir(), testCallPath);
-        List<String> secondTestParams = LogUtils.getParamListFromLog(engine.getBuilder(), secondTestLog);
-*/        // end 2011-12-06 PwD
         TestEntry test = index.getTest(testId);
         if (suite.getStartingTest().equals(test.getQName())) {
             ArrayList<String> kvps = new ArrayList<String>();
             kvps.addAll(baseParams);
-            // kvps.addAll(secondTestParams);  // 2011-12-06 PwD
             kvps.addAll(params);
             Document form = profile.getForm();
             if (form != null) {
@@ -488,35 +364,16 @@ public class TECore implements Runnable {
                 int baseResult = Integer.parseInt(baseTest.getAttribute("result"));
                 if (baseResult == TECore.FAIL || baseResult == TECore.INHERITED_FAILURE) {
                     summary = "Failed";
-                } 
-                // begin 2011-03-31 PwD
-                else if (result == TECore.BEST_PRACTICE){
-                	summary = "Passed as Best Practice";
-                }
-                // end 2011-03-31 PwD                
-                else {
+                } else {
                     summary = "Passed";
                 }
             }
             out.println(summary);
             setIndentLevel(1);
-            // begin 2011-03-31 PwD
-            String defaultResultName = profile.getDefaultResult();
-            defaultResult = defaultResultName.equals("BestPractice") ? BEST_PRACTICE : PASS;
-            out.println("\nExecuting profile " + name + " with defaultResult of " + defaultResultName + "...");
-            // end 2011-03-31 PwD
-            int result = execute_test(profile.getStartingTest().toString(), kvps, null);  // line 284
+            int result = execute_test(profile.getStartingTest().toString(), kvps, null);
             out.print("Profile " + profile.getPrefix() + ":" + profile.getLocalName() + " ");
             if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
                 summary = "Failed";
-            }
-            // begin 2011-03-31 PwD
-            else if (result == TECore.BEST_PRACTICE){
-            	summary = "Passed as Best Practice";
-            }
-            else {
-            // end 2011-03-31 PwD                
-                summary = "Passed";
             }
             out.println(summary);
         } else {
@@ -543,11 +400,10 @@ public class TECore implements Runnable {
         if (params != null) {
             xt.setParameter(TEPARAMS_QNAME, params);
         }
-        xt.transform();  // test may set global result, e.g. by calling ctl:fail  2011-03-31 PwD
+        xt.transform();
         XdmNode ret = dest.getXdmNode();
         return ret;
     }
-    
 
     static String getLabel(XdmNode n) {
         String label = n.getAttributeValue(LABEL_QNAME);
@@ -603,93 +459,52 @@ public class TECore implements Runnable {
         newText = StringUtils.replaceAll(newText, "{$context}", contextLabel);
         return newText;
     }
+
     static String getResultDescription(int result) {
-    	
-    	if (result == CONTINUE){					// 2011-03-30 PwD Moved
-			return "Inconclusive! Continue Test";
-        } else if (result == BEST_PRACTICE) {		// 2011-03-30 PwD Added
-        	return "Passed as Best Practice";
-    	} else if (result == PASS) {
+        if (result == PASS) {
             return "Passed";
-        } else if (result == NOT_TESTED) {			// 2011-03-30 PwD Added
-    		return "Not Tested";
-    	} else if (result == SKIPPED) {				// 2011-03-30 PwD Added
-    		return "Skipped - Prerequisites Not Met"; 
-    	} else if (result == WARNING) {
+        } else if (result == WARNING) {
             return ("generated a Warning.");
         } else if (result == INHERITED_FAILURE){
             return "Failed (Inherited failure)";
-		}else  {
+		}else if (result == CONTINUE){
+			return "Inconclusive! Continue Test";
+        } else {
             return "Failed";
         }
     }
 
     public int executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
-        // begin 2011-04-07 PwD
-    	testStack.push(test);
-    	testType = test.getType();
-        defaultResult = test.getDefaultResult();
-        defaultResultName = (defaultResult == BEST_PRACTICE) ? "BestPractice" : "Pass";
-        // end 2011-04-07 PwD
         Document oldPrevLog = prevLog;
         if (opts.getMode() == Test.RESUME_MODE) {
             prevLog = readLog();
-        // begin 2011-06-09 PwD
-        } else if (opts.getMode() == Test.REDO_FROM_CACHE_MODE) {
-        	prevLog = readLog();
-        // end 2011-06-09 PwD
         } else {
             prevLog = null;
         }
+
         String assertion = getAssertionValue(test.getAssertion(), params);
-        // begin 2011-06-09 PwD
-        // out.print(indent + (prevLog == null ? "Testing " : "Resuming Test "));
-        out.print("Testing ");
-        // out.println(test.getName() + " (" + testPath + ")...");
-        out.print(test.getName() + " type " + test.getType()); 
-        out.print(" in " + getMode() + " with defaultResult " + defaultResultName + " ");
-        out.println("(" + testPath + ")...");
-        // end 2011-06-09 PwD
+        out.print(indent + (prevLog == null ? "Testing " : "Resuming Test "));
+        out.println(test.getName() + " (" + testPath + ")...");
 
         String oldIndent = indent;
         indent += INDENT;
-        // begin 2011-03-30 PwD
-        if (test.usesContext()) {
-        	out.println(indent + "Context: " + test.getContext());
-        }
-        // end 2011-03-30 PwD
+
         out.println(indent + "Assertion: " + assertion);
 
         PrintWriter oldLogger = logger;
         if (opts.getLogDir() != null) {
-            logger = createLog();  // replaces prevLog
+            logger = createLog();
             logger.println("<log>");
-            // begin 2011-04-01 PwD
-            /* was
             logger.println("<starttest local-name=\"" + test.getLocalName() + "\" " +
                                       "prefix=\"" + test.getPrefix() + "\" " +
                                       "namespace-uri=\"" + test.getNamespaceURI() + "\" " +
                                       "path=\"" + testPath + "\" " +
                                       "file=\"" + test.getTemplateFile().getAbsolutePath() + "\">");
-            */
-            logger.print("<starttest ");
-            logger.print("local-name=\"" + test.getLocalName() + "\" ");
-            logger.print("prefix=\"" + test.getPrefix() + "\" ");
-            logger.print("namespace-uri=\"" + test.getNamespaceURI() + "\" ");
-            logger.print("type=\"" + test.getType() + "\" ");
-            logger.print("defaultResult=\"" + Integer.toString(test.getDefaultResult()) + "\" ");
-            logger.print("path=\"" + testPath + "\" ");
-            logger.println("file=\"" + test.getTemplateFile().getAbsolutePath() + "\">");     
-            // end 2011-04-01 PwD
             logger.println("<assertion>" + StringUtils.escapeXML(assertion) + "</assertion>");
             if (params != null) {
                 logger.println(params.toString());
             }
             if (test.usesContext()) {
-                // begin 2011-04-01 PwD
-                // the code below reuses global test suite context for all tests in tree.
-                // I really don't understand how that is useful.
-                /* was
                 logger.println("<context label=\"" + StringUtils.escapeXML(contextLabel) + "\">");
                 NodeInfo contextNode = (NodeInfo)context.getContextItem();
                 int kind = contextNode.getNodeKind();
@@ -703,18 +518,6 @@ public class TECore implements Runnable {
                     logger.println(DomUtils.serializeSource(engine.getBuilder().build(contextNode).asSource()));
                     logger.println("</value>");
                 }
-                */
-                logger.print("<context label=\"" + StringUtils.escapeXML(contextLabel) + "\">");
-                // start 2011-06-08 PwD
-                logger.print("<value>");
-                logger.print("<context>");
-                // end 2011-06-08 PwD
-                logger.print(test.getContext());
-                // start 2011-06-08 PwD
-                logger.print("</context>");
-                logger.print("</value>");
-                // end 2011-06-08 PwD
-               // end 2011-04-01 PwD
                 logger.println("</context>");
 
             }
@@ -722,10 +525,9 @@ public class TECore implements Runnable {
             logger.flush();
         }
 
-        result = defaultResult;  // 2011-03-31 PwD   was PASS;
-      
+        result = PASS;
         try {
-            executeTemplate(test, params, context);  // May set worse result  2011-03-31 PwD
+            executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
             jlogger.log(Level.SEVERE,"SaxonApiException",e);
 
@@ -733,22 +535,7 @@ public class TECore implements Runnable {
             if (logger != null) {
                 logger.println("<exception><![CDATA[" + e.getMessage() + "]]></exception>");
             }
-            // begin 2011-04-07 PwD
-            // was result = FAIL;
-            TestEntry parentTest = getParentTest();
-            if (result == CONTINUE) {
-	            if ("Optional".equals(testType)) {
-	            	result = parentTest.getResult();
-	            } else {
-	            	result = INHERITED_FAILURE;
-	            	parentTest.setResult(result);
-	            }
-            } else {
-            	result = FAIL;  // all other exceptions
-            	parentTest.setResult(result);
-            }
-            testStack.pop();
-            // end 2011-04-07 PwD
+            result = FAIL;
         }
 
         if (logger != null) {
@@ -763,9 +550,7 @@ public class TECore implements Runnable {
         indent = oldIndent;
 
         out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
-        // begin 2011-04-07 PwD
-        test.setResult(result);
-        // end 2011-04-07 PwD
+
         return result;
     }
 
@@ -782,7 +567,6 @@ public class TECore implements Runnable {
         if (opts.getMode() == Test.RESUME_MODE) {
             Document doc = LogUtils.readLog(opts.getLogDir(), testPath + "/" + callId);
             int result = LogUtils.getResultFromLog(doc);
-            // TODO revise the following if
             if (result >= 0) {
                 out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
                 if (result == WARNING) {
@@ -797,24 +581,15 @@ public class TECore implements Runnable {
         }
 
         String oldTestPath = testPath;
-        // begin 2011-04-07 PwD
-        // int oldResult = result;  // This is the parent result   2011-03-31 PwD  
-        // end 2011-04-07 PwD
+        int oldResult = result;
         testPath += "/" + callId;
-        executeTest(test, S9APIUtils.makeNode(params), context); 
+        executeTest(test, S9APIUtils.makeNode(params), context);
         testPath = oldTestPath;
-        // called test result has been set; now setting parent result
+
 		if (result == CONTINUE){
 			throw new Exception("Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
-			// parent result set in catch clause at line 693
-		}
-		// begin 2011-04-07 PwD
-        TestEntry parentTest = getParentTest();
-        int oldResult = parentTest.getResult();
-        // end 2011-04-07 PwD
-		// begin 2011-03-31 PwD
-		/* was
-		else if (result < oldResult) {
+			
+		}else if (result < oldResult) {
             // Restore parent result if the child results aren't worse
             result = oldResult;
         } else if (result == FAIL && oldResult != FAIL) {
@@ -823,69 +598,6 @@ public class TECore implements Runnable {
         } else {
             // Keep child result as parent result
         }
-        */
-		String testTypeName = test.getType();
-		int testType = (parentTest.getType().equals("Optional") ? OPTIONAL : // 2011-04-08 PwD
-						testTypeName.equals("Optional") ? OPTIONAL :
-						testTypeName.equals("MandatoryIfImplemented") ? MANDATORY_IF_IMPLEMENTED :
-						MANDATORY);
-		if (result == BEST_PRACTICE) {
-			result = oldResult;  // leave the parent result unchanged
-		} else if (result == PASS) {
-			if (oldResult == BEST_PRACTICE) {
-				result = PASS; // Best Practice must be universal
-			} else {
-				result = oldResult; // leave the parent result unchanged
-			}
-		} else if (result == NOT_TESTED || result == WARNING) {
-			switch(testType) {
-				case MANDATORY:
-				case MANDATORY_IF_IMPLEMENTED:
-				{
-					result = INHERITED_FAILURE;
-					break;
-				}
-				case OPTIONAL:
-				default:
-				{
-					result = oldResult;  // leave the parent result unchanged
-				}
-			}	
-		} else if (result == SKIPPED) {
-			switch(testType) {
-				case MANDATORY:
-				{
-					result = INHERITED_FAILURE;
-					break;
-				}
-				case MANDATORY_IF_IMPLEMENTED:
-				case OPTIONAL:
-				default:
-				{
-					result = oldResult;  // leave the parent result unchanged
-					
-				}
-			}
-		} else if (result == FAIL || result == INHERITED_FAILURE) {
-			switch(testType) {
-				case MANDATORY:
-				case MANDATORY_IF_IMPLEMENTED:
-				{
-					result = INHERITED_FAILURE;
-					break;
-				}
-				case OPTIONAL:
-				default:
-				{
-					result = oldResult;  // leave the parent result unchanged
-				}
-			}	
-		}
-		// end 2011-03-31 PwD
-		// begin 2011-04-07 PwD
-		parentTest.setResult(result);
-		testStack.pop();
-		// end 2011-04-07 PwD
     }
 
 	public void repeatTest(XPathContext context, String localName,
@@ -922,7 +634,7 @@ public class TECore implements Runnable {
 		for (int i = 0; i < count; i++) {
                        
 			
-			executeTest(test, S9APIUtils.makeNode(params), context); // line 535
+			executeTest(test, S9APIUtils.makeNode(params), context);
 			
 			testPath = oldTestPath;
 			
@@ -1073,41 +785,6 @@ public class TECore implements Runnable {
         throw new Exception("No function {" + namespaceURI + "}" + localName + " with a compatible signature.");
     }
 
-	public void _continue() { // 2011-03-30 PwD moved
-		result = CONTINUE;
-	}
-	
-	// 2011-03-30 PwD begin
-	// for use by test with defaultResult of BEST_PRACTICE
-	public void bestPractice() {
-		if (result < BEST_PRACTICE) {
-			result = BEST_PRACTICE;
-		}
-	}
-	
-	// not attempted
-	public void notTested() {
-		if (result < NOT_TESTED) {
-			result = NOT_TESTED;
-		}
-	}
-	
-	// abandoned during attempt
-	public void skipped() {
-		if (result < SKIPPED) {
-			result = SKIPPED;
-		}
-	}
-	// 2011-03-30 PwD end
-	// 2011-03-31 PwD begin
-	// for use by test with defaultResult of BEST_PRACTICE
-	public void pass() {  
-		if (result < PASS) {
-			result = PASS;
-		}
-	}
-	// 2011-03-31 PwD end
-	
     public void warning() {
         if (result < WARNING) {
             result = WARNING;
@@ -1126,18 +803,10 @@ public class TECore implements Runnable {
         }
     }
 
-    // begin 2011-05-06 PwD
-    public String getResult() {
-    	return getResultDescription(result);
-    }
-    // end 2011-05-06 PwD
-    
-    // begin 2011-06-09 PwD
-    public String getMode() {
-    	return Test.getModeName(opts.getMode());
-    }
-    // end 2011-06-09 PwD
-    
+	public void _continue() {
+		result = CONTINUE;
+	}
+
     public void setContextLabel(String label) {
         contextLabel = label;
     }
@@ -1415,12 +1084,6 @@ public class TECore implements Runnable {
 
     }
 
-    /*
-     * Implement ctl:request:
-     *  Create and send an HTTP request then return an HttpResponse.
-     *  Invoke any specified parsers on the response to validate it, 
-     *  change its format or derive specific information from it.
-     */
     public NodeList request(Document ctlRequest, String id) throws Throwable {
         Element request = (Element)ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
@@ -1447,7 +1110,6 @@ public class TECore implements Runnable {
         Element response = null;
         Element parserInstruction = null;
         NodeList nl = request.getChildNodes();
-        // find parsers to apply to response, and put their instructions in an Element
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && !n.getNamespaceURI().equals(CTL_NS)) {
@@ -1536,29 +1198,7 @@ public class TECore implements Runnable {
                 } else if (n.getLocalName().equals("param")) {
                     if (sParams.length() > 0) sParams += "&";
                     sParams += ((Element) n).getAttribute("name") + "="
-                    	+ URLEncoder.encode(n.getTextContent(), "UTF-8"); // 2011-09-01 PwD
-                    // 2011-09-01 PwD was + n.getTextContent();
-                // begin 2011-08-19 PwD
-                } else if (n.getLocalName().equals("dynamicParam")) {
-                	String name = null;
-                	String val = null;
-                	NodeList dpnl = n.getChildNodes();
-                	for (int j = 0; j < dpnl.getLength(); j++) {
-                		Node dpn = (Node)dpnl.item(j);
-                		if (dpn.getNodeType() == Node.ELEMENT_NODE) {
-                			if (dpn.getLocalName().equals("name")) {
-                				name = dpn.getTextContent();
-                			} else if (dpn.getLocalName().equals("value")) {
-                				val = URLEncoder.encode(dpn.getTextContent(),"UTF-8"); // 2011-09-01 PwD
-                	// 2011-09-01 Pwd was			val = dpn.getTextContent();
-                			}
-                		}
-                	}
-                	if (name != null && val != null) {
-                        if (sParams.length() > 0) sParams += "&";
-                		sParams += name + "=" + val;
-                	}
-                // end 2011-08-19 PwD
+                            + n.getTextContent();
                 } else if (n.getLocalName().equals("body")) {
                     body = n;
                 } else if (n.getLocalName().equals("part")) {
@@ -1837,23 +1477,15 @@ public class TECore implements Runnable {
         temp.delete();
         return result;
     }
-    /* Build a Document to hold parser result content, and invoke specified parsers.
-     * @return selected info from uc as specified by instruction Element and children.
-     */
+
     public Element parse(URLConnection uc, Node instruction) throws Throwable {
-    	// DomUtils.displayNode(instruction); // 2011-09-08 PwD education
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document response_doc = db.newDocument();
         return parse(uc, instruction, response_doc);
     }
-    /* Invoke a parser or chain of parsers as specified by instruction element and children.
-     * Parsers in chain share uc, strip off their own instructions, and pass child instructions
-     * to next parser in chain. Final parser in chain modifies content.  All parsers in chain can 
-     * return info in attributes and child elements of instructions.
-     * If parser specified in instruction, call it to return specified info from uc.
-     */
+    
     public Element parse(URLConnection uc, Node instruction, Document response_doc) throws Throwable {
 //        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //        dbf.setNamespaceAware(true);
@@ -1866,11 +1498,11 @@ public class TECore implements Runnable {
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
             try {
-            	// 2011-08-29 PwD  was InputStream is = uc.getInputStream();
-            	InputStream is = URLConnectionUtils.getInputStream(uc);     // 2011-08-29 PwD
-            	t.transform(new StreamSource(is), new DOMResult(content_e));
+                InputStream is = uc.getInputStream();
+                t.transform(new StreamSource(is), new DOMResult(content_e));
             } catch (Exception e) {
                 jlogger.log(Level.SEVERE,"parse Error",e);
+
                 parser_e.setTextContent(e.getClass().getName() + ": " + e.getMessage());
             }
         } else {
@@ -1914,7 +1546,6 @@ public class TECore implements Runnable {
             }
             Object return_object;
             try {
-            	// invoke parser specified in instruction
                 return_object = method.invoke(instance, args);
             } catch (java.lang.reflect.InvocationTargetException e) {
                 Throwable cause = e.getCause();
@@ -1956,36 +1587,6 @@ public class TECore implements Runnable {
         return null;
     }
 
-    // start 2011-06-09 PwD
-    public void putLogCache(String id, Document xmlToCache) {
-    	if (logger != null) {
-    		String xmlString = DomUtils.serializeNode(xmlToCache);
-    		logger.println("<cache id=\"" + id + "\">" + xmlString + "</cache>");
-    	}
-    }
-    
-    public Element getLogCache(String id) {
-    	Element child_e = null;
-        if (prevLog != null) {
-            for (Element cache_e : DomUtils.getElementsByTagName(prevLog, "cache")) {
-                if (cache_e.getAttribute("id").equals(id)) {
-                    child_e = DomUtils.getChildElement(cache_e);
-                }
-            }
-        } 
-        // begin 2011-12-09 PwD
-        if (suiteLog != null && child_e == null) {
-            for (Element cache_e : DomUtils.getElementsByTagName(suiteLog, "cache")) {
-                if (cache_e.getAttribute("id").equals(id)) {
-                    child_e = DomUtils.getChildElement(cache_e);
-                }
-            }
-        }
-        // end 2011-12-09 PwD
-        return (child_e == null) ? null : child_e;
-    }
-    // end 2011-06-09 PwD
-    
     /**
      * Converts CTL input form data to generate a Swing-based or XHTML form and
      * reports the results of processing the submitted form. The results document

@@ -1,7 +1,5 @@
 package com.occamlab.te.parsers;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,8 +24,6 @@ import org.w3c.dom.Node;
 
 import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
-
-import com.occamlab.te.util.URLConnectionUtils; // 2011-08-26 PwD
 
 public class XSLTransformationParser {
 	DocumentBuilder db = null;
@@ -136,11 +132,8 @@ public class XSLTransformationParser {
     	t.setErrorListener(el);
     	Document doc = db.newDocument();
     	try {
-    		// begin 2011-08-26 PwD
-    		// was t.transform(new StreamSource(uc.getInputStream()), new DOMResult(doc));  
-    		InputStream is = URLConnectionUtils.getInputStream(uc);
-    		t.transform(new StreamSource(is), new DOMResult(doc));
-    		// end 2011-08-26 PwD
+    		t.transform(new StreamSource(uc.getInputStream()), new DOMResult(doc));
+//t.transform(new StreamSource(uc.getInputStream()), new javax.xml.transform.stream.StreamResult(System.out));
     	} catch (TransformerException e) {
     		el.error(e);
     	}

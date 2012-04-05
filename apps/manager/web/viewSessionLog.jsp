@@ -35,9 +35,7 @@ public void jspInit() {
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): Paul Daisey (Image Matters LLC) 
-  					2011-06-10, 2011-06-27, 2011-12-10	add cache mode
-  					2011-12-20 add testnum param to view_log() call for profiles so toggles will work
+  Contributor(s): No additional contributors to date
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
@@ -77,7 +75,8 @@ public void jspInit() {
 			    }
 			  }
 			}
-			
+
+
 			function deleteSession() {
 				if (confirm("Are you sure you want to delete session <%=request.getParameter("session")%>?")) {
 					window.location = "deleteSession?session=<%=request.getParameter("session")%>"
@@ -93,23 +92,9 @@ public void jspInit() {
       String sessionId = request.getParameter("session");
       TestSession ts = new TestSession();
       ts.load(userlog, sessionId);
-      // begin 2011-06-27 PwD
-      String suiteName = "null";
-      String sourcesName = ts.getSourcesName();
-      if (sourcesName == null) {
-    	  suiteName = "error: sourcesName is null";
-      } else {
-    	  SuiteEntry se = Conf.getSuites().get(sourcesName);
-    	  if (se == null) {
-    		 suiteName = "error: suitEntry is null";
-    	  } else {
-    		  String title = se.getTitle();
-    	  	  suiteName = (title == null) ? "error: suiteEntry title is null" : title;
-    	  }
-      }
-      //out.println("<h3>Test Suite: " + (Conf.getSuites().get(ts.getSourcesName())).getTitle() + "</h3>");
-      out.println("<h3>Test Suite: " + suiteName + "</h3>");
-      // end 2011-06-27 PwD
+
+      out.println("<h3>Test Suite: " + (Conf.getSuites().get(ts.getSourcesName())).getTitle() + "</h3>");
+
       ArrayList tests = new ArrayList();
       boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
@@ -125,8 +110,7 @@ public void jspInit() {
 	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
 	          if (ts.getProfiles().contains(profile.getId())) {
 	        	  String path = sessionId + "/" + profile.getLocalName();
-	    	      // 2011-12-20 PwD was complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out);
-	    	      complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out, (i+2)); // 2011-12-20 PwD
+	    	      complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out);
 				  out.println("<br/>");
 	//        	  if (!complete) {
 	//    	          out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
@@ -150,20 +134,6 @@ public void jspInit() {
 --%>
 		<br/>
 		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%><%=profileParams%>'"/>
-		<!-- begin 2011-06-10 PwD 
-		<input type="button" value="Redo using cached values" onclick="window.location = 'test.jsp?mode=cache&amp;session=<%=request.getParameter("session")%>'"/>
-		     end 2011-06-10 PwD -->
-		<!-- begin 2011-06-27 PwD -->
-<%
-      boolean hasCache = ViewLog.hasCache();
-      if (hasCache) {
-    	  // begin 2011-12-10 PwD>
-          // out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + "'\"/>");
-          out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + profileParams + "'\"/>");
-          // end 2011-12-10 PwD
-      }
-%>
-		<!-- end 2011-06-27 PwD -->
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
 		<input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>

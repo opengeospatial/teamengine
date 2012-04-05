@@ -16,25 +16,18 @@
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): Paul Daisey (Image Matters LLC): Added support for:
-  					defaultResult of suites, profiles, and tests;
-  					inheritance of defaultResult from suites by tests;
-  					xmlns:gen="java:com.occamlab.te.Generator";
-  					test types:  Mandatory, Mandatory if Implemented, Optional;
-  					ctl:context in tests; 
-  					ctl:bestPractice, ctl:pass, ctl:notTested, ctl:skipped
-  					ctl:getMode
+  Contributor(s): No additional contributors to date
+
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <xsl:transform
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
  xmlns:txsl="http://www.w3.org/1999/XSL/Transform/target"
  xmlns:ctl="http://www.occamlab.com/ctl"
  xmlns:te="http://www.occamlab.com/te"
- xmlns:gen="java:com.occamlab.te.Generator"  
  xmlns:saxon="http://saxon.sf.net/"
  extension-element-prefixes="saxon"
  version="2.0">
- <!-- 2011-04-07 PwD added xmlns:gen="java:com.occamlab.te.Generator"   -->
+ 
  	<!--
          The input XML for this stylesheet should be a CTL source file.
  	     An outdir parameter must also be supplied.
@@ -456,21 +449,6 @@
 		<xsl:variable name="qname">
 			<xsl:call-template name="parse-qname"/>
 		</xsl:variable>
-		<!-- begin 2011-03-31 PwD -->
-		<xsl:variable name="defaultResult">
-			<xsl:choose>
-				<xsl:when test="boolean(ctl:defaultResult)">
-					<xsl:value-of select="ctl:defaultResult"/>
-				</xsl:when>
-				<xsl:otherwise>Pass</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		<!-- end 2011-03-31 PwD -->
-		<!-- begin 2011-04-07 PwD -->
-		<xsl:if test="$defaultResult">
-			<xsl:value-of select="gen:setSuiteDefaultResult($defaultResult)"/>
-		</xsl:if>
-		<!--  end 2011-04-07 PwD -->
 		<xsl:variable name="starting-test">
 			<xsl:for-each select="ctl:starting-test">
 				<xsl:call-template name="parse-qname">
@@ -485,11 +463,6 @@
 			<description>
 				<xsl:value-of select="ctl:description"/>
 			</description>
-		<!-- begin 2011-03-31 PwD -->
-			<defaultResult>
-				<xsl:value-of select="$defaultResult"/>
-			</defaultResult>
-		<!-- end 2011-03-31 PwD -->
 			<starting-test prefix="{$starting-test/prefix}" namespace-uri="{$starting-test/namespace-uri}" local-name="{$starting-test/local-name}"/>
 			<xsl:copy-of select="ctl:form"/>
 		</suite>
@@ -543,24 +516,6 @@
 					</xsl:for-each>
 				</exclude>
 			</xsl:for-each>
-			<!-- begin 2011-03-31 PwD -->
-			<xsl:variable name="defaultResult">
-				<xsl:choose>
-					<xsl:when test="boolean(ctl:defaultResult)">
-						<xsl:value-of select="ctl:defaultResult"/>
-					</xsl:when>
-					<xsl:otherwise>Pass</xsl:otherwise>
-				</xsl:choose>
-			</xsl:variable>
-			<defaultResult>
-				<xsl:value-of select="$defaultResult"/>
-			</defaultResult>
-			<!-- end 2011-03-31 PwD -->
-			<!-- begin 2011-04-07 PwD -->
-			<xsl:if test="$defaultResult">
-				<xsl:value-of select="gen:setSuiteDefaultResult($defaultResult)"/>
-			</xsl:if>
-			<!--  end 2011-04-07 PwD -->
 			<xsl:variable name="starting-test">
 				<xsl:for-each select="ctl:starting-test">
 					<xsl:call-template name="parse-qname">
@@ -578,16 +533,6 @@
 		<xsl:variable name="qname">
 			<xsl:call-template name="parse-qname"/>
 		</xsl:variable>
-		<!-- begin 2011-03-31 PwD -->
-		<xsl:variable name="type">
-			<xsl:choose>
-				<xsl:when test="boolean(@type)">
-					<xsl:value-of select="@type"/>
-				</xsl:when>
-				<xsl:otherwise>Mandatory</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
-		<!-- end 2011-03-31 PwD -->
 		<xsl:variable name="filename" select="te:get-filename('test', $qname/prefix, $qname/local-name, $qname/namespace-uri, '')"/>
 		<test prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}" local-name="{$qname/local-name}" file="{$filename}">
 			<xsl:attribute name="uses-context">
@@ -599,47 +544,9 @@
 				</xsl:variable>
 				<param prefix="{$param-qname/prefix}" namespace-uri="{$param-qname/namespace-uri}" local-name="{$param-qname/local-name}"/>
 			</xsl:for-each>
-			<!-- begin 2011-03-30 PwD -->
-			<!-- <xsl:message>Context? <xsl:value-of select="ctl:context"/></xsl:message> -->
-			<!--  
-			<xsl:if test="boolean(ctl:context)">
-				<context>
-					<xsl:value-of select="ctl:context"/>
-				</context>
-			</xsl:if>
-			-->
-			<!-- end 2011-03-30 PwD -->
-			<!--  begin 2011-06-07 PwD -->
-			<xsl:if test="boolean(ctl:context)">
-				<context>
-					<value>
-						<context>
-							<xsl:value-of select="ctl:context"/>
-						</context>
-					</value>
-				</context>
-			</xsl:if>
-			<!--  end 2011-06-07 PwD -->
-			<!-- begin 2011-03-31 PwD -->
-				<type>
-					<xsl:value-of select="$type"/>
-				</type>
-			<!-- end 2011-03-31 PwD -->
 			<assertion>
 				<xsl:value-of select="ctl:assertion"/>
 			</assertion>
-			<!--  begin 2011-04-07 PwD -->
-			<defaultResult>
-				<xsl:choose>
-					<xsl:when test="boolean(ctl:defaultResult)">
-						<xsl:value-of select="ctl:defaultResult"/>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:value-of select="gen:getSuiteDefaultResult()"/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</defaultResult>
-			<!-- end 2011-04-07 PwD -->
 		</test>
 		<xsl:call-template name="make-sub-stylesheet">
 			<xsl:with-param name="qname" select="$qname"/>
@@ -866,38 +773,6 @@
 		<txsl:value-of select="tec:_continue($te:core)"/>
 	</xsl:template>
 
-	<!-- begin 2011-03-31 PwD -->
-	<xsl:template match="ctl:pass">
-		<txsl:value-of select="tec:pass($te:core)"/>
-	</xsl:template>
-	<!-- end 2011-03-31 PwD -->
-	
-	<!-- begin 2011-03-30 PwD -->
-	<xsl:template match="ctl:bestPractice">
-		<txsl:value-of select="tec:bestPractice($te:core)"/>
-	</xsl:template>
-	
-	<xsl:template match="ctl:notTested">
-		<txsl:value-of select="tec:notTested($te:core)"/>
-	</xsl:template>
-	
-	<xsl:template match="ctl:skipped">
-		<txsl:value-of select="tec:skipped($te:core)"/>
-	</xsl:template>
-	<!-- end 2011-03-30 PwD -->
-	
-	<!-- begin 2011-05-06 PwD -->
-	<xsl:template match="ctl:getResult">
-		<txsl:value-of select="tec:getResult($te:core)"/>
-	</xsl:template>
-	<!-- end 2011-05-06 PwD -->
-	
-	<!--  begin 2011-06-09 PwD -->
-	<xsl:template match="ctl:getMode">
-		<txsl:value-of select="tec:getMode($te:core)"/>
-	</xsl:template>
-	<!--  end 2011-06-09 PwD -->
-	
 	<xsl:template match="ctl:form">
 		<!-- Expand any child CTL instructions into XSL instructions and store in generated variable -->
 		<txsl:variable name="te:form-xhtml">

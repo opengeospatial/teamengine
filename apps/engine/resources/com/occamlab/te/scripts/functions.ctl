@@ -12,16 +12,6 @@
                   method="getImageType"/>
 	</ctl:function>   
    
-   <!-- Start PwD additions 2011-11-30 -->
-   <ctl:function name="ctl:ParseBase64ImageData">
-		<ctl:param name="base64Data">Base 64 image data, e.g. from wmts:BinaryPayload/wmts:BinaryContent returned by SOAPParser as unwrapped content from SOAP GetTile response, or from ImageParser parsers:base64Data instruction from a GetTile image. </ctl:param>
-		<ctl:param name="instruction">parsers:ImageParser element containing a list of parsers:* instruction child elements (any or all of type, height, width, metadata) for the ImageParser</ctl:param>
-		<ctl:return>Requested parsers:* elements with requested data</ctl:return>
-		<ctl:description>Invokes the ImageParser on the specified base64Data using the parsers:* elements specified in the instruction.</ctl:description>
-		<ctl:java class="com.occamlab.te.parsers.ImageParser" method="parseBase64" initialized="false"/>
-  </ctl:function>
-   <!-- end PwD additions 2011-11-30 -->
-   
 	<ctl:function name="ctl:getBeginningDateTime">
 		<ctl:param name="timestamp"/>
 		<ctl:description>
@@ -33,44 +23,6 @@
 			method="getBeginningInstant" />
 	</ctl:function>
    
-  <!-- start PwD additions 2011-06-07 --> 
-  <ctl:function name="ctl:startStopwatch">
-  	<ctl:param name="watchName"/>
-  	<ctl:description>Starts a stopwatch with the supplied name (identifier)</ctl:description>
-  	<ctl:java class="com.occamlab.te.util.Stopwatch" method="start"/>
-  </ctl:function>
-  
-  <ctl:function name="ctl:elapsedTime">
-  	<ctl:param name="watchName"/>
- 	<ctl:description>Returns elapsed time in milliseconds for stopwatich with the supplied name (identifier) 
- 	if it was started, or 0 if not. </ctl:description>	
- 	<ctl:java class="com.occamlab.te.util.Stopwatch" method="elapsedTime"/>
-  </ctl:function>
-  <!-- end PwD additions 2011-06-07 -->
-  
-  <!-- start PwD additions 2011-06-09 -->
-  <ctl:function name="ctl:putLogCache">
-  	<ctl:param name="id"/>
-  	<ctl:param name="xmlToCache"/>
-  	<ctl:description>puts the xmlToCache in the current log file with the specified id</ctl:description>
-  	<!--<ctl:java class="com.occamlab.te.TECore" method="putLogCache" initialized="true"/> -->
-  	<ctl:code>
-		<xsl:variable name="xmlToCacheDoc">
-			<xsl:copy-of select="$xmlToCache"/>
-		</xsl:variable>
-  		<xsl:copy-of select="tec:putLogCache($te:core, $id, $xmlToCache)" xmlns:tec="java:com.occamlab.te.TECore"/>
-  	</ctl:code>
-  </ctl:function>
-  
-  <ctl:function name="ctl:getLogCache">
-  	<ctl:param name="id"/>
-    <ctl:description>returns the contents of the previous log cache element with the specified id</ctl:description>
-  	<ctl:code>
-  		<xsl:copy-of select="tec:getLogCache($te:core, $id)" xmlns:tec="java:com.occamlab.te.TECore"/>
-  	</ctl:code>
-  </ctl:function>
-   <!--  end PwD additions 2011-06-09  -->
-     
   <ctl:function name="ctl:addDomAttr">
 	  <ctl:param name="doc"/>
 	  <ctl:param name="tag.name"/>

@@ -1,4 +1,3 @@
-<%@page import="java.util.SortedSet"%>
 <%@ page
  language="java"
  session="false"
@@ -6,7 +5,6 @@
 String mode;
 String test;
 String sessionId;
-java.util.Map<String,String[]> paramMap;  // 2011-12-20 PwD
 %><!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   The contents of this file are subject to the Mozilla Public License
@@ -25,9 +23,8 @@ java.util.Map<String,String[]> paramMap;  // 2011-12-20 PwD
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): Paul Daisey (Image Matters LLC) 
-  					2011-06-10, 2011-12-08 add cache mode
-					2011-12-21 get parameters map so any selected profile(s) may be executed
+  Contributor(s): No additional contributors to date
+
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
 <html>
@@ -57,12 +54,8 @@ java.util.Map<String,String[]> paramMap;  // 2011-12-20 PwD
 mode = request.getParameter("mode");
 test = request.getParameter("test");
 sessionId = request.getParameter("session");
-paramMap = request.getParameterMap(); // 2011-12-20 PwD
 String params = "mode=" + mode;
-//begin 2011-06-10 PwD
-//if (mode.equals("retest") || mode.equals("resume")) {
-if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
-//end 2011-06-10 PwD
+if (mode.equals("retest") || mode.equals("resume")) {
   if (test != null) {
     params += "&test=" + test;
   }
@@ -74,11 +67,7 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
   params += "&suite=" + request.getParameter("suite");
   params += "&description=" + request.getParameter("description");
 }
-// begin 2011-12-08 PwD
-// if (mode.equals("test") || mode.equals("retest")) {
-if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
-// end 2011-12-08 PwD
-/*  begin 2011-12-21 PwD  was
+if (mode.equals("test") || mode.equals("retest")) {
   String profile = request.getParameter("profile_0");
   int i = 0;
   while (profile != null) {
@@ -86,17 +75,6 @@ if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
       i++;
       profile = request.getParameter("profile_" + Integer.toString(i));
   }
-*/
-  for (String key: new java.util.TreeSet<String>(paramMap.keySet())) {
-	  if (key.startsWith("profile_")) {
-		  String values[] = paramMap.get(key);
-		  String profile = values[0];
-		  if (profile != null) {
-			  params += "&" + key + "=" + URLEncoder.encode(profile, "UTF-8");
-		  }
-	  }
-  }
-  // end 2011-12-21 PwD
 }
 %>
 				var url = "test?te-operation=Test&<%=params%>&t=" + d.getTime();
@@ -182,10 +160,7 @@ if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
 			function loadLog() {
 			    var d = new Date();
 <%
-//begin 2011-06-10 PwD
-//if (mode.equals("retest") || mode.equals("resume")) {
-if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
-//end 2011-06-10 PwD
+if (mode.equals("retest") || mode.equals("resume")) {
   if (test == null) {
     out.println("\t\t\t\tvar url = \"viewSessionLog.jsp?session=" + sessionId + "\";");
   } else {

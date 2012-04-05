@@ -17,8 +17,7 @@
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): Paul Daisey (Image Matters LLC): Added support for:
-				 test status: Best Practice, Not Tested, Skipped, Continue.
+  Contributor(s): No additional contributors to date
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <xsl:transform
@@ -77,7 +76,6 @@
 		<xsl:value-of select="saxon:serialize(., 'xml')" xmlns:saxon="http://saxon.sf.net/"/>
 	</xsl:template>
 
-<!-- 2011-03-31 PwD
 	<xsl:template name="result-text">
 		<xsl:param name="result-code" select="@result"/>
 		<xsl:param name="complete" select="not(@complete='no')"/>
@@ -90,33 +88,7 @@
 			<xsl:otherwise>Passed</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	 replaced by the following: -->
-	 
-	<xsl:template name="result-text">
-		<xsl:param name="result-code" select="@result"/>
-		<xsl:param name="complete" select="not(@complete='no')"/>
-		<!-- Following values from java.com.occamlab.te.TECore.java -->
-		<xsl:param name="continue">-1</xsl:param>
-		<xsl:param name="bestPractice">0</xsl:param>
-		<xsl:param name="pass">1</xsl:param>
-		<xsl:param name="notTested">2</xsl:param>
-		<xsl:param name="skipped">3</xsl:param>
-		<xsl:param name="warning">4</xsl:param>
-		<xsl:param name="inheritedFailure">5</xsl:param>
-		<xsl:param name="fail">6</xsl:param>
-		<xsl:choose>
-			<xsl:when test="$result-code=$fail and not($complete)">Failed and did not complete</xsl:when>
-			<xsl:when test="not($complete)">Did not complete</xsl:when>
-			<xsl:when test="$result-code=$fail">Failed</xsl:when>
-			<xsl:when test="$result-code=$inheritedFailure">Failed (InheritedFailure)</xsl:when>
-			<xsl:when test="$result-code=$warning">Warning</xsl:when>
-			<xsl:when test="$result-code=$skipped">Skipped</xsl:when>
-			<xsl:when test="$result-code=$notTested">Not Tested</xsl:when>
-			<xsl:when test="$result-code=$pass">Passed</xsl:when>
-			<xsl:when test="$result-code=$continue">Continue (did not complete)</xsl:when>
-			<xsl:otherwise>Passed as Best Practice</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+
 <!--
 	<xsl:template name="literal">
 		<xsl:value-of select="concat('&lt;', name())"/>
@@ -151,10 +123,7 @@
 		<xsl:variable name="result">
 			<xsl:call-template name="result-text"/>
 		</xsl:variable>
-		<!-- begin 2011-04-01 PwD -->
-		<!-- <xsl:value-of select="concat($indent, 'Test ', @prefix, ':', @local-name, ' (', @path, ') ', $result, '&#xa;')"/>  -->
-		<xsl:value-of select="concat($indent, 'Test ', @prefix, ':', @local-name, ' type ', @type,  ' (', @path, ') ', $result, '&#xa;')"/>
-		<!--  end 2011-04-01 PwD -->
+		<xsl:value-of select="concat($indent, 'Test ', @prefix, ':', @local-name, ' (', @path, ') ', $result, '&#xa;')"/>
 		<xsl:for-each select="test">
 			<xsl:call-template name="viewtest">
 				<xsl:with-param name="indent" select="concat($indent, '   ')"/>
@@ -169,23 +138,12 @@
 				<xsl:call-template name="result-text"/>
 			</xsl:for-each>
 		</xsl:variable>
-		<!-- begin 2011-04-01 PwD -->
-		<!--  <xsl:value-of select="concat('Result: ', $result, '&#xa;')"/> -->
-		<xsl:value-of select="concat('Result: ', $result, '&#xa;&#xa;')"/>
-		<!--  end 2011-04-01 PwD -->		
+		<xsl:value-of select="concat('Result: ', $result, '&#xa;')"/>
 	</xsl:template>
 
 	<xsl:template match="starttest">
-		<!-- begin 2011-04-07 PwD -->
-		<!-- <xsl:value-of select="concat('Test ', @prefix, ':', @local-name, ' (', @path, ')&#xa;&#xa;')"/>  -->
-		<xsl:variable name="defaultResultName">
-			<xsl:call-template name="result-text">
-				<xsl:with-param name="result-code" select="@defaultResult"/>
-				<xsl:with-param name="complete" select="true()"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:value-of select="concat('Test ', @prefix, ':', @local-name, ' type ', @type, ' default result ', $defaultResultName, ' (', @path, ')&#xa;&#xa;')"/> 
-		<!--  end 2011-04-07 PwD -->
+		<xsl:value-of select="concat('Test ', @prefix, ':', @local-name, ' (', @path, ')&#xa;&#xa;')"/>
+
 		<xsl:value-of select="concat('Assertion: ', assertion, '&#xa;&#xa;')"/>
 
 		<xsl:for-each select="param">
@@ -208,23 +166,12 @@
 			<xsl:text>Context:&#xa;</xsl:text>
 			<xsl:value-of select="concat('   Label: ', @label, '&#xa;')"/>
 			<xsl:text>   Value: </xsl:text>
-			<!-- begin 2011-04-01 PwD -->
-			<xsl:choose>
-				<xsl:when test="boolean(value)">
-			<!-- end 2011-04-01 PwD  -->	
-					<xsl:for-each select="value">
-						<xsl:value-of select="text()|@*"/>
-						<xsl:for-each select="*">
-							<xsl:call-template name="literal"/>
-						</xsl:for-each>
-					</xsl:for-each>
-			<!-- begin 2011-04-01 PwD -->
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:value-of select="."/>
-				</xsl:otherwise>
-			</xsl:choose>
-			<!-- end 2011-04-01 PwD  -->				
+			<xsl:for-each select="value">
+				<xsl:value-of select="text()|@*"/>
+				<xsl:for-each select="*">
+					<xsl:call-template name="literal"/>
+				</xsl:for-each>
+			</xsl:for-each>
 			<xsl:text>&#xa;</xsl:text>
 		</xsl:for-each>
 		<xsl:if test="context[not(value/@te:used='false')]">
@@ -316,15 +263,7 @@
 				<xsl:call-template name="result-text"/>
 			</xsl:for-each>
 		</xsl:variable>
-		<!-- begin 2011-04-01 PwD -->
-		<xsl:variable name="nameTypeString">
-			<xsl:for-each select="$index//test[@path=$path]">
-				<xsl:value-of select="concat('name ', @prefix, ':', @local-name, ' type ', @type)"/>
-			</xsl:for-each>		
-		</xsl:variable>
-		<!-- <xsl:value-of select="concat('Subtest ', @path, ' ', $result, '&#xa;&#xa;')"/> -->
-		<xsl:value-of select="concat('Subtest ', $nameTypeString, ' path ', @path, ' result ', $result, '&#xa;&#xa;')"/>
-		<!--  end 2011-04-01 PwD -->
+		<xsl:value-of select="concat('Subtest ', @path, ' ', $result, '&#xa;&#xa;')"/>
 	</xsl:template>
 
 	<xsl:template match="formresults">
