@@ -1,0 +1,27 @@
+<project default="build" basedir=".">
+	
+  	<!--property holding version without date -->
+	<property name="ver" value="Version 3.1b (SVN teamengine-apps r674 cite-scripts r4529-r4600)" />
+	
+	<target name="init.version.stamp" unless="version.stamp">
+			<tstamp>
+				<format property="version.stamp" pattern="yyyy.MM.dd" />
+			</tstamp>
+	</target>
+	
+	<target name="putValueInTokens" depends="init.version.stamp">
+		<filter token="version" value="${ver} ${version.stamp}"/>
+		  	  <copy todir="web" filtering="true" overwrite="true">
+		  	    <fileset dir="templates"/>
+		  	  </copy>
+	</target>
+	
+	<target name="build" depends="putValueInTokens" >
+
+	    <copy todir="../webapps/teamengine" overwrite="true">
+	      <fileset dir="web"/>
+	    </copy>
+
+	  </target>
+</project>
+
