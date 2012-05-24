@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opengeospatial.cite</groupId>
+  <artifactId>teamengine</artifactId>
+  <version>3.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>TEAM-Engine</name>
+  <description>
+  A test harness used in the OGC Compliance Testing Program. It interprets 
+  test scripts written using the CTL vocabulary. A CTL script is processed 
+  to generate an XSLT 2.0 stylesheet that constitutes the executable test 
+  suite (ETS).
+  </description>
+  <url>http://sourceforge.net/projects/teamengine/</url>
+  <licenses>
+    <license>
+      <name>Mozilla Public License 2.0 (MPL-2.0)</name>
+      <url>http://www.opensource.org/licenses/MPL-2.0</url>
+    </license>
+  </licenses>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>[4.10,)</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+	<module>teamengine-realm</module>
+<!--
+    <module>teamengine-web</module>
+    <module>teamengine-core</module>
+  -->
+  </modules>
+</project>
