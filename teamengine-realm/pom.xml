@@ -12,10 +12,11 @@
   <artifactId>teamengine-realm</artifactId>
   <packaging>jar</packaging>
 
-  <name>teamengine-realm</name>
+  <name>TEAM Engine - Tomcat Realm</name>
   <description>
   This module implements a custom Tomcat Realm for checking credentials 
-  from XML user files.
+  from XML user files. Place it in the $CATALINA_BASE/lib directory of 
+  the Tomcat instance.
   </description>
   <url>http://sourceforge.net/projects/teamengine/</url>
 
@@ -24,6 +25,7 @@
       <groupId>org.apache.tomcat</groupId>
       <artifactId>catalina</artifactId>
       <version>6.0.35</version>
+	  <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

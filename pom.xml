@@ -9,7 +9,7 @@
   <artifactId>teamengine</artifactId>
   <version>3.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>TEAM-Engine</name>
+  <name>TEAM Engine</name>
   <description>
   A test harness used in the OGC Compliance Testing Program. It interprets 
   test scripts written using the CTL vocabulary. A CTL script is processed 
@@ -44,9 +44,10 @@
 
   <modules>
 	<module>teamengine-realm</module>
+	<module>teamengine-spi</module>
 <!--
-    <module>teamengine-web</module>
     <module>teamengine-core</module>
+	<module>teamengine-web</module>
   -->
   </modules>
 </project>
