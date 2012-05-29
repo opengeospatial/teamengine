@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>TEAM Engine 2.0 Quick Start - Windows</title>
+</head>
+
+<body>
+
+<h1>TEAM Engine 2.0 Quick Start - Windows</h1>
+
+<h2>Overview</h2>
+
+<p>
+The Test, Evaluation, And Measurement (TEAM) Engine is a test
+script interpreter. It executes test
+scripts written in Compliance Test Language (CTL).
+</p>
+
+<h2>Installation</h2>
+
+<p>
+  TEAM Engine is a Java application.  It depends on Java 1.5 or greater.  To check the version of Java installed on your system.
+  Open a command prompt window, and try the java command:
+  <pre>C:\>java -version</pre>
+  This should display the version of java that is in your path.  If the version number is 1.5 or greater, you are good to go.
+  If you get an error message or a number less than 1.5, you may need to install a standard Java Runtime Environment (JRE).
+  You can find it on <a href="http://www.oracle.com/technetwork/java">Oracle's Java page</a>.
+</p>
+<p>
+  Download the TEAM Engine binary distribution archive from <a href="http://sourceforge.net/projects/teamengine/">SourceForge</a>.
+  Extract the files.  The root directory of your hard drive would be a good location to extract them to.
+</p>
+<p>
+  To test the installation, open a command prompt window and try the test utility.
+  <pre>C:\teamengine2.0>bin\test</pre>
+  This should display a short synopsis of the test utility.
+</p>
+
+<h2>Hello World Test Script</h2>
+<p>
+  Let's start by creating a simple Hello World test script.
+</p>
+<table border="1">
+  <caption>hello.ctl</caption>
+  <tr>
+    <td>
+      <pre>&lt;ctl:test
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:my="urn://mynamespace"
+ name="my:hello"
+&gt;
+  &lt;ctl:assertion&gt;This test displays a greeting.&lt;/ctl:assertion&gt;
+  &lt;ctl:code&gt;
+    &lt;ctl:message&gt;Hello, world!&lt;/ctl:message&gt;
+  &lt;/ctl:code&gt;
+&lt;/ctl:test&gt;</pre>
+    </td>
+  </tr>
+</table>
+<p>
+  This is one of the simplest test scripts that can be written.  It contains a single test.
+  Tests are identified by a namespace quailfied name attribute.  In this case, we have made
+  up our own namespace "urn://mynamespace" identified by the prefix "my" which we are using
+  in the test name.  A test has an assertion, which is a statement that is true if what is being
+  tested is compliant.  It also has code that determines whether the assertion is true or false.
+  This test isn't really testing anything.  The code merely displays a greeting on the console,
+  and the assertion just describes what the code does.
+</p>
+<p>
+  To execute the test, use the TEAM Engine test utility.
+</p>
+<pre>C:\teamengine2.0>bin\test -source=hello.ctl -test=my:hello
+
+No working directory supplied.  Using C:\DOCUME~1\morrich\LOCALS~1\Temp\te_work 
+Testing my:hello (s0001)...
+   Assertion: This test displays a greeting.
+   Hello, world!
+Test my:hello Passed</pre>
+<p>
+  TEAM Engine starts by processing the source file, converting the CTL source code into XSL
+  code that it will execute.  The XSL files it produces are stored in a work directory.  We
+  could have told TEAM Engine what directory to use for these files using the -workdir option.
+  Since we didn't, it created its own work directory.  This directory and the files in it are
+  not removed.  TEAM Engine will reuse the files instead of recreating them if we execute the
+  same source file again, unless the source file has been modified.
+</p>
+<p>
+  TEAM Engine displays the test name and the assertion, and then executes the test code.  In this
+  case, the code just displays the message "Hello, world!"  Then TEAM Engine tells us whether the
+  test passed or failed.  In this case, the test will always pass since we did not provide for
+  any failure conditions in the code.
+</p>
+
+<h2>A Real Test Script</h2>
+<p>
+  Let's try another script that actually tests something.
+</p>
+<p>
+  W3Schools' <a href="\http://www.w3schools.com/xml/">XML Tutorial</a> has a simple XML example of a note.
+<table border="1">
+  <caption><a href="http://www.w3schools.com/xml/note.xml">http://www.w3schools.com/xml/note.xml</a></caption>
+  <tr>
+    <td>
+      <pre>&lt;?xml version="1.0" ?&gt; 
+&lt;note&gt;
+  &lt;to&gt;Tove&lt;/to&gt; 
+  &lt;from&gt;Jani&lt;/from&gt; 
+  &lt;heading&gt;Reminder&lt;/heading&gt; 
+  &lt;body&gt;Don't forget me this weekend!&lt;/body&gt; 
+&lt;/note&gt;</pre>
+    </td>
+  </tr>
+</table>
+<p>
+  Suppose we want to test this note.  We want to make sure that it has a heading that contains more than just
+  whitespace characters.  We also want to make sure that it has from and to fields that identify known users.
+  Here is a test script.
+</p>
+<table border="1">
+  <caption>note.ctl</caption>
+  <tr>
+    <td>
+      <pre>&lt;ctl:package
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+ xmlns:note="urn://notetest"
+&gt;
+  &lt;ctl:test name="note:main"&gt;
+    &lt;ctl:assertion&gt;The note is valid.&lt;/ctl:assertion&gt;
+    &lt;ctl:code&gt;
+      &lt;xsl:variable name="response"&gt;
+        &lt;ctl:request&gt;
+          &lt;ctl:url&gt;http://www.w3schools.com/xml/note.xml&lt;/ctl:url&gt;
+        &lt;/ctl:request&gt;
+      &lt;/xsl:variable&gt;
+      &lt;xsl:choose&gt;
+        &lt;xsl:when test="$response/note"&gt;
+          &lt;ctl:call-test name="note:check-heading"&gt;
+            &lt;ctl:with-param name="heading" select="$response/note/heading"/&gt;
+          &lt;/ctl:call-test&gt;
+          &lt;ctl:call-test name="note:check-user"&gt;
+            &lt;ctl:with-param name="user" select="$response/note/to" label="The to user"/&gt;
+          &lt;/ctl:call-test&gt;
+          &lt;ctl:call-test name="note:check-user"&gt;
+            &lt;ctl:with-param name="user" select="$response/note/from" label="The from user"/&gt;
+          &lt;/ctl:call-test&gt;
+        &lt;/xsl:when&gt;
+        &lt;xsl:otherwise&gt;
+          &lt;ctl:message&gt;Failed to retrieve the note.&lt;/ctl:message&gt;
+          &lt;ctl:fail/&gt;
+        &lt;/xsl:otherwise&gt;
+      &lt;/xsl:choose&gt;
+    &lt;/ctl:code&gt;
+  &lt;/ctl:test&gt;
+
+  &lt;ctl:test name="note:check-heading"&gt;
+    &lt;ctl:param name="heading"/&gt;
+    &lt;ctl:assertion&gt;The heading contains more than whitespace.&lt;/ctl:assertion&gt;
+    &lt;ctl:code&gt;
+      &lt;xsl:if test="normalize-space($heading)=''"&gt;
+        &lt;ctl:fail/&gt;
+      &lt;/xsl:if&gt;
+    &lt;/ctl:code&gt;
+  &lt;/ctl:test&gt;
+
+  &lt;ctl:test name="note:check-user"&gt;
+    &lt;ctl:param name="user"/&gt;
+    &lt;ctl:assertion&gt;{$user} is valid.&lt;/ctl:assertion&gt;
+    &lt;ctl:code&gt;
+      &lt;xsl:choose&gt;
+        &lt;xsl:when test="$user='Tove'"/&gt;
+        &lt;xsl:when test="$user='Jim'"/&gt;
+        &lt;xsl:when test="$user='Jan'"/&gt;
+        &lt;xsl:otherwise&gt;
+        &lt;ctl:fail/&gt;
+        &lt;/xsl:otherwise&gt;
+      &lt;/xsl:choose&gt;
+    &lt;/ctl:code&gt;
+  &lt;/ctl:test&gt;
+&lt;/ctl:package&gt;</pre>
+    </td>
+  </tr>
+</table>
+<p>
+  There is still just one starting test called note:main, but it calls several subtests.
+  Because there are several tests in the same file, they are grouped inside a package element.
+</p>
+<p>
+  The request instruction retrieves the note XML.  The note contents are assigned to the variable
+  named response, that encloses the request instruction.
+</p>
+<p>
+  If the root node in the response variable is a note element as it should be, then we will call
+  the subtests that check various aspects of the note.  Otherwise, we display an error message
+  and use the fail instruction so that this test fails.
+</p>
+<p>
+  Our check-heading test receives the heading as a parameter.  It uses the XPath normalize-space
+  function to condense whitespace in the header's text content.  If the header contains nothing
+  but whitespace so that it normalizes down to an empty string, we use the fail instruction so
+  the test fails.
+</p>
+<p>
+  The check-user test is used for both the from and the to elements in our note.  It receives the
+  user as a parameter.  The assertion text contains a parameter name substitution code for the
+  user parameter.  When the test is executed and the assertion text is displayed, the value of the
+  label attribute supplied with the user parameter replaces "{$user}".  The code checks to see if
+  the user is Tove, Jim, or Jan.  If not, it falls through to the fail instruction so the test fails.
+</p>
+<p>
+  Now, let's execute the main test.
+</p>
+<pre>C:\teamengine2.0>bin\test -source=note.ctl -test=note:main
+
+No working directory supplied.  Using C:\DOCUME~1\morrich\LOCALS~1\Temp\te_work
+Testing note:main (s0001)...
+   Assertion: The note is valid.
+   Testing note:check-heading (s0001/d1e23_1)...
+      Assertion: The heading contains more than whitespace.
+   Test note:check-heading Passed
+   Testing note:check-user (s0001/d1e28_1)...
+      Assertion: The to user is valid.
+   Test note:check-user Passed
+   Testing note:check-user (s0001/d1e33_1)...
+      Assertion: The from user is valid.
+   Test note:check-user Failed
+Test note:main Failed (Inherited failure)
+</pre>
+
+<p>
+  The second call to check-user fails, since in our test "Jani" is not one of the names we recognize.
+  Because this test fails, the parent test (main) also fails.  When a test fails because a child
+  test fails, it is an inherited failure.
+</p>
+
+<h2>Specifying Parameters on the Command Line</h2>
+
+<p>
+  Suppose we want to check our own note rather than always checking the note on the w3schools site.
+  We can create our own note, with a valid "from" user.  Then with a slight modification to our code,
+  we can check it by passing the URL for our note to our test as a parameter.
+</p>
+
+<p>
+  Here is our new note.
+<table border="1">
+  <caption>note2.xml</caption>
+  <tr>
+    <td>
+      <pre>&lt;?xml version="1.0" ?&gt; 
+&lt;note&gt;
+  &lt;to&gt;Tove&lt;/to&gt; 
+  &lt;from&gt;Jan&lt;/from&gt; 
+  &lt;heading&gt;Reminder&lt;/heading&gt; 
+  &lt;body&gt;Don't forget me this weekend!&lt;/body&gt; 
+&lt;/note&gt;</pre>
+    </td>
+  </tr>
+</table>
+</p>
+
+<p>
+  Copy note.ctl to note2.ctl, and modify the main test to use a url parameter.
+<table border="1">
+  <caption>main test in note2.ctl</caption>
+  <tr>
+    <td>
+      <pre>...
+  &lt;ctl:test name="note:main"&gt;
+    &lt;ctl:param name="url"/&gt;
+    &lt;ctl:assertion&gt;The note is valid.&lt;/ctl:assertion&gt;
+    &lt;ctl:code&gt;
+      &lt;xsl:variable name="response"&gt;
+        &lt;ctl:request&gt;
+          &lt;ctl:url&gt;
+            &lt;xsl:value-of select="$url"/&gt;
+          &lt;/ctl:url&gt;
+        &lt;/ctl:request&gt;
+      &lt;/xsl:variable&gt;
+      &lt;xsl:choose&gt;
+        &lt;xsl:when test="$response/note"&gt;
+          &lt;ctl:call-test name="note:check-heading"&gt;
+            &lt;ctl:with-param name="heading" select="$response/note/heading"/&gt;
+          &lt;/ctl:call-test&gt;
+          &lt;ctl:call-test name="note:check-user"&gt;
+            &lt;ctl:with-param name="user" select="$response/note/to" label="The to user"/&gt;
+          &lt;/ctl:call-test&gt;
+          &lt;ctl:call-test name="note:check-user"&gt;
+            &lt;ctl:with-param name="user" select="$response/note/from" label="The from user"/&gt;
+          &lt;/ctl:call-test&gt;
+        &lt;/xsl:when&gt;
+        &lt;xsl:otherwise&gt;
+          &lt;ctl:message&gt;Failed to retrieve the note.&lt;/ctl:message&gt;
+          &lt;ctl:fail/&gt;
+        &lt;/xsl:otherwise&gt;
+      &lt;/xsl:choose&gt;
+    &lt;/ctl:code&gt;
+  &lt;/ctl:test&gt;
+...</pre>
+    </td>
+  </tr>
+</table>
+</p>
+
+<p>
+  To execute this new test, specify the url parameter on the command line.
+</p>
+<pre>C:\teamengine2.0>bin\test -source=note2.ctl -test=note:main @url=file:///c:/teamengine2.0/note2.xml</pre>
+<p>
+  This time, all of the tests should pass.
+</p>
+
+
+<h2>Supply a Starting Form</h2>
+
+<p>
+  Specifying parameters on the command line may be fine for developers, but it is somewhat tricky for
+  end users.  To help them along, we can create a formal test suite element that includes a starting
+  form.
+</p>
+
+<table border="1">
+  <caption>suite.ctl</caption>
+  <tr>
+    <td>
+      <pre>&lt;ctl:suite
+ xmlns:ctl="http://www.occamlab.com/ctl"
+ xmlns:xhtml="http://www.w3.org/1999/xhtml"
+ xmlns:note="urn://notetest"
+ name="note:suite"
+&gt;
+  &lt;ctl:title&gt;Note test suite&lt;/ctl:title&gt;
+  &lt;ctl:description&gt;Validates notes.&lt;/ctl:description&gt;
+  &lt;ctl:starting-test&gt;note:main&lt;/ctl:starting-test&gt;
+  &lt;ctl:form&gt;
+    &lt;xhtml:p&gt;Enter the URL of the note that you want to validate:&lt;/xhtml:p&gt;
+    &lt;xhtml:input type="text" name="url" size="100"/&gt;
+    &lt;xhtml:p/&gt;
+    &lt;xhtml:input type="submit" value="OK"/&gt;
+  &lt;/ctl:form&gt;
+&lt;/ctl:suite&gt;</pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+  The suite element formalizes our set of tests by giving them a title and description.
+  It identifies the starting test to execute, and provides a form that is used to prompt the
+  user for the values of the parameters of the test.  The form contains XHTML elements, including
+  &lt;xhtml:input type="text"/&gt; (text box) elements.  There is an input element with a matching
+  name attribute for each parameter in starting-test.  The form also has a
+  &lt;xhtml:input type="submit"/&gt; (Submit button) element so the user can submit the form.
+</p>
+
+<p>
+  We could have put the suite element inside the package element in the same file that contains our
+  tests, but we need to know how to work with multiple source files anyway.  We can start the test
+  suite by supplying two -source parameters.
+  <pre>C:\teamengine2.0>bin\test -source=suite.ctl -source=note2.ctl</pre>
+  Alternatively, we could put suite.ctl and note2.ctl into their own directory (we'll call it notedir)
+  , and set the -source parameter to the directory name.
+  <pre>C:\teamengine2.0>bin\test -source=notedir</pre>
+  With the second form, TEAM Engine reads all .ctl and .xml files in notedir as source files.
+</p>
+<p>
+  In either case, TEAM Engine should find our suite element, display the form, and call the starting
+  test using the input we enter as parameter values.  This works because there is only one suite element
+  in our source files.  If there were more than one suite, then we would also have to supply a -suite
+  option to identify the one that we want to execute.
+</p>
+
+<h2>Digging Deeper</h2>
+
+<p>For more on writing CTL scripts, see the <a href="http://portal.opengeospatial.org/files/?artifact_id=33085">CTL Specification</a>.</p>
+<p>For more information on using TEAM Engine command line utilities, see <a href="teamengine.html">teamengine.html</a>.</p>
+<p>For information on using TEAM Engine as a web application, see <a href="manager.html">manager.html</a>.</p>
+<p>For technical information on TEAM Engine internals, see <a href="TEAM2Design.html">TEAM2Design.html</a>.</p>
+
+</body>
+
+</html>

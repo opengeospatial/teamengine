@@ -1,0 +1,2 @@
+#JAVA_HOME=/opt/jdk1.7.0_02
+#JAVA_OPTS=-Xmx256m

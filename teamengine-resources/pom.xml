@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opengeospatial.cite</groupId>
+    <artifactId>teamengine</artifactId>
+    <version>3.2-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opengeospatial.cite.teamengine</groupId>
+  <artifactId>teamengine-resources</artifactId>
+  <packaging>jar</packaging>
+
+  <name>TEAM Engine - Shared Resources</name>
+  <description>
+  This resource bundle includes various file system resources that are shared 
+  between modules: stylesheets, schemas, and common CTL scripts.
+  </description>
+  <url>http://sourceforge.net/projects/teamengine/</url>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+		<configuration>
+          <includes>
+            <include>**/*.xsl</include>
+            <include>**/*.ctl</include>
+			<include>**/*.xsd</include>
+          </includes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
