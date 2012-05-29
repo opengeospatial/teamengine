@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Paths are relative to ${catalina.base} -->
+<config>
+  <home></home>
+  <scriptsdir>scripts</scriptsdir>
+  <resourcesdir>scripts</resourcesdir>
+  <usersdir>users</usersdir>
+  <workdir>work</workdir>
+  <scripts>
+  </scripts>
+</config>
