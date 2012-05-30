@@ -72,6 +72,8 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.2</version>
         <configuration>
+		  <!-- shared resources are already present in WEB-INF/classes/ -->
+		  <packagingExcludes>WEB-INF/lib/teamengine-resources*.jar</packagingExcludes>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
