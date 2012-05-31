@@ -17,22 +17,21 @@
 
  Contributor(s): No additional contributors to date
  */
-
 package com.occamlab.te;
 
+import com.occamlab.te.index.Index;
+import com.occamlab.te.util.Misc;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -42,24 +41,24 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
-import com.occamlab.te.index.Index;
-import com.occamlab.te.util.Misc;
-
+/**
+ * Generates XSL template files from CTL sources and a master index of metadata
+ * about the CTL objects.
+ */
 public class Generator {
-    // Generates XSL template files from CTL sources and a master index
-    // of metadata about the CTL objects
-    private static Logger logger = Logger.getLogger("com.occamlab.te.Generator");
+
+    private static final Logger LOGR = Logger.getLogger(Generator.class.getName());
 
     public static Index generateXsl(SetupOptions opts) throws Exception {
         Index masterIndex = new Index();
-        
+
         // Create CTL validator
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema ctl_schema = sf.newSchema(Misc.getResourceAsFile("com/occamlab/te/schemas/ctl.xsd"));
         Validator ctl_validator = ctl_schema.newValidator();
         CtlErrorHandler validation_eh = new CtlErrorHandler();
         ctl_validator.setErrorHandler(validation_eh);
-        
+
         // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
         processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
@@ -77,19 +76,20 @@ public class Generator {
 
         // Create a list of source CTL files only (no dirs),
         // and a corresponding list containing a working dir for each file
-        ArrayList<File> sourceFiles = new ArrayList<File>(); 
+        ArrayList<File> sourceFiles = new ArrayList<File>();
         ArrayList<File> workDirs = new ArrayList<File>();
         Iterator<File> it = sources.iterator();
         while (it.hasNext()) {
             File source = it.next();
-//System.out.println("Processing source(s) at: " + source.getAbsolutePath());
-//          appLogger.log(Level.INFO, "Processing source(s) at: " + source.getAbsolutePath());
-
+            LOGR.log(Level.CONFIG, "Processing CTL source files in {0}",
+                    source.getAbsolutePath());
             String encodedName = URLEncoder.encode(source.getAbsolutePath(), "UTF-8");
             encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
             File workingDir = new File(opts.getWorkDir(), encodedName);
-            workingDir.mkdir();
-            
+            if (!workingDir.mkdir()) {
+                LOGR.log(Level.WARNING, "Unable to create working directory at {0}",
+                        workingDir.getAbsolutePath());
+            }
             if (source.isDirectory()) {
                 String[] children = source.list();
                 for (int i = 0; i < children.length; i++) {
@@ -133,21 +133,21 @@ public class Generator {
                     regenerate = true;
                 }
             }
-            
+
             if (regenerate) {
                 // Validate the source CTL file 
                 boolean validationErrors = false;
                 if (opts.isValidate()) {
                     int old_count = validation_eh.getErrorCount();
-                    logger.log(Level.INFO,"Validating " + sourceFile);
+                    LOGR.log(Level.INFO, "Validating " + sourceFile);
                     ctl_validator.validate(new StreamSource(sourceFile));
                     validationErrors = (validation_eh.getErrorCount() > old_count);
                 }
-                
+
                 if (!validationErrors) {
                     // Clean up the working directory
                     Misc.deleteDirContents(workingDir);
-                    
+
                     // Run the generator transformation.  Output is an index file and is saved to disk.
                     // The generator also creates XSL template files in the working dir.
                     generatorTransformer.setSource(new StreamSource(sourceFile));
@@ -157,7 +157,7 @@ public class Generator {
                     XdmAtomicValue av = new XdmAtomicValue(workingDir.getAbsolutePath());
                     generatorTransformer.setParameter(new QName("outdir"), av);
                     generatorTransformer.transform();
-                    
+
                     // Read the generated index
                     index = new Index(indexFile);
                 }
@@ -166,7 +166,7 @@ public class Generator {
             // Add new index entries to the master index
             masterIndex.add(index);
         }
-            
+
         // If there were any validation errors, display them and throw an exception
         int error_count = validation_eh.getErrorCount();
         if (error_count > 0) {
@@ -181,7 +181,7 @@ public class Generator {
 //            appLogger.severe(msg);
             throw new Exception(msg);
         }
-        
+
         return masterIndex;
     }
 }

@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -43,6 +45,8 @@ import com.occamlab.te.util.DomUtils;
  * Reads the test harness configuration file.
  */
 public class Config {
+
+    private static final Logger LOGR = Logger.getLogger(Config.class.getName());
     private String home;
     private File scriptsDir;
     private File resourcesDir;
@@ -73,7 +77,8 @@ public class Config {
             } else {
 	            scriptsDir = findFile(scriptsDirEl.getTextContent(), cl);
 	            if (!scriptsDir.isDirectory()) {
-	                System.out.println("Error: Directory " + scriptsDirEl.getTextContent() + " does not exist.");
+				    LOGR.log(Level.WARNING, "Scripts directory not found at {0}", 
+					    scriptsDir.getAbsolutePath());
 	            }
             }
 
@@ -83,20 +88,23 @@ public class Config {
             } else {
 	            resourcesDir = findFile(resourcesDirEl.getTextContent(), cl);
 	            if (!resourcesDir.isDirectory()) {
-	                System.out.println("Error: Directory " + resourcesDirEl.getTextContent() + " does not exist.");
+				    LOGR.log(Level.WARNING, "Resources directory not found at {0}", 
+					    resourcesDir.getAbsolutePath());
 	            }
             }
 
             Element usersDirEl = DomUtils.getElementByTagName(configElem, "usersdir");
             usersDir = findFile(usersDirEl.getTextContent(), cl);
             if (!usersDir.isDirectory()) {
-                System.out.println("Error: Directory " + usersDirEl.getTextContent() + " does not exist.");
+			    LOGR.log(Level.WARNING, "Users directory not found at {0}", 
+					    usersDir.getAbsolutePath());
             }
 
             Element workDirEl = DomUtils.getElementByTagName(configElem, "workdir");
             workDir = findFile(workDirEl.getTextContent(), cl);
-            if (!workDir.isDirectory()) {
-                System.out.println("Error: Directory " + workDirEl.getTextContent() + " does not exist.");
+            if (!workDir.isDirectory() && !workDir.mkdirs()) {
+			    LOGR.log(Level.WARNING, "Unable to create working directory at {0}", 
+					    workDir.getAbsolutePath());
             }
             
             organizationList = new ArrayList<String>();
@@ -311,7 +319,8 @@ public class Config {
             if (null != url) {
                 f = new File(url.getFile());
             } else {
-                System.out.println("Directory is not accessible: " + path);
+			    LOGR.log(Level.INFO, 
+				    "Directory not found at this location: {0}", path);
             }
         }
         return f;

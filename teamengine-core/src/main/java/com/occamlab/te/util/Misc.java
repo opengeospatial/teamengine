@@ -17,9 +17,9 @@
 
  Contributor(s): No additional contributors to date
  */
-
 package com.occamlab.te.util;
 
+import com.occamlab.te.TEClassLoader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -27,18 +27,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import com.occamlab.te.TEClassLoader;
 
 public class Misc {
 
@@ -50,8 +46,16 @@ public class Misc {
         }
     }
 
-    // Deletes the contents of a directory
+    /**
+     * Deletes the contents of a directory, including subdirectories.
+     *
+     * @param dir The directory to be emptied.
+     */
     public static void deleteDirContents(File dir) {
+        if (!dir.isDirectory() || !dir.exists()) {
+            throw new IllegalArgumentException(dir.getAbsolutePath()
+                    + " is not a directory or does not exist.");
+        }
         String[] children = dir.list();
         for (int i = 0; i < children.length; i++) {
             File f = new File(dir, children[i]);
@@ -105,7 +109,7 @@ public class Misc {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         return cl.getResource(resource).toString();
     }
-    
+
     public static Method getMethod(String className, String methodName, TEClassLoader cl, int minArgs, int maxArgs) throws Exception {
 //        cl.registerClass(className);
         Class c = Class.forName(className, true, cl);
@@ -130,7 +134,7 @@ public class Misc {
     public static Method getMethod(String className, String methodName, TEClassLoader cl, int argCount) throws Exception {
         return getMethod(className, methodName, cl, argCount, argCount);
     }
-    
+
 //    public static Method getMethod(String className, String methodName, int argCount) throws Exception {
 //        Class c = Class.forName(className);
 //        Method[] methods = c.getMethods();
@@ -143,7 +147,6 @@ public class Misc {
 //        }
 //        throw new Exception("Error: Method " + methodName + " with " + Integer.toString(argCount) + " arguments was not found in class " + className);
 //    }
-    
     public static Object makeInstance(String className, List<Node> classParams, TEClassLoader cl) throws Exception {
 //        cl.registerClass(className);
         Class c = Class.forName(className, true, cl);
@@ -160,11 +163,11 @@ public class Misc {
                 for (int j = 0; j < types.length; j++) {
                     Node n = classParams.get(j);
                     if (Document.class.isAssignableFrom(types[j])) {
-                    	if (n instanceof Document) {
-                    		classParamObjects[j] = (Document)n;
-                    	} else {
+                        if (n instanceof Document) {
+                            classParamObjects[j] = (Document) n;
+                        } else {
                             classParamObjects[j] = DomUtils.createDocument(n);
-                    	}
+                        }
                     } else if (Node.class.isAssignableFrom(types[j])) {
                         classParamObjects[j] = n;
                     } else if (types[j].equals(String.class)) {
