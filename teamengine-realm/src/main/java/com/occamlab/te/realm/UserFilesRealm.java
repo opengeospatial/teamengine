@@ -1,22 +1,27 @@
 package com.occamlab.te.realm;
 
-import org.apache.catalina.realm.RealmBase;
-import org.apache.catalina.realm.GenericPrincipal;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.apache.catalina.realm.GenericPrincipal;
+import org.apache.catalina.realm.RealmBase;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class UserFilesRealm extends RealmBase {
 
+    private static final Logger LOGR = Logger.getLogger(
+            UserFilesRealm.class.getName());
     private String Root = null;
     private DocumentBuilder DB = null;
     private HashMap Principals = new HashMap();
@@ -40,25 +45,31 @@ public class UserFilesRealm extends RealmBase {
         if (!userfile.canRead()) {
             return null;
         }
+        Document userInfo = null;
         try {
             if (DB == null) {
                 DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             }
-            Document doc = DB.parse(userfile);
-            Element userElement = (Element) (doc.getElementsByTagName("user").item(0));
-            Element passwordElement = (Element) (userElement.getElementsByTagName("password").item(0));
-            password = passwordElement.getTextContent();
-            Element rolesElement = (Element) (userElement.getElementsByTagName("roles").item(0));
-            NodeList roleElements = rolesElement.getElementsByTagName("name");
-            for (int i = 0; i < roleElements.getLength(); i++) {
-                String name = ((Element) roleElements.item(i)).getTextContent();
-                roles.add(name);
-            }
-            return new GenericPrincipal(this, username, password, roles);
+            userInfo = DB.parse(userfile);
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            LOGR.log(Level.WARNING, "Failed to read user info at "
+                    + userfile.getAbsolutePath(), e);
         }
+        Element userElement = (Element) (userInfo.getElementsByTagName("user").item(0));
+        Element passwordElement = (Element) (userElement.getElementsByTagName(
+                "password").item(0));
+        password = passwordElement.getTextContent();
+        Element rolesElement = (Element) (userElement.getElementsByTagName(
+                "roles").item(0));
+        NodeList roleElements = rolesElement.getElementsByTagName("name");
+        for (int i = 0; i < roleElements.getLength(); i++) {
+            String name = ((Element) roleElements.item(i)).getTextContent();
+            roles.add(name);
+        }
+        // NOTE: the Realm argument is only used for debug message logging
+        // See https://issues.apache.org/bugzilla/show_bug.cgi?id=40881
+        GenericPrincipal principal = new GenericPrincipal(this, username, password, roles);
+        return principal;
     }
 
     protected String getPassword(String username) {
