@@ -15,7 +15,7 @@
   <name>TEAM Engine - Core Module</name>
   <description>
   The core module includes the main CTL script processor along with various 
-  test utilities.
+  supporting test utilities.
   </description>
   <url>http://sourceforge.net/projects/teamengine/</url>
 
@@ -25,22 +25,15 @@
       <artifactId>teamengine-resources</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
+	<dependency>
       <groupId>net.sourceforge.saxon</groupId>
-      <artifactId>saxon</artifactId>
+      <artifactId>saxon9-dom</artifactId>
       <version>9.0.0.8</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.saxon</groupId>
-      <artifactId>saxon</artifactId>
+      <artifactId>saxon9-s9api</artifactId>
       <version>9.0.0.8</version>
-      <classifier>s9api</classifier>
-    </dependency>
-	    <dependency>
-      <groupId>net.sourceforge.saxon</groupId>
-      <artifactId>saxon</artifactId>
-      <version>9.0.0.8</version>
-      <classifier>dom</classifier>
     </dependency>
 	<dependency>
       <groupId>thaiopensource</groupId>

@@ -49,7 +49,7 @@
 	<xsl:namespace-alias stylesheet-prefix="txsl" result-prefix="xsl"/>
 	
 	<xsl:param name="outdir"/>
-	<xsl:param name="xsl-ver">1.0</xsl:param>
+	<xsl:param name="xsl-ver">2.0</xsl:param>
 	<xsl:variable name="namespaces">
 		<namespaces/> <!-- Placeholder element to hold default namespaces -->
 	</xsl:variable>
