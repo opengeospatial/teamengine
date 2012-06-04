@@ -24,6 +24,17 @@
     </license>
   </licenses>
 
+  <scm>
+    <connection>scm:svn:http://teamengine.svn.sourceforge.net/svnroot/teamengine/trunk/</connection>
+    <developerConnection>scm:svn:https://teamengine.svn.sourceforge.net/svnroot/teamengine/trunk</developerConnection>
+	<tag>HEAD</tag>
+    <url>http://teamengine.svn.sourceforge.net/viewvc/teamengine/</url>
+  </scm>
+  <issueManagement>
+    <system>Tracker</system>
+    <url>http://sourceforge.net/tracker/?group_id=172853</url>
+  </issueManagement>
+
   <prerequisites>
     <maven>3.0</maven>
   </prerequisites>

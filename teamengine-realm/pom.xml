@@ -22,10 +22,42 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>catalina</artifactId>
-      <version>6.0.35</version>
-	  <scope>provided</scope>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
-  </dependencies>
+  </dependencies>	
+
+  <profiles>
+    <profile>
+      <id>tomcat6</id>
+      <properties>
+        <container>tomcat6</container>
+      </properties>
+	  <activation>
+		<activeByDefault>true</activeByDefault>
+      </activation>
+	  <dependencies>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>catalina</artifactId>
+          <version>6.0.35</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+	<profile>
+      <id>tomcat7</id>
+	  <properties>
+        <container>tomcat7</container>
+      </properties>
+	  <dependencies>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-catalina</artifactId>
+          <version>7.0.27</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
