@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,25 +103,24 @@ public class UserFilesRealm extends RealmBase {
         }
         Constructor[] ctors = klass.getConstructors();
         Class firstParamType = ctors[0].getParameterTypes()[0];
+        Class[] paramTypes = new Class[]{
+            Realm.class,
+            String.class,
+            String.class,
+            List.class};
+        Object[] ctorArgs = new Object[]{this, username, password, roles};
         GenericPrincipal principal = null;
         try {
             if (Realm.class.isAssignableFrom(firstParamType)) {
-                // for Tomcat 6
-                Constructor ctor = klass.getConstructor(new Class[]{
-                            Realm.class,
-                            String.class,
-                            String.class,
-                            List.class});
-                principal = (GenericPrincipal) ctor.newInstance(
-                        new Object[]{this, username, password, roles});
+                // Tomcat 6
+                Constructor ctor = klass.getConstructor(paramTypes);
+                principal = (GenericPrincipal) ctor.newInstance(ctorArgs);
             } else {
-                // Realm parameter absent in Tomcat 7
-                Constructor ctor = klass.getConstructor(new Class[]{
-                            String.class,
-                            String.class,
-                            List.class});
+                // Realm parameter removed in Tomcat 7
+                Constructor ctor = klass.getConstructor(
+                        Arrays.copyOfRange(paramTypes, 1, paramTypes.length));
                 principal = (GenericPrincipal) ctor.newInstance(
-                        new Object[]{username, password, roles});
+                        Arrays.copyOfRange(ctorArgs, 1, ctorArgs.length));
             }
         } catch (Exception ex) {
             LOGR.log(Level.WARNING, ex.getMessage());
