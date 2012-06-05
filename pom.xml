@@ -47,6 +47,7 @@
 	<module>teamengine-realm</module>
 	<module>teamengine-resources</module>
 	<module>teamengine-spi</module>
+	<module>teamengine-config</module>
     <module>teamengine-core</module>
 	<module>teamengine-web</module>
   </modules>
