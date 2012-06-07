@@ -63,7 +63,7 @@
         <configuration>
           <!-- Disable TestNG runner (enabled due to compile dependency) -->
           <testNGArtifactName>null:null</testNGArtifactName>
-          <junitArtifactName>org.junit:junit</junitArtifactName>
+          <junitArtifactName>junit:junit</junitArtifactName>
           <includes>
             <include>**/Verify*.java</include>
             <include>**/*Tests.java</include>

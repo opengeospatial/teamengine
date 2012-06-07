@@ -23,7 +23,7 @@ public class ApplicationComponents extends Application {
      */
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> appClasses = new HashSet<>();
+        Set<Class<?>> appClasses = new HashSet<Class<?>>();
         appClasses.add(TestSuiteSetResource.class);
         appClasses.add(TestSuiteResource.class);
         appClasses.add(TestRunResource.class);

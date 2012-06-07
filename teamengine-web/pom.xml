@@ -79,6 +79,7 @@
         <version>2.2</version>
         <configuration>
 		  <!-- shared resources are already present in WEB-INF/classes/ -->
+		  <!-- JAX-RS dependencies are bundled separately -->
 		  <packagingExcludes>
 		  WEB-INF/lib/teamengine-resources*.jar,
 		  WEB-INF/lib/jersey-*.jar,

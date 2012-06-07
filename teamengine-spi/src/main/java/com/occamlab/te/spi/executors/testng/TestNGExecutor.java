@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
  */
 public class TestNGExecutor implements TestRunExecutor {
 
-    private static final Logger logger =
+    private static final Logger LOGR =
             Logger.getLogger(TestNGExecutor.class.getPackage().getName());
     private boolean useDefaultListeners;
     private File outputDir;
@@ -108,13 +108,13 @@ public class TestNGExecutor implements TestRunExecutor {
         Document resultsDoc = null;
         try {
             resultsDoc = parseResultsDoc(driver.getOutputDirectory());
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(TestNGExecutor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            LOGR.log(Level.SEVERE, "Failed to parse test results.", ex);
         }
         return new DOMSource(resultsDoc, resultsDoc.getDocumentURI());
     }
 
-    private Document parseResultsDoc(String outputDirectory)
+    Document parseResultsDoc(String outputDirectory)
             throws ParserConfigurationException, SAXException, IOException {
         File results = new File(outputDirectory, "testng-results.xml");
         Document resultsDoc;
@@ -146,10 +146,10 @@ public class TestNGExecutor implements TestRunExecutor {
             driver.setTestJar(jarFile.getAbsolutePath());
             driver.setXmlPathInJar(jarPath[1].substring(1));
         } else {
-            List<String> testSuites = new ArrayList<>();
+            List<String> testSuites = new ArrayList<String>();
             File tngFile = new File(ets);
             if (tngFile.exists()) {
-                logger.log(Level.CONFIG, "Using TestNG config file {0}",
+                LOGR.log(Level.CONFIG, "Using TestNG config file {0}",
                         tngFile.getAbsolutePath());
                 testSuites.add(tngFile.getAbsolutePath());
             } else {

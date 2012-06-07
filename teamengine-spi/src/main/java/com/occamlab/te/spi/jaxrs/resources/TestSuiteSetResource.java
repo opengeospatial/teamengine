@@ -101,9 +101,9 @@ public class TestSuiteSetResource {
         Document doc = null;
         try {
             doc = this.docBuilder.parse(inStream);
-        } catch (SAXException | IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(TestSuiteSetResource.class.getName()).log(
-                    Level.WARNING, null, ex);
+                    Level.WARNING, "Failed to parse test-suites.html", ex);
         }
         return doc;
     }

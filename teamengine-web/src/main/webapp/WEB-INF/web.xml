@@ -4,6 +4,11 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
                       http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
+  <display-name>TEAM Engine Test Harness</display-name>
+  <description>
+  Provides a web interface for executing test suites and viewing test results.
+  </description>
+
 	<servlet>
 		<servlet-name>test</servlet-name>
 		<servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
