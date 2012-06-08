@@ -4,11 +4,11 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.opengeospatial.cite</groupId>
+    <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
     <version>3.2-SNAPSHOT</version>
   </parent>
-  <groupId>org.opengeospatial.cite.teamengine</groupId>
+  <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-core</artifactId>
   <packaging>jar</packaging>
 
