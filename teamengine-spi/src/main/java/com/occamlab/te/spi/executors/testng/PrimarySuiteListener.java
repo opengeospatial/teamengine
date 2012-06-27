@@ -11,9 +11,9 @@ import org.w3c.dom.NodeList;
  * A suite listener that adds the supplied test run arguments to the collection
  * of suite-level parameters. Since this listener is the first one to be
  * registered it will be called first and the parameters it sets should be
- * available to subsequent listeners.
+ * available to all subsequent listeners.
  */
-class CommonSuiteListener implements ISuiteListener {
+class PrimarySuiteListener implements ISuiteListener {
 
     private Document testRunArgs;
 
@@ -25,9 +25,9 @@ class CommonSuiteListener implements ISuiteListener {
      * @param testRunArgs A DOM Document node that contains a set of XML
      * properties.
      *
-     * @see java.util.Properties
+     * @see java.util.Properties#loadFromXML(java.io.InputStream) loadFromXML
      */
-    CommonSuiteListener(Document testRunArgs) {
+    PrimarySuiteListener(Document testRunArgs) {
         this.testRunArgs = testRunArgs;
     }
 

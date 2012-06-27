@@ -1,5 +1,6 @@
 package com.occamlab.te.spi.executors.testng;
 
+import com.occamlab.te.spi.executors.TestRunExecutor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +15,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import com.occamlab.te.spi.executors.TestRunExecutor;
 import org.testng.TestNG;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -74,7 +74,7 @@ public class TestNGExecutor implements TestRunExecutor {
      * <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
      * <properties version="1.0">
      *   <comment>Test run arguments</comment>
-     *   <entry key="uri">./atom-feed.xml</entry>
+     *   <entry key="uri">atom-feed.xml</entry>
      *   <entry key="classes">L2</entry>
      * </properties>
      * </pre>
@@ -103,7 +103,7 @@ public class TestNGExecutor implements TestRunExecutor {
             runDir = this.outputDir;
         }
         driver.setOutputDirectory(runDir.getAbsolutePath());
-        driver.addListener(new CommonSuiteListener(testRunArgs));
+        driver.addListener(new PrimarySuiteListener(testRunArgs));
         driver.run();
         Document resultsDoc = null;
         try {
