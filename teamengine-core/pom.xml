@@ -46,9 +46,16 @@
       <version>2.10.0</version>
     </dependency>
     <dependency>
+      <!-- this optional dependency of xercesImpl is generally useful -->
+      <groupId>xml-resolver</groupId>
+      <artifactId>xml-resolver</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
       <groupId>com.thaiopensource</groupId>
       <artifactId>jing</artifactId>
       <version>20091111</version>
+      <!-- exclude outdated dependencies -->
       <exclusions>
         <exclusion>
           <groupId>net.sf.saxon</groupId>
