@@ -26,11 +26,12 @@ import org.xml.sax.SAXException;
 
 import com.occamlab.te.ErrorHandlerImpl;
 import com.thaiopensource.util.PropertyMapBuilder;
+import com.thaiopensource.validate.FlagPropertyId;
 import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.SchemaReaderLoader;
+import com.thaiopensource.validate.StringPropertyId;
 import com.thaiopensource.validate.ValidateProperty;
 import com.thaiopensource.validate.ValidationDriver;
-import com.thaiopensource.validate.schematron.SchematronProperty;
 
 /**
  * Validates the given XML resource against the rules specified in a Schematron
@@ -95,7 +96,8 @@ public class SchematronValidatingParser {
     private void initSchematronReader() {
         this.propMapBuilder = new PropertyMapBuilder();
         // set general properties for schematron validation
-        SchematronProperty.DIAGNOSE.add(this.propMapBuilder);
+        FlagPropertyId diagnoseProp = new FlagPropertyId("DIAGNOSE");
+        diagnoseProp.add(this.propMapBuilder);
         SchemaReaderLoader loader = new SchemaReaderLoader();
         this.schematronReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
         assert null != this.schematronReader : "Unable to create a SchemaReader for this schema language: "
@@ -275,9 +277,10 @@ public class SchematronValidatingParser {
         eh = new ErrorHandlerImpl("Schematron", outputLogger);
         ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
         // validate using default phase
-        SchematronProperty.PHASE.put(schematronConfig, "Default");
+        StringPropertyId phaseProp = new StringPropertyId("PHASE");
+        phaseProp.put(schematronConfig, "Default");
         if (null != phase && phase.length() > 0) {
-            SchematronProperty.PHASE.put(schematronConfig, phase);
+            phaseProp.put(schematronConfig, phase);
         }
         SchemaReader reader = this.schematronReader;
         ValidationDriver validator = new ValidationDriver(schematronConfig
@@ -479,9 +482,10 @@ public class SchematronValidatingParser {
         PropertyMapBuilder schematronConfig = this.propMapBuilder;
         ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
         // validate using default phase
-        SchematronProperty.PHASE.put(schematronConfig, "Default");
+        StringPropertyId phaseProp = new StringPropertyId("PHASE");
+        phaseProp.put(schematronConfig, "Default");
         if (null != phase && phase.length() > 0) {
-            SchematronProperty.PHASE.put(schematronConfig, phase);
+            phaseProp.put(schematronConfig, phase);
         }
         SchemaReader reader = this.schematronReader;
         driver = new ValidationDriver(schematronConfig.toPropertyMap(), reader);

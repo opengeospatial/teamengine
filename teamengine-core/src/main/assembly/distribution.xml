@@ -32,7 +32,7 @@
       </includes>
 	  <lineEnding>dos</lineEnding>
     </fileSet>
-	<fileSet>
+    <fileSet>
       <directory>${project.build.scriptSourceDirectory}/shell</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
@@ -41,15 +41,15 @@
 	  <lineEnding>unix</lineEnding>
 	  <fileMode>0755</fileMode>
     </fileSet>
-	<fileSet>
+    <fileSet>
       <directory>${project.build.scriptSourceDirectory}/ctl</directory>
       <outputDirectory>scripts</outputDirectory>
     </fileSet>
-	<fileSet>
+    <fileSet>
       <directory>${project.build.directory}/maven-shared-archive-resources</directory>
       <outputDirectory>resources</outputDirectory>
     </fileSet>
-	<fileSet>
+    <fileSet>
       <directory>src/site/resources</directory>
       <outputDirectory>docs</outputDirectory>
     </fileSet>
