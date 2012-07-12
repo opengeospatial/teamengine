@@ -50,8 +50,14 @@
       <outputDirectory>resources</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>src/site/resources</directory>
+      <directory>${project.basedir}/src/site/resources</directory>
       <outputDirectory>docs</outputDirectory>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>${project.basedir}/src/main/assembly/README.txt</source>
+      <outputDirectory>components</outputDirectory>
+    </file>
+  </files>
 </assembly>
