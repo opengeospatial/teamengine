@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>teamengine</artifactId>
-  <version>3.2-SNAPSHOT</version>
+  <version>4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
@@ -43,12 +43,12 @@
   </properties>
 
   <modules>
-	<module>teamengine-realm</module>
-	<module>teamengine-resources</module>
-	<module>teamengine-spi</module>
-	<module>teamengine-config</module>
+    <module>teamengine-realm</module>
+    <module>teamengine-resources</module>
+    <module>teamengine-spi</module>
+    <module>teamengine-config</module>
     <module>teamengine-core</module>
-	<module>teamengine-web</module>
+    <module>teamengine-web</module>
   </modules>
   
   <dependencyManagement>
@@ -104,7 +104,7 @@
             </manifest>
             <manifestEntries>
               <Build-Time>${maven.build.timestamp}</Build-Time>
-			  <Build-Revision>${svn.revision}</Build-Revision>
+              <Build-Revision>${svn.revision}</Build-Revision>
             </manifestEntries>
           </archive>
         </configuration>
