@@ -15,11 +15,22 @@ code base, which consists of the following modules:
 * teamengine-spi: Extensibility framework and REST API
 
 Simply run `mvn package` in the root project directory to generate all build 
-artifacts (using JDK 7). 
+artifacts (using JDK 6 or later). 
 
 IMPORTANT: In order to download the Saxon 9.0 libraries from the OGC CITE 
 repository (id = 'opengeospatial-cite') it is necessary to add appropriate 
-user credentials to the matching server entry in settings.xml.
+user credentials to the matching server entry in $HOME/.m2/settings.xml.
+
+<servers>
+  <server>
+    <id>opengeospatial-cite</id>
+    <username>USERNAME</username>
+    <password>PASSWORD</password>
+  </server>
+</servers>
+
+NOTE: This setting will no longer be necessary when the libraries are available
+from a public Maven repository.
 
 The main build artifacts include:
 
@@ -33,9 +44,9 @@ teamengine-jaxrs-libs.zip::
 
 How to deploy
 -------------
-Apache Tomcat 6.0 or 7.0 (with JDK 7) are supported servlet containers. It is 
-strongly recommended that a dedicated Tomcat instance be created to host the 
-teamengine application. Create one as suggested below.
+Apache Tomcat 6.0 or 7.0 (with JDK 6 or later) are supported servlet containers. 
+It is strongly recommended that a dedicated Tomcat instance be created to host 
+the teamengine application. Create one as suggested below.
 
 .Create a CATALINA_BASE directory (Windows)
 ----
