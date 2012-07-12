@@ -1,1 +1,0 @@
-This folder contains customizations for the OGC TEAM Engine. The example presented here shows the customizations for OGC TEAM Engine
