@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>4.0-alpha1</version>
+    <version>4.0-alpha2-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-web</artifactId>
@@ -78,13 +77,13 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.2</version>
         <configuration>
-		    <!-- shared resources are already present in WEB-INF/classes/ -->
-		    <!-- JAX-RS dependencies are bundled separately -->
+          <!-- shared resources are already present in WEB-INF/classes/ -->
+          <!-- JAX-RS dependencies are bundled separately -->
           <packagingExcludes>
-		      WEB-INF/lib/teamengine-resources*.jar,
-		      WEB-INF/lib/jersey-*.jar,
-		      WEB-INF/lib/jsr311-api-*.jar,
-		      WEB-INF/lib/asm-*.jar,
+            WEB-INF/lib/teamengine-resources*.jar,
+            WEB-INF/lib/jersey-*.jar,
+            WEB-INF/lib/jsr311-api-*.jar,
+            WEB-INF/lib/asm-*.jar,
           </packagingExcludes>
           <archive>
             <manifest>
