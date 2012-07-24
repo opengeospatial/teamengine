@@ -20,7 +20,7 @@ import org.xml.sax.SAXParseException;
 /**
  * A SAX error handler that collects validation errors raised while verifying
  * the structure and content of XML entities.
- *
+ * 
  * @author rmartell
  * @version $Rev$
  */
@@ -31,11 +31,12 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /** Collection of reported validation errors. */
     private List<ValidationError> errors = new ArrayList<ValidationError>();
-    private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.XmlErrorHandler");
+    private static Logger jlogger = Logger
+            .getLogger("com.occamlab.te.parsers.XmlErrorHandler");
 
     /**
      * Indicates whether any validation errors have been reported.
-     *
+     * 
      * @return true if any validation errors have been received.
      */
     public boolean isEmpty() {
@@ -44,38 +45,39 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Receive notification of a warning.
-     *
+     * 
      * @param spex
      *            a non-error condition reported by the parser
      * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
      */
     public void warning(SAXParseException spex) {
 
-	//printError("Warning", spex);
+        // printError("Warning", spex);
         addError(ValidationError.WARNING, spex);
     }
 
     /**
      * Receive notification of a recoverable error. Typically this indicates
      * that a validation constraint has been violated.
-     *
+     * 
      * @param spex
      *            a non-fatal error condition reported by the parser
      * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
      */
     public void error(SAXParseException spex) {
 
-	//printError("Error", spex);
+        // printError("Error", spex);
         addError(ValidationError.ERROR, spex);
     }
 
     /**
-    * Prints the error to STDOUT, used to be consistent with TEAM Engine error handler.
-    *
-    */
+     * Prints the error to STDOUT, used to be consistent with TEAM Engine error
+     * handler.
+     * 
+     */
     private void printError(String type, SAXParseException e) {
 
-    	PrintWriter logger = new PrintWriter(System.out);
+        PrintWriter logger = new PrintWriter(System.out);
         logger.print(type);
         if (e.getLineNumber() >= 0) {
             logger.print(" at line " + e.getLineNumber());
@@ -98,7 +100,7 @@ public class XmlErrorHandler implements ErrorHandler {
     /**
      * Receive notification of a non-recoverable error, such as a violation of
      * the well-formedness constraint.
-     *
+     * 
      * @param spex
      *            a fatal error condition reported by the parser
      * @throws SAXException
@@ -114,17 +116,17 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Adds a validation error based on a <code>SAXParseException</code>.
-     *
+     * 
      * @param severity
      *            the severity of the error
      * @param spex
-     *            the <code>SAXParseException</code> raised while validating
-     *            the XML source
+     *            the <code>SAXParseException</code> raised while validating the
+     *            XML source
      */
     private void addError(short severity, SAXParseException spex) {
 
         buf.append("Line " + spex.getLineNumber() + " - ");
-        buf.append(spex.getMessage()+"\n");
+        buf.append(spex.getMessage() + "\n");
         ValidationError error = new ValidationError(severity, buf.toString());
         errors.add(error);
         buf.setLength(0);
@@ -132,7 +134,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Returns a concatenation of all received error messages.
-     *
+     * 
      * @return a consolidated error message
      */
     public String toString() {
@@ -148,7 +150,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Returns a list of errors as strings.
-     *
+     * 
      * @return a list of error strings.
      */
     public List<String> toList() {
@@ -164,27 +166,27 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Returns the errors in a simple nodelist (needed for CTL processing).
-     *
+     * 
      * @return a list of errors in a NodeList.
      */
     public NodeList toNodeList() {
 
-	Document doc = null;
-	try {
-		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-		  "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		doc = db.newDocument();
-	} catch (Exception e) {
-        jlogger.log(Level.SEVERE,"validate",e);
+        Document doc = null;
+        try {
+            System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+                    "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            doc = db.newDocument();
+        } catch (Exception e) {
+            jlogger.log(Level.SEVERE, "validate", e);
 
-		e.printStackTrace();
-	}
+            e.printStackTrace();
+        }
 
-	Element root = doc.createElement("errors");
-	doc.appendChild(root);
+        Element root = doc.createElement("errors");
+        doc.appendChild(root);
         ErrorIterator errIterator = iterator();
         while (errIterator.hasNext()) {
             ValidationError err = errIterator.next();
@@ -199,7 +201,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Returns an iterator over the validation errors collected by this handler.
-     *
+     * 
      * @return a read-only <code>ErrorIterator</code> for this handler
      */
     public ErrorIterator iterator() {
@@ -216,7 +218,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Helper class that provides a read-only iterator over validation errors.
-     *
+     * 
      * @author rmartell
      * @version $Rev$
      */
@@ -226,7 +228,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
         /**
          * Indicates if more errors remain in the iteration.
-         *
+         * 
          * @return <code>true</code> if more errors remain.
          */
         public boolean hasNext() {
@@ -235,7 +237,7 @@ public class XmlErrorHandler implements ErrorHandler {
 
         /**
          * Returns the next validation error in the iteration.
-         *
+         * 
          * @return the next error
          */
         public ValidationError next() {

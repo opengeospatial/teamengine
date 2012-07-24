@@ -48,8 +48,9 @@ public class Misc {
 
     /**
      * Deletes the contents of a directory, including subdirectories.
-     *
-     * @param dir The directory to be emptied.
+     * 
+     * @param dir
+     *            The directory to be emptied.
      */
     public static void deleteDirContents(File dir) {
         if (!dir.isDirectory() || !dir.exists()) {
@@ -81,7 +82,8 @@ public class Misc {
     public static File getResourceAsFile(String resource) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
-            return new File(URLDecoder.decode(cl.getResource(resource).getFile(), "UTF-8"));
+            return new File(URLDecoder.decode(cl.getResource(resource)
+                    .getFile(), "UTF-8"));
         } catch (UnsupportedEncodingException uee) {
             return null;
         }
@@ -110,14 +112,16 @@ public class Misc {
         return cl.getResource(resource).toString();
     }
 
-    public static Method getMethod(String className, String methodName, TEClassLoader cl, int minArgs, int maxArgs) throws Exception {
-//        cl.registerClass(className);
+    public static Method getMethod(String className, String methodName,
+            TEClassLoader cl, int minArgs, int maxArgs) throws Exception {
+        // cl.registerClass(className);
         Class c = Class.forName(className, true, cl);
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
             Method m = methods[i];
             int count = m.getParameterTypes().length;
-            if (m.getName().equals(methodName) && count >= minArgs && count <= maxArgs) {
+            if (m.getName().equals(methodName) && count >= minArgs
+                    && count <= maxArgs) {
                 return m;
             }
         }
@@ -128,27 +132,33 @@ public class Misc {
         if (minArgs > 1 || maxArgs > 1) {
             argsDesc += "s";
         }
-        throw new Exception("Error: Method " + methodName + " with " + argsDesc + " was not found in class " + className);
+        throw new Exception("Error: Method " + methodName + " with " + argsDesc
+                + " was not found in class " + className);
     }
 
-    public static Method getMethod(String className, String methodName, TEClassLoader cl, int argCount) throws Exception {
+    public static Method getMethod(String className, String methodName,
+            TEClassLoader cl, int argCount) throws Exception {
         return getMethod(className, methodName, cl, argCount, argCount);
     }
 
-//    public static Method getMethod(String className, String methodName, int argCount) throws Exception {
-//        Class c = Class.forName(className);
-//        Method[] methods = c.getMethods();
-//        for (int i = 0; i < methods.length; i++) {
-//            Method m = methods[i];
-//            int count = m.getParameterTypes().length;
-//            if (m.getName().equals(methodName) && count == argCount) {
-//                return m;
-//            }
-//        }
-//        throw new Exception("Error: Method " + methodName + " with " + Integer.toString(argCount) + " arguments was not found in class " + className);
-//    }
-    public static Object makeInstance(String className, List<Node> classParams, TEClassLoader cl) throws Exception {
-//        cl.registerClass(className);
+    // public static Method getMethod(String className, String methodName, int
+    // argCount) throws Exception {
+    // Class c = Class.forName(className);
+    // Method[] methods = c.getMethods();
+    // for (int i = 0; i < methods.length; i++) {
+    // Method m = methods[i];
+    // int count = m.getParameterTypes().length;
+    // if (m.getName().equals(methodName) && count == argCount) {
+    // return m;
+    // }
+    // }
+    // throw new Exception("Error: Method " + methodName + " with " +
+    // Integer.toString(argCount) + " arguments was not found in class " +
+    // className);
+    // }
+    public static Object makeInstance(String className, List<Node> classParams,
+            TEClassLoader cl) throws Exception {
+        // cl.registerClass(className);
         Class c = Class.forName(className, true, cl);
         Constructor[] constructors = c.getConstructors();
         int paramCount = 0;
@@ -175,17 +185,23 @@ public class Misc {
                     } else if (types[j].toString().equals("char")) {
                         classParamObjects[j] = n.getTextContent().charAt(0);
                     } else if (types[j].toString().equals("boolean")) {
-                        classParamObjects[j] = Boolean.parseBoolean(n.getTextContent());
+                        classParamObjects[j] = Boolean.parseBoolean(n
+                                .getTextContent());
                     } else if (types[j].toString().equals("byte")) {
-                        classParamObjects[j] = Byte.parseByte(n.getTextContent());
+                        classParamObjects[j] = Byte.parseByte(n
+                                .getTextContent());
                     } else if (types[j].toString().equals("short")) {
-                        classParamObjects[j] = Short.parseShort(n.getTextContent());
+                        classParamObjects[j] = Short.parseShort(n
+                                .getTextContent());
                     } else if (types[j].toString().equals("int")) {
-                        classParamObjects[j] = Integer.parseInt(n.getTextContent());
+                        classParamObjects[j] = Integer.parseInt(n
+                                .getTextContent());
                     } else if (types[j].toString().equals("float")) {
-                        classParamObjects[j] = Float.parseFloat(n.getTextContent());
+                        classParamObjects[j] = Float.parseFloat(n
+                                .getTextContent());
                     } else if (types[j].toString().equals("double")) {
-                        classParamObjects[j] = Double.parseDouble(n.getTextContent());
+                        classParamObjects[j] = Double.parseDouble(n
+                                .getTextContent());
                     } else {
                         constructorCorrect = false;
                         break;
@@ -196,6 +212,7 @@ public class Misc {
                 }
             }
         }
-        throw new Exception("No compatible constructors found in class " + className);
+        throw new Exception("No compatible constructors found in class "
+                + className);
     }
 }

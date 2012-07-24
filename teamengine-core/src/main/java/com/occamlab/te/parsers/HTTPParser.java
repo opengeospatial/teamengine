@@ -43,7 +43,6 @@ import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
 
-
 /**
  * Parses an HTTP response message and produces a DOM Document representation of
  * the message content.
@@ -73,8 +72,10 @@ public class HTTPParser {
         }
     }
 
-    private static Node select_parser(int partnum, String mime, Element instruction) {
-        NodeList instructions = instruction.getElementsByTagNameNS(PARSERS_NS, "parse");
+    private static Node select_parser(int partnum, String mime,
+            Element instruction) {
+        NodeList instructions = instruction.getElementsByTagNameNS(PARSERS_NS,
+                "parse");
         for (int i = 0; i < instructions.getLength(); i++) {
             Element parse = (Element) instructions.item(i);
             if (partnum != 0) {
@@ -165,7 +166,8 @@ public class HTTPParser {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.newDocument();
-        Element root = doc.createElement(multipart ? "multipart-response" : "response");
+        Element root = doc.createElement(multipart ? "multipart-response"
+                : "response");
 
         if (uc.getHeaderFieldKey(0) == null) {
             String status_line = uc.getHeaderField(0);
@@ -197,7 +199,8 @@ public class HTTPParser {
             }
             int end = mime2.indexOf(endchar, start);
             String boundary = mime2.substring(start, end);
-            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    uc.getInputStream()));
             File temp = create_part_file(in, boundary);
             temp.delete();
             String line = in.readLine();
@@ -228,11 +231,13 @@ public class HTTPParser {
                 Node parser = select_parser(num, contentType, instruction);
                 Element response_e = core.parse(pc, parser);
                 temp.delete();
-                Element parser_e = (Element) (response_e.getElementsByTagName("parser").item(0));
+                Element parser_e = (Element) (response_e
+                        .getElementsByTagName("parser").item(0));
                 if (parser_e != null) {
                     logger.print(parser_e.getTextContent());
                 }
-                Element content = (Element) (response_e.getElementsByTagName("content").item(0));
+                Element content = (Element) (response_e
+                        .getElementsByTagName("content").item(0));
                 t.transform(new DOMSource(content), new DOMResult(part));
                 root.appendChild(part);
                 line = in.readLine();
@@ -241,11 +246,13 @@ public class HTTPParser {
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
             Element response_e = core.parse(uc, parser);
-            Element parser_e = (Element) (response_e.getElementsByTagName("parser").item(0));
+            Element parser_e = (Element) (response_e
+                    .getElementsByTagName("parser").item(0));
             if (parser_e != null) {
                 logger.print(parser_e.getTextContent());
             }
-            Element content = (Element) (response_e.getElementsByTagName("content").item(0));
+            Element content = (Element) (response_e
+                    .getElementsByTagName("content").item(0));
             t.transform(new DOMSource(content), new DOMResult(root));
         }
         doc.appendChild(root);

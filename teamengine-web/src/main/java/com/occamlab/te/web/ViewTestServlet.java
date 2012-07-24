@@ -69,8 +69,8 @@ public class ViewTestServlet extends HttpServlet {
                     request.getServerPort(), request.getContextPath());
             t.setParameter("baseURL", url.toString());
             t.setParameter("user", request.getRemoteUser());
-            t.transform(new StreamSource(file), new StreamResult(response
-                    .getOutputStream()));
+            t.transform(new StreamSource(file),
+                    new StreamResult(response.getOutputStream()));
         } catch (Exception e) {
             throw new ServletException(e);
         }

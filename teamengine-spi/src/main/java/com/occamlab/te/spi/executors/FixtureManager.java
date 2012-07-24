@@ -22,19 +22,18 @@ public class FixtureManager {
 
     /**
      * Returns a singleton manager in a lazy (but thread-safe) manner.
-     *
-     * @return the
-     * <code>FixtureManager</code> instance.
+     * 
+     * @return the <code>FixtureManager</code> instance.
      */
     public static FixtureManager getInstance() {
 
         // Employ a "double-checked locking" strategy because a lock is only
-        // needed upon initialization; synchronize on the monitor belonging to 
+        // needed upon initialization; synchronize on the monitor belonging to
         // the class itself.
         if (null == manager) {
             synchronized (FixtureManager.class) {
-                // check again, because the thread might have been preempted 
-                // just after the outer if was processed but before the 
+                // check again, because the thread might have been preempted
+                // just after the outer if was processed but before the
                 // synchronized statement was executed
                 if (manager == null) {
                     manager = new FixtureManager();
@@ -47,10 +46,11 @@ public class FixtureManager {
     /**
      * Gets the fixture for the specified test run. If runId is an empty String
      * and only one fixture exists this is returned.
-     *
-     * @param runId The test run identifier (may be an empty String).
-     * @return A TestRunFixture, or
-     * <code>null></code> if a matching one cannot be found.
+     * 
+     * @param runId
+     *            The test run identifier (may be an empty String).
+     * @return A TestRunFixture, or <code>null></code> if a matching one cannot
+     *         be found.
      */
     public TestRunFixture getFixture(String runId) {
         if (runId.isEmpty() && this.fixtures.size() == 1) {
@@ -61,9 +61,11 @@ public class FixtureManager {
 
     /**
      * Adds a fixture.
-     *
-     * @param runId The test run identifier.
-     * @param fixture The TestRunFixture to be added (or replaced).
+     * 
+     * @param runId
+     *            The test run identifier.
+     * @param fixture
+     *            The TestRunFixture to be added (or replaced).
      */
     public void addFixture(String runId, TestRunFixture fixture) {
         this.fixtures.put(runId, fixture);
@@ -71,8 +73,9 @@ public class FixtureManager {
 
     /**
      * Removes a fixture.
-     *
-     * @param runId The test run identifier.
+     * 
+     * @param runId
+     *            The test run identifier.
      */
     public void removeFixture(String runId) {
         this.fixtures.remove(runId);
@@ -80,7 +83,7 @@ public class FixtureManager {
 
     /**
      * Lists the identifiers of registered test run fixtures.
-     *
+     * 
      * @return A Set containing fixture identifiers.
      */
     public Set<String> listFixtureIdentifiers() {

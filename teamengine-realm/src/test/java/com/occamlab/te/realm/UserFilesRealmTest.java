@@ -20,10 +20,12 @@ public class UserFilesRealmTest {
         List<String> roles = new ArrayList<String>();
         roles.add(ROLE_1);
         UserFilesRealm iut = new UserFilesRealm();
-        GenericPrincipal result = iut.createGenericPrincipal(username, password, roles);
+        GenericPrincipal result = iut.createGenericPrincipal(username,
+                password, roles);
         Assert.assertNotNull(result);
         Assert.assertEquals("Unexpected username", username, result.getName());
-        Assert.assertEquals("Unexpected password", password, result.getPassword());
+        Assert.assertEquals("Unexpected password", password,
+                result.getPassword());
         Assert.assertTrue("Expected principal to have role " + ROLE_1,
                 result.hasRole(ROLE_1));
     }

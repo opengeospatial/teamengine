@@ -30,36 +30,37 @@ public class TemplateEntry extends IndexEntry {
             NodeList nl = template.getElementsByTagName("param");
             params = new ArrayList<QName>();
             for (int i = 0; i < nl.getLength(); i++) {
-                Element el = (Element)nl.item(i);
+                Element el = (Element) nl.item(i);
                 String prefix = el.getAttribute("prefix");
                 String namespaceUri = el.getAttribute("namespace-uri");
                 String localName = el.getAttribute("local-name");
                 params.add(new QName(namespaceUri, localName, prefix));
             }
-            setUsesContext(Boolean.parseBoolean(template.getAttribute("uses-context")));
+            setUsesContext(Boolean.parseBoolean(template
+                    .getAttribute("uses-context")));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-//    public void persistAttributes(PrintWriter out) {
-//        super.persistAttributes(out);
-//        try {
-//            out.print(" file=\"" + templateFile.toURI().toURL().toString() + "\""
-//                    + " uses-context=\"" + Boolean.toString(usesContext) + "\"");
-//        } catch (MalformedURLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//    
-//    public void persistTags(PrintWriter out) {
-//        super.persistTags(out);
-//        for (QName qname : params) {
-//            out.println("<param prefix=\"" + qname.getPrefix() + "\"" + 
-//                              " namespace-uri=\"" + qname.getNamespaceURI() + "\"" +
-//                              " local-name=\"" + qname.getLocalPart() + "\"/>");
-//        }
-//    }
+    // public void persistAttributes(PrintWriter out) {
+    // super.persistAttributes(out);
+    // try {
+    // out.print(" file=\"" + templateFile.toURI().toURL().toString() + "\""
+    // + " uses-context=\"" + Boolean.toString(usesContext) + "\"");
+    // } catch (MalformedURLException e) {
+    // throw new RuntimeException(e);
+    // }
+    // }
+    //
+    // public void persistTags(PrintWriter out) {
+    // super.persistTags(out);
+    // for (QName qname : params) {
+    // out.println("<param prefix=\"" + qname.getPrefix() + "\"" +
+    // " namespace-uri=\"" + qname.getNamespaceURI() + "\"" +
+    // " local-name=\"" + qname.getLocalPart() + "\"/>");
+    // }
+    // }
 
     public File getTemplateFile() {
         return templateFile;
@@ -84,44 +85,44 @@ public class TemplateEntry extends IndexEntry {
     public void setUsesContext(boolean usesContext) {
         this.usesContext = usesContext;
     }
-    
-//    static boolean freeExecutable() {
-//        Set<String> keys = Globals.loadedExecutables.keySet();
-//        synchronized(Globals.loadedExecutables) {
-//            Iterator<String> it = keys.iterator();
-//            if (it.hasNext()) {
-//                Globals.loadedExecutables.remove(it.next());
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//    
-//    public XsltExecutable loadExecutable() throws SaxonApiException {
-//        String key = getId();
-//        XsltExecutable executable = Globals.loadedExecutables.get(key);
-//        while (executable == null) {
-//            try {
-////                System.out.println(template.getTemplateFile().getAbsolutePath());
-//                Source source = new StreamSource(getTemplateFile());
-//                executable = Globals.compiler.compile(source);
-//                Globals.loadedExecutables.put(key, executable);
-//            } catch (OutOfMemoryError e) {
-//                boolean freed = freeExecutable();
-//                if (!freed) {
-//                    throw e;
-//                }
-//            }
-//        }
-//
-//        Runtime rt = Runtime.getRuntime();
-//        while (rt.totalMemory() - rt.freeMemory() > Globals.memThreshhold) {
-//            boolean freed = freeExecutable();
-//            if (!freed) {
-//                break;
-//            }
-//        }
-//
-//        return executable;
-//    }
+
+    // static boolean freeExecutable() {
+    // Set<String> keys = Globals.loadedExecutables.keySet();
+    // synchronized(Globals.loadedExecutables) {
+    // Iterator<String> it = keys.iterator();
+    // if (it.hasNext()) {
+    // Globals.loadedExecutables.remove(it.next());
+    // return true;
+    // }
+    // }
+    // return false;
+    // }
+    //
+    // public XsltExecutable loadExecutable() throws SaxonApiException {
+    // String key = getId();
+    // XsltExecutable executable = Globals.loadedExecutables.get(key);
+    // while (executable == null) {
+    // try {
+    // // System.out.println(template.getTemplateFile().getAbsolutePath());
+    // Source source = new StreamSource(getTemplateFile());
+    // executable = Globals.compiler.compile(source);
+    // Globals.loadedExecutables.put(key, executable);
+    // } catch (OutOfMemoryError e) {
+    // boolean freed = freeExecutable();
+    // if (!freed) {
+    // throw e;
+    // }
+    // }
+    // }
+    //
+    // Runtime rt = Runtime.getRuntime();
+    // while (rt.totalMemory() - rt.freeMemory() > Globals.memThreshhold) {
+    // boolean freed = freeExecutable();
+    // if (!freed) {
+    // break;
+    // }
+    // }
+    //
+    // return executable;
+    // }
 }

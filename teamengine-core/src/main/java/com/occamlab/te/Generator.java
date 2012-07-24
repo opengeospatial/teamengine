@@ -47,14 +47,17 @@ import net.sf.saxon.s9api.XsltTransformer;
  */
 public class Generator {
 
-    private static final Logger LOGR = Logger.getLogger(Generator.class.getName());
+    private static final Logger LOGR = Logger.getLogger(Generator.class
+            .getName());
 
     public static Index generateXsl(SetupOptions opts) throws Exception {
         Index masterIndex = new Index();
 
         // Create CTL validator
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema ctl_schema = sf.newSchema(Misc.getResourceAsFile("com/occamlab/te/schemas/ctl.xsd"));
+        SchemaFactory sf = SchemaFactory
+                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema ctl_schema = sf.newSchema(Misc
+                .getResourceAsFile("com/occamlab/te/schemas/ctl.xsd"));
         Validator ctl_validator = ctl_schema.newValidator();
         CtlErrorHandler validation_eh = new CtlErrorHandler();
         ctl_validator.setErrorHandler(validation_eh);
@@ -62,10 +65,13 @@ public class Generator {
         // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
         processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
-        processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
+        processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING,
+                Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
-        File generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
-        XsltExecutable generatorXsltExecutable = generatorCompiler.compile(new StreamSource(generatorStylesheet));
+        File generatorStylesheet = Misc
+                .getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
+        XsltExecutable generatorXsltExecutable = generatorCompiler
+                .compile(new StreamSource(generatorStylesheet));
         XsltTransformer generatorTransformer = generatorXsltExecutable.load();
 
         // Create a list of CTL sources (may be files or dirs)
@@ -83,11 +89,17 @@ public class Generator {
             File source = it.next();
             LOGR.log(Level.CONFIG, "Processing CTL source files in {0}",
                     source.getAbsolutePath());
-            String encodedName = URLEncoder.encode(source.getAbsolutePath(), "UTF-8");
-            encodedName = encodedName.replace('%', '~');  // In Java 5, the Document.parse function has trouble with the URL % encoding
+            String encodedName = URLEncoder.encode(source.getAbsolutePath(),
+                    "UTF-8");
+            encodedName = encodedName.replace('%', '~'); // In Java 5, the
+                                                         // Document.parse
+                                                         // function has trouble
+                                                         // with the URL %
+                                                         // encoding
             File workingDir = new File(opts.getWorkDir(), encodedName);
             if (!workingDir.mkdir()) {
-                LOGR.log(Level.WARNING, "Unable to create working directory at {0}",
+                LOGR.log(Level.WARNING,
+                        "Unable to create working directory at {0}",
                         workingDir.getAbsolutePath());
             }
             if (source.isDirectory()) {
@@ -95,11 +107,13 @@ public class Generator {
                 for (int i = 0; i < children.length; i++) {
                     // Finds all .ctl and .xml files in the directory to use
                     String lowerName = children[i].toLowerCase();
-                    if (lowerName.endsWith(".ctl") || lowerName.endsWith(".xml")) {
+                    if (lowerName.endsWith(".ctl")
+                            || lowerName.endsWith(".xml")) {
                         File file = new File(source, children[i]);
                         if (file.isFile()) {
                             sourceFiles.add(file);
-                            String basename = children[i].substring(0, children[i].length() - 4);
+                            String basename = children[i].substring(0,
+                                    children[i].length() - 4);
                             File subdir = new File(workingDir, basename);
                             subdir.mkdir();
                             workDirs.add(subdir);
@@ -117,25 +131,28 @@ public class Generator {
             File sourceFile = sourceFiles.get(i);
             File workingDir = workDirs.get(i);
 
-            // Read previous index for this file (if any), and determine whether the
+            // Read previous index for this file (if any), and determine whether
+            // the
             // index and xsl need to be regenerated
             File indexFile = new File(workingDir, "index.xml");
             Index index = null;
             boolean regenerate = true;
             if (indexFile.isFile()) {
                 try {
-                    if (indexFile.lastModified() > generatorStylesheet.lastModified()) {
+                    if (indexFile.lastModified() > generatorStylesheet
+                            .lastModified()) {
                         index = new Index(indexFile);
                         regenerate = index.outOfDate();
                     }
                 } catch (Exception e) {
-                    // If there was an exception reading the index file, it is likely corrupt.  Regenerate it.
+                    // If there was an exception reading the index file, it is
+                    // likely corrupt. Regenerate it.
                     regenerate = true;
                 }
             }
 
             if (regenerate) {
-                // Validate the source CTL file 
+                // Validate the source CTL file
                 boolean validationErrors = false;
                 if (opts.isValidate()) {
                     int old_count = validation_eh.getErrorCount();
@@ -148,13 +165,17 @@ public class Generator {
                     // Clean up the working directory
                     Misc.deleteDirContents(workingDir);
 
-                    // Run the generator transformation.  Output is an index file and is saved to disk.
-                    // The generator also creates XSL template files in the working dir.
-                    generatorTransformer.setSource(new StreamSource(sourceFile));
+                    // Run the generator transformation. Output is an index file
+                    // and is saved to disk.
+                    // The generator also creates XSL template files in the
+                    // working dir.
+                    generatorTransformer
+                            .setSource(new StreamSource(sourceFile));
                     Serializer generatorSerializer = new Serializer();
                     generatorSerializer.setOutputFile(indexFile);
                     generatorTransformer.setDestination(generatorSerializer);
-                    XdmAtomicValue av = new XdmAtomicValue(workingDir.getAbsolutePath());
+                    XdmAtomicValue av = new XdmAtomicValue(
+                            workingDir.getAbsolutePath());
                     generatorTransformer.setParameter(new QName("outdir"), av);
                     generatorTransformer.transform();
 
@@ -167,7 +188,8 @@ public class Generator {
             masterIndex.add(index);
         }
 
-        // If there were any validation errors, display them and throw an exception
+        // If there were any validation errors, display them and throw an
+        // exception
         int error_count = validation_eh.getErrorCount();
         if (error_count > 0) {
             String msg = error_count + " validation error"
@@ -178,7 +200,7 @@ public class Generator {
                         + (warning_count == 1 ? "" : "s");
             }
             msg += " detected.";
-//            appLogger.severe(msg);
+            // appLogger.severe(msg);
             throw new Exception(msg);
         }
 

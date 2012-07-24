@@ -33,107 +33,110 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Attr;
 
 /**
- * Allows for manipulating of a DOM Document by adding/removing/etc elements and attributes.
- *
+ * Allows for manipulating of a DOM Document by adding/removing/etc elements and
+ * attributes.
+ * 
  * @author jparrpearson
  */
 public class DomUtils {
 
     /**
      * Adds the attribute to each node in the Document with the given name.
-     *
+     * 
      * @param doc
-     *		the Document to add attributes to
+     *            the Document to add attributes to
      * @param tagName
-     *		the local name of the nodes to add the attribute to
+     *            the local name of the nodes to add the attribute to
      * @param tagNamespaceURI
-     *		the namespace uri of the nodes to add the attribute to
+     *            the namespace uri of the nodes to add the attribute to
      * @param attrName
-     *		the name of the attribute to add
+     *            the name of the attribute to add
      * @param attrValue
-     *		the value of the attribute to add
-     *
+     *            the value of the attribute to add
+     * 
      * @return the original Document with the update attribute nodes
      */
-    public static Node addDomAttr(Document doc, String tagName, String tagNamespaceURI, String attrName, String attrValue) {
+    public static Node addDomAttr(Document doc, String tagName,
+            String tagNamespaceURI, String attrName, String attrValue) {
 
-	// Create a Document to work on
-	Document newDoc = null;
-	try {
-		System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		newDoc = db.newDocument();
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
+        // Create a Document to work on
+        Document newDoc = null;
+        try {
+            System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+                    "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            newDoc = db.newDocument();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-	Transformer identity = null;
-	try {
-    	TransformerFactory TF = TransformerFactory.newInstance();
-		identity = TF.newTransformer();
-		identity.transform(new DOMSource(doc), new DOMResult(newDoc));
-	} catch (Exception ex) {
-		System.out.println("ERROR: "+ex.getMessage());
-	}
+        Transformer identity = null;
+        try {
+            TransformerFactory TF = TransformerFactory.newInstance();
+            identity = TF.newTransformer();
+            identity.transform(new DOMSource(doc), new DOMResult(newDoc));
+        } catch (Exception ex) {
+            System.out.println("ERROR: " + ex.getMessage());
+        }
 
-	// Get all named nodes in the doucment
-	NodeList namedTags = newDoc.getElementsByTagNameNS(tagNamespaceURI, tagName);
-	for (int i = 0; i < namedTags.getLength(); i++) {
-		// Add the attribute to each one
-		Element element = (Element)namedTags.item(i);
-		element.setAttribute(attrName, attrValue);
-	}
+        // Get all named nodes in the doucment
+        NodeList namedTags = newDoc.getElementsByTagNameNS(tagNamespaceURI,
+                tagName);
+        for (int i = 0; i < namedTags.getLength(); i++) {
+            // Add the attribute to each one
+            Element element = (Element) namedTags.item(i);
+            element.setAttribute(attrName, attrValue);
+        }
 
-	//displayNode(newDoc);
-	return (Node)newDoc;
+        // displayNode(newDoc);
+        return (Node) newDoc;
     }
 
     /**
      * Determines if there is a comment Node that contains the given string.
-     *
+     * 
      * @param node
-     *		the Node to look in
+     *            the Node to look in
      * @param str
-     *		the string value to match in the comment nodes
-     *
-       CTL declaration, if we ever want to use it
-       <!--Sample Usage: ctl:checkCommentNodes($xml.resp, 'complexContent')-->
-       <ctl:function name="ctl:checkCommentNodes">
-	  <ctl:param name="node"/>
-	  <ctl:param name="string"/>
-	  <ctl:description>Checks a Node for comments that contain the given string.</ctl:description>
-	  <ctl:java class="com.occamlab.te.util.DomUtils" 
-					method="checkCommentNodes"/>
-  	</ctl:function>
-
+     *            the string value to match in the comment nodes
+     * 
+     *            CTL declaration, if we ever want to use it <!--Sample Usage:
+     *            ctl:checkCommentNodes($xml.resp, 'complexContent')-->
+     *            <ctl:function name="ctl:checkCommentNodes"> <ctl:param
+     *            name="node"/> <ctl:param name="string"/>
+     *            <ctl:description>Checks a Node for comments that contain the
+     *            given string.</ctl:description> <ctl:java
+     *            class="com.occamlab.te.util.DomUtils"
+     *            method="checkCommentNodes"/> </ctl:function>
+     * 
      * @return the original Document with the update attribute nodes
      */
     public static boolean checkCommentNodes(Node node, String str) {
 
-	// Get nodes of node and go through them
-	NodeList children = node.getChildNodes();
-	for (int i = 0; i < children.getLength(); i++) {
-		Node child = children.item(i);
-		NodeList childChildren = child.getChildNodes();
-		if (childChildren.getLength() > 0) {
-			// Recurse for all children
-			boolean okDownThere = checkCommentNodes(child, str);
-			if (okDownThere == true) {
-				return true;
-			}
-		}
-		// Investigate comments
-		if (child.getNodeType() == Node.COMMENT_NODE) {
-			// If we got a comment that contains the string we are happy
-			Comment comment = (Comment)child;
-			if (comment.getNodeValue().contains(str)) {
-				return true;
-			}
-		}
-	}
-	return false;
+        // Get nodes of node and go through them
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            NodeList childChildren = child.getChildNodes();
+            if (childChildren.getLength() > 0) {
+                // Recurse for all children
+                boolean okDownThere = checkCommentNodes(child, str);
+                if (okDownThere == true) {
+                    return true;
+                }
+            }
+            // Investigate comments
+            if (child.getNodeType() == Node.COMMENT_NODE) {
+                // If we got a comment that contains the string we are happy
+                Comment comment = (Comment) child;
+                if (comment.getNodeValue().contains(str)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -142,23 +145,24 @@ public class DomUtils {
     public static String serializeNode(Node node) {
         return serializeSource(new DOMSource(node));
     }
-    
-    public static String serializeSource(Source source){
+
+    public static String serializeSource(Source source) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer = factory.newTransformer();
 
             StreamResult dest = new StreamResult(baos);
-                    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+                    "yes");
             transformer.transform(source, dest);
         } catch (Exception e) {
-            System.out.println("Error serializing node.  "+e.getMessage());
+            System.out.println("Error serializing node.  " + e.getMessage());
         }
 
         try {
             return baos.toString("UTF-8");
-        } catch ( UnsupportedEncodingException e ) {
+        } catch (UnsupportedEncodingException e) {
             return baos.toString();
         }
     }
@@ -184,7 +188,7 @@ public class DomUtils {
         NodeList children = node.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node n = children.item(i);
-            short type = node.getNodeType(); 
+            short type = node.getNodeType();
             if (type == Node.TEXT_NODE) {
                 if (tagOpen) {
                     buf.append(">\n");
@@ -208,39 +212,42 @@ public class DomUtils {
             buf.append(">\n");
         }
         return buf.toString();
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        try {
-//                TransformerFactory factory = TransformerFactory.newInstance();
-//                File f = Misc.getResourceAsFile("com/occamlab/te/drop-ns.xsl");
-//                Transformer transformer = factory.newTransformer(new StreamSource(f));
-//
-//                DOMSource src = new DOMSource(node);
-//                StreamResult dest = new StreamResult(baos);
-//                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-//                transformer.transform(src, dest);
-//        } catch (Exception e) {
-//                System.out.println("Error serializing node.  "+e.getMessage());
-//        }
-//
-//        return baos.toString();
+        // ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // try {
+        // TransformerFactory factory = TransformerFactory.newInstance();
+        // File f = Misc.getResourceAsFile("com/occamlab/te/drop-ns.xsl");
+        // Transformer transformer = factory.newTransformer(new
+        // StreamSource(f));
+        //
+        // DOMSource src = new DOMSource(node);
+        // StreamResult dest = new StreamResult(baos);
+        // transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+        // "yes");
+        // transformer.transform(src, dest);
+        // } catch (Exception e) {
+        // System.out.println("Error serializing node.  "+e.getMessage());
+        // }
+        //
+        // return baos.toString();
     }
 
     /** HELPER METHOD TO PRINT A DOM TO STDOUT */
     static public void displayNode(Node node) {
-	try {
-	    	TransformerFactory TF = TransformerFactory.newInstance();
-		Transformer identity = TF.newTransformer();
-		identity.transform(new DOMSource(node), new StreamResult(System.out));
-	} catch (Exception ex) {
-		System.out.println("ERROR: "+ex.getMessage());
-	}
+        try {
+            TransformerFactory TF = TransformerFactory.newInstance();
+            Transformer identity = TF.newTransformer();
+            identity.transform(new DOMSource(node),
+                    new StreamResult(System.out));
+        } catch (Exception ex) {
+            System.out.println("ERROR: " + ex.getMessage());
+        }
     }
 
     static public Element getElement(Node node) {
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
-            return ((Document)node).getDocumentElement();
-        } else if (node.getNodeType() == Node.ELEMENT_NODE){
-            return (Element)node;
+            return ((Document) node).getDocumentElement();
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            return (Element) node;
         }
         return null;
     }
@@ -250,7 +257,7 @@ public class DomUtils {
         NamedNodeMap nnm = node.getAttributes();
         if (nnm != null) {
             for (int i = 0; i < nnm.getLength(); i++) {
-                Attr att = (Attr)nnm.item(i);
+                Attr att = (Attr) nnm.item(i);
                 String uri = att.getBaseURI();
                 String localname = att.getLocalName();
                 String prefix = att.getPrefix();
@@ -262,7 +269,8 @@ public class DomUtils {
                 } else {
                     name = new QName(uri, localname, prefix);
                 }
-                if (prefix == null || !(prefix.equals("xmlns") || prefix.equals("xml"))) {
+                if (prefix == null
+                        || !(prefix.equals("xmlns") || prefix.equals("xml"))) {
                     atts.put(name, att.getValue());
                 }
             }
@@ -286,19 +294,19 @@ public class DomUtils {
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
-                return (Element)n;
+                return (Element) n;
             }
         }
         return null;
     }
 
     static public List<Element> getChildElements(Node node) {
-        ArrayList<Element> list = new ArrayList<Element>(); 
+        ArrayList<Element> list = new ArrayList<Element>();
         NodeList nl = node.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
-                list.add((Element)nl.item(i));
+                list.add((Element) nl.item(i));
             }
         }
         return list;
@@ -307,63 +315,69 @@ public class DomUtils {
     static public Element getElementByTagName(Node node, String tagname) {
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
-            nl = ((Document)node).getElementsByTagName(tagname);
+            nl = ((Document) node).getElementsByTagName(tagname);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
-            nl = ((Element)node).getElementsByTagName(tagname);
+            nl = ((Element) node).getElementsByTagName(tagname);
         } else {
             return null;
         }
         if (nl.getLength() >= 0) {
-            return (Element)nl.item(0);
+            return (Element) nl.item(0);
         } else {
             return null;
         }
     }
 
-    static public Element getElementByTagNameNS(Node node, String namespaceURI, String localName) {
+    static public Element getElementByTagNameNS(Node node, String namespaceURI,
+            String localName) {
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
-            nl = ((Document)node).getElementsByTagNameNS(namespaceURI, localName);
+            nl = ((Document) node).getElementsByTagNameNS(namespaceURI,
+                    localName);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
-            nl = ((Element)node).getElementsByTagNameNS(namespaceURI, localName);
+            nl = ((Element) node).getElementsByTagNameNS(namespaceURI,
+                    localName);
         } else {
             return null;
         }
         if (nl.getLength() > 0) {
-            return (Element)nl.item(0);
+            return (Element) nl.item(0);
         } else {
             return null;
         }
     }
 
     static public List<Element> getElementsByTagName(Node node, String tagname) {
-        ArrayList<Element> list = new ArrayList<Element>(); 
+        ArrayList<Element> list = new ArrayList<Element>();
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
-            nl = ((Document)node).getElementsByTagName(tagname);
+            nl = ((Document) node).getElementsByTagName(tagname);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
-            nl = ((Element)node).getElementsByTagName(tagname);
+            nl = ((Element) node).getElementsByTagName(tagname);
         } else {
             return null;
         }
         for (int i = 0; i < nl.getLength(); i++) {
-            list.add((Element)nl.item(i));
+            list.add((Element) nl.item(i));
         }
         return list;
     }
 
-    static public List<Element> getElementsByTagNameNS(Node node, String namespaceURI, String localName) {
-        ArrayList<Element> list = new ArrayList<Element>(); 
+    static public List<Element> getElementsByTagNameNS(Node node,
+            String namespaceURI, String localName) {
+        ArrayList<Element> list = new ArrayList<Element>();
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
-            nl = ((Document)node).getElementsByTagNameNS(namespaceURI, localName);
+            nl = ((Document) node).getElementsByTagNameNS(namespaceURI,
+                    localName);
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
-            nl = ((Element)node).getElementsByTagNameNS(namespaceURI, localName);
+            nl = ((Element) node).getElementsByTagNameNS(namespaceURI,
+                    localName);
         } else {
             return null;
         }
         for (int i = 0; i < nl.getLength(); i++) {
-            list.add((Element)nl.item(i));
+            list.add((Element) nl.item(i));
         }
         return list;
     }

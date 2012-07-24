@@ -11,37 +11,39 @@ public interface TestSuiteController {
 
     /**
      * Returns the ETS code.
-     *
+     * 
      * @return A String containing an alphanumeric code value. It cannot start
-     * with a digit.
+     *         with a digit.
      */
     public String getCode();
 
     /**
      * Returns the version of this ETS.
-     *
+     * 
      * @return A String indicating the version. It must comply with the Maven
-     * versioning scheme.
+     *         versioning scheme.
      */
     public String getVersion();
 
     /**
      * Returns the title of this ETS.
-     *
+     * 
      * @return
      */
     public String getTitle();
 
     /**
      * Executes a test run and returns the results.
-     *
-     * @param testRunArgs A DOM Document conveying the test run arguments. The
-     * content is implementation-specific.
+     * 
+     * @param testRunArgs
+     *            A DOM Document conveying the test run arguments. The content
+     *            is implementation-specific.
      * @return A Source object that supplies an XML representation of the test
-     * results.
-     *
-     * @throws Exception If the supplied test run arguments are invalid for any
-     * reason.
+     *         results.
+     * 
+     * @throws Exception
+     *             If the supplied test run arguments are invalid for any
+     *             reason.
      */
     public Source doTestRun(Document testRunArgs) throws Exception;
 }

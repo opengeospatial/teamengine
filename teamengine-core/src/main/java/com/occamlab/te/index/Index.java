@@ -51,22 +51,22 @@ public class Index {
     Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
 
     List<Element> elements = new ArrayList<Element>();
-    
+
     public Index() {
     }
-    
+
     public Index(File indexFile) throws Exception {
         this.indexFile = indexFile;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(indexFile);
-        Element index = (Element)doc.getDocumentElement();
+        Element index = (Element) doc.getDocumentElement();
         NodeList nodes = index.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element)node;
+                Element el = (Element) node;
                 elements.add(el);
                 String name = el.getNodeName();
                 if (name.equals("dependency")) {
@@ -83,7 +83,8 @@ public class Index {
                     testMap.put(te.getId(), te);
                 } else if (name.equals("function")) {
                     FunctionEntry fe = new FunctionEntry(el);
-                    List<FunctionEntry> functions = functionsMap.get(fe.getId());
+                    List<FunctionEntry> functions = functionsMap
+                            .get(fe.getId());
                     if (functions == null) {
                         functions = new ArrayList<FunctionEntry>();
                         functions.add(fe);
@@ -98,7 +99,7 @@ public class Index {
             }
         }
     }
-    
+
     public void persist(File file) throws Exception {
         file.getParentFile().mkdirs();
         PrintWriter out = new PrintWriter(file);
@@ -109,7 +110,7 @@ public class Index {
         out.println("</index>");
         out.close();
     }
-    
+
     public boolean outOfDate() {
         if (indexFile != null) {
             long indexDate = indexFile.lastModified();
@@ -121,7 +122,7 @@ public class Index {
         }
         return false;
     }
-    
+
     public void add(Index index) {
         elements.addAll(index.elements);
         dependencies.addAll(index.dependencies);
@@ -131,54 +132,55 @@ public class Index {
         testMap.putAll(index.testMap);
         parserMap.putAll(index.parserMap);
     }
-    
+
     public List<FunctionEntry> getFunctions(String name) {
         if (name.startsWith("{")) {
             return functionsMap.get(name);
         }
         throw new RuntimeException("Invalid function name");
     }
-    
+
     public List<FunctionEntry> getFunctions(QName qname) {
-        return getFunctions("{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
+        return getFunctions("{" + qname.getNamespaceURI() + "}"
+                + qname.getLocalPart());
     }
-    
+
     public Set<String> getFunctionKeys() {
         return functionsMap.keySet();
     }
-    
+
     public ParserEntry getParser(String name) {
-        return (ParserEntry)getEntry(parserMap, name);
+        return (ParserEntry) getEntry(parserMap, name);
     }
 
     public ParserEntry getParser(QName qname) {
-        return (ParserEntry)getEntry(parserMap, qname);
+        return (ParserEntry) getEntry(parserMap, qname);
     }
-    
+
     public Set<String> getParserKeys() {
         return parserMap.keySet();
     }
-    
+
     public SuiteEntry getSuite(String name) {
-        return (SuiteEntry)getEntry(suiteMap, name);
+        return (SuiteEntry) getEntry(suiteMap, name);
     }
 
     public SuiteEntry getSuite(QName qname) {
-        return (SuiteEntry)getEntry(suiteMap, qname);
+        return (SuiteEntry) getEntry(suiteMap, qname);
     }
-    
+
     public Set<String> getSuiteKeys() {
         return suiteMap.keySet();
     }
 
     public ProfileEntry getProfile(String name) {
-        return (ProfileEntry)getEntry(profileMap, name);
+        return (ProfileEntry) getEntry(profileMap, name);
     }
 
     public ProfileEntry getProfile(QName qname) {
-        return (ProfileEntry)getEntry(profileMap, qname);
+        return (ProfileEntry) getEntry(profileMap, qname);
     }
-    
+
     public Set<String> getProfileKeys() {
         return profileMap.keySet();
     }
@@ -188,33 +190,37 @@ public class Index {
     }
 
     public TestEntry getTest(String name) {
-        return (TestEntry)getEntry(testMap, name);
+        return (TestEntry) getEntry(testMap, name);
     }
 
     public TestEntry getTest(QName qname) {
-        return (TestEntry)getEntry(testMap, qname);
+        return (TestEntry) getEntry(testMap, qname);
     }
 
     public Set<String> getTestKeys() {
         return testMap.keySet();
     }
-    
-    private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, QName qname) {
-        return getEntry(map, "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
+
+    private IndexEntry getEntry(Map<String, ? extends IndexEntry> map,
+            QName qname) {
+        return getEntry(map,
+                "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart());
     }
 
-    private IndexEntry getEntry(Map<String, ? extends IndexEntry> map, String name) {
+    private IndexEntry getEntry(Map<String, ? extends IndexEntry> map,
+            String name) {
         if (name == null) {
             return map.values().iterator().next();
         }
-        
+
         if (name.startsWith("{")) {
             return map.get(name);
         }
 
         int i = name.lastIndexOf(',');
         if (i >= 0) {
-            String key = "{" + name.substring(0, i) + "}" + name.substring(i + 1);
+            String key = "{" + name.substring(0, i) + "}"
+                    + name.substring(i + 1);
             return map.get(key);
         }
 
@@ -225,7 +231,7 @@ public class Index {
             prefix = name.substring(0, i);
             localName = name.substring(i + 1);
         }
-        
+
         Iterator<? extends IndexEntry> it = map.values().iterator();
         while (it.hasNext()) {
             IndexEntry entry = it.next();
@@ -254,6 +260,5 @@ public class Index {
     public void setDependencies(List<File> dependencies) {
         this.dependencies = dependencies;
     }
-    
-    
+
 }

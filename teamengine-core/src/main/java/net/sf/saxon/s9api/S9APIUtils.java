@@ -18,21 +18,24 @@
  Contributor(s): No additional contributors to date
  */
 
-/* This file is in the s9api package so it can access the protected XdmNode constructor */ 
+/* This file is in the s9api package so it can access the protected XdmNode constructor */
 package net.sf.saxon.s9api;
 
 import net.sf.saxon.om.NodeInfo;
 
 public class S9APIUtils {
-  public static XdmNode makeNode(NodeInfo node) {
-    return new XdmNode(node);
-  }
-  
-  public static void setTransformerParam(XsltTransformer xt, String param, String value) throws SaxonApiException {
-      setTransformerParam(xt, new QName(param), value);
-  }
+    public static XdmNode makeNode(NodeInfo node) {
+        return new XdmNode(node);
+    }
 
-  public static void setTransformerParam(XsltTransformer xt, QName param, String value) throws SaxonApiException {
-      xt.setParameter(param, XdmItem.newAtomicValue(value, ItemType.ANY_ATOMIC_VALUE));
-  }
+    public static void setTransformerParam(XsltTransformer xt, String param,
+            String value) throws SaxonApiException {
+        setTransformerParam(xt, new QName(param), value);
+    }
+
+    public static void setTransformerParam(XsltTransformer xt, QName param,
+            String value) throws SaxonApiException {
+        xt.setParameter(param,
+                XdmItem.newAtomicValue(value, ItemType.ANY_ATOMIC_VALUE));
+    }
 }

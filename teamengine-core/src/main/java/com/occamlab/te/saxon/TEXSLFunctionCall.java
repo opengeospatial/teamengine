@@ -36,26 +36,30 @@ import com.occamlab.te.util.DomUtils;
 
 public class TEXSLFunctionCall extends TEFunctionCall {
     FunctionEntry fe;
-    
-    public TEXSLFunctionCall(FunctionEntry fe, StructuredQName functionName, Expression[] staticArgs, StaticContext env) {
+
+    public TEXSLFunctionCall(FunctionEntry fe, StructuredQName functionName,
+            Expression[] staticArgs, StaticContext env) {
         super(functionName, staticArgs, env);
         this.fe = fe;
     }
-    
-    public static String getType(Expression expr, XPathContext context) throws XPathException {
+
+    public static String getType(Expression expr, XPathContext context)
+            throws XPathException {
         ValueRepresentation vr = ExpressionTool.lazyEvaluate(expr, context, 1);
-        ItemType it = Value.asValue(vr).getItemType(context.getConfiguration().getTypeHierarchy());
+        ItemType it = Value.asValue(vr).getItemType(
+                context.getConfiguration().getTypeHierarchy());
         if (it instanceof SchemaType) {
-            return "xs:" + ((SchemaType)it).getName();
+            return "xs:" + ((SchemaType) it).getName();
         }
         return "xs:any";
     }
-    
+
     public SequenceIterator iterate(XPathContext context) throws XPathException {
         Controller controller = context.getController();
-        ObjectValue ov = (ObjectValue)controller.getParameter("{" + Test.TE_NS + "}core");
-        TECore core = (TECore)ov.getObject();
-            
+        ObjectValue ov = (ObjectValue) controller.getParameter("{" + Test.TE_NS
+                + "}core");
+        TECore core = (TECore) ov.getObject();
+
         Expression[] argExpressions = getArguments();
         String xml = "<params>\n";
         List<QName> params = fe.getParams();
@@ -65,55 +69,64 @@ public class TEXSLFunctionCall extends TEFunctionCall {
             xml += " local-name=\"" + param.getLocalPart() + "\"";
             xml += " namespace-uri=\"" + param.getNamespaceURI() + "\"";
             xml += " prefix=\"" + param.getPrefix() + "\"";
-            ValueRepresentation vr = ExpressionTool.eagerEvaluate(argExpressions[i], context);
-//            ValueRepresentation vr = ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
+            ValueRepresentation vr = ExpressionTool.eagerEvaluate(
+                    argExpressions[i], context);
+            // ValueRepresentation vr =
+            // ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
             Value v = Value.asValue(vr);
             try {
-                Node n = (Node)v.convertToJava(Node.class, context);
+                Node n = (Node) v.convertToJava(Node.class, context);
                 int type = n.getNodeType();
                 if (type == Node.ATTRIBUTE_NODE) {
                     xml += ">\n";
-                    Attr attr = (Attr)n;
-                    xml += "<value " + attr.getNodeName() + "=\"" + attr.getValue().replace( "&", "&amp;" ) + "\"";
+                    Attr attr = (Attr) n;
+                    xml += "<value " + attr.getNodeName() + "=\""
+                            + attr.getValue().replace("&", "&amp;") + "\"";
                     if (attr.getPrefix() != null) {
-                        xml += " xmlns:" + attr.getPrefix() + "=\"" + attr.getNamespaceURI() + "\"";
+                        xml += " xmlns:" + attr.getPrefix() + "=\""
+                                + attr.getNamespaceURI() + "\"";
                     }
                     xml += "/>\n";
-//                } else if (type == Node.ELEMENT_NODE || type == Node.DOCUMENT_NODE) {
-//                    xml += ">\n";
-//                    xml += "<value>";
-//                    xml += DomUtils.serializeNode(n);
-//                    xml += "</value>\n";
+                    // } else if (type == Node.ELEMENT_NODE || type ==
+                    // Node.DOCUMENT_NODE) {
+                    // xml += ">\n";
+                    // xml += "<value>";
+                    // xml += DomUtils.serializeNode(n);
+                    // xml += "</value>\n";
                 } else if (type == Node.ELEMENT_NODE) {
-                  xml += " type=\"node()\">\n";
-                  xml += "<value>";
-                  xml += DomUtils.serializeNode(n);
-                  xml += "</value>\n";
+                    xml += " type=\"node()\">\n";
+                    xml += "<value>";
+                    xml += DomUtils.serializeNode(n);
+                    xml += "</value>\n";
                 } else if (type == Node.DOCUMENT_NODE) {
-                  xml += " type=\"document-node()\">\n";
-                  xml += "<value>";
-                  xml += DomUtils.serializeNode(n);
-                  xml += "</value>\n";
+                    xml += " type=\"document-node()\">\n";
+                    xml += "<value>";
+                    xml += DomUtils.serializeNode(n);
+                    xml += "</value>\n";
                 } else {
-                    ItemType it = v.getItemType(context.getConfiguration().getTypeHierarchy());
+                    ItemType it = v.getItemType(context.getConfiguration()
+                            .getTypeHierarchy());
                     xml += " type=\"" + getTypeName(it) + "\">\n";
                     xml += "<value>" + n.getNodeValue() + "</value>\n";
                 }
             } catch (Exception e) {
-                ItemType it = v.getItemType(context.getConfiguration().getTypeHierarchy());
+                ItemType it = v.getItemType(context.getConfiguration()
+                        .getTypeHierarchy());
                 xml += " type=\"" + getTypeName(it) + "\">\n";
                 xml += "<value>" + v.getStringValue() + "</value>\n";
             }
             xml += "</param>\n";
         }
         xml += "</params>";
-//System.out.println(xml);
+        // System.out.println(xml);
         Source src = new StreamSource(new CharArrayReader(xml.toCharArray()));
-//        XdmValue result = null;
+        // XdmValue result = null;
         NodeInfo result = null;
         try {
-//            result = core.executeTemplate(fe, Globals.builder.build(src), context);
-            NodeInfo paramsNode = core.getEngine().getBuilder().build(src).getUnderlyingNode();
+            // result = core.executeTemplate(fe, Globals.builder.build(src),
+            // context);
+            NodeInfo paramsNode = core.getEngine().getBuilder().build(src)
+                    .getUnderlyingNode();
             result = core.executeXSLFunction(context, fe, paramsNode);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -121,8 +134,8 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         if (result == null) {
             return EmptyIterator.getInstance();
         } else {
-//            Value v = Value.asValue(result);
-//            return v.iterate();
+            // Value v = Value.asValue(result);
+            // return v.iterate();
             return result.iterateAxis(Axis.CHILD);
         }
     }

@@ -52,7 +52,8 @@ public class MonitorServlet extends HttpServlet {
     static Map<String, MonitorCall> monitors = new HashMap<String, MonitorCall>();
 
     static public String allocateMonitorUrl(String url) {
-        String monitorUrl = baseServletURL + "/" + servletName + "/" + Integer.toString(monitorUrlSeq);
+        String monitorUrl = baseServletURL + "/" + servletName + "/"
+                + Integer.toString(monitorUrlSeq);
         monitorUrlSeq++;
         MonitorCall mc = new MonitorCall(url);
         monitors.put(monitorUrl, mc);
@@ -65,74 +66,82 @@ public class MonitorServlet extends HttpServlet {
     }
 
     // Monitor that doesn't trigger a test
-    static public String createMonitor(String monitorUrl, Node parserInstruction, String modifiesResponse, TECore core) {
+    static public String createMonitor(String monitorUrl,
+            Node parserInstruction, String modifiesResponse, TECore core) {
         MonitorCall mc = monitors.get(monitorUrl);
-    	mc.setCore(core);
+        mc.setCore(core);
         if (parserInstruction != null) {
-        	mc.setParserInstruction(DomUtils.getElement(parserInstruction));
-        	mc.setModifiesResponse(Boolean.parseBoolean(modifiesResponse));
+            mc.setParserInstruction(DomUtils.getElement(parserInstruction));
+            mc.setModifiesResponse(Boolean.parseBoolean(modifiesResponse));
         }
         return "";
     }
 
     // Monitor without parser that triggers a test
-    static public String createMonitor(XPathContext context, String url, String localName, String namespaceURI, NodeInfo params, String callId, TECore core) throws Exception {
-        return createMonitor(context, url, localName, namespaceURI, params, null, "", callId, core);
+    static public String createMonitor(XPathContext context, String url,
+            String localName, String namespaceURI, NodeInfo params,
+            String callId, TECore core) throws Exception {
+        return createMonitor(context, url, localName, namespaceURI, params,
+                null, "", callId, core);
     }
 
     // Monitor that triggers a test
-    static public String createMonitor(XPathContext context, String monitorUrl, String localName, String namespaceURI, NodeInfo params, NodeInfo parserInstruction, String modifiesResponse, String callId, TECore core) throws Exception {
+    static public String createMonitor(XPathContext context, String monitorUrl,
+            String localName, String namespaceURI, NodeInfo params,
+            NodeInfo parserInstruction, String modifiesResponse, String callId,
+            TECore core) throws Exception {
         MonitorCall mc = monitors.get(monitorUrl);
-    	mc.setCore(core);
+        mc.setCore(core);
         mc.setContext(context);
         mc.setLocalName(localName);
         mc.setNamespaceURI(namespaceURI);
         if (params != null) {
-            Node node = (Node)NodeOverNodeInfo.wrap(params);
+            Node node = (Node) NodeOverNodeInfo.wrap(params);
             if (node.getNodeType() == Node.DOCUMENT_NODE) {
-                mc.setParams(((Document)node).getDocumentElement());
+                mc.setParams(((Document) node).getDocumentElement());
             } else {
-                mc.setParams((Element)node);
+                mc.setParams((Element) node);
             }
         }
         if (parserInstruction != null) {
-            Node node = (Node)NodeOverNodeInfo.wrap(parserInstruction);
+            Node node = (Node) NodeOverNodeInfo.wrap(parserInstruction);
             if (node.getNodeType() == Node.DOCUMENT_NODE) {
-                mc.setParserInstruction(((Document)node).getDocumentElement());
+                mc.setParserInstruction(((Document) node).getDocumentElement());
             } else {
-                mc.setParserInstruction((Element)node);
+                mc.setParserInstruction((Element) node);
             }
             mc.setModifiesResponse(Boolean.parseBoolean(modifiesResponse));
         }
         mc.setCallId(callId);
         return "";
     }
-    
+
     public static String destroyMonitors(TECore core) {
-    	ArrayList<String> keysToDelete = new ArrayList<String>();
-    	for (Entry<String, MonitorCall> entry : monitors.entrySet()) {
-    		MonitorCall mc = entry.getValue();
-    		if (mc.getCore() == core) {
-    			if (mc.getTestPath().equals(core.getTestPath())) {
-    				keysToDelete.add(entry.getKey());
-    			}
-    		}
-    	}
-    	for (String key : keysToDelete) {
-    		monitors.remove(key);
-    	}
-    	return "";
+        ArrayList<String> keysToDelete = new ArrayList<String>();
+        for (Entry<String, MonitorCall> entry : monitors.entrySet()) {
+            MonitorCall mc = entry.getValue();
+            if (mc.getCore() == core) {
+                if (mc.getTestPath().equals(core.getTestPath())) {
+                    keysToDelete.add(entry.getKey());
+                }
+            }
+        }
+        for (String key : keysToDelete) {
+            monitors.remove(key);
+        }
+        return "";
     }
 
-    public void process(HttpServletRequest request, HttpServletResponse response, boolean post) throws ServletException {
+    public void process(HttpServletRequest request,
+            HttpServletResponse response, boolean post) throws ServletException {
         try {
             String uri = request.getRequestURL().toString();
             MonitorCall mc = monitors.get(uri);
             if (mc == null) {
-            	response.sendError(410, "This URL is no longer valid");
-            	return;
+                response.sendError(410, "This URL is no longer valid");
+                return;
             }
-            
+
             TECore core = mc.getCore();
 
             String url = mc.getUrl();
@@ -144,26 +153,25 @@ public class MonitorServlet extends HttpServlet {
                     url += "?" + queryString;
                 }
             }
-            
-            HttpURLConnection huc = (HttpURLConnection)(new URL(url).openConnection());
+
+            HttpURLConnection huc = (HttpURLConnection) (new URL(url)
+                    .openConnection());
             CachedHttpURLConnection uc = new CachedHttpURLConnection(huc);
-            
+
             String method = request.getMethod();
             uc.setRequestMethod(method);
             uc.setDoInput(true);
             uc.setDoOutput(post);
-/*            
-            for (String key : uc.getRequestProperties().keySet()) {
-            	System.out.println(key + ": " + uc.getRequestProperty(key));
-            }
-
-            Enumeration requestHeaders = request.getHeaderNames();
-            while (requestHeaders.hasMoreElements()) {
-                String key = (String)requestHeaders.nextElement();
-System.out.println(key + ": " + request.getHeader(key));
-				uc.setRequestProperty(key, request.getHeader(key));
-            }
-*/          
+            /*
+             * for (String key : uc.getRequestProperties().keySet()) {
+             * System.out.println(key + ": " + uc.getRequestProperty(key)); }
+             * 
+             * Enumeration requestHeaders = request.getHeaderNames(); while
+             * (requestHeaders.hasMoreElements()) { String key =
+             * (String)requestHeaders.nextElement(); System.out.println(key +
+             * ": " + request.getHeader(key)); uc.setRequestProperty(key,
+             * request.getHeader(key)); }
+             */
             byte[] data = null;
             if (post) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -172,49 +180,53 @@ System.out.println(key + ": " + request.getHeader(key));
                 ByteArrayInputStream bais = new ByteArrayInputStream(data);
                 copy_stream(bais, uc.getOutputStream());
             }
-            
+
             Document doc = DB.newDocument();
             Element eRequest = encodeRequest(request, doc, data);
             Element parserInstruction = mc.getParserInstruction();
             Element eResponse = core.parse(uc, parserInstruction);
-            
+
             Map<String, List<String>> responseHeaders = uc.getHeaderFields();
             for (Entry<String, List<String>> entry : responseHeaders.entrySet()) {
-            	String key = entry.getKey();
-//System.out.println(key + ": " + entry.getValue());
+                String key = entry.getKey();
+                // System.out.println(key + ": " + entry.getValue());
                 if (key != null) {
-                	if (key.length() == 0) {
-                		// do nothing
-                	} else if (key.equalsIgnoreCase("Transfer-Encoding")) {
-                		// do nothing
-                	} else {
-	                    for (String value: entry.getValue()) {
-                    		response.setHeader(key, value);
-	                    }
-                	}
+                    if (key.length() == 0) {
+                        // do nothing
+                    } else if (key.equalsIgnoreCase("Transfer-Encoding")) {
+                        // do nothing
+                    } else {
+                        for (String value : entry.getValue()) {
+                            response.setHeader(key, value);
+                        }
+                    }
                 }
             }
-            
+
             if (mc.getModifiesResponse()) {
-            	Element content = DomUtils.getElementByTagName(eResponse, "content");
-            	Element root = DomUtils.getChildElement(content);
-//            	identityTransformer.transform(new DOMSource(root), new StreamResult(System.out));
-            	identityTransformer.transform(new DOMSource(root), new StreamResult(response.getOutputStream()));
-/*
-            	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            	identityTransformer.transform(new DOMSource(eResponse), new StreamResult(baos));
-                data = baos.toByteArray();
-            	response.setContentLength(data.length);
-                ByteArrayInputStream bais = new ByteArrayInputStream(data);
-                copy_stream(bais, response.getOutputStream());
-*/
+                Element content = DomUtils.getElementByTagName(eResponse,
+                        "content");
+                Element root = DomUtils.getChildElement(content);
+                // identityTransformer.transform(new DOMSource(root), new
+                // StreamResult(System.out));
+                identityTransformer.transform(new DOMSource(root),
+                        new StreamResult(response.getOutputStream()));
+                /*
+                 * ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 * identityTransformer.transform(new DOMSource(eResponse), new
+                 * StreamResult(baos)); data = baos.toByteArray();
+                 * response.setContentLength(data.length); ByteArrayInputStream
+                 * bais = new ByteArrayInputStream(data); copy_stream(bais,
+                 * response.getOutputStream());
+                 */
             } else {
-            	response.setContentLength(uc.getLength());
-            	copy_stream(uc.getInputStream(), response.getOutputStream());
+                response.setContentLength(uc.getLength());
+                copy_stream(uc.getInputStream(), response.getOutputStream());
             }
-            
+
             if (mc.getCallId() != null) {
-            	identityTransformer.transform(new DOMSource(mc.getParams()), new DOMResult(doc));
+                identityTransformer.transform(new DOMSource(mc.getParams()),
+                        new DOMResult(doc));
                 Element eParams = DomUtils.getElementByTagName(doc, "params");
                 Element eReqParam = doc.createElement("param");
                 eReqParam.setAttribute("local-name", "request");
@@ -231,50 +243,55 @@ System.out.println(key + ": " + request.getHeader(key));
                 eRespParam.setAttribute("prefix", "");
                 eRespParam.setAttribute("type", "node()");
                 Element eRespValue = doc.createElement("value");
-                identityTransformer.transform(new DOMSource(eResponse), new DOMResult(eRespValue));
+                identityTransformer.transform(new DOMSource(eResponse),
+                        new DOMResult(eRespValue));
                 eRespParam.appendChild(eRespValue);
                 eParams.appendChild(eRespParam);
-                net.sf.saxon.s9api.DocumentBuilder builder = core.getEngine().getBuilder();
+                net.sf.saxon.s9api.DocumentBuilder builder = core.getEngine()
+                        .getBuilder();
                 XdmNode paramsNode = builder.build(new DOMSource(doc));
                 monitorCallSeq++;
-                String callId = mc.getCallId() + "_" + Integer.toString(monitorCallSeq);
-/*
-                while (!core.getTestPath().equals(mc.testPath)) {
-					try{
-						Thread.sleep((int)(Math.random() * 200));
-					}catch (Exception e){
-						e.printStackTrace();
-					}
-                }
-*/
-                core.callTest(mc.getContext(), mc.getLocalName(), mc.getNamespaceURI(), paramsNode.getUnderlyingNode(), callId);
+                String callId = mc.getCallId() + "_"
+                        + Integer.toString(monitorCallSeq);
+                /*
+                 * while (!core.getTestPath().equals(mc.testPath)) { try{
+                 * Thread.sleep((int)(Math.random() * 200)); }catch (Exception
+                 * e){ e.printStackTrace(); } }
+                 */
+                core.callTest(mc.getContext(), mc.getLocalName(),
+                        mc.getNamespaceURI(), paramsNode.getUnderlyingNode(),
+                        callId);
             }
         } catch (Throwable t) {
             throw new ServletException(t);
         }
     }
-    
+
     public void init() throws ServletException {
         try {
-        	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        	dbf.setNamespaceAware(true);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
             DB = dbf.newDocumentBuilder();
-            identityTransformer = TransformerFactory.newInstance().newTransformer();
+            identityTransformer = TransformerFactory.newInstance()
+                    .newTransformer();
             servletName = this.getServletName();
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
-    
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
         process(request, response, false);
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
         process(request, response, true);
     }
 
-    Element encodeRequest(HttpServletRequest request, Document doc, byte[] data) throws Exception {
+    Element encodeRequest(HttpServletRequest request, Document doc, byte[] data)
+            throws Exception {
         Element eRequest = doc.createElementNS(CTL_NS, "ctl:request");
         Element eURL = doc.createElementNS(CTL_NS, "ctl:url");
         eURL.setTextContent(request.getRequestURL().toString());
@@ -284,7 +301,7 @@ System.out.println(key + ": " + request.getHeader(key));
         eRequest.appendChild(eMethod);
         Enumeration requestHeaders = request.getHeaderNames();
         while (requestHeaders.hasMoreElements()) {
-            String key = (String)requestHeaders.nextElement();
+            String key = (String) requestHeaders.nextElement();
             Element eHeader = doc.createElementNS(CTL_NS, "ctl:header");
             eHeader.setAttribute("name", key);
             eHeader.setTextContent(request.getHeader(key));
@@ -292,7 +309,7 @@ System.out.println(key + ": " + request.getHeader(key));
         }
         Enumeration params = request.getParameterNames();
         while (params.hasMoreElements()) {
-            String key = (String)params.nextElement();
+            String key = (String) params.nextElement();
             Element eParam = doc.createElementNS(CTL_NS, "ctl:param");
             eParam.setAttribute("name", key);
             eParam.setTextContent(request.getParameter(key));
@@ -300,10 +317,12 @@ System.out.println(key + ": " + request.getHeader(key));
         }
         if (data != null) {
             String mime = request.getContentType();
-            if (mime.indexOf("text/xml") == 0 || mime.indexOf("application/xml") == 0) {
+            if (mime.indexOf("text/xml") == 0
+                    || mime.indexOf("application/xml") == 0) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(data);
                 Element eBody = doc.createElementNS(CTL_NS, "ctl:body");
-                Transformer t = TransformerFactory.newInstance().newTransformer();
+                Transformer t = TransformerFactory.newInstance()
+                        .newTransformer();
                 t.transform(new StreamSource(bais), new DOMResult(eBody));
                 eRequest.appendChild(eBody);
             } else if (mime.indexOf("text/") == 0) {
@@ -315,21 +334,22 @@ System.out.println(key + ": " + request.getHeader(key));
         return eRequest;
     }
 
-    static void copy_stream(InputStream in, OutputStream out) throws IOException {
+    static void copy_stream(InputStream in, OutputStream out)
+            throws IOException {
         int i = in.read();
         while (i >= 0) {
-                out.write(i);
-                i = in.read();
+            out.write(i);
+            i = in.read();
         }
-//      in.close();
-//      out.close();
+        // in.close();
+        // out.close();
     }
-    
+
     public static String getBaseServletURL() {
-    	return baseServletURL;
+        return baseServletURL;
     }
-    
+
     public static void setBaseServletURL(String baseServletURL) {
-    	MonitorServlet.baseServletURL = baseServletURL;
+        MonitorServlet.baseServletURL = baseServletURL;
     }
 }

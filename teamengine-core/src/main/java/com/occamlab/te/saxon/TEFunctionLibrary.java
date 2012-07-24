@@ -16,29 +16,33 @@ import com.occamlab.te.index.Index;
 public class TEFunctionLibrary implements FunctionLibrary {
     Configuration config = null;
     Index index = null;
-    
+
     public TEFunctionLibrary(Configuration config, Index index) {
         this.config = config;
         this.index = index;
     }
 
-    public Expression bind(StructuredQName functionName, Expression[] staticArgs, StaticContext env) throws XPathException {
-        if (functionName.getNamespaceURI().equals(Test.TE_NS) && functionName.getLocalName().equals("get-type")) {
+    public Expression bind(StructuredQName functionName,
+            Expression[] staticArgs, StaticContext env) throws XPathException {
+        if (functionName.getNamespaceURI().equals(Test.TE_NS)
+                && functionName.getLocalName().equals("get-type")) {
             return new GetTypeFunctionCall(functionName, staticArgs, env);
         }
 
         String key = functionName.getClarkName();
         List<FunctionEntry> functions = index.getFunctions(key);
         int argCount = staticArgs.length;
-        
+
         if (functions != null) {
             for (FunctionEntry fe : functions) {
                 if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
                     if (fe.isJava()) {
-                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe, functionName, staticArgs, env);
+                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe,
+                                functionName, staticArgs, env);
                         return fc;
                     } else {
-                        TEXSLFunctionCall fc = new TEXSLFunctionCall(fe, functionName, staticArgs, env);
+                        TEXSLFunctionCall fc = new TEXSLFunctionCall(fe,
+                                functionName, staticArgs, env);
                         return fc;
                     }
                 }

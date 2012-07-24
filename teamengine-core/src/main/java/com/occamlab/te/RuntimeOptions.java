@@ -117,7 +117,7 @@ public class RuntimeOptions {
     public void addParam(String param) {
         this.params.add(param);
     }
-    
+
     public XdmNode getContextNode() {
         return null;
     }

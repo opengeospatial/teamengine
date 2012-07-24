@@ -55,14 +55,16 @@ public class Engine {
     DocumentBuilder builder = null;
     TeErrorListener errorListener = null;
     XsltExecutable formExecutable = null;
-    
+
     // Map of loaded executables, ordered by access order
-    public Map<String, XsltExecutable> loadedExecutables = Collections.synchronizedMap(
-            new LinkedHashMap<String, XsltExecutable>(256, 0.75f, true));
-    
+    public Map<String, XsltExecutable> loadedExecutables = Collections
+            .synchronizedMap(new LinkedHashMap<String, XsltExecutable>(256,
+                    0.75f, true));
+
     public Map<String, TEClassLoader> classLoaders;
 
-    public Engine(Index index, String sourcesName, TEClassLoader cl) throws Exception {
+    public Engine(Index index, String sourcesName, TEClassLoader cl)
+            throws Exception {
         this();
         ArrayList<Index> indexes = new ArrayList<Index>();
         indexes.add(index);
@@ -70,8 +72,10 @@ public class Engine {
         classLoaders.put(sourcesName, cl);
         addFunctionLibrary(indexes);
     }
-    
-    public Engine(Collection<Index> indexes, Map<String, TEClassLoader> classLoaders, int cacheSize) throws Exception {
+
+    public Engine(Collection<Index> indexes,
+            Map<String, TEClassLoader> classLoaders, int cacheSize)
+            throws Exception {
         this();
         this.classLoaders = classLoaders;
         if (cacheSize > 0) {
@@ -79,7 +83,7 @@ public class Engine {
         }
         addFunctionLibrary(indexes);
     }
-    
+
     public Engine() throws Exception {
         String s = System.getProperty("te.cacheSize");
         if (s != null) {
@@ -93,7 +97,8 @@ public class Engine {
         Configuration config = processor.getUnderlyingConfiguration();
         config.setVersionWarning(false);
 
-        // Use our custom error listener which reports line numbers in the CTL source file
+        // Use our custom error listener which reports line numbers in the CTL
+        // source file
         errorListener = new TeErrorListener();
         config.setErrorListener(errorListener);
 
@@ -106,15 +111,15 @@ public class Engine {
         InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
         formExecutable = compiler.compile(new StreamSource(is));
     }
-    
+
     public void addFunctionLibrary(Collection<Index> indexes) {
         // Change the function library to a new library list that includes
         // our custom java function library
         Configuration config = processor.getUnderlyingConfiguration();
         FunctionLibraryList liblist = new FunctionLibraryList();
         for (Index index : indexes) {
-          TEFunctionLibrary telib = new TEFunctionLibrary(config, index);
-          liblist.addFunctionLibrary(telib);
+            TEFunctionLibrary telib = new TEFunctionLibrary(config, index);
+            liblist.addFunctionLibrary(telib);
         }
         liblist.addFunctionLibrary(config.getExtensionBinder("java"));
         config.setExtensionBinder("java", liblist);
@@ -122,9 +127,10 @@ public class Engine {
     }
 
     // Loads all of the XSL executables.
-    // Throws an exception for any that won't compile. 
+    // Throws an exception for any that won't compile.
     // This is a time consuming operation.
-    public void preload(Index index, String sourcesName) throws SaxonApiException {
+    public void preload(Index index, String sourcesName)
+            throws SaxonApiException {
         for (String key : index.getTestKeys()) {
             TestEntry te = index.getTest(key);
             loadExecutable(te, sourcesName);
@@ -141,7 +147,7 @@ public class Engine {
 
     boolean freeExecutable() {
         Set<String> keys = loadedExecutables.keySet();
-        synchronized(loadedExecutables) {
+        synchronized (loadedExecutables) {
             Iterator<String> it = keys.iterator();
             if (it.hasNext()) {
                 loadedExecutables.remove(it.next());
@@ -150,16 +156,17 @@ public class Engine {
         }
         return false;
     }
-    
-    public XsltExecutable loadExecutable(TemplateEntry entry, String sourcesName) throws SaxonApiException {
+
+    public XsltExecutable loadExecutable(TemplateEntry entry, String sourcesName)
+            throws SaxonApiException {
         String key = sourcesName + "," + entry.getId();
         if (entry instanceof FunctionEntry) {
-            key += "_" + Integer.toString(((FunctionEntry)entry).getMinArgs());
+            key += "_" + Integer.toString(((FunctionEntry) entry).getMinArgs());
         }
         XsltExecutable executable = loadedExecutables.get(key);
         while (executable == null) {
             try {
-//                System.out.println(template.getTemplateFile().getAbsolutePath());
+                // System.out.println(template.getTemplateFile().getAbsolutePath());
                 Source source = new StreamSource(entry.getTemplateFile());
                 executable = compiler.compile(source);
                 loadedExecutables.put(key, executable);

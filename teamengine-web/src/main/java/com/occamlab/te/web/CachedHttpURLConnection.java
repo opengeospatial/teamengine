@@ -13,19 +13,19 @@ public class CachedHttpURLConnection extends HttpURLConnectionCopy {
     public CachedHttpURLConnection(HttpURLConnectionCopy uc) {
         super(uc);
     }
-    
+
     public CachedHttpURLConnection(HttpURLConnection uc) {
         this(new HttpURLConnectionCopy(uc));
     }
-    
+
     public void connect() throws IOException {
         super.connect();
         BufferedInputStream bis = new BufferedInputStream(uc.getInputStream());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int i = bis.read();
         while (i >= 0) {
-          baos.write(i);
-          i = bis.read();
+            baos.write(i);
+            i = bis.read();
         }
         bis.close();
         baos.close();
@@ -38,11 +38,11 @@ public class CachedHttpURLConnection extends HttpURLConnectionCopy {
         }
         return new ByteArrayInputStream(content);
     }
-    
+
     public int getLength() throws IOException {
         if (content == null) {
             connect();
         }
-    	return content.length;
+        return content.length;
     }
 }

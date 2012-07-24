@@ -16,7 +16,7 @@ public class VerifyTestSuitesResource {
         Document result = iut.readTemplate();
         Node ul = result.getElementsByTagNameNS(HTML_NS, "ul").item(0);
         Assert.assertNotNull(ul);
-        Assert.assertEquals("Expected empty ul element.",
-                0, ul.getChildNodes().getLength());
+        Assert.assertEquals("Expected empty ul element.", 0, ul.getChildNodes()
+                .getLength());
     }
 }

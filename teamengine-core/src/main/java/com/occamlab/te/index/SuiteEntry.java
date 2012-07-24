@@ -15,7 +15,7 @@ public class SuiteEntry extends IndexEntry {
     String description = null;
     String link;
     String dataLink;
-    
+
     public SuiteEntry() {
         super();
     }
@@ -23,13 +23,15 @@ public class SuiteEntry extends IndexEntry {
     SuiteEntry(Element suite) throws Exception {
         super(suite);
         title = DomUtils.getElementByTagName(suite, "title").getTextContent();
-        description = DomUtils.getElementByTagName(suite, "description").getTextContent();
+        description = DomUtils.getElementByTagName(suite, "description")
+                .getTextContent();
         Element e = DomUtils.getElementByTagName(suite, "starting-test");
         String prefix = e.getAttribute("prefix");
         String namespaceUri = e.getAttribute("namespace-uri");
         String localName = e.getAttribute("local-name");
         startingTest = new QName(namespaceUri, localName, prefix);
-        Element form_e = DomUtils.getElementByTagNameNS(suite, Test.CTL_NS, "form");
+        Element form_e = DomUtils.getElementByTagNameNS(suite, Test.CTL_NS,
+                "form");
         if (form_e != null) {
             form = DomUtils.createDocument(form_e);
         }

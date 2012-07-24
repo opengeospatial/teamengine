@@ -12,7 +12,7 @@ import com.occamlab.te.spi.jaxrs.resources.TestSuiteSetResource;
  * Designates the components of the application in a portable manner. This
  * information is used to configure a JAX-RS runtime environment (such as a
  * hosting container).
- *
+ * 
  * @see javax.ws.rs.core.Application
  */
 public class ApplicationComponents extends Application {

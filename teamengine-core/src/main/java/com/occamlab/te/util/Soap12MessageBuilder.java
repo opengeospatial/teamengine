@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- *
+ * 
  * @author Simone Gianfranceschi
  */
 public class Soap12MessageBuilder {
@@ -58,19 +58,22 @@ public class Soap12MessageBuilder {
     public static final String ROLE_ULTIMATE_RECEIVER = "http://www.w3.org/2003/05/soap-envelope/role/ultimateReceiver";
 
     /**
-     * A method to get the SOAP 1.2 message. The message is created and returned as DOM Document.
-     *
+     * A method to get the SOAP 1.2 message. The message is created and returned
+     * as DOM Document.
+     * 
      * @param headerBlocks
-     *        The list of header blocks to be included in the SOAP message header
-     *
-     *  @param i_body
-     *        The XML file to be inclued in the SOAP message body.
-     *
+     *            The list of header blocks to be included in the SOAP message
+     *            header
+     * 
+     * @param i_body
+     *            The XML file to be inclued in the SOAP message body.
+     * 
      * @return the DOM document representing the SOAP message
-     *
+     * 
      * @author Simone Gianfranceschi
      */
-    public static Document getSoapMessage(List headerBlocks, Element i_body) throws Exception {
+    public static Document getSoapMessage(List headerBlocks, Element i_body)
+            throws Exception {
         Document soapDocument;
         Element envelope;
         Element header;
@@ -79,19 +82,22 @@ public class Soap12MessageBuilder {
 
         soapDocument = DomUtils.createDocument(null);
 
-        //creating envelope node
-        envelope = soapDocument.createElementNS(SOAP_NS_URI, SOAP_ENV + ":" + SOAP_ENVELOPE);
-//        envelope.setAttribute(XMLNS + ":" + SOAP_ENV, SOAP_NS_URI);
+        // creating envelope node
+        envelope = soapDocument.createElementNS(SOAP_NS_URI, SOAP_ENV + ":"
+                + SOAP_ENVELOPE);
+        // envelope.setAttribute(XMLNS + ":" + SOAP_ENV, SOAP_NS_URI);
         soapDocument.appendChild(envelope);
 
-        //Add the header if the tag is not empty
+        // Add the header if the tag is not empty
         NodeList children = null;
         if (headerBlocks.size() > 0) {
-            //creating header
-            header = soapDocument.createElementNS(SOAP_NS_URI, SOAP_ENV + ":" + SOAP_HEADER);
+            // creating header
+            header = soapDocument.createElementNS(SOAP_NS_URI, SOAP_ENV + ":"
+                    + SOAP_HEADER);
             envelope.appendChild(header);
             for (int j = 0; j < headerBlocks.size(); j++) {
-                NamedNodeMap blockAttributes = ((Node) headerBlocks.get(j)).getAttributes();
+                NamedNodeMap blockAttributes = ((Node) headerBlocks.get(j))
+                        .getAttributes();
                 Attr attribute;
                 String attributeName;
                 children = ((Node) headerBlocks.get(j)).getChildNodes();
@@ -99,33 +105,64 @@ public class Soap12MessageBuilder {
                     // Loop on the header elements
                     for (int i = 0; i < children.getLength(); i++) {
                         if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                            importedNode = soapDocument.importNode(children.item(i), true);
-                            //Add the SOAP attributes
+                            importedNode = soapDocument.importNode(
+                                    children.item(i), true);
+                            // Add the SOAP attributes
                             for (int k = 0; k <= blockAttributes.getLength() - 1; k++) {
                                 attribute = (Attr) blockAttributes.item(k);
                                 attributeName = attribute.getName();
-                                if (attributeName.equals(RELY) || attributeName.equals(MUST_UNDERSTAND)) {
-//                                    ((Element) importedNode).setAttribute(SOAP_ENV + ":" + attributeName, attribute.getValue());
-                                    ((Element) importedNode).setAttributeNS(SOAP_NS_URI, SOAP_ENV + ":" + attributeName, attribute.getValue());
+                                if (attributeName.equals(RELY)
+                                        || attributeName
+                                                .equals(MUST_UNDERSTAND)) {
+                                    // ((Element)
+                                    // importedNode).setAttribute(SOAP_ENV + ":"
+                                    // + attributeName, attribute.getValue());
+                                    ((Element) importedNode).setAttributeNS(
+                                            SOAP_NS_URI, SOAP_ENV + ":"
+                                                    + attributeName,
+                                            attribute.getValue());
 
                                 } else if (attributeName.equals(ROLE)) {
                                     String value = attribute.getValue();
                                     // Add the mapping
                                     if (value.equals(ROLE_NEXT_SC)) {
-//                                        ((Element) importedNode).setAttribute(SOAP_ENV + ":" + ROLE, ROLE_NEXT);
-                                        ((Element) importedNode).setAttributeNS(SOAP_NS_URI, SOAP_ENV + ":" + ROLE, ROLE_NEXT);
+                                        // ((Element)
+                                        // importedNode).setAttribute(SOAP_ENV +
+                                        // ":" + ROLE, ROLE_NEXT);
+                                        ((Element) importedNode)
+                                                .setAttributeNS(SOAP_NS_URI,
+                                                        SOAP_ENV + ":" + ROLE,
+                                                        ROLE_NEXT);
 
                                     } else if (value.equals(ROLE_NONE_SC)) {
-//                                        ((Element) importedNode).setAttribute(SOAP_ENV + ":" + ROLE, ROLE_NONE);
-                                        ((Element) importedNode).setAttributeNS(SOAP_NS_URI, SOAP_ENV + ":" + ROLE, ROLE_NONE);
+                                        // ((Element)
+                                        // importedNode).setAttribute(SOAP_ENV +
+                                        // ":" + ROLE, ROLE_NONE);
+                                        ((Element) importedNode)
+                                                .setAttributeNS(SOAP_NS_URI,
+                                                        SOAP_ENV + ":" + ROLE,
+                                                        ROLE_NONE);
 
-                                    } else if (value.equals(ROLE_ULTIMATE_RECEIVER_SC)) {
-//                                        ((Element) importedNode).setAttribute(SOAP_ENV + ":" + ROLE, ROLE_ULTIMATE_RECEIVER);
-                                        ((Element) importedNode).setAttributeNS(SOAP_NS_URI, SOAP_ENV + ":" + ROLE, ROLE_ULTIMATE_RECEIVER);
+                                    } else if (value
+                                            .equals(ROLE_ULTIMATE_RECEIVER_SC)) {
+                                        // ((Element)
+                                        // importedNode).setAttribute(SOAP_ENV +
+                                        // ":" + ROLE, ROLE_ULTIMATE_RECEIVER);
+                                        ((Element) importedNode)
+                                                .setAttributeNS(SOAP_NS_URI,
+                                                        SOAP_ENV + ":" + ROLE,
+                                                        ROLE_ULTIMATE_RECEIVER);
 
                                     } else {
-//                                        ((Element) importedNode).setAttribute(SOAP_ENV + ":" + attributeName, value);
-                                        ((Element) importedNode).setAttributeNS(SOAP_NS_URI, SOAP_ENV + ":" + attributeName, value);
+                                        // ((Element)
+                                        // importedNode).setAttribute(SOAP_ENV +
+                                        // ":" + attributeName, value);
+                                        ((Element) importedNode)
+                                                .setAttributeNS(
+                                                        SOAP_NS_URI,
+                                                        SOAP_ENV + ":"
+                                                                + attributeName,
+                                                        value);
 
                                     }
                                 }
@@ -138,17 +175,20 @@ public class Soap12MessageBuilder {
         }
 
         // Add the body element
-        body = soapDocument.createElementNS(SOAP_NS_URI, SOAP_ENV + ":" + SOAP_BODY);
+        body = soapDocument.createElementNS(SOAP_NS_URI, SOAP_ENV + ":"
+                + SOAP_BODY);
         envelope.appendChild(body);
 
-        //Import the XML message to be included in the body
+        // Import the XML message to be included in the body
         children = i_body.getChildNodes();
         if (children.getLength() > 0) {
             // Loop on the header elements
             for (int i = 0; i < children.getLength(); i++) {
                 if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    Document newSoapDocument = DomUtils.createDocument((Element) children.item(i));
-                    importedNode = soapDocument.importNode(newSoapDocument.getDocumentElement(), true);
+                    Document newSoapDocument = DomUtils
+                            .createDocument((Element) children.item(i));
+                    importedNode = soapDocument.importNode(
+                            newSoapDocument.getDocumentElement(), true);
                     body.appendChild(importedNode);
                 }
             }
@@ -156,4 +196,3 @@ public class Soap12MessageBuilder {
         return soapDocument;
     }
 }
-

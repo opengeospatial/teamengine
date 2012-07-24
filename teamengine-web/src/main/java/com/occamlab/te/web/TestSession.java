@@ -50,12 +50,13 @@ public class TestSession {
         suiteName = null;
         profiles = new ArrayList<String>();
     }
-    
+
     public void save(File logdir) throws Exception {
         File sessionDir = new File(logdir, sessionId);
         sessionDir.mkdir();
         PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
-        out.println("<session id=\"" + sessionId + "\" sourcesId=\"" + sourcesName + "\">");
+        out.println("<session id=\"" + sessionId + "\" sourcesId=\""
+                + sourcesName + "\">");
         out.println("<suite>" + suiteName + "</suite>");
         for (String profile : profiles) {
             out.println("<profile>" + profile + "</profile>");
@@ -74,14 +75,17 @@ public class TestSession {
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File(sessionDir, "session.xml"));
-        Element session = (Element) (doc.getElementsByTagName("session").item(0));
+        Element session = (Element) (doc.getElementsByTagName("session")
+                .item(0));
         setSourcesName(session.getAttribute("sourcesId"));
         Element suite = DomUtils.getElementByTagName(session, "suite");
         setSuiteName(suite.getTextContent());
-        for (Element profile : DomUtils.getElementsByTagName(session, "profile")) {
+        for (Element profile : DomUtils
+                .getElementsByTagName(session, "profile")) {
             profiles.add(profile.getTextContent());
         }
-        Element description = (Element) (session.getElementsByTagName("description").item(0));
+        Element description = (Element) (session
+                .getElementsByTagName("description").item(0));
         this.description = description.getTextContent();
     }
 
@@ -124,5 +128,5 @@ public class TestSession {
     public void setSuiteName(String suiteName) {
         this.suiteName = suiteName;
     }
-    
+
 }

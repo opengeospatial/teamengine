@@ -18,7 +18,7 @@ public class ProfileEntry extends IndexEntry {
     Document form = null;
     String title = null;
     String description = null;
-    
+
     public ProfileEntry() {
         super();
     }
@@ -26,10 +26,12 @@ public class ProfileEntry extends IndexEntry {
     public ProfileEntry(Element profile) throws Exception {
         super(profile);
         title = DomUtils.getElementByTagName(profile, "title").getTextContent();
-        description = DomUtils.getElementByTagName(profile, "description").getTextContent();
+        description = DomUtils.getElementByTagName(profile, "description")
+                .getTextContent();
         Element base = DomUtils.getElementByTagName(profile, "base");
         baseSuite = getQName(base);
-        for (Element exclude : DomUtils.getElementsByTagName(profile, "exclude")) {
+        for (Element exclude : DomUtils
+                .getElementsByTagName(profile, "exclude")) {
             ArrayList<QName> list = new ArrayList<QName>();
             for (Element test : DomUtils.getElementsByTagName(exclude, "test")) {
                 list.add(getQName(test));
@@ -38,7 +40,8 @@ public class ProfileEntry extends IndexEntry {
         }
         Element e = DomUtils.getElementByTagName(profile, "starting-test");
         startingTest = getQName(e);
-        Element form_e = DomUtils.getElementByTagNameNS(profile, Test.CTL_NS, "form");
+        Element form_e = DomUtils.getElementByTagNameNS(profile, Test.CTL_NS,
+                "form");
         if (form_e != null) {
             form = DomUtils.createDocument(form_e);
         }

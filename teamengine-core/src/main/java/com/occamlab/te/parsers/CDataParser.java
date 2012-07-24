@@ -30,15 +30,14 @@ import org.w3c.dom.Element;
 
 /**
  * Reads a response message and produces a String representation of its content.
- *
+ * 
  */
 public class CDataParser {
-/*
-    public static String parse(HttpResponse resp, Element instruction,
-            PrintWriter logger) throws Exception {
-        return parse(resp.getEntity().getContent(), instruction, logger);
-    }
-*/
+    /*
+     * public static String parse(HttpResponse resp, Element instruction,
+     * PrintWriter logger) throws Exception { return
+     * parse(resp.getEntity().getContent(), instruction, logger); }
+     */
     public static String parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
         return parse(uc.getInputStream(), instruction, logger);

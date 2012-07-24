@@ -51,79 +51,82 @@ import com.occamlab.te.util.Misc;
 public class ViewLog {
 
     // Count how many errors and passes for output later
-//    static public int passCount = 0;
-//    static public int failCount = 0;
-//    static public int warnCount = 0;
+    // static public int passCount = 0;
+    // static public int failCount = 0;
+    // static public int warnCount = 0;
 
-    public static TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    public static TransformerFactory transformerFactory = TransformerFactory
+            .newInstance();
 
-//    static void increment_counts(Element test) {
-//        int result = Integer.parseInt(test.getAttribute("result"));
-//        String complete = test.getAttribute("complete");
-//        if (!("no".equals(complete))) {
-//            if (result == TECore.PASS) {
-//                passCount++;
-//            } else if (result == TECore.WARNING) {
-//                warnCount++;
-//            } else if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
-//                failCount++;
-//            }
-//        }
-//        for (Element subtest : DomUtils.getChildElements(test)) {
-//            increment_counts(subtest);
-//        }
-//    }
+    // static void increment_counts(Element test) {
+    // int result = Integer.parseInt(test.getAttribute("result"));
+    // String complete = test.getAttribute("complete");
+    // if (!("no".equals(complete))) {
+    // if (result == TECore.PASS) {
+    // passCount++;
+    // } else if (result == TECore.WARNING) {
+    // warnCount++;
+    // } else if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
+    // failCount++;
+    // }
+    // }
+    // for (Element subtest : DomUtils.getChildElements(test)) {
+    // increment_counts(subtest);
+    // }
+    // }
 
-//    static Element parse_log(DocumentBuilder db, Document owner, File logdir,
-//            String path) throws Exception {
-//        File log = new File(new File(logdir, path), "log.xml");
-//        Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
-//        Element test = owner.createElement("test");
-//        Element log_e = (Element) logdoc.getElementsByTagName("log").item(0);
-//        NodeList children = log_e.getChildNodes();
-//        boolean complete = false;
-//        for (int i = 0; i < children.getLength(); i++) {
-//            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-//                Element e = (Element) children.item(i);
-//                if (e.getNodeName().equals("starttest")) {
-//                    NamedNodeMap atts = e.getAttributes();
-//                    for (int j = 0; j < atts.getLength(); j++) {
-//                        test.setAttribute(atts.item(j).getNodeName(), atts
-//                                .item(j).getNodeValue());
-//                    }
-//                } else if (e.getNodeName().equals("endtest")) {
-//                    complete = true;
-//                    if (Integer.parseInt(e.getAttribute("result")) == 3) {
-//                        failCount++;
-//                        test.setAttribute("failed", "yes");
-//                    }
-//                    if (Integer.parseInt(e.getAttribute("result")) == 1) {
-//                        warnCount++;
-//                        test.setAttribute("warning", "yes");
-//                    }
-//                    if (Integer.parseInt(e.getAttribute("result")) == 2) {
-//                        failCount++;
-//                    }
-//                    if (Integer.parseInt(e.getAttribute("result")) == 0) {
-//                        passCount++;
-//                    }
-//                } else if (e.getNodeName().equals("testcall")) {
-//                    test.appendChild(parse_log(db, owner, logdir, e
-//                            .getAttribute("path")));
-//                }
-//            }
-//        }
-//        test.setAttribute("complete", complete ? "yes" : "no");
-//        return test;
-//    }
+    // static Element parse_log(DocumentBuilder db, Document owner, File logdir,
+    // String path) throws Exception {
+    // File log = new File(new File(logdir, path), "log.xml");
+    // Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
+    // Element test = owner.createElement("test");
+    // Element log_e = (Element) logdoc.getElementsByTagName("log").item(0);
+    // NodeList children = log_e.getChildNodes();
+    // boolean complete = false;
+    // for (int i = 0; i < children.getLength(); i++) {
+    // if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+    // Element e = (Element) children.item(i);
+    // if (e.getNodeName().equals("starttest")) {
+    // NamedNodeMap atts = e.getAttributes();
+    // for (int j = 0; j < atts.getLength(); j++) {
+    // test.setAttribute(atts.item(j).getNodeName(), atts
+    // .item(j).getNodeValue());
+    // }
+    // } else if (e.getNodeName().equals("endtest")) {
+    // complete = true;
+    // if (Integer.parseInt(e.getAttribute("result")) == 3) {
+    // failCount++;
+    // test.setAttribute("failed", "yes");
+    // }
+    // if (Integer.parseInt(e.getAttribute("result")) == 1) {
+    // warnCount++;
+    // test.setAttribute("warning", "yes");
+    // }
+    // if (Integer.parseInt(e.getAttribute("result")) == 2) {
+    // failCount++;
+    // }
+    // if (Integer.parseInt(e.getAttribute("result")) == 0) {
+    // passCount++;
+    // }
+    // } else if (e.getNodeName().equals("testcall")) {
+    // test.appendChild(parse_log(db, owner, logdir, e
+    // .getAttribute("path")));
+    // }
+    // }
+    // }
+    // test.setAttribute("complete", complete ? "yes" : "no");
+    // return test;
+    // }
 
-    public static boolean view_log(File logdir, String session, ArrayList tests, Templates templates, Writer out) throws Exception {
-//        passCount = 0;
-//        failCount = 0;
-//        warnCount = 0;
+    public static boolean view_log(File logdir, String session,
+            ArrayList tests, Templates templates, Writer out) throws Exception {
+        // passCount = 0;
+        // failCount = 0;
+        // warnCount = 0;
         Transformer t = templates.newTransformer();
         t.setParameter("logdir", logdir.getAbsolutePath());
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder db = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder();
 
         if (tests.size() == 0 && session == null) {
             Document doc = db.newDocument();
@@ -142,11 +145,12 @@ public class ViewLog {
         } else if (tests.size() == 0) {
             File session_dir = new File(logdir, session);
             if (!session_dir.isDirectory()) {
-                System.out.println("Error: Directory " + session_dir.getAbsolutePath() + " does not exist.");
+                System.out.println("Error: Directory "
+                        + session_dir.getAbsolutePath() + " does not exist.");
                 return false;
             }
             Document doc = LogUtils.makeTestList(logdir, session);
-//            increment_counts(doc.getDocumentElement());
+            // increment_counts(doc.getDocumentElement());
             t.transform(new DOMSource(doc), new StreamResult(out));
             Element testElement = DomUtils.getElementByTagName(doc, "test");
             if (testElement == null) {
@@ -163,14 +167,18 @@ public class ViewLog {
                 if (f.exists()) {
                     Document doc = LogUtils.makeTestList(logdir, test);
                     t.setParameter("index", doc);
-                    // t.transform(new StreamSource(f), new StreamResult(System.out));
+                    // t.transform(new StreamSource(f), new
+                    // StreamResult(System.out));
                     Document log = LogUtils.readLog(logdir, test);
                     t.transform(new DOMSource(log), new StreamResult(out));
-                    Element logElement = (Element) (log.getElementsByTagName("log").item(0));
-                    NodeList endtestlist = logElement.getElementsByTagName("endtest");
+                    Element logElement = (Element) (log
+                            .getElementsByTagName("log").item(0));
+                    NodeList endtestlist = logElement
+                            .getElementsByTagName("endtest");
                     ret = ret && (endtestlist.getLength() > 0);
                 } else {
-                    System.out.println("Error: " + f.getAbsolutePath() + " does not exist.");
+                    System.out.println("Error: " + f.getAbsolutePath()
+                            + " does not exist.");
                     ret = ret && false;
                 }
             }
@@ -210,7 +218,8 @@ public class ViewLog {
             return;
         }
 
-        File stylesheet = Misc.getResourceAsFile("com/occamlab/te/logstyles/default.xsl");
+        File stylesheet = Misc
+                .getResourceAsFile("com/occamlab/te/logstyles/default.xsl");
         if (style != null) {
             stylesheet = new File(stylesheet.getParent(), style + ".xsl");
             if (!stylesheet.exists()) {

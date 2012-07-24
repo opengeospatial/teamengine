@@ -57,7 +57,7 @@ import com.occamlab.te.ErrorHandlerImpl;
 
 /**
  * Validates an XML resource using a set of W3C XML Schema documents.
- *
+ * 
  */
 public class XMLValidatingParser {
     static SchemaFactory SF = null;
@@ -67,10 +67,13 @@ public class XMLValidatingParser {
     static DocumentBuilderFactory dtdValidatingDBF = null;
     ArrayList<Object> schemaList = new ArrayList<Object>();
     ArrayList<Object> dtdList = new ArrayList<Object>();
-    private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
+    private static Logger jlogger = Logger
+            .getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
-    private void loadSchemaList(Document schemaLinks, ArrayList<Object> schemas, String schemaType) throws Exception {
-        NodeList nodes = schemaLinks.getElementsByTagNameNS("http://www.occamlab.com/te/parsers", schemaType);
+    private void loadSchemaList(Document schemaLinks,
+            ArrayList<Object> schemas, String schemaType) throws Exception {
+        NodeList nodes = schemaLinks.getElementsByTagNameNS(
+                "http://www.occamlab.com/te/parsers", schemaType);
         for (int i = 0; i < nodes.getLength(); i++) {
             Element e = (Element) nodes.item(i);
             Object schema = null;
@@ -97,7 +100,8 @@ public class XMLValidatingParser {
         }
     }
 
-    private void loadSchemaLists(Node schemaLinks, ArrayList<Object> schemas, ArrayList<Object> dtds) throws Exception {
+    private void loadSchemaLists(Node schemaLinks, ArrayList<Object> schemas,
+            ArrayList<Object> dtds) throws Exception {
 
         // Parse Document for schema elements
         Document d;
@@ -106,12 +110,14 @@ public class XMLValidatingParser {
         } else {
             d = schemaLinks.getOwnerDocument();
         }
-        
+
         loadSchemaList(d, schemas, "schema");
         loadSchemaList(d, dtds, "dtd");
 
-        // If instruction body is an embedded xsd:schema, add it to the ArrayList
-        NodeList nodes = d.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "schema");
+        // If instruction body is an embedded xsd:schema, add it to the
+        // ArrayList
+        NodeList nodes = d.getElementsByTagNameNS(
+                "http://www.w3.org/2001/XMLSchema", "schema");
         for (int i = 0; i < nodes.getLength(); i++) {
             Element e = (Element) nodes.item(i);
             CharArrayWriter caw = new CharArrayWriter();
@@ -123,11 +129,15 @@ public class XMLValidatingParser {
 
     public XMLValidatingParser() throws Exception {
         if (SF == null) {
-            String property_name = "javax.xml.validation.SchemaFactory:" + XMLConstants.W3C_XML_SCHEMA_NS_URI;
+            String property_name = "javax.xml.validation.SchemaFactory:"
+                    + XMLConstants.W3C_XML_SCHEMA_NS_URI;
             String oldprop = System.getProperty(property_name);
-            System.setProperty(property_name, "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+            System.setProperty(property_name,
+                    "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
             SF = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            SF.setFeature("http://apache.org/xml/features/validation/schema-full-checking", false);
+            SF.setFeature(
+                    "http://apache.org/xml/features/validation/schema-full-checking",
+                    false);
             if (oldprop == null) {
                 System.clearProperty(property_name);
             } else {
@@ -138,14 +148,16 @@ public class XMLValidatingParser {
         if (nonValidatingDBF == null) {
             String property_name = "javax.xml.parsers.DocumentBuilderFactory";
             String oldprop = System.getProperty(property_name);
-            System.setProperty(property_name, "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+            System.setProperty(property_name,
+                    "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
             nonValidatingDBF = DocumentBuilderFactory.newInstance();
             nonValidatingDBF.setNamespaceAware(true);
             schemaValidatingDBF = DocumentBuilderFactory.newInstance();
             schemaValidatingDBF.setNamespaceAware(true);
             schemaValidatingDBF.setValidating(true);
-            schemaValidatingDBF.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-                                       "http://www.w3.org/2001/XMLSchema");
+            schemaValidatingDBF.setAttribute(
+                    "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+                    "http://www.w3.org/2001/XMLSchema");
             dtdValidatingDBF = DocumentBuilderFactory.newInstance();
             dtdValidatingDBF.setNamespaceAware(true);
             dtdValidatingDBF.setValidating(true);
@@ -166,31 +178,32 @@ public class XMLValidatingParser {
         loadSchemaLists(schema_links, schemaList, dtdList);
     }
 
-    public Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
+    public Document parse(URLConnection uc, Element instruction,
+            PrintWriter logger) throws Exception {
         return parse(uc.getInputStream(), instruction, logger);
     }
 
     /*
-     public Document parse(HttpResponse resp, Element instruction,
-     PrintWriter logger) throws Exception {
-     return parse(resp.getEntity().getContent(), instruction, logger);
-     }
+     * public Document parse(HttpResponse resp, Element instruction, PrintWriter
+     * logger) throws Exception { return parse(resp.getEntity().getContent(),
+     * instruction, logger); }
      */
     /**
      * A method to validate a pool of schemas within the ctl:request element.
-     *
+     * 
      * @param xml
-     *            the xml to parse and validate.  May be an InputStream object
-     *            or a Document object.
+     *            the xml to parse and validate. May be an InputStream object or
+     *            a Document object.
      * @param instruction
      *            the xml encapsulated schema information (file locations)
      * @param logger
      *            the PrintWriter to log all results to
      * @return null if there were errors, the parse document otherwise
-     *
+     * 
      * @author jparrpearson
      */
-    private Document parse(Object xml, Element instruction, PrintWriter logger) throws Exception {
+    private Document parse(Object xml, Element instruction, PrintWriter logger)
+            throws Exception {
 
         ArrayList<Object> schemas = new ArrayList<Object>();
         ArrayList<Object> dtds = new ArrayList<Object>();
@@ -208,7 +221,8 @@ public class XMLValidatingParser {
             // I.e. use the schemaLocation attribute
             if (schemas.size() == 0 && dtds.size() == 0) {
                 eh.setRole("ValidatingParser");
-                NodeList nl = instruction.getElementsByTagNameNS("http://www.occamlab.com/te/parsers", "schemas"); 
+                NodeList nl = instruction.getElementsByTagNameNS(
+                        "http://www.occamlab.com/te/parsers", "schemas");
                 if (nl != null && nl.getLength() > 0) {
                     dbf = schemaValidatingDBF;
                 } else {
@@ -222,9 +236,9 @@ public class XMLValidatingParser {
             try {
                 doc = db.parse((InputStream) xml);
             } catch (Exception e) {
-                jlogger.log(Level.SEVERE,"error parsing",e);
+                jlogger.log(Level.SEVERE, "error parsing", e);
 
-//                logger.println(e.getMessage());
+                // logger.println(e.getMessage());
             }
         } else if (xml instanceof Document) {
             doc = (Document) xml;
@@ -244,12 +258,14 @@ public class XMLValidatingParser {
         if (error_count > 0 || warning_count > 0) {
             String msg = "";
             if (error_count > 0) {
-                msg += error_count + " validation error" + (error_count == 1 ? "" : "s");
+                msg += error_count + " validation error"
+                        + (error_count == 1 ? "" : "s");
                 if (warning_count > 0)
                     msg += " and ";
             }
             if (warning_count > 0) {
-                msg += warning_count + " warning" + (warning_count == 1 ? "" : "s");
+                msg += warning_count + " warning"
+                        + (warning_count == 1 ? "" : "s");
             }
             msg += " detected.";
             logger.println(msg);
@@ -274,17 +290,18 @@ public class XMLValidatingParser {
 
     /**
      * A method to validate a pool of schemas outside of the request element.
-     *
+     * 
      * @param Document
      *            doc The file document to validate
      * @param Document
      *            instruction The xml encapsulated schema information (file
      *            locations)
      * @return false if there were errors, true if none
-     *
+     * 
      * @author jparrpearson
      */
-    public boolean checkXMLRules(Document doc, Document instruction) throws Exception {
+    public boolean checkXMLRules(Document doc, Document instruction)
+            throws Exception {
 
         if (doc == null || doc.getDocumentElement() == null)
             return false;
@@ -296,7 +313,8 @@ public class XMLValidatingParser {
         return (parsedDoc != null);
     }
 
-    public NodeList validate(Document doc, Document instruction) throws Exception {
+    public NodeList validate(Document doc, Document instruction)
+            throws Exception {
 
         if (doc == null || doc.getDocumentElement() == null) {
             return null;
@@ -318,17 +336,18 @@ public class XMLValidatingParser {
         errorStrings = eh.toNodeList();
 
         // Print error summary
-        /*boolean isEmpty = eh.isEmpty();
-         if (!isEmpty) {
-         int error_count = errorStrings.getLength();
-         logger.println(error_count +  " validation error" + (error_count == 1 ? "" : "s") + " detected.");
-         logger.flush();
-         }*/
+        /*
+         * boolean isEmpty = eh.isEmpty(); if (!isEmpty) { int error_count =
+         * errorStrings.getLength(); logger.println(error_count +
+         * " validation error" + (error_count == 1 ? "" : "s") + " detected.");
+         * logger.flush(); }
+         */
 
         return errorStrings;
     }
-    
-    private void validate(Document doc, ArrayList<Object> schemas, ArrayList<Object> dtds, ErrorHandler eh) throws Exception {
+
+    private void validate(Document doc, ArrayList<Object> schemas,
+            ArrayList<Object> dtds, ErrorHandler eh) throws Exception {
         // Validate against schemas
         if (schemas.size() > 0) {
             Source[] schemaSources = new Source[schemas.size()];
@@ -339,7 +358,8 @@ public class XMLValidatingParser {
                 } else if (o instanceof URL) {
                     schemaSources[i] = new StreamSource(o.toString());
                 } else if (o instanceof char[]) {
-                    schemaSources[i] = new StreamSource(new CharArrayReader((char[]) o));
+                    schemaSources[i] = new StreamSource(new CharArrayReader(
+                            (char[]) o));
                 } else {
                     throw new Exception("Illegal object in schemas list");
                 }
@@ -353,7 +373,8 @@ public class XMLValidatingParser {
         // Validate against each dtd
         for (Object dtd : dtds) {
             StringBuffer transform = new StringBuffer();
-            transform.append("<xsl:transform xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"2.0\">");
+            transform
+                    .append("<xsl:transform xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"2.0\">");
             transform.append("<xsl:output doctype-system=\"");
             transform.append(dtd.toString());
             transform.append("\"/>");
@@ -361,15 +382,16 @@ public class XMLValidatingParser {
             transform.append("<xsl:copy-of select=\"*\"/>");
             transform.append("</xsl:template>");
             transform.append("</xsl:transform>");
-            Transformer t = TF.newTransformer(new StreamSource(new CharArrayReader(transform.toString().toCharArray())));
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+            Transformer t = TF.newTransformer(new StreamSource(
+                    new CharArrayReader(transform.toString().toCharArray())));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             t.transform(new DOMSource(doc), new StreamResult(baos));
             DocumentBuilder db = dtdValidatingDBF.newDocumentBuilder();
             db.setErrorHandler(eh);
             try {
                 db.parse(new ByteArrayInputStream(baos.toByteArray()));
             } catch (Exception e) {
-                jlogger.log(Level.SEVERE,"validate",e);
+                jlogger.log(Level.SEVERE, "validate", e);
 
             }
         }

@@ -20,13 +20,13 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * 
  * Executes a TestNG test suite using the given test run arguments.
  */
 public class TestNGExecutor implements TestRunExecutor {
 
-    private static final Logger LOGR =
-            Logger.getLogger(TestNGExecutor.class.getPackage().getName());
+    private static final Logger LOGR = Logger.getLogger(TestNGExecutor.class
+            .getPackage().getName());
     private boolean useDefaultListeners;
     private File outputDir;
     private URI testngConfig;
@@ -34,9 +34,10 @@ public class TestNGExecutor implements TestRunExecutor {
     /**
      * Constructs a TestNG executor with the given test suite definition. The
      * default listeners are <strong>not</strong> used.
-     *
-     * @param testngSuite A reference to a file containing a TestNG suite
-     * definition (with &lt;suite&gt; as the document element).
+     * 
+     * @param testngSuite
+     *            A reference to a file containing a TestNG suite definition
+     *            (with &lt;suite&gt; as the document element).
      */
     public TestNGExecutor(String testngSuite) {
         this(testngSuite, System.getProperty("java.io.tmpdir"), false);
@@ -44,14 +45,17 @@ public class TestNGExecutor implements TestRunExecutor {
 
     /**
      * Constructs a TestNG executor configured as indicated.
-     *
-     * @param testngSuite A reference to a file containing a TestNG suite
-     * definition.
-     * @param outputDirPath The location of the root directory for writing test
-     * results. If the directory does not exist and cannot be created, the
-     * location given by the "java.io.tmpdir" system property is used instead.
-     * @param useDefaultListeners A boolean value indicating whether or not to
-     * use the default set of listeners.
+     * 
+     * @param testngSuite
+     *            A reference to a file containing a TestNG suite definition.
+     * @param outputDirPath
+     *            The location of the root directory for writing test results.
+     *            If the directory does not exist and cannot be created, the
+     *            location given by the "java.io.tmpdir" system property is used
+     *            instead.
+     * @param useDefaultListeners
+     *            A boolean value indicating whether or not to use the default
+     *            set of listeners.
      */
     public TestNGExecutor(String testngSuite, String outputDirPath,
             boolean useDefaultListeners) {
@@ -69,7 +73,7 @@ public class TestNGExecutor implements TestRunExecutor {
      * Executes a test suite using the supplied test run arguments. The test run
      * arguments are expected to be contained in an XML properties document
      * structured as shown in the following example.
-     *
+     * 
      * <pre>
      * <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
      * <properties version="1.0">
@@ -78,14 +82,16 @@ public class TestNGExecutor implements TestRunExecutor {
      *   <entry key="classes">L2</entry>
      * </properties>
      * </pre>
-     *
-     * <p><strong>Note:</strong>The actual arguments (key-value pairs) are
-     * suite-specific.</p>
-     *
-     * @param testRunArgs A DOM Document node that contains a set of XML
-     * properties.
+     * 
+     * <p>
+     * <strong>Note:</strong>The actual arguments (key-value pairs) are
+     * suite-specific.
+     * </p>
+     * 
+     * @param testRunArgs
+     *            A DOM Document node that contains a set of XML properties.
      * @return A Source object that provides an XML representation of the test
-     * results.
+     *         results.
      */
     @Override
     public Source execute(Document testRunArgs) {
@@ -132,11 +138,17 @@ public class TestNGExecutor implements TestRunExecutor {
 
     /**
      * Sets the test suite to run using the given URI reference. Three types of
-     * references are supported: <ul> <li>A file system reference</li> <li>A
-     * file: URI</li> <li>A jar: URI</li> </ul>
-     *
-     * @param driver The main TestNG driver.
-     * @param ets A URI referring to a suite definition.
+     * references are supported:
+     * <ul>
+     * <li>A file system reference</li>
+     * <li>A file: URI</li>
+     * <li>A jar: URI</li>
+     * </ul>
+     * 
+     * @param driver
+     *            The main TestNG driver.
+     * @param ets
+     *            A URI referring to a suite definition.
      */
     private void setTestSuites(TestNG driver, URI ets) {
         if (ets.getScheme().equalsIgnoreCase("jar")) {

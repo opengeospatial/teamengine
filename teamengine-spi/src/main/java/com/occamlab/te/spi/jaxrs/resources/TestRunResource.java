@@ -28,15 +28,15 @@ import org.w3c.dom.Element;
  * A controller resource that provides the results of a test run. An XML
  * representation of the results is obtained using HTTP/1.1 methods in accord
  * with the JAX-RS 1.1 specification (JSR 311).
- *
+ * 
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
 @Path("suites/{etsCode}/{etsVersion}/run")
 @Produces("application/xml; charset='utf-8'")
 public class TestRunResource {
 
-    private static final Logger LOGR = Logger.getLogger(
-            TestRunResource.class.getPackage().getName());
+    private static final Logger LOGR = Logger.getLogger(TestRunResource.class
+            .getPackage().getName());
     @Context
     private UriInfo reqUriInfo;
 
@@ -44,7 +44,8 @@ public class TestRunResource {
     public Source processGetRequest(@PathParam("etsCode") String etsCode,
             @PathParam("etsVersion") String etsVersion) {
         TestSuiteController controller = findController(etsCode, etsVersion);
-        MultivaluedMap<String, String> requestParams = reqUriInfo.getQueryParameters();
+        MultivaluedMap<String, String> requestParams = reqUriInfo
+                .getQueryParameters();
         if (LOGR.isLoggable(Level.CONFIG)) {
             StringBuilder msg = new StringBuilder("Test run parameters - ");
             msg.append(etsCode).append("/").append(etsVersion).append("\n");
@@ -70,18 +71,16 @@ public class TestRunResource {
     }
 
     /**
-     * Obtains a
-     * <code>TestSuiteController</code> for a particular executable test suite
-     * (ETS) identified by code and version.
-     *
-     * @param code A
-     * <code>String</code> identifying the ETS to execute.
-     * @param version A
-     * <code>String</code> indicating the version of the ETS.
-     * @return The
-     * <code>TestSuiteController</code> for the requested ETS.
-     * @throws WebApplicationException If a corresponding controller cannot be
-     * found.
+     * Obtains a <code>TestSuiteController</code> for a particular executable
+     * test suite (ETS) identified by code and version.
+     * 
+     * @param code
+     *            A <code>String</code> identifying the ETS to execute.
+     * @param version
+     *            A <code>String</code> indicating the version of the ETS.
+     * @return The <code>TestSuiteController</code> for the requested ETS.
+     * @throws WebApplicationException
+     *             If a corresponding controller cannot be found.
      */
     TestSuiteController findController(String code, String version)
             throws WebApplicationException {
@@ -96,20 +95,23 @@ public class TestRunResource {
     /**
      * Extracts test run arguments from the submitted request parameters and
      * puts them into a DOM Document.
-     *
-     * @param requestParams A map of key-value pairs. Each key can have zero or
-     * more values; only the first value is used.
+     * 
+     * @param requestParams
+     *            A map of key-value pairs. Each key can have zero or more
+     *            values; only the first value is used.
      * @return A DOM Document representing an XML properties file.
      * @see Properties
      */
-    private Document extractTestRunArguments(MultivaluedMap<String, String> requestParams) {
+    private Document extractTestRunArguments(
+            MultivaluedMap<String, String> requestParams) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Document propsDoc = null;
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             propsDoc = db.newDocument();
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(TestRunResource.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestRunResource.class.getName()).log(Level.SEVERE,
+                    null, ex);
         }
         Element docElem = propsDoc.createElement("properties");
         docElem.setAttribute("version", "1.0");
@@ -117,7 +119,8 @@ public class TestRunResource {
             Element entry = propsDoc.createElement("entry");
             entry.setAttribute("key", param.getKey());
             StringBuilder values = new StringBuilder();
-            for (Iterator<String> itr = param.getValue().iterator(); itr.hasNext();) {
+            for (Iterator<String> itr = param.getValue().iterator(); itr
+                    .hasNext();) {
                 values.append(itr.next());
                 if (itr.hasNext()) {
                     values.append(",");

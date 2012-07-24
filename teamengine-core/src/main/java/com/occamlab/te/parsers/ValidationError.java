@@ -3,7 +3,7 @@ package com.occamlab.te.parsers;
 /**
  * Encapsulates information pertaining to a validation error. Instances of this
  * class are immutable.
- *
+ * 
  * @author rmartell
  * @version $Rev$
  */
@@ -29,7 +29,7 @@ public class ValidationError {
 
     /**
      * Constructs an immutable error object.
-     *
+     * 
      * @param severity
      *            the severity level (Warning, Error, Fatal)
      * @param message
@@ -45,7 +45,7 @@ public class ValidationError {
 
     /**
      * Returns the message describing this error.
-     *
+     * 
      * @return the details about this error
      */
     public String getMessage() {
@@ -54,7 +54,7 @@ public class ValidationError {
 
     /**
      * Returns the severity code (a <code>short</code> value) for this error.
-     *
+     * 
      * @return the severity code for this error
      */
     public short getSeverity() {

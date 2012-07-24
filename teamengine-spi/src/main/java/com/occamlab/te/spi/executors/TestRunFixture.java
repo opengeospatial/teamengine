@@ -14,32 +14,35 @@ public interface TestRunFixture {
     /**
      * Adds an item to the fixture. If an item with the given name already
      * exists it is replaced.
-     *
-     * @param name The name of the item.
-     * @param value The actual item to add.
+     * 
+     * @param name
+     *            The name of the item.
+     * @param value
+     *            The actual item to add.
      */
     public void addItem(String name, Object value);
 
     /**
      * Retrieves an item from the fixture by name.
-     *
-     * @param name The name of the item to return.
-     * @return The item, or
-     * <code>null</code> if no corresponding item exists.
+     * 
+     * @param name
+     *            The name of the item to return.
+     * @return The item, or <code>null</code> if no corresponding item exists.
      */
     public Object getItem(String name);
 
     /**
      * Returns a set of all item names.
-     *
+     * 
      * @return A Set containing the names of all items in the fixture.
      */
     public Set<String> listItemNames();
 
     /**
      * Removes an item specified by name.
-     *
-     * @param name The name of the item to remove.
+     * 
+     * @param name
+     *            The name of the item to remove.
      */
     public void removeItem(String name);
 

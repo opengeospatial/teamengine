@@ -79,24 +79,24 @@ public class MonitorCall {
         this.parserInstruction = parserInstruction;
     }
 
-	public boolean getModifiesResponse() {
-		return modifiesResponse;
-	}
+    public boolean getModifiesResponse() {
+        return modifiesResponse;
+    }
 
-	public void setModifiesResponse(boolean modifiesResponse) {
-		this.modifiesResponse = modifiesResponse;
-	}
+    public void setModifiesResponse(boolean modifiesResponse) {
+        this.modifiesResponse = modifiesResponse;
+    }
 
-	public TECore getCore() {
-		return core;
-	}
+    public TECore getCore() {
+        return core;
+    }
 
-	public void setCore(TECore core) {
-		this.core = core;
-		testPath = core.getTestPath();
-	}
+    public void setCore(TECore core) {
+        this.core = core;
+        testPath = core.getTestPath();
+    }
 
-	public String getTestPath() {
-		return testPath;
-	}
+    public String getTestPath() {
+        return testPath;
+    }
 }

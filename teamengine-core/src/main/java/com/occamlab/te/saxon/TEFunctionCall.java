@@ -12,7 +12,8 @@ import net.sf.saxon.type.ItemType;
 import net.sf.saxon.type.TypeHierarchy;
 
 public class TEFunctionCall extends FunctionCall {
-    public TEFunctionCall(StructuredQName functionName, Expression[] staticArgs, StaticContext env) {
+    public TEFunctionCall(StructuredQName functionName,
+            Expression[] staticArgs, StaticContext env) {
         super();
         this.setFunctionName(functionName);
         this.setArguments(staticArgs);
@@ -26,7 +27,8 @@ public class TEFunctionCall extends FunctionCall {
         return ITERATE_METHOD;
     }
 
-    protected void checkArguments(ExpressionVisitor visitor) throws XPathException {
+    protected void checkArguments(ExpressionVisitor visitor)
+            throws XPathException {
         // Assume arguments are OK
     }
 

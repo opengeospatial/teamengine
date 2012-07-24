@@ -11,7 +11,7 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
-	  <excludes>
+      <excludes>
         <exclude>${project.groupId}:teamengine-resources</exclude>
       </excludes>
     </dependencySet>
@@ -30,7 +30,7 @@
       <includes>
         <include>*.bat</include>
       </includes>
-	  <lineEnding>dos</lineEnding>
+      <lineEnding>dos</lineEnding>
     </fileSet>
     <fileSet>
       <directory>${project.build.scriptSourceDirectory}/shell</directory>
@@ -38,8 +38,8 @@
       <includes>
         <include>*.sh</include>
       </includes>
-	  <lineEnding>unix</lineEnding>
-	  <fileMode>0755</fileMode>
+      <lineEnding>unix</lineEnding>
+      <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>${project.build.scriptSourceDirectory}/ctl</directory>

@@ -46,21 +46,23 @@ import com.occamlab.te.TECore;
 
 public class LogUtils {
 
-    public static PrintWriter createLog(File logDir, String callpath) throws Exception {
-      if (logDir != null) {
-          File dir = new File(logDir, callpath);
-          dir.mkdir();
-          File f = new File(dir, "log.xml");
-          f.delete();
-          BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                  new FileOutputStream(f), "UTF-8"));
-          return new PrintWriter(writer);
-      }
-      return null;
-  }
-    
+    public static PrintWriter createLog(File logDir, String callpath)
+            throws Exception {
+        if (logDir != null) {
+            File dir = new File(logDir, callpath);
+            dir.mkdir();
+            File f = new File(dir, "log.xml");
+            f.delete();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(f), "UTF-8"));
+            return new PrintWriter(writer);
+        }
+        return null;
+    }
+
     // Reads a log from disk
-    public static Document readLog(File logDir, String callpath) throws Exception {
+    public static Document readLog(File logDir, String callpath)
+            throws Exception {
         File dir = new File(logDir, callpath);
         File f = new File(dir, "log.xml");
         if (f.exists()) {
@@ -119,19 +121,26 @@ public class LogUtils {
     }
 
     // Returns the parameters to a test from its log document
-    public static List<String> getParamListFromLog(net.sf.saxon.s9api.DocumentBuilder builder, Document log) throws Exception {
-        List<String> list = new ArrayList<String>(); 
-        Element starttest = (Element) log.getElementsByTagName("starttest").item(0);
+    public static List<String> getParamListFromLog(
+            net.sf.saxon.s9api.DocumentBuilder builder, Document log)
+            throws Exception {
+        List<String> list = new ArrayList<String>();
+        Element starttest = (Element) log.getElementsByTagName("starttest")
+                .item(0);
         for (Element param : DomUtils.getElementsByTagName(starttest, "param")) {
-            String value = DomUtils.getElementByTagName(param, "value").getTextContent();
+            String value = DomUtils.getElementByTagName(param, "value")
+                    .getTextContent();
             list.add(param.getAttribute("local-name") + "=" + value);
         }
         return list;
     }
-    
+
     // Returns the parameters to a test from its log document
-    public static XdmNode getParamsFromLog(net.sf.saxon.s9api.DocumentBuilder builder, Document log) throws Exception {
-        Element starttest = (Element) log.getElementsByTagName("starttest").item(0);
+    public static XdmNode getParamsFromLog(
+            net.sf.saxon.s9api.DocumentBuilder builder, Document log)
+            throws Exception {
+        Element starttest = (Element) log.getElementsByTagName("starttest")
+                .item(0);
         NodeList nl = starttest.getElementsByTagName("params");
         if (nl == null || nl.getLength() == 0) {
             return null;
@@ -142,21 +151,26 @@ public class LogUtils {
     }
 
     // Returns the context node for a test from its log document
-    public static XdmNode getContextFromLog(net.sf.saxon.s9api.DocumentBuilder builder, Document log) throws Exception {
-        Element starttest = (Element) log.getElementsByTagName("starttest").item(0);
+    public static XdmNode getContextFromLog(
+            net.sf.saxon.s9api.DocumentBuilder builder, Document log)
+            throws Exception {
+        Element starttest = (Element) log.getElementsByTagName("starttest")
+                .item(0);
         NodeList nl = starttest.getElementsByTagName("context");
         if (nl == null || nl.getLength() == 0) {
             return null;
         } else {
-            Element context = (Element)nl.item(0);
-            Element value = (Element)context.getElementsByTagName("value").item(0);
+            Element context = (Element) nl.item(0);
+            Element value = (Element) context.getElementsByTagName("value")
+                    .item(0);
             nl = value.getChildNodes();
             for (int i = 0; i < nl.getLength(); i++) {
                 Node n = nl.item(i);
                 if (n.getNodeType() == Node.ATTRIBUTE_NODE) {
                     String s = DomUtils.serializeNode(value);
-                    XdmNode xn = builder.build(new StreamSource(new CharArrayReader(s.toCharArray())));
-                    return (XdmNode)xn.axisIterator(Axis.ATTRIBUTE).next();
+                    XdmNode xn = builder.build(new StreamSource(
+                            new CharArrayReader(s.toCharArray())));
+                    return (XdmNode) xn.axisIterator(Axis.ATTRIBUTE).next();
                 } else if (n.getNodeType() == Node.ELEMENT_NODE) {
                     Document doc = DomUtils.createDocument(n);
                     return builder.build(new DOMSource(doc));
@@ -166,7 +180,8 @@ public class LogUtils {
         return null;
     }
 
-    private static Element makeTestListElement(DocumentBuilder db, Document owner, File logdir, String path) throws Exception {
+    private static Element makeTestListElement(DocumentBuilder db,
+            Document owner, File logdir, String path) throws Exception {
         File log = new File(new File(logdir, path), "log.xml");
         Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
         if (logdoc == null) {
@@ -184,7 +199,8 @@ public class LogUtils {
             if (e.getNodeName().equals("starttest")) {
                 NamedNodeMap atts = e.getAttributes();
                 for (int j = 0; j < atts.getLength(); j++) {
-                    test.setAttribute(atts.item(j).getNodeName(), atts.item(j).getNodeValue());
+                    test.setAttribute(atts.item(j).getNodeName(), atts.item(j)
+                            .getNodeValue());
                 }
 
             } else if (e.getNodeName().equals("endtest")) {
@@ -215,18 +231,21 @@ public class LogUtils {
         return test;
     }
 
-    public static Document makeTestList(File logdir, String path, List<List<QName>> excludes) throws Exception {
+    public static Document makeTestList(File logdir, String path,
+            List<List<QName>> excludes) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc;
-        File testListFile = new File(logdir, path + File.separator + "testlist.xml");
+        File testListFile = new File(logdir, path + File.separator
+                + "testlist.xml");
         long testListDate = testListFile.lastModified();
         File rootlog = new File(logdir, path + File.separator + "log.xml");
         boolean updated;
         if (testListFile.exists() && testListDate >= rootlog.lastModified()) {
             doc = db.parse(testListFile);
-            updated = (updateTestListElement(db, doc.getDocumentElement(), logdir, testListDate) != null);
+            updated = (updateTestListElement(db, doc.getDocumentElement(),
+                    logdir, testListDate) != null);
         } else {
             doc = db.newDocument();
             Element test = makeTestListElement(db, doc, logdir, path);
@@ -243,36 +262,46 @@ public class LogUtils {
             t.transform(new DOMSource(doc), new StreamResult(testListFile));
         }
         if (excludes.size() > 0) {
-            removeExcludes(doc.getDocumentElement(), new ArrayList<QName>(), excludes);
+            removeExcludes(doc.getDocumentElement(), new ArrayList<QName>(),
+                    excludes);
             updateTestListElement(db, doc.getDocumentElement(), logdir, 0);
         }
         return doc;
     }
 
-    public static Document makeTestList(File logdir, String path) throws Exception {
+    public static Document makeTestList(File logdir, String path)
+            throws Exception {
         List<List<QName>> excludes = new ArrayList<List<QName>>();
         return makeTestList(logdir, path, excludes);
     }
-    
-    /* Recalculate each result.  If testListDate != 0, then reread new log files as well */ 
-    private static Element updateTestListElement(DocumentBuilder db, Element test, File logdir, long testListDate) throws Exception {
+
+    /*
+     * Recalculate each result. If testListDate != 0, then reread new log files
+     * as well
+     */
+    private static Element updateTestListElement(DocumentBuilder db,
+            Element test, File logdir, long testListDate) throws Exception {
         String path = test.getAttribute("path");
         long logdate = 0;
         if (testListDate > 0) {
-            logdate = new File(logdir, path + File.separator + "log.xml").lastModified();
+            logdate = new File(logdir, path + File.separator + "log.xml")
+                    .lastModified();
         }
         if (logdate > testListDate) {
-            Element newtest = makeTestListElement(db, test.getOwnerDocument(), logdir, path);
+            Element newtest = makeTestListElement(db, test.getOwnerDocument(),
+                    logdir, path);
             test.getParentNode().replaceChild(newtest, test);
             return newtest;
         } else {
             boolean updated = false;
             boolean childrenFailed = false;
             for (Element subtest : DomUtils.getChildElements(test)) {
-                Element newsubtest = updateTestListElement(db, subtest, logdir, testListDate);
+                Element newsubtest = updateTestListElement(db, subtest, logdir,
+                        testListDate);
                 if (newsubtest != null) {
                     updated = true;
-                    int code = Integer.parseInt(newsubtest.getAttribute("result"));
+                    int code = Integer.parseInt(newsubtest
+                            .getAttribute("result"));
                     if (code == TECore.FAIL || code == TECore.INHERITED_FAILURE) {
                         childrenFailed = true;
                     }
@@ -297,7 +326,8 @@ public class LogUtils {
         }
     }
 
-    private static void removeExcludes(Element test, List<QName> pathQName, List<List<QName>> excludes) throws Exception {
+    private static void removeExcludes(Element test, List<QName> pathQName,
+            List<List<QName>> excludes) throws Exception {
         List<QName> testQName = new ArrayList<QName>();
         testQName.addAll(pathQName);
         String namespaceURI = test.getAttribute("namespace-uri");
@@ -330,118 +360,125 @@ public class LogUtils {
         }
         return session;
     }
-    
+
     /**
-     * Generate a file in logDir refererring all logfiles.
-     * Create a file called "report_logs.xml" in the log folder that 
-     * includes all logs listed inside the directory.
+     * Generate a file in logDir refererring all logfiles. Create a file called
+     * "report_logs.xml" in the log folder that includes all logs listed inside
+     * the directory.
      * 
-     * @param sessionLogDir considered log directory
+     * @param sessionLogDir
+     *            considered log directory
      * @throws Exception
      * @author F.Vitale vitale@imaa.cnr.it
      */
-    public static void createFullReportLog(String sessionLogDir)  throws Exception {
-    	File xml_logs_report_file=new File(sessionLogDir+File.separator+"report_logs.xml");
-    	if (xml_logs_report_file.exists()) {
-    	   xml_logs_report_file.delete();	xml_logs_report_file.createNewFile();
-    	}
-    	xml_logs_report_file=new File(sessionLogDir+File.separator+"report_logs.xml");
-    	OutputStream report_logs = new FileOutputStream(xml_logs_report_file);
-    	List<File> files = null;
-    	Document result=null;
+    public static void createFullReportLog(String sessionLogDir)
+            throws Exception {
+        File xml_logs_report_file = new File(sessionLogDir + File.separator
+                + "report_logs.xml");
+        if (xml_logs_report_file.exists()) {
+            xml_logs_report_file.delete();
+            xml_logs_report_file.createNewFile();
+        }
+        xml_logs_report_file = new File(sessionLogDir + File.separator
+                + "report_logs.xml");
+        OutputStream report_logs = new FileOutputStream(xml_logs_report_file);
+        List<File> files = null;
+        Document result = null;
 
-    	files = getFileListing(new File(sessionLogDir));
+        files = getFileListing(new File(sessionLogDir));
 
-    	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    	factory.setNamespaceAware(true);
-    	DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
 
-    	// Create the document
-    	Document doc=builder.newDocument(); 
-    	// Fill the document
-    	Element execution= doc.createElement("execution");
-    	execution.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xi", "http://www.w3.org/2001/XInclude");
-    	doc.appendChild(execution);
-    	for (File file : files) {
-    		//all files are Sorted with CompareTO 
-    		Element include= doc.createElementNS("http://www.w3.org/2001/XInclude","xi:include");
-    		include.setAttribute("href", file.getAbsolutePath());
-    		execution.appendChild(include);
-    	}
-    	// Serialize the document into System.out
-    	TransformerFactory xformFactory = TransformerFactory.newInstance();  
-    	Transformer idTransform = xformFactory.newTransformer();
-    	Source input = new DOMSource(doc);
-    	Result output = new StreamResult(report_logs);
-    	idTransform.transform(input, output);
-    	result=doc; // actually we do not needs results
+        // Create the document
+        Document doc = builder.newDocument();
+        // Fill the document
+        Element execution = doc.createElement("execution");
+        execution.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xi",
+                "http://www.w3.org/2001/XInclude");
+        doc.appendChild(execution);
+        for (File file : files) {
+            // all files are Sorted with CompareTO
+            Element include = doc.createElementNS(
+                    "http://www.w3.org/2001/XInclude", "xi:include");
+            include.setAttribute("href", file.getAbsolutePath());
+            execution.appendChild(include);
+        }
+        // Serialize the document into System.out
+        TransformerFactory xformFactory = TransformerFactory.newInstance();
+        Transformer idTransform = xformFactory.newTransformer();
+        Source input = new DOMSource(doc);
+        Result output = new StreamResult(report_logs);
+        idTransform.transform(input, output);
+        result = doc; // actually we do not needs results
     }
 
     /**
-     * Recursively walk a directory tree and return a List of all log files found.
-	 *
-	 * 
-     * @param logDir die to walk
+     * Recursively walk a directory tree and return a List of all log files
+     * found.
+     * 
+     * 
+     * @param logDir
+     *            die to walk
      * @return
      * @throws Exception
      */
-	private static List<File> getFileListing(File logDir) throws Exception {
-		List<File> result = getFileListingLogs(logDir);
-		return result;
-	}
+    private static List<File> getFileListing(File logDir) throws Exception {
+        List<File> result = getFileListingLogs(logDir);
+        return result;
+    }
 
+    /**
+     * Get all log files and directories and make recursive call.
+     * 
+     * @param aStartingDir
+     * @return
+     * @throws Exception
+     */
+    static private List<File> getFileListingLogs(File aStartingDir)
+            throws Exception {
+        List<File> result = new ArrayList<File>();
+        File[] logfiles = aStartingDir.listFiles(new FileFilter() {
 
-	/**
-	 * Get all log files and directories and make recursive call.
-	 * 
-	 * @param aStartingDir
-	 * @return
-	 * @throws Exception
-	 */
-	static private List<File> getFileListingLogs(File aStartingDir)
-			throws Exception {
-		List<File> result = new ArrayList<File>();
-		File[] logfiles = aStartingDir.listFiles(new FileFilter() {		
-			
-			@Override
-			public boolean accept(File pathname) {				
-				return pathname.isFile();
-			}
-		});
-		List<File> logFilesList = Arrays.asList(logfiles);
-		File[] allDirs=  aStartingDir.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				return pathname.isDirectory();
-			}
-		});		
-		for (File file : logFilesList) {
-			if (file.getName().equals("log.xml")) {
-				result.add(file);
-			}			
-		}
-		List<File> allDirsList = Arrays.asList(allDirs);		
-		Collections.sort(allDirsList, new Comparator<File>()
-		{
-			public int compare(File o1, File o2) {
-			
-				if (o1.lastModified() > o2.lastModified()) {
-					return +1;
-				} else if (o1.lastModified() < o2.lastModified()) {
-					return -1;
-				} else {
-					return 0;
-				}
-			}
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isFile();
+            }
+        });
+        List<File> logFilesList = Arrays.asList(logfiles);
+        File[] allDirs = aStartingDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        });
+        for (File file : logFilesList) {
+            if (file.getName().equals("log.xml")) {
+                result.add(file);
+            }
+        }
+        List<File> allDirsList = Arrays.asList(allDirs);
+        Collections.sort(allDirsList, new Comparator<File>() {
+            public int compare(File o1, File o2) {
 
-		});
-		for (File file : allDirsList) {				
-			if (!file.isFile()) {
-				List<File> deeperList = getFileListingLogs(file);
-				result.addAll(deeperList);
-			}
-		}	
-		return result;
-	}
- 
+                if (o1.lastModified() > o2.lastModified()) {
+                    return +1;
+                } else if (o1.lastModified() < o2.lastModified()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+
+        });
+        for (File file : allDirsList) {
+            if (!file.isFile()) {
+                List<File> deeperList = getFileListingLogs(file);
+                result.addAll(deeperList);
+            }
+        }
+        return result;
+    }
+
 }

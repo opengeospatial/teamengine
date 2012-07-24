@@ -51,20 +51,21 @@ public class TestSuiteSetResource {
     /**
      * Presents an XHTML representation containing a listing of registered test
      * suites with links to each.
-     *
+     * 
      * @return A Source object containing the information needed to read the
-     * collection (an HTML5 document represented using the XHTML syntax).
+     *         collection (an HTML5 document represented using the XHTML
+     *         syntax).
      */
     @GET
     public Source listTestSuites() {
         Document xhtmlDoc = readTemplate();
         if (null == xhtmlDoc) {
-            throw new WebApplicationException(Response.serverError().entity(
-                    "Failed to parse test-suites.html").type(
-                    MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("Failed to parse test-suites.html")
+                    .type(MediaType.TEXT_PLAIN).build());
         }
-        Element listElem = (Element) xhtmlDoc.getElementsByTagNameNS(
-                HTML_NS, "ul").item(0);
+        Element listElem = (Element) xhtmlDoc.getElementsByTagNameNS(HTML_NS,
+                "ul").item(0);
         TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
         Set<TestSuiteController> etsControllers = registry.getControllers();
         StringBuilder etsURI = new StringBuilder();
@@ -79,8 +80,8 @@ public class TestSuiteSetResource {
             if (!reqUriInfo.getPath().endsWith("/")) {
                 etsURI.append(this.reqUriInfo.getPath()).append("/");
             }
-            etsURI.append(etsController.getCode()).append("/").
-                    append(etsController.getVersion()).append("/");
+            etsURI.append(etsController.getCode()).append("/")
+                    .append(etsController.getVersion()).append("/");
             link.setAttribute("href", etsURI.toString());
             link.setAttribute("id", etsController.getCode() + "-"
                     + etsController.getVersion());
@@ -92,7 +93,7 @@ public class TestSuiteSetResource {
     /**
      * Reads the template document from the classpath. It contains an empty
      * list.
-     *
+     * 
      * @return A DOM Document node.
      */
     Document readTemplate() {

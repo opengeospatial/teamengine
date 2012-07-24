@@ -102,32 +102,36 @@ import org.w3c.dom.Comment;
 
 /**
  * Provides various utility methods to support test execution and logging.
- *
+ * 
  */
 public class TECore implements Runnable {
 
     private static final Logger LOGR = Logger.getLogger(TECore.class.getName());
     public static final String SOAP_V_1_1 = "1.1";
     public static final String SOAP_V_1_2 = "1.2";
-    Engine engine;                      // Engine object
+    Engine engine; // Engine object
     Index index;
     RuntimeOptions opts;
     String testServletURL = null;
-//    String sessionId;                   // Session identifier
-//    String sourcesName;                 // Name of active collection of sources
-//    File logDir = null;                 // Log directory
-    volatile PrintStream out;                    // Console destination
-    boolean web = false;                // True when running as a servlet
-//    int mode = Test.TEST_MODE;          // Test mode
-    String testPath;                    // Uniquely identifies a test instance
-    String fnPath = "";                 // Uniquely identifies an XSL function instance within a test instance
-    String indent = "";                 // Contains the appropriate number of spaces for the current indent level
-    String contextLabel = "";           // Current context label set by ctl:for-each
-    int result;                         // Result for current test
-    Document prevLog = null;            // Log document for current test from previous  test execution (resume and retest modes only)
-    PrintWriter logger = null;          // Logger for current test
-    volatile String formHtml;                    // HTML representation for an active form
-    volatile Document formResults;               // Holds form results until they are retrieved
+    // String sessionId; // Session identifier
+    // String sourcesName; // Name of active collection of sources
+    // File logDir = null; // Log directory
+    volatile PrintStream out; // Console destination
+    boolean web = false; // True when running as a servlet
+    // int mode = Test.TEST_MODE; // Test mode
+    String testPath; // Uniquely identifies a test instance
+    String fnPath = ""; // Uniquely identifies an XSL function instance within a
+                        // test instance
+    String indent = ""; // Contains the appropriate number of spaces for the
+                        // current indent level
+    String contextLabel = ""; // Current context label set by ctl:for-each
+    int result; // Result for current test
+    Document prevLog = null; // Log document for current test from previous test
+                             // execution (resume and retest modes only)
+    PrintWriter logger = null; // Logger for current test
+    volatile String formHtml; // HTML representation for an active form
+    volatile Document formResults; // Holds form results until they are
+                                   // retrieved
     Map<String, Element> formParsers = new HashMap<String, Element>();
     Map<Integer, Object> functionInstances = new HashMap<Integer, Object>();
     Map<String, Object> parserInstances = new HashMap<String, Object>();
@@ -151,21 +155,22 @@ public class TECore implements Runnable {
     static final String HEADER_BLOCKS = "header-blocks";
     private static Logger jlogger = Logger.getLogger("com.occamlab.te.TECore");
 
-//    public TECore(Engine engine, Index index, String sessionId, String sourcesName) {
-//        this.engine = engine;
-//        this.index = index;
-//        this.sessionId = sessionId;
-//        this.sourcesName = sourcesName;
-//
-//        testPath = sessionId;
-//        out = System.out;
-//    }
+    // public TECore(Engine engine, Index index, String sessionId, String
+    // sourcesName) {
+    // this.engine = engine;
+    // this.index = index;
+    // this.sessionId = sessionId;
+    // this.sourcesName = sourcesName;
+    //
+    // testPath = sessionId;
+    // out = System.out;
+    // }
     public TECore(Engine engine, Index index, RuntimeOptions opts) {
         this.engine = engine;
         this.index = index;
         this.opts = opts;
-//        this.sessionId = opts.getSessionId();
-//        this.sourcesName = opts.getSourcesName();
+        // this.sessionId = opts.getSessionId();
+        // this.sourcesName = opts.getSourcesName();
 
         testPath = opts.getSessionId();
         out = System.out;
@@ -178,23 +183,28 @@ public class TECore implements Runnable {
             String name = param.substring(0, param.indexOf('='));
             String value = param.substring(param.indexOf('=') + 1);
             if (params.get(i).indexOf('=') != 0) {
-                paramsXML += "<param local-name=\"" + name + "\" namespace-uri=\"\" prefix=\"\" type=\"xs:string\">";
+                paramsXML += "<param local-name=\""
+                        + name
+                        + "\" namespace-uri=\"\" prefix=\"\" type=\"xs:string\">";
                 paramsXML += "<value><![CDATA[" + value + "]]></value>";
                 paramsXML += "</param>";
             }
         }
         paramsXML += "</params>";
-//System.out.println("paramsXML: "+paramsXML);
+        // System.out.println("paramsXML: "+paramsXML);
         return paramsXML;
 
-//        return Globals.builder.build(new StreamSource(new StringReader(paramsXML)));
+        // return Globals.builder.build(new StreamSource(new
+        // StringReader(paramsXML)));
     }
 
-    XPathContext getXPathContext(TestEntry test, String sourcesName, XdmNode contextNode) throws SaxonApiException {
+    XPathContext getXPathContext(TestEntry test, String sourcesName,
+            XdmNode contextNode) throws SaxonApiException {
         XPathContext context = null;
         if (test.usesContext()) {
             XsltExecutable xe = engine.loadExecutable(test, sourcesName);
-            Executable ex = xe.getUnderlyingCompiledStylesheet().getExecutable();
+            Executable ex = xe.getUnderlyingCompiledStylesheet()
+                    .getExecutable();
             context = new XPathContextMajor(contextNode.getUnderlyingNode(), ex);
         }
         return context;
@@ -204,9 +214,9 @@ public class TECore implements Runnable {
     public void execute() throws Exception {
         try {
             String sessionId = opts.getSessionId();
-            //        File logDir = opts.getLogDir();
+            // File logDir = opts.getLogDir();
             int mode = opts.getMode();
-            //        String sourcesName = opts.getSourcesName();
+            // String sourcesName = opts.getSourcesName();
             ArrayList<String> params = opts.getParams();
 
             if (mode == Test.RESUME_MODE) {
@@ -244,8 +254,9 @@ public class TECore implements Runnable {
                 SwingForm.destroy();
             }
             if (opts.getLogDir() != null) {
-                //Create xml execution report file
-                LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath() + File.separator + opts.getSessionId());
+                // Create xml execution report file
+                LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
+                        + File.separator + opts.getSessionId());
             }
         }
     }
@@ -257,12 +268,14 @@ public class TECore implements Runnable {
         net.sf.saxon.s9api.DocumentBuilder builder = engine.getBuilder();
         XdmNode paramsNode = LogUtils.getParamsFromLog(builder, log);
         XdmNode contextNode = LogUtils.getContextFromLog(builder, log);
-        XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
+        XPathContext context = getXPathContext(test, opts.getSourcesName(),
+                contextNode);
         setTestPath(testPath);
         executeTest(test, paramsNode, context);
     }
 
-    public int execute_test(String testName, List<String> params, XdmNode contextNode) throws Exception {
+    public int execute_test(String testName, List<String> params,
+            XdmNode contextNode) throws Exception {
         if (LOGR.isLoggable(Level.FINE)) {
             final String logMsg = String.format(
                     "Preparing test %s for execution, using params:%n %s",
@@ -273,12 +286,15 @@ public class TECore implements Runnable {
         if (test == null) {
             throw new Exception("Error: Test " + testName + " not found.");
         }
-        XdmNode paramsNode = engine.getBuilder().build(new StreamSource(new StringReader(getParamsXML(params))));
-        XPathContext context = getXPathContext(test, opts.getSourcesName(), contextNode);
+        XdmNode paramsNode = engine.getBuilder().build(
+                new StreamSource(new StringReader(getParamsXML(params))));
+        XPathContext context = getXPathContext(test, opts.getSourcesName(),
+                contextNode);
         return executeTest(test, paramsNode, context);
     }
 
-    public void execute_suite(String suiteName, List<String> params) throws Exception {
+    public void execute_suite(String suiteName, List<String> params)
+            throws Exception {
         SuiteEntry suite = null;
         if (suiteName == null) {
             Iterator<String> it = index.getSuiteKeys().iterator();
@@ -287,7 +303,8 @@ public class TECore implements Runnable {
             }
             suite = index.getSuite(it.next());
             if (it.hasNext()) {
-                throw new Exception("Error: Suite name must be specified since there is more than one suite in sources.");
+                throw new Exception(
+                        "Error: Suite name must be specified since there is more than one suite in sources.");
             }
         } else {
             suite = index.getSuite(suiteName);
@@ -300,15 +317,19 @@ public class TECore implements Runnable {
         Document form = suite.getForm();
         if (form != null) {
             Document results = (Document) form(form, suite.getId());
-            for (Element value : DomUtils.getElementsByTagName(results, "value")) {
-                kvps.add(value.getAttribute("key") + "=" + value.getTextContent());
+            for (Element value : DomUtils
+                    .getElementsByTagName(results, "value")) {
+                kvps.add(value.getAttribute("key") + "="
+                        + value.getTextContent());
             }
         }
         String name = suite.getPrefix() + ":" + suite.getLocalName();
         out.println("Testing suite " + name + "...");
         setIndentLevel(1);
-        int result = execute_test(suite.getStartingTest().toString(), kvps, null);
-        out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName() + " ");
+        int result = execute_test(suite.getStartingTest().toString(), kvps,
+                null);
+        out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName()
+                + " ");
         if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
             out.println("Failed");
         } else {
@@ -316,7 +337,8 @@ public class TECore implements Runnable {
         }
     }
 
-    public void execute_profile(String profileName, List<String> params, boolean required) throws Exception {
+    public void execute_profile(String profileName, List<String> params,
+            boolean required) throws Exception {
         ProfileEntry profile = index.getProfile(profileName);
         if (profile == null) {
             throw new Exception("Error: Profile " + profileName + " not found.");
@@ -324,22 +346,25 @@ public class TECore implements Runnable {
 
         SuiteEntry suite = index.getSuite(profile.getBaseSuite());
         if (suite == null) {
-            throw new Exception("Error: The base suite (" + profile.getBaseSuite().toString() + ") for the profile (" + profileName + ") not found.");
+            throw new Exception("Error: The base suite ("
+                    + profile.getBaseSuite().toString() + ") for the profile ("
+                    + profileName + ") not found.");
         }
         String sessionId = opts.getSessionId();
         Document log = LogUtils.readLog(opts.getLogDir(), sessionId);
         if (log == null) {
-//            if (opts.getLogDir() == null) {
-//                File tempLogDir = File.createTempFile("telog", null);
-//                tempLogDir.delete();
-//                tempLogDir.mkdir();
-//                opts.setLogDir(tempLogDir);
-//            }
+            // if (opts.getLogDir() == null) {
+            // File tempLogDir = File.createTempFile("telog", null);
+            // tempLogDir.delete();
+            // tempLogDir.mkdir();
+            // opts.setLogDir(tempLogDir);
+            // }
             execute_suite(suite.getId(), params);
             log = LogUtils.readLog(opts.getLogDir(), sessionId);
         }
         String testId = LogUtils.getTestIdFromLog(log);
-        List<String> baseParams = LogUtils.getParamListFromLog(engine.getBuilder(), log);
+        List<String> baseParams = LogUtils.getParamListFromLog(
+                engine.getBuilder(), log);
         TestEntry test = index.getTest(testId);
         if (suite.getStartingTest().equals(test.getQName())) {
             ArrayList<String> kvps = new ArrayList<String>();
@@ -348,21 +373,27 @@ public class TECore implements Runnable {
             Document form = profile.getForm();
             if (form != null) {
                 Document results = (Document) form(form, profile.getId());
-                for (Element value : DomUtils.getElementsByTagName(results, "value")) {
-                    kvps.add(value.getAttribute("key") + "=" + value.getTextContent());
+                for (Element value : DomUtils.getElementsByTagName(results,
+                        "value")) {
+                    kvps.add(value.getAttribute("key") + "="
+                            + value.getTextContent());
                 }
             }
             setTestPath(sessionId + "/" + profile.getLocalName());
             String name = profile.getPrefix() + ":" + profile.getLocalName();
             out.println("\nTesting profile " + name + "...");
-            Document baseLog = LogUtils.makeTestList(opts.getLogDir(), sessionId, profile.getExcludes());
+            Document baseLog = LogUtils.makeTestList(opts.getLogDir(),
+                    sessionId, profile.getExcludes());
             Element baseTest = DomUtils.getElement(baseLog);
-//out.println(DomUtils.serializeNode(baseLog));
-            out.print(TECore.INDENT + "Base tests from suite " + suite.getPrefix() + ":" + suite.getLocalName() + " ");
+            // out.println(DomUtils.serializeNode(baseLog));
+            out.print(TECore.INDENT + "Base tests from suite "
+                    + suite.getPrefix() + ":" + suite.getLocalName() + " ");
             String summary = "Not complete";
             if ("yes".equals(baseTest.getAttribute("complete"))) {
-                int baseResult = Integer.parseInt(baseTest.getAttribute("result"));
-                if (baseResult == TECore.FAIL || baseResult == TECore.INHERITED_FAILURE) {
+                int baseResult = Integer.parseInt(baseTest
+                        .getAttribute("result"));
+                if (baseResult == TECore.FAIL
+                        || baseResult == TECore.INHERITED_FAILURE) {
                     summary = "Failed";
                 } else {
                     summary = "Passed";
@@ -370,24 +401,30 @@ public class TECore implements Runnable {
             }
             out.println(summary);
             setIndentLevel(1);
-            int result = execute_test(profile.getStartingTest().toString(), kvps, null);
-            out.print("Profile " + profile.getPrefix() + ":" + profile.getLocalName() + " ");
+            int result = execute_test(profile.getStartingTest().toString(),
+                    kvps, null);
+            out.print("Profile " + profile.getPrefix() + ":"
+                    + profile.getLocalName() + " ");
             if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
                 summary = "Failed";
             }
             out.println(summary);
         } else {
             if (required) {
-                throw new Exception("Error: Profile " + profileName + " is not a valid profile for session " + sessionId + ".");
+                throw new Exception("Error: Profile " + profileName
+                        + " is not a valid profile for session " + sessionId
+                        + ".");
             }
         }
     }
 
-    public XdmNode executeTemplate(TemplateEntry template, XdmNode params, XPathContext context) throws Exception {
+    public XdmNode executeTemplate(TemplateEntry template, XdmNode params,
+            XPathContext context) throws Exception {
         if (stop) {
             throw new Exception("Execution was stopped by the user.");
         }
-        XsltExecutable executable = engine.loadExecutable(template, opts.getSourcesName());
+        XsltExecutable executable = engine.loadExecutable(template,
+                opts.getSourcesName());
         XsltTransformer xt = executable.load();
         XdmDestination dest = new XdmDestination();
         xt.setDestination(dest);
@@ -452,7 +489,8 @@ public class TECore implements Runnable {
                 if (tagname.equals("param")) {
                     String name = n.getAttributeValue(LOCALNAME_QNAME);
                     String label = getLabel(n);
-                    newText = StringUtils.replaceAll(newText, "{$" + name + "}", label);
+                    newText = StringUtils.replaceAll(newText,
+                            "{$" + name + "}", label);
                 }
             }
         }
@@ -474,7 +512,8 @@ public class TECore implements Runnable {
         }
     }
 
-    public int executeTest(TestEntry test, XdmNode params, XPathContext context) throws Exception {
+    public int executeTest(TestEntry test, XdmNode params, XPathContext context)
+            throws Exception {
         Document oldPrevLog = prevLog;
         if (opts.getMode() == Test.RESUME_MODE) {
             prevLog = readLog();
@@ -495,27 +534,30 @@ public class TECore implements Runnable {
         if (opts.getLogDir() != null) {
             logger = createLog();
             logger.println("<log>");
-            logger.println("<starttest local-name=\"" + test.getLocalName() + "\" "
-                    + "prefix=\"" + test.getPrefix() + "\" "
+            logger.println("<starttest local-name=\"" + test.getLocalName()
+                    + "\" " + "prefix=\"" + test.getPrefix() + "\" "
                     + "namespace-uri=\"" + test.getNamespaceURI() + "\" "
-                    + "path=\"" + testPath + "\" "
-                    + "file=\"" + test.getTemplateFile().getAbsolutePath() + "\">");
-            logger.println("<assertion>" + StringUtils.escapeXML(assertion) + "</assertion>");
+                    + "path=\"" + testPath + "\" " + "file=\""
+                    + test.getTemplateFile().getAbsolutePath() + "\">");
+            logger.println("<assertion>" + StringUtils.escapeXML(assertion)
+                    + "</assertion>");
             if (params != null) {
                 logger.println(params.toString());
             }
             if (test.usesContext()) {
-                logger.println("<context label=\"" + StringUtils.escapeXML(contextLabel) + "\">");
+                logger.println("<context label=\""
+                        + StringUtils.escapeXML(contextLabel) + "\">");
                 NodeInfo contextNode = (NodeInfo) context.getContextItem();
                 int kind = contextNode.getNodeKind();
                 if (kind == Type.ATTRIBUTE) {
-                    logger.print("<value " + contextNode.getDisplayName() + "=\""
-                            + contextNode.getStringValue() + "\"");
+                    logger.print("<value " + contextNode.getDisplayName()
+                            + "=\"" + contextNode.getStringValue() + "\"");
                     // TODO: set namespace
                     logger.println("/>");
                 } else if (kind == Type.ELEMENT || kind == Type.DOCUMENT) {
                     logger.println("<value>");
-                    logger.println(DomUtils.serializeSource(engine.getBuilder().build(contextNode).asSource()));
+                    logger.println(DomUtils.serializeSource(engine.getBuilder()
+                            .build(contextNode).asSource()));
                     logger.println("</value>");
                 }
                 logger.println("</context>");
@@ -533,13 +575,15 @@ public class TECore implements Runnable {
 
             out.println(e.getMessage());
             if (logger != null) {
-                logger.println("<exception><![CDATA[" + e.getMessage() + "]]></exception>");
+                logger.println("<exception><![CDATA[" + e.getMessage()
+                        + "]]></exception>");
             }
             result = FAIL;
         }
 
         if (logger != null) {
-            logger.println("<endtest result=\"" + Integer.toString(result) + "\"/>");
+            logger.println("<endtest result=\"" + Integer.toString(result)
+                    + "\"/>");
             logger.println("</log>");
             logger.close();
         }
@@ -549,30 +593,37 @@ public class TECore implements Runnable {
 
         indent = oldIndent;
 
-        out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
+        out.println(indent + "Test " + test.getName() + " "
+                + getResultDescription(result));
 
         return result;
     }
 
-    public synchronized void callTest(XPathContext context, String localName, String namespaceURI, NodeInfo params, String callId) throws Exception {
-//        System.out.println("call_test");
-//        System.out.println(params.getClass().getName());
+    public synchronized void callTest(XPathContext context, String localName,
+            String namespaceURI, NodeInfo params, String callId)
+            throws Exception {
+        // System.out.println("call_test");
+        // System.out.println(params.getClass().getName());
         String key = "{" + namespaceURI + "}" + localName;
         TestEntry test = index.getTest(key);
 
         if (logger != null) {
-            logger.println("<testcall path=\"" + testPath + "/" + callId + "\"/>");
+            logger.println("<testcall path=\"" + testPath + "/" + callId
+                    + "\"/>");
             logger.flush();
         }
         if (opts.getMode() == Test.RESUME_MODE) {
-            Document doc = LogUtils.readLog(opts.getLogDir(), testPath + "/" + callId);
+            Document doc = LogUtils.readLog(opts.getLogDir(), testPath + "/"
+                    + callId);
             int result = LogUtils.getResultFromLog(doc);
             if (result >= 0) {
-                out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
+                out.println(indent + "Test " + test.getName() + " "
+                        + getResultDescription(result));
                 if (result == WARNING) {
                     warning();
                 } else if (result == CONTINUE) {
-                    throw new Exception("Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
+                    throw new Exception(
+                            "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
                 } else if (result != PASS) {
                     inheritedFailure();
                 }
@@ -587,13 +638,15 @@ public class TECore implements Runnable {
         testPath = oldTestPath;
 
         if (result == CONTINUE) {
-            throw new Exception("Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
+            throw new Exception(
+                    "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
 
         } else if (result < oldResult) {
             // Restore parent result if the child results aren't worse
             result = oldResult;
         } else if (result == FAIL && oldResult != FAIL) {
-            // If the child result was FAIL and parent hasn't directly failed, set parent result to INHERITED_FAILURE
+            // If the child result was FAIL and parent hasn't directly failed,
+            // set parent result to INHERITED_FAILURE
             result = INHERITED_FAILURE;
         } else {
             // Keep child result as parent result
@@ -633,20 +686,19 @@ public class TECore implements Runnable {
 
         for (int i = 0; i < count; i++) {
 
-
             executeTest(test, S9APIUtils.makeNode(params), context);
 
             testPath = oldTestPath;
 
-
             if (result == FAIL && oldResult != FAIL) {
-                // If the child result was FAIL and parent hasn't directly failed,
+                // If the child result was FAIL and parent hasn't directly
+                // failed,
                 // set parent result to INHERITED_FAILURE
                 result = INHERITED_FAILURE;
 
                 return;
             } else if (result == CONTINUE) {
-                //System.out.println("Pausing for..."+pause);
+                // System.out.println("Pausing for..."+pause);
                 if (pause > 0 && i < count - 1) {
 
                     try {
@@ -673,7 +725,8 @@ public class TECore implements Runnable {
 
     }
 
-    public NodeInfo executeXSLFunction(XPathContext context, FunctionEntry fe, NodeInfo params) throws Exception {
+    public NodeInfo executeXSLFunction(XPathContext context, FunctionEntry fe,
+            NodeInfo params) throws Exception {
         String oldFnPath = fnPath;
         CRC32 crc = new CRC32();
         crc.update((fe.getPrefix() + fe.getId()).getBytes());
@@ -686,12 +739,15 @@ public class TECore implements Runnable {
         return n.getUnderlyingNode();
     }
 
-    public Object callFunction(XPathContext context, String localName, String namespaceURI, NodeInfo params) throws Exception {
-//        System.out.println("callFunction {" + NamespaceURI + "}" + localName);
+    public Object callFunction(XPathContext context, String localName,
+            String namespaceURI, NodeInfo params) throws Exception {
+        // System.out.println("callFunction {" + NamespaceURI + "}" +
+        // localName);
         String key = "{" + namespaceURI + "}" + localName;
         List<FunctionEntry> functions = index.getFunctions(key);
         Node paramsNode = NodeOverNodeInfo.wrap(params);
-        List<Element> paramElements = DomUtils.getElementsByTagName(paramsNode, "param");
+        List<Element> paramElements = DomUtils.getElementsByTagName(paramsNode,
+                "param");
         for (FunctionEntry fe : functions) {
             if (!fe.isJava()) {
                 boolean valid = true;
@@ -699,7 +755,8 @@ public class TECore implements Runnable {
                     String uri = el.getAttribute("namespace-uri");
                     String name = el.getAttribute("local-name");
                     String prefix = el.getAttribute("prefix");
-                    javax.xml.namespace.QName qname = new javax.xml.namespace.QName(uri, name, prefix);
+                    javax.xml.namespace.QName qname = new javax.xml.namespace.QName(
+                            uri, name, prefix);
                     if (!fe.getParams().contains(qname)) {
                         valid = false;
                         break;
@@ -715,14 +772,18 @@ public class TECore implements Runnable {
             if (fe.isJava()) {
                 int argCount = paramElements.size();
                 if (fe.getMinArgs() >= argCount && fe.getMaxArgs() <= argCount) {
-                    TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
-                    Method method = Misc.getMethod(fe.getClassName(), fe.getMethod(), cl, argCount);
+                    TEClassLoader cl = engine.getClassLoader(opts
+                            .getSourcesName());
+                    Method method = Misc.getMethod(fe.getClassName(),
+                            fe.getMethod(), cl, argCount);
                     Class<?>[] types = method.getParameterTypes();
                     Object[] args = new Object[argCount];
                     for (int i = 0; i < argCount; i++) {
-                        Element el = DomUtils.getElementByTagName(paramElements.get(i), "value");
+                        Element el = DomUtils.getElementByTagName(
+                                paramElements.get(i), "value");
                         if (types[i].equals(String.class)) {
-                            Map<javax.xml.namespace.QName, String> attrs = DomUtils.getAttributes(el);
+                            Map<javax.xml.namespace.QName, String> attrs = DomUtils
+                                    .getAttributes(el);
                             if (attrs.size() > 0) {
                                 args[i] = attrs.values().iterator().next();
                             } else {
@@ -745,23 +806,30 @@ public class TECore implements Runnable {
                         } else if (types[i].toString().equals("double")) {
                             args[i] = Double.parseDouble(el.getTextContent());
                         } else if (Document.class.isAssignableFrom(types[i])) {
-                            args[i] = DomUtils.createDocument(DomUtils.getChildElement(el));
+                            args[i] = DomUtils.createDocument(DomUtils
+                                    .getChildElement(el));
                         } else if (NodeList.class.isAssignableFrom(types[i])) {
                             args[i] = el.getChildNodes();
                         } else if (Node.class.isAssignableFrom(types[i])) {
                             args[i] = el.getFirstChild();
                         } else {
-                            throw new Exception("Error: Function " + key + " uses unsupported Java type " + types[i].toString());
+                            throw new Exception("Error: Function " + key
+                                    + " uses unsupported Java type "
+                                    + types[i].toString());
                         }
                     }
                     try {
                         Object instance = null;
                         if (fe.isInitialized()) {
-//                            String instkey = fe.getId() + "," + Integer.toString(fe.getMinArgs()) + "," + Integer.toString(fe.getMaxArgs());
+                            // String instkey = fe.getId() + "," +
+                            // Integer.toString(fe.getMinArgs()) + "," +
+                            // Integer.toString(fe.getMaxArgs());
                             instance = getFunctionInstance(fe.hashCode());
                             if (instance == null) {
                                 try {
-                                    instance = Misc.makeInstance(fe.getClassName(), fe.getClassParams(), cl);
+                                    instance = Misc.makeInstance(
+                                            fe.getClassName(),
+                                            fe.getClassParams(), cl);
                                     putFunctionInstance(fe.hashCode(), instance);
                                 } catch (Exception e) {
                                     throw new XPathException(e);
@@ -771,18 +839,21 @@ public class TECore implements Runnable {
                         return method.invoke(instance, args);
                     } catch (java.lang.reflect.InvocationTargetException e) {
                         Throwable cause = e.getCause();
-                        String msg = "Error invoking function " + fe.getId() + "\n" + cause.getClass().getName();
+                        String msg = "Error invoking function " + fe.getId()
+                                + "\n" + cause.getClass().getName();
                         if (cause.getMessage() != null) {
                             msg += ": " + cause.getMessage();
                         }
-                        jlogger.log(Level.SEVERE, "InvocationTargetException", e);
+                        jlogger.log(Level.SEVERE, "InvocationTargetException",
+                                e);
 
                         throw new Exception(msg, cause);
                     }
                 }
             }
         }
-        throw new Exception("No function {" + namespaceURI + "}" + localName + " with a compatible signature.");
+        throw new Exception("No function {" + namespaceURI + "}" + localName
+                + " with a compatible signature.");
     }
 
     public void warning() {
@@ -837,31 +908,31 @@ public class TECore implements Runnable {
 
     public PrintWriter createLog() throws Exception {
         return LogUtils.createLog(opts.getLogDir(), testPath);
-//        if (logDir != null) {
-//            File dir = new File(logDir, testPath);
-//            dir.mkdir();
-//            File f = new File(dir, "log.xml");
-//            f.delete();
-//            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-//                    new FileOutputStream(f), "UTF-8"));
-//            logger = new PrintWriter(writer);
-//        }
-//        return logger;
+        // if (logDir != null) {
+        // File dir = new File(logDir, testPath);
+        // dir.mkdir();
+        // File f = new File(dir, "log.xml");
+        // f.delete();
+        // BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+        // new FileOutputStream(f), "UTF-8"));
+        // logger = new PrintWriter(writer);
+        // }
+        // return logger;
     }
 
-//    public static Node reset_log(String logdir, String callpath)
-//            throws Exception {
-//        if (logdir.length() > 0) {
-//            File dir = new File(logdir, callpath);
-//            dir.mkdir();
-//            File f = new File(dir, "log.xml");
-//            RandomAccessFile raf = new RandomAccessFile(f, "rw");
-//            raf.setLength(0);
-//            raf.writeBytes("<log>\n</log>\n");
-//            raf.close();
-//        }
-//        return null;
-//    }
+    // public static Node reset_log(String logdir, String callpath)
+    // throws Exception {
+    // if (logdir.length() > 0) {
+    // File dir = new File(logdir, callpath);
+    // dir.mkdir();
+    // File f = new File(dir, "log.xml");
+    // RandomAccessFile raf = new RandomAccessFile(f, "rw");
+    // raf.setLength(0);
+    // raf.writeBytes("<log>\n</log>\n");
+    // raf.close();
+    // }
+    // return null;
+    // }
     // Get a File pointer to a file reference (in XML)
     public static File getFile(NodeList fileNodes) {
         File file = null;
@@ -877,14 +948,19 @@ public class TECore implements Runnable {
                 } else if (type.equals("file")) {
                     file = new File(e.getTextContent());
                 } else if (type.equals("resource")) {
-                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                    file = new File(cl.getResource(e.getTextContent()).getFile());
+                    ClassLoader cl = Thread.currentThread()
+                            .getContextClassLoader();
+                    file = new File(cl.getResource(e.getTextContent())
+                            .getFile());
                 } else {
-                    System.out.println("Incorrect file reference:  Unknown type!");
+                    System.out
+                            .println("Incorrect file reference:  Unknown type!");
                 }
             } catch (Exception exception) {
-                System.err.println("Error getting file. " + exception.getMessage());
-                jlogger.log(Level.SEVERE, "Error getting file. " + exception.getMessage(), e);
+                System.err.println("Error getting file. "
+                        + exception.getMessage());
+                jlogger.log(Level.SEVERE,
+                        "Error getting file. " + exception.getMessage(), e);
 
                 return null;
             }
@@ -893,27 +969,32 @@ public class TECore implements Runnable {
     }
 
     // BEGIN SOAP SUPPORT
-    public NodeList soap_request(Document ctlRequest, String id) throws Throwable {
-        Element request = (Element) ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "soap-request").item(0);
+    public NodeList soap_request(Document ctlRequest, String id)
+            throws Throwable {
+        Element request = (Element) ctlRequest.getElementsByTagNameNS(
+                Test.CTL_NS, "soap-request").item(0);
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
-            for (Element request_e : DomUtils.getElementsByTagName(prevLog, "soap-request")) {
+            for (Element request_e : DomUtils.getElementsByTagName(prevLog,
+                    "soap-request")) {
                 if (request_e.getAttribute("id").equals(fnPath + id)) {
                     logger.println(DomUtils.serializeNode(request_e));
                     logger.flush();
-                    Element response_e = DomUtils.getElementByTagName(request_e, "response");
-                    Element content_e = DomUtils.getElementByTagName(response_e, "content");
+                    Element response_e = DomUtils.getElementByTagName(
+                            request_e, "response");
+                    Element content_e = DomUtils.getElementByTagName(
+                            response_e, "content");
                     return content_e.getChildNodes();
-//                    return DomUtils.getChildElement(content_e);
+                    // return DomUtils.getChildElement(content_e);
                 }
             }
         }
 
         String logTag = "<soap-request id=\"" + fnPath + id + "\">\n";
         logTag += DomUtils.serializeNode(request) + "\n";
-//        if (logger != null) {
-//            logger.println("<request id=\"" + fnPath + id + "\">");
-//            logger.println(DomUtils.serializeNode(request));
-//        }
+        // if (logger != null) {
+        // logger.println("<request id=\"" + fnPath + id + "\">");
+        // logger.println(DomUtils.serializeNode(request));
+        // }
         Exception ex = null;
         Element response = null;
         Element parserInstruction = null;
@@ -921,7 +1002,8 @@ public class TECore implements Runnable {
         long elapsedTime = 0;
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && !n.getNamespaceURI().equals(CTL_NS)) {
+            if (n.getNodeType() == Node.ELEMENT_NODE
+                    && !n.getNamespaceURI().equals(CTL_NS)) {
                 parserInstruction = (Element) n;
             }
         }
@@ -932,10 +1014,12 @@ public class TECore implements Runnable {
             Date after = new Date();
             elapsedTime = after.getTime() - before.getTime();
 
-            // Adding the exchange time in the response as comment the format is the following
+            // Adding the exchange time in the response as comment the format is
+            // the following
             // <!--Response received in [XXX] milliseconds-->
             // the comment is included in the first tag of the response
-            // SOAP:Envelope in case a SOAP message is returned the specific interface tag if a SOAP parser is applied
+            // SOAP:Envelope in case a SOAP message is returned the specific
+            // interface tag if a SOAP parser is applied
             Element content = DomUtils.getElementByTagName(response, "content");
             if (content != null) {
                 nl = content.getChildNodes();
@@ -944,7 +1028,9 @@ public class TECore implements Runnable {
                     if (n.getNodeType() == Node.ELEMENT_NODE) {
                         Document doc;
                         doc = response.getOwnerDocument();
-                        Comment comm = doc.createComment("Response received in [" + elapsedTime + "] milliseconds");
+                        Comment comm = doc
+                                .createComment("Response received in ["
+                                        + elapsedTime + "] milliseconds");
                         n.appendChild(comm);
                     }
                 }
@@ -976,31 +1062,38 @@ public class TECore implements Runnable {
         }
     }
 
-    // Create and send a soap request over HTTP then return an HttpResponse (HttpResponse)
+    // Create and send a soap request over HTTP then return an HttpResponse
+    // (HttpResponse)
     /**
      * Create SOAP request, sends it and return an URL Connection ready to be
      * parsed.
-     *
-     * @param xml the soap-request node (from CTL)
-     *
+     * 
+     * @param xml
+     *            the soap-request node (from CTL)
+     * 
      * @return The URL Connection
-     *
-     * @throws Exception the exception
-     *
-     * <soap-request version="1.1|1.2" charset="UTF-8"> <url>http://blah</url>
-     * <action>Some-URI</action> <headers> <header MutUnderstand="true"
-     * rely="true" role="http://etc"> <t:Transaction xmlns:t="some-URI"
-     * >5</t:Transaction> </header> </headers> <body> <m:GetLastTradePrice
-     * xmlns:m="Some-URI"> <symbol>DEF</symbol> </m:GetLastTradePrice> </body>
-     * <parsers:SOAPParser return="content"> <parsers:XMLValidatingParser>
-     * <parsers:schemas> <parsers:schema
-     * type="url">http://blah/schema.xsd</parsers:schema> </parsers:schemas>
-     * </parsers:XMLValidatingParser> </parsers:SOAPParser> </soap-request>
+     * 
+     * @throws Exception
+     *             the exception
+     * 
+     *             <soap-request version="1.1|1.2" charset="UTF-8">
+     *             <url>http://blah</url> <action>Some-URI</action> <headers>
+     *             <header MutUnderstand="true" rely="true" role="http://etc">
+     *             <t:Transaction xmlns:t="some-URI" >5</t:Transaction>
+     *             </header> </headers> <body> <m:GetLastTradePrice
+     *             xmlns:m="Some-URI"> <symbol>DEF</symbol>
+     *             </m:GetLastTradePrice> </body> <parsers:SOAPParser
+     *             return="content"> <parsers:XMLValidatingParser>
+     *             <parsers:schemas> <parsers:schema
+     *             type="url">http://blah/schema.xsd</parsers:schema>
+     *             </parsers:schemas> </parsers:XMLValidatingParser>
+     *             </parsers:SOAPParser> </soap-request>
      */
     static public URLConnection build_soap_request(Node xml) throws Exception {
         String sUrl = null;
         String method = "POST";
-        String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml).getAttribute("charset") : "UTF-8";
+        String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml)
+                .getAttribute("charset") : "UTF-8";
         String version = ((Element) xml).getAttribute("version");
         String action = "";
         String contentType = "";
@@ -1015,18 +1108,20 @@ public class TECore implements Runnable {
                     sUrl = n.getTextContent();
                 } else if (n.getLocalName().equals("action")) {
                     action = n.getTextContent();
-                } //else if (n.getLocalName().equals("header")) {
-                //header = (org.w3c.dom.Element) n;
+                } // else if (n.getLocalName().equals("header")) {
+                  // header = (org.w3c.dom.Element) n;
                 /*
                  * }
-                 */ else if (n.getLocalName().equals("body")) {
+                 */else if (n.getLocalName().equals("body")) {
                     body = (org.w3c.dom.Element) n;
                 }
             }
         }
 
-        //Get the list of the header blocks needed to build the SOAP Header section
-        List<Element> headerBloks = DomUtils.getElementsByTagNameNS(xml, CTL_NS, HEADER_BLOCKS);
+        // Get the list of the header blocks needed to build the SOAP Header
+        // section
+        List<Element> headerBloks = DomUtils.getElementsByTagNameNS(xml,
+                CTL_NS, HEADER_BLOCKS);
         // Open the URLConnection
         URLConnection uc = new URL(sUrl).openConnection();
         if (uc instanceof HttpURLConnection) {
@@ -1037,8 +1132,9 @@ public class TECore implements Runnable {
         byte[] bytes = null;
 
         // SOAP POST
-        bytes = SoapUtils.getSoapMessageAsByte(version, headerBloks, body, charset);
-//        System.out.println("SOAP MESSAGE  " + new String(bytes));
+        bytes = SoapUtils.getSoapMessageAsByte(version, headerBloks, body,
+                charset);
+        // System.out.println("SOAP MESSAGE  " + new String(bytes));
 
         uc.setRequestProperty("User-Agent", "Team Engine 1.2");
         uc.setRequestProperty("Cache-Control", "no-cache");
@@ -1047,7 +1143,7 @@ public class TECore implements Runnable {
         uc.setRequestProperty("Content-Length", Integer.toString(bytes.length));
 
         if (version.equals(SOAP_V_1_1)) {
-            //Handle HTTP binding for SOAP 1.1
+            // Handle HTTP binding for SOAP 1.1
             // uc.setRequestProperty("Accept", "application/soap+xml");
             uc.setRequestProperty("Accept", "text/xml");
             uc.setRequestProperty("SOAPAction", action);
@@ -1057,7 +1153,7 @@ public class TECore implements Runnable {
             }
             uc.setRequestProperty("Content-Type", contentType);
         } else {
-            //Handle HTTP binding for SOAP 1.2
+            // Handle HTTP binding for SOAP 1.2
             uc.setRequestProperty("Accept", "application/soap+xml");
             contentType = "application/soap+xml";
             if (!charset.equals("")) {
@@ -1075,26 +1171,30 @@ public class TECore implements Runnable {
     }
 
     public NodeList request(Document ctlRequest, String id) throws Throwable {
-        Element request = (Element) ctlRequest.getElementsByTagNameNS(Test.CTL_NS, "request").item(0);
+        Element request = (Element) ctlRequest.getElementsByTagNameNS(
+                Test.CTL_NS, "request").item(0);
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
-            for (Element request_e : DomUtils.getElementsByTagName(prevLog, "request")) {
+            for (Element request_e : DomUtils.getElementsByTagName(prevLog,
+                    "request")) {
                 if (request_e.getAttribute("id").equals(fnPath + id)) {
                     logger.println(DomUtils.serializeNode(request_e));
                     logger.flush();
-                    Element response_e = DomUtils.getElementByTagName(request_e, "response");
-                    Element content_e = DomUtils.getElementByTagName(response_e, "content");
+                    Element response_e = DomUtils.getElementByTagName(
+                            request_e, "response");
+                    Element content_e = DomUtils.getElementByTagName(
+                            response_e, "content");
                     return content_e.getChildNodes();
-//                    return DomUtils.getChildElement(content_e);
+                    // return DomUtils.getChildElement(content_e);
                 }
             }
         }
 
         String logTag = "<request id=\"" + fnPath + id + "\">\n";
         logTag += DomUtils.serializeNode(request) + "\n";
-//        if (logger != null) {
-//            logger.println("<request id=\"" + fnPath + id + "\">");
-//            logger.println(DomUtils.serializeNode(request));
-//        }
+        // if (logger != null) {
+        // logger.println("<request id=\"" + fnPath + id + "\">");
+        // logger.println(DomUtils.serializeNode(request));
+        // }
         long elapsedTime = 0;
         Exception ex = null;
         Element response = null;
@@ -1102,7 +1202,8 @@ public class TECore implements Runnable {
         NodeList nl = request.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && !n.getNamespaceURI().equals(CTL_NS)) {
+            if (n.getNodeType() == Node.ELEMENT_NODE
+                    && !n.getNamespaceURI().equals(CTL_NS)) {
                 parserInstruction = (Element) n;
             }
         }
@@ -1114,7 +1215,8 @@ public class TECore implements Runnable {
             Date after = new Date();
             elapsedTime = after.getTime() - before.getTime();
 
-            // Adding the exchange time in the response as comment the format is the following
+            // Adding the exchange time in the response as comment the format is
+            // the following
             // <!--Response received in [XXX] milliseconds-->
             // the comment is included in the first tag of the response
             Element content = DomUtils.getElementByTagName(response, "content");
@@ -1125,23 +1227,25 @@ public class TECore implements Runnable {
                     if (n.getNodeType() == Node.ELEMENT_NODE) {
                         Document doc;
                         doc = response.getOwnerDocument();
-                        Comment comm = doc.createComment("Response received in [" + elapsedTime + "] milliseconds");
+                        Comment comm = doc
+                                .createComment("Response received in ["
+                                        + elapsedTime + "] milliseconds");
                         n.appendChild(comm);
                     }
                 }
             }
 
             logTag += DomUtils.serializeNode(response) + "\n";
-//            if (logger != null) {
-//                logger.println(DomUtils.serializeNode(response));
-//            }
+            // if (logger != null) {
+            // logger.println(DomUtils.serializeNode(response));
+            // }
         } catch (Exception e) {
             ex = e;
         }
-//        logTag += "<!-- elapsed time :"+elapsedTime+" (milliseconds) -->";
+        // logTag += "<!-- elapsed time :"+elapsedTime+" (milliseconds) -->";
         logTag += "</request>";
         if (logger != null) {
-//            logger.println("</request>");
+            // logger.println("</request>");
             logger.println(logTag);
             logger.flush();
         }
@@ -1161,7 +1265,7 @@ public class TECore implements Runnable {
     }
 
     // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
-//    static public URLConnection build_request(Node xml) throws Exception {
+    // static public URLConnection build_request(Node xml) throws Exception {
     public URLConnection build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
@@ -1182,9 +1286,9 @@ public class TECore implements Runnable {
                 } else if (n.getLocalName().equals("method")) {
                     method = n.getTextContent().toUpperCase();
                 } else if (n.getLocalName().equals("header")) {
-                    headers.add(new String[]{
-                                ((Element) n).getAttribute("name"),
-                                n.getTextContent()});
+                    headers.add(new String[] {
+                            ((Element) n).getAttribute("name"),
+                            n.getTextContent() });
                 } else if (n.getLocalName().equals("param")) {
                     if (sParams.length() > 0) {
                         sParams += "&";
@@ -1273,9 +1377,11 @@ public class TECore implements Runnable {
                         Element currentPart = (Element) parts.get(i);
                         String cid = currentPart.getAttribute("cid");
                         if (cid.indexOf("cid:") != -1) {
-                            cid = cid.substring(cid.indexOf("cid:") + "cid:".length());
+                            cid = cid.substring(cid.indexOf("cid:")
+                                    + "cid:".length());
                         }
-                        String contentType = currentPart.getAttribute("content-type");
+                        String contentType = currentPart
+                                .getAttribute("content-type");
 
                         // Default encodings and content-type
                         if (contentType.equals("application/xml")) {
@@ -1286,9 +1392,11 @@ public class TECore implements Runnable {
                         }
 
                         // Set headers for each part
-                        String partHeaders = newline + prefix + boundary + newline;
+                        String partHeaders = newline + prefix + boundary
+                                + newline;
                         partHeaders += "Content-Type: " + contentType + newline;
-                        partHeaders += "Content-ID: <" + cid + ">" + newline + newline;
+                        partHeaders += "Content-ID: <" + cid + ">" + newline
+                                + newline;
                         writeBytes(contentBytes, partHeaders.getBytes(charset));
 
                         // Get the fileName, if it exists
@@ -1304,7 +1412,9 @@ public class TECore implements Runnable {
                             byte[] fileBytes = new byte[(int) length];
                             int offset = 0;
                             int numRead = 0;
-                            while (offset < fileBytes.length && (numRead = is.read(fileBytes, offset, fileBytes.length - offset)) >= 0) {
+                            while (offset < fileBytes.length
+                                    && (numRead = is.read(fileBytes, offset,
+                                            fileBytes.length - offset)) >= 0) {
                                 offset += numRead;
                             }
                             is.close();
@@ -1314,15 +1424,21 @@ public class TECore implements Runnable {
                         else {
                             // Text
                             if (currentPart.getFirstChild() instanceof Text) {
-                                writeBytes(contentBytes, currentPart.getTextContent().getBytes(charset));
+                                writeBytes(contentBytes, currentPart
+                                        .getTextContent().getBytes(charset));
                             } // XML
                             else {
-                                writeBytes(contentBytes, DomUtils.serializeNode(currentPart.getFirstChild()).getBytes(charset));
+                                writeBytes(
+                                        contentBytes,
+                                        DomUtils.serializeNode(
+                                                currentPart.getFirstChild())
+                                                .getBytes(charset));
                             }
                         }
                     }
 
-                    String endingBoundary = newline + prefix + boundary + prefix + newline;
+                    String endingBoundary = newline + prefix + boundary
+                            + prefix + newline;
                     writeBytes(contentBytes, endingBoundary.getBytes(charset));
 
                     bytes = contentBytes.toByteArray();
@@ -1332,8 +1448,8 @@ public class TECore implements Runnable {
                     mime = "multipart/related; type=\"" + mime
                             + "\"; boundary=\"" + boundary + "\"";
 
-                    //String contentsString = new String(bytes, charset);
-                    //System.out.println("Content-Type: "+mime+"\n"+contentsString);
+                    // String contentsString = new String(bytes, charset);
+                    // System.out.println("Content-Type: "+mime+"\n"+contentsString);
                 }
             }
 
@@ -1342,13 +1458,15 @@ public class TECore implements Runnable {
                 String mid = ((Element) body).getAttribute("mid");
                 if (mid != null && !mid.equals("")) {
                     if (mid.indexOf("mid:") != -1) {
-                        mid = mid.substring(mid.indexOf("mid:") + "mid:".length());
+                        mid = mid.substring(mid.indexOf("mid:")
+                                + "mid:".length());
                     }
                     uc.setRequestProperty("Message-ID", "<" + mid + ">");
                 }
             }
             uc.setRequestProperty("Content-Type", mime);
-            uc.setRequestProperty("Content-Length", Integer.toString(bytes.length));
+            uc.setRequestProperty("Content-Length",
+                    Integer.toString(bytes.length));
 
             // Enter the custom headers (overwrites the defaults if present)
             for (int i = 0; i < headers.size(); i++) {
@@ -1368,7 +1486,7 @@ public class TECore implements Runnable {
          * ((HttpURLConnection) uc).getResponseCode(); String respMess =
          * ((HttpURLConnection) uc).getResponseMessage(); Map respHeaders =
          * ((HttpURLConnection) uc).getHeaderFields();
-         *
+         * 
          * // Construct the HttpResponse (BasicHttpResponse) to send to parsers
          * HttpVersion version = new HttpVersion(1,1); BasicStatusLine
          * statusLine = new BasicStatusLine(version, respCode, respMess);
@@ -1379,7 +1497,7 @@ public class TECore implements Runnable {
          * value = (String) valueList.get(0); if (name == null) continue;
          * resp.addHeader(name, value); } HttpEntity entity = new
          * ByteArrayEntity(respBytes); resp.setEntity(entity);
-         *
+         * 
          * return resp;
          */
         return uc;
@@ -1389,7 +1507,8 @@ public class TECore implements Runnable {
         baos.write(bytes, 0, bytes.length);
     }
 
-    public Element parse(Document parse_instruction, String xsl_version) throws Throwable {
+    public Element parse(Document parse_instruction, String xsl_version)
+            throws Throwable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -1399,7 +1518,8 @@ public class TECore implements Runnable {
         Node content = null;
         Document parser_instruction = null;
 
-        Element parse_element = (Element) parse_instruction.getElementsByTagNameNS(CTL_NS, "parse").item(0);
+        Element parse_element = (Element) parse_instruction
+                .getElementsByTagNameNS(CTL_NS, "parse").item(0);
 
         NodeList children = parse_element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -1408,7 +1528,8 @@ public class TECore implements Runnable {
                 if (e.getNamespaceURI().equals(XSL_NS)
                         && e.getLocalName().equals("output")) {
                     Document doc = db.newDocument();
-                    Element transform = doc.createElementNS(XSL_NS, "transform");
+                    Element transform = doc
+                            .createElementNS(XSL_NS, "transform");
                     transform.setAttribute("version", xsl_version);
                     doc.appendChild(transform);
                     Element output = doc.createElementNS(XSL_NS, "output");
@@ -1470,13 +1591,14 @@ public class TECore implements Runnable {
         return parse(uc, instruction, response_doc);
     }
 
-    public Element parse(URLConnection uc, Node instruction, Document response_doc) throws Throwable {
-//        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//        dbf.setNamespaceAware(true);
-//        DocumentBuilder db = dbf.newDocumentBuilder();
-//
+    public Element parse(URLConnection uc, Node instruction,
+            Document response_doc) throws Throwable {
+        // DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // dbf.setNamespaceAware(true);
+        // DocumentBuilder db = dbf.newDocumentBuilder();
+        //
         Transformer t = TransformerFactory.newInstance().newTransformer();
-//        Document response_doc = db.newDocument();
+        // Document response_doc = db.newDocument();
         Element parser_e = response_doc.createElement("parser");
         Element response_e = response_doc.createElement("response");
         Element content_e = response_doc.createElement("content");
@@ -1487,7 +1609,8 @@ public class TECore implements Runnable {
             } catch (Exception e) {
                 jlogger.log(Level.SEVERE, "parse Error", e);
 
-                parser_e.setTextContent(e.getClass().getName() + ": " + e.getMessage());
+                parser_e.setTextContent(e.getClass().getName() + ": "
+                        + e.getMessage());
             }
         } else {
             Element instruction_e;
@@ -1504,10 +1627,13 @@ public class TECore implements Runnable {
                 instance = parserInstances.get(key);
                 if (instance == null) {
                     try {
-                        TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
-                        instance = Misc.makeInstance(pe.getClassName(), pe.getClassParams(), cl);
+                        TEClassLoader cl = engine.getClassLoader(opts
+                                .getSourcesName());
+                        instance = Misc.makeInstance(pe.getClassName(),
+                                pe.getClassParams(), cl);
                     } catch (Exception e) {
-                        throw new Exception("Can't instantiate parser " + pe.getName(), e);
+                        throw new Exception("Can't instantiate parser "
+                                + pe.getName(), e);
                     }
                     parserInstances.put(key, instance);
                 }
@@ -1515,7 +1641,8 @@ public class TECore implements Runnable {
             Method method = parserMethods.get(key);
             if (method == null) {
                 TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
-                method = Misc.getMethod(pe.getClassName(), pe.getMethod(), cl, 3, 4);
+                method = Misc.getMethod(pe.getClassName(), pe.getMethod(), cl,
+                        3, 4);
                 parserMethods.put(key, method);
             }
             StringWriter swLogger = new StringWriter();
@@ -1533,7 +1660,8 @@ public class TECore implements Runnable {
                 return_object = method.invoke(instance, args);
             } catch (java.lang.reflect.InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                String msg = "Error invoking parser " + pe.getId() + "\n" + cause.getClass().getName();
+                String msg = "Error invoking parser " + pe.getId() + "\n"
+                        + cause.getClass().getName();
                 if (cause.getMessage() != null) {
                     msg += ": " + cause.getMessage();
                 }
@@ -1546,25 +1674,29 @@ public class TECore implements Runnable {
                 t.transform(new DOMSource((Node) return_object), new DOMResult(
                         content_e));
             } else if (return_object != null) {
-                content_e.appendChild(response_doc.createTextNode(return_object.toString()));
+                content_e.appendChild(response_doc.createTextNode(return_object
+                        .toString()));
             }
 
             parser_e.setAttribute("prefix", instruction_e.getPrefix());
             parser_e.setAttribute("local-name", instruction_e.getLocalName());
-            parser_e.setAttribute("namespace-uri", instruction_e.getNamespaceURI());
+            parser_e.setAttribute("namespace-uri",
+                    instruction_e.getNamespaceURI());
             parser_e.setTextContent(swLogger.toString());
         }
         response_e.appendChild(parser_e);
         response_e.appendChild(content_e);
-//        response_doc.appendChild(response_e);
+        // response_doc.appendChild(response_e);
         return response_e;
     }
 
     public Node message(String message, String id) {
-        String formatted_message = indent + message.trim().replaceAll("\n", "\n" + indent);
+        String formatted_message = indent
+                + message.trim().replaceAll("\n", "\n" + indent);
         out.println(formatted_message);
         if (logger != null) {
-            logger.println("<message id=\"" + id + "\"><![CDATA[" + message + "]]></message>");
+            logger.println("<message id=\"" + id + "\"><![CDATA[" + message
+                    + "]]></message>");
         }
         return null;
     }
@@ -1574,15 +1706,17 @@ public class TECore implements Runnable {
      * reports the results of processing the submitted form. The results
      * document is produced in (web context) or
      * {@link SwingForm.CustomFormView#submitData}.
-     *
-     * @param ctlForm a DOM Document representing a &lt;ctl:form&gt; element.
+     * 
+     * @param ctlForm
+     *            a DOM Document representing a &lt;ctl:form&gt; element.
      * @throws java.lang.Exception
      * @return a DOM Document containing the resulting &lt;values&gt; element as
-     * the document element.
+     *         the document element.
      */
     public Node form(Document ctlForm, String id) throws Exception {
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
-            for (Element e : DomUtils.getElementsByTagName(prevLog, "formresults")) {
+            for (Element e : DomUtils.getElementsByTagName(prevLog,
+                    "formresults")) {
                 if (e.getAttribute("id").equals(fnPath + id)) {
                     logger.println(DomUtils.serializeNode(e));
                     logger.flush();
@@ -1592,7 +1726,8 @@ public class TECore implements Runnable {
         }
 
         String name = Thread.currentThread().getName();
-        Element form = (Element) ctlForm.getElementsByTagNameNS(CTL_NS, "form").item(0);
+        Element form = (Element) ctlForm.getElementsByTagNameNS(CTL_NS, "form")
+                .item(0);
 
         NamedNodeMap attrs = form.getAttributes();
         Attr attr = (Attr) attrs.getNamedItem("name");
@@ -1600,7 +1735,8 @@ public class TECore implements Runnable {
             name = attr.getValue();
         }
 
-        for (Element parseInstruction : DomUtils.getElementsByTagNameNS(form, CTL_NS, "parse")) {
+        for (Element parseInstruction : DomUtils.getElementsByTagNameNS(form,
+                CTL_NS, "parse")) {
             String key = parseInstruction.getAttribute("file");
             formParsers.put(key, DomUtils.getChildElement(parseInstruction));
         }
@@ -1608,7 +1744,8 @@ public class TECore implements Runnable {
         // Determine if there are file widgets or not
         boolean hasFiles = false;
         List<Element> inputs = DomUtils.getElementsByTagName(form, "input");
-        inputs.addAll(DomUtils.getElementsByTagNameNS(form, "http://www.w3.org/1999/xhtml", "input"));
+        inputs.addAll(DomUtils.getElementsByTagNameNS(form,
+                "http://www.w3.org/1999/xhtml", "input"));
         for (Element input : inputs) {
             if (input.getAttribute("type").toLowerCase().equals("file")) {
                 hasFiles = true;
@@ -1628,20 +1765,27 @@ public class TECore implements Runnable {
         XsltTransformer xt = engine.getFormExecutable().load();
         xt.setSource(new DOMSource(ctlForm));
         xt.setParameter(new QName("title"), new XdmAtomicValue(name));
-        xt.setParameter(new QName("web"), new XdmAtomicValue(web ? "yes" : "no"));
-        xt.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes" : "no"));
-        xt.setParameter(new QName("thread"), new XdmAtomicValue(Long.toString(Thread.currentThread().getId())));
+        xt.setParameter(new QName("web"),
+                new XdmAtomicValue(web ? "yes" : "no"));
+        xt.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes"
+                : "no"));
+        xt.setParameter(
+                new QName("thread"),
+                new XdmAtomicValue(Long
+                        .toString(Thread.currentThread().getId())));
         xt.setParameter(new QName("method"), new XdmAtomicValue(method));
-        xt.setParameter(new QName("base"), new XdmAtomicValue(opts.getBaseURI()));
+        xt.setParameter(new QName("base"),
+                new XdmAtomicValue(opts.getBaseURI()));
         xt.setParameter(new QName("action"), new XdmAtomicValue(testServletURL));
         StringWriter sw = new StringWriter();
         Serializer serializer = new Serializer();
         serializer.setOutputWriter(sw);
-        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION, "yes");
+        serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION,
+                "yes");
         xt.setDestination(serializer);
         xt.transform();
         formHtml = sw.toString();
-//System.out.println(this.formHtml);
+        // System.out.println(this.formHtml);
 
         if (!web) {
             int width = 700;
@@ -1666,7 +1810,7 @@ public class TECore implements Runnable {
         }
 
         Document doc = formResults;
-//        System.out.println(DomUtils.serializeNode(doc));
+        // System.out.println(DomUtils.serializeNode(doc));
         formResults = null;
         formParsers.clear();
 
@@ -1705,7 +1849,7 @@ public class TECore implements Runnable {
 
     public void run() {
         threadComplete = false;
-//        activeThread = Thread.currentThread();
+        // activeThread = Thread.currentThread();
         try {
             opts.logDir.mkdir();
             threadOutput = new ByteArrayOutputStream();
@@ -1715,26 +1859,27 @@ public class TECore implements Runnable {
         } catch (Exception e) {
             jlogger.log(Level.SEVERE, "", e);
         }
-//        activeThread = null;
+        // activeThread = null;
         threadComplete = true;
     }
 
     public File getLogDir() {
         return opts.getLogDir();
     }
-//
-//    public void setLogDir(File logDir) {
-//        this.logDir = logDir;
-//    }
-//
-//    public int getMode() {
-//        return mode;
-//    }
-//
-//    public void setMode(int mode) {
-//        this.mode = mode;
-//    }
-//
+
+    //
+    // public void setLogDir(File logDir) {
+    // this.logDir = logDir;
+    // }
+    //
+    // public int getMode() {
+    // return mode;
+    // }
+    //
+    // public void setMode(int mode) {
+    // this.mode = mode;
+    // }
+    //
 
     public PrintStream getOut() {
         return out;
@@ -1787,12 +1932,12 @@ public class TECore implements Runnable {
     public void setTestServletURL(String testServletURL) {
         this.testServletURL = testServletURL;
     }
-//
-//    public String getSourcesName() {
-//        return sourcesName;
-//    }
-//
-//    public String getSessionId() {
-//        return sessionId;
-//    }
+    //
+    // public String getSourcesName() {
+    // return sourcesName;
+    // }
+    //
+    // public String getSessionId() {
+    // return sessionId;
+    // }
 }

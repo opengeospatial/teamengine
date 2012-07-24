@@ -32,8 +32,8 @@ import com.occamlab.te.util.LogUtils;
 
 /**
  * 
- * The main class for the TEAM Engine command line interface. 
- *
+ * The main class for the TEAM Engine command line interface.
+ * 
  */
 public class Test {
     public static final int TEST_MODE = 0;
@@ -51,35 +51,52 @@ public class Test {
     /**
      * Displays startup command syntax
      * 
-     * @param cmd Name of the startup command (i.e. test.bat or test.sh) 
+     * @param cmd
+     *            Name of the startup command (i.e. test.bat or test.sh)
      */
     static void syntax(String cmd) {
         System.out.println();
         System.out.println("Test mode:");
         System.out.println("  Use to start a test session.\n");
-        System.out.println("  " + cmd + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
-        System.out.println("    [-workdir=dir] [-logdir=dir] [-session=session] [-base=baseURI]");
-        System.out.println("    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...\n");
+        System.out
+                .println("  "
+                        + cmd
+                        + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
+        System.out
+                .println("    [-workdir=dir] [-logdir=dir] [-session=session] [-base=baseURI]");
+        System.out
+                .println("    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...\n");
         System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
         System.out.println("Resume mode:");
-        System.out.println("  Use to resume a test session that was interrupted before completion.\n");
-        System.out.println("  " + cmd + " -mode=resume -logdir=dir -session=session\n");
+        System.out
+                .println("  Use to resume a test session that was interrupted before completion.\n");
+        System.out.println("  " + cmd
+                + " -mode=resume -logdir=dir -session=session\n");
         System.out.println("Retest mode:");
         System.out.println("  Use to reexecute individual tests.\n");
-        System.out.println("  " + cmd + " -mode=retest -logdir=dir -session=session testpath1 [testpath2] ...\n");
+        System.out
+                .println("  "
+                        + cmd
+                        + " -mode=retest -logdir=dir -session=session testpath1 [testpath2] ...\n");
         System.out.println("Doc mode:");
         System.out.println("  Use to generate documentation of tests.\n");
-        System.out.println("  " + cmd + " -mode=doc -source=<main ctl file> [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
+        System.out
+                .println("  "
+                        + cmd
+                        + " -mode=doc -source=<main ctl file> [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
         System.out.println("PPLogs mode:");
-        System.out.println("  Pretty Print Logs mode is used to generate a readable HTML report of execution.\n");
-        System.out.println("  " + cmd + " -mode=pplogs -logdir=<dir of a session log>  \n");        
+        System.out
+                .println("  Pretty Print Logs mode is used to generate a readable HTML report of execution.\n");
+        System.out.println("  " + cmd
+                + " -mode=pplogs -logdir=<dir of a session log>  \n");
     }
 
     /**
      * The main TEAM Engine command line interface.
      * 
      * 
-     * @param args Command line arguments
+     * @param args
+     *            Command line arguments
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
@@ -103,7 +120,8 @@ public class Test {
                     setupOpts.addSource(f);
                     sourcesSupplied = true;
                 } else {
-                    System.out.println("Error: Can't find source \"" + args[i].substring(8) + "\".");
+                    System.out.println("Error: Can't find source \""
+                            + args[i].substring(8) + "\".");
                     return;
                 }
             } else if (args[i].startsWith("-workdir=")) {
@@ -111,7 +129,7 @@ public class Test {
             } else if (args[i].startsWith("-logdir=")) {
                 logDir = new File(args[i].substring(8));
             } else if (args[i].startsWith("-session=")) {
-                session = args[i].substring(9); 
+                session = args[i].substring(9);
             } else if (args[i].startsWith("-base=")) {
                 runOpts.setBaseURI(args[i].substring(6));
             } else if (args[i].startsWith("-test=")) {
@@ -120,7 +138,7 @@ public class Test {
                 runOpts.setSuiteName(args[i].substring(7));
             } else if (args[i].startsWith("-profile=")) {
                 runOpts.addProfile(args[i].substring(9));
-            } else if(args[i].startsWith("@")){
+            } else if (args[i].startsWith("@")) {
                 runOpts.addParam(args[i].substring(1));
             } else if (args[i].equals("-mode=test")) {
                 mode = TEST_MODE;
@@ -132,8 +150,8 @@ public class Test {
                 mode = DOC_MODE;
             } else if (args[i].equals("-mode=check")) {
                 mode = CHECK_MODE;
-            } else if (args[i].equals("-mode=pplogs")){
-            	mode = PRETTYLOG_MODE;
+            } else if (args[i].equals("-mode=pplogs")) {
+                mode = PRETTYLOG_MODE;
             } else if (args[i].startsWith("-mode=")) {
                 System.out.println("Error: Invalid mode.");
                 return;
@@ -143,26 +161,31 @@ public class Test {
                 if (mode == RETEST_MODE) {
                     runOpts.addTestPath(args[i]);
                 } else {
-                    System.out.println("Unrecognized parameter \"" + args[i] + "\"");
+                    System.out.println("Unrecognized parameter \"" + args[i]
+                            + "\"");
                 }
             } else {
-                System.out.println("Unrecognized parameter \"" + args[i] + "\"");
+                System.out
+                        .println("Unrecognized parameter \"" + args[i] + "\"");
             }
         }
-        
+
         // Set work dir
         if (workDir == null) {
             String prop = System.getProperty("team.workdir");
             if (prop == null) {
-                workDir = new File(System.getProperty("java.io.tmpdir"), "te_work");
+                workDir = new File(System.getProperty("java.io.tmpdir"),
+                        "te_work");
                 workDir.mkdirs();
-                System.out.println("No working directory supplied.  Using " + workDir.toString());
+                System.out.println("No working directory supplied.  Using "
+                        + workDir.toString());
             } else {
                 workDir = new File(prop);
             }
         }
         if (!workDir.isDirectory()) {
-            System.out.println("Error: Working directory " + workDir.toString() + " does not exist.");
+            System.out.println("Error: Working directory " + workDir.toString()
+                    + " does not exist.");
             return;
         }
         setupOpts.setWorkDir(workDir);
@@ -177,7 +200,8 @@ public class Test {
         }
         if (logDir != null) {
             if (!logDir.isDirectory()) {
-                System.out.println("Error: Log directory " + logDir.toString() + " does not exist.");
+                System.out.println("Error: Log directory " + logDir.toString()
+                        + " does not exist.");
                 return;
             }
         }
@@ -185,21 +209,22 @@ public class Test {
 
         // Set mode
         runOpts.setMode(mode);
-        
+
         // Syntax checks
-        if ((mode == TEST_MODE && !sourcesSupplied) ||
-            (mode == RETEST_MODE && (logDir == null || session == null)) ||
-            (mode == RESUME_MODE && (logDir == null || session == null))
-            ) {
+        if ((mode == TEST_MODE && !sourcesSupplied)
+                || (mode == RETEST_MODE && (logDir == null || session == null))
+                || (mode == RESUME_MODE && (logDir == null || session == null))) {
             syntax(cmd);
             return;
         }
         if (runOpts.getProfiles().size() > 0 && logDir == null) {
-            System.out.println("Error: A -logdir parameter is required for testing profiles");
+            System.out
+                    .println("Error: A -logdir parameter is required for testing profiles");
             return;
         }
         if (mode == PRETTYLOG_MODE && logDir == null) {
-            System.out.println("Error: A -logdir parameter is required to create report");
+            System.out
+                    .println("Error: A -logdir parameter is required to create report");
             return;
         }
 
@@ -217,7 +242,7 @@ public class Test {
         runOpts.setSessionId(session);
 
         Thread.currentThread().setName("TEAM Engine");
-        
+
         Index masterIndex;
         File indexFile = null;
         if (logDir != null && session != null) {
@@ -226,24 +251,34 @@ public class Test {
         }
 
         if (mode == DOC_MODE) {
-        	ClassLoader cl = Thread.currentThread().getContextClassLoader();           
-        	DocumentationHelper docCode= new DocumentationHelper(cl.getResource("com/occamlab/te/PseudoCTLDocumentation.xsl"));
-        	File html_output_documentation_file=new File(workDir.getAbsolutePath()+File.separator+"documentation.html");
-    		if (html_output_documentation_file.exists())
-    			throw new Exception("Error: Documentation file already exists, check the file " + html_output_documentation_file.getAbsolutePath() + " ");
-        	
-        	//docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(),runOpts.getSuiteName(),System.out);
-        	docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(),new FileOutputStream(html_output_documentation_file));
-        	System.out.println("Test documentation file \""+html_output_documentation_file.getAbsolutePath()+"\" created!");
-        	return;
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            DocumentationHelper docCode = new DocumentationHelper(
+                    cl.getResource("com/occamlab/te/PseudoCTLDocumentation.xsl"));
+            File html_output_documentation_file = new File(
+                    workDir.getAbsolutePath() + File.separator
+                            + "documentation.html");
+            if (html_output_documentation_file.exists())
+                throw new Exception(
+                        "Error: Documentation file already exists, check the file "
+                                + html_output_documentation_file
+                                        .getAbsolutePath() + " ");
+
+            // docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(),runOpts.getSuiteName(),System.out);
+            docCode.generateDocumentation(setupOpts.getSources().get(0)
+                    .getAbsolutePath(), new FileOutputStream(
+                    html_output_documentation_file));
+            System.out.println("Test documentation file \""
+                    + html_output_documentation_file.getAbsolutePath()
+                    + "\" created!");
+            return;
         }
-        
 
         if (mode == PRETTYLOG_MODE) {
-        	ClassLoader cl = Thread.currentThread().getContextClassLoader();           
-        	DocumentationHelper docLogs= new DocumentationHelper(cl.getResource("com/occamlab/te/test_report_html.xsl"));
-        	docLogs.prettyPrintsReport(logDir);        	
-        	return;
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            DocumentationHelper docLogs = new DocumentationHelper(
+                    cl.getResource("com/occamlab/te/test_report_html.xsl"));
+            docLogs.prettyPrintsReport(logDir);
+            return;
         }
         if (mode == TEST_MODE || mode == CHECK_MODE) {
             masterIndex = Generator.generateXsl(setupOpts);
@@ -252,28 +287,29 @@ public class Test {
             }
         } else {
             if (!indexFile.canRead()) {
-              System.out.println("Error: Can't read index file.");
-              return;
+                System.out.println("Error: Can't read index file.");
+                return;
             }
             masterIndex = new Index(indexFile);
             if (masterIndex.outOfDate()) {
-                System.out.println("Warning: Scripts have changed since this session was first executed.");
+                System.out
+                        .println("Warning: Scripts have changed since this session was first executed.");
             }
         }
 
         masterIndex.setElements(null);
-        
-        TEClassLoader cl = new TEClassLoader(null); 
+
+        TEClassLoader cl = new TEClassLoader(null);
         Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
-        
+
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
             engine.preload(masterIndex, setupOpts.getSourcesName());
         }
-        
+
         if (mode != CHECK_MODE) {
-        	TECore core = new TECore(engine, masterIndex, runOpts);
+            TECore core = new TECore(engine, masterIndex, runOpts);
             core.execute();
         }
-       
+
     }
 }

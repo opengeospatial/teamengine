@@ -42,7 +42,8 @@ public class TeErrorListener implements ErrorListener {
     private int ErrorCount = 0;
     private int WarningCount = 0;
     private boolean active = true;
-    private static Logger logger = Logger.getLogger("com.occamlab.te.TeErrorListener");
+    private static Logger logger = Logger
+            .getLogger("com.occamlab.te.TeErrorListener");
 
     public TeErrorListener() {
     }
@@ -62,11 +63,12 @@ public class TeErrorListener implements ErrorListener {
     private void error(String type, TransformerException exception) {
         if (scriptChars == null) {
             if (active) {
-                System.err.println(type + ": " + exception.getMessageAndLocation());
+                System.err.println(type + ": "
+                        + exception.getMessageAndLocation());
             }
             return;
         }
-        
+
         try {
             String systemId = exception.getLocator().getSystemId();
             BufferedReader in;
@@ -104,7 +106,7 @@ public class TeErrorListener implements ErrorListener {
                     + " in intermediate stylesheet"
                     + exception.getLocationAsString());
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"",e);
+            logger.log(Level.SEVERE, "", e);
 
             System.err.println(type + ": " + exception.getMessageAndLocation());
         }

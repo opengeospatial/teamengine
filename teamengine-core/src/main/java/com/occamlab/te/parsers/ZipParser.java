@@ -27,10 +27,10 @@ import com.occamlab.te.util.Utils;
  * Parses a zip file input by extracting the contents into the directory
  * specified by the value of the <code>java.io.tmpdir</code> system property.
  * The resulting manifest is structured as follows:
- *
+ * 
  * <ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl"> <ctl:file-entry
  * full-path="${java.io.tmpdir}/dir/doc.kml" size="2048" /> </ctl:manifest>
- *
+ * 
  * @author jparrpearson
  */
 public class ZipParser {
@@ -47,11 +47,12 @@ public class ZipParser {
             { "txt", "text/plain" }, { "jpg", "image/jpeg" },
             { "jpeg", "image/jpeg" }, { "gif", "image/gif" },
             { "png", "image/png" } };
-     private static Logger jlogger = Logger.getLogger("com.occamlab.te.parsers.ZipParser");
+    private static Logger jlogger = Logger
+            .getLogger("com.occamlab.te.parsers.ZipParser");
 
     /**
      * Returns the mime media type value for the given extension
-     *
+     * 
      * @param ext
      *            the filename extension to lookup
      * @return String the mime type for the given extension
@@ -78,7 +79,7 @@ public class ZipParser {
      * Parses the entity (a ZIP archive) obtained in response to submitting a
      * request to some URL. The resulting manifest is an XML document with
      * <ctl:manifest> as the document element.
-     *
+     * 
      * @param resp
      *            the response to parse
      * @param instruction
@@ -89,12 +90,11 @@ public class ZipParser {
      * @return a DOM Document representing the manifest of items in the archive.
      * @throws Throwable
      */
-/*
-    public static Document parse(HttpResponse resp, Element instruction,
-            PrintWriter logger) throws Throwable {
-        return parse(resp.getEntity().getContent(), instruction, logger);
-    }
-*/
+    /*
+     * public static Document parse(HttpResponse resp, Element instruction,
+     * PrintWriter logger) throws Throwable { return
+     * parse(resp.getEntity().getContent(), instruction, logger); }
+     */
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Throwable {
         return parse(uc.getInputStream(), instruction, logger);
@@ -157,8 +157,8 @@ public class ZipParser {
 
             // Add the file information to the document
             Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-            fileEntry.setAttribute("full-path", outFile.getPath().replace('\\',
-                    '/'));
+            fileEntry.setAttribute("full-path",
+                    outFile.getPath().replace('\\', '/'));
             fileEntry.setAttribute("media-type", mediaType);
             fileEntry.setAttribute("size", String.valueOf(size));
             root.appendChild(fileEntry);
@@ -171,9 +171,10 @@ public class ZipParser {
     }
 
     /**
-     * Extracts the local Zip file and saves to the working directory. The resulting
-     * manifest is an XML document with <ctl:manifest> as the document element.
-     *
+     * Extracts the local Zip file and saves to the working directory. The
+     * resulting manifest is an XML document with <ctl:manifest> as the document
+     * element.
+     * 
      * @param path
      *            the full path to the local Zip file
      * @param instruction
@@ -181,21 +182,21 @@ public class ZipParser {
      *            this parser
      * @return a DOM Document representing the manifest of items in the archive.
      */
-    public Document saveZipFile(String filepath, Document instruction) throws Exception {
+    public Document saveZipFile(String filepath, Document instruction)
+            throws Exception {
 
-	// Get a connection to the Zip file
-	FileInputStream is = null;
+        // Get a connection to the Zip file
+        FileInputStream is = null;
         ZipInputStream zis = null;
-	try {
-		is = new FileInputStream(filepath);
-		zis = new ZipInputStream(is);
-	}
-	catch (Exception e) {
-        jlogger.log(Level.SEVERE,"saveZipFile",e);
+        try {
+            is = new FileInputStream(filepath);
+            zis = new ZipInputStream(is);
+        } catch (Exception e) {
+            jlogger.log(Level.SEVERE, "saveZipFile", e);
 
-		System.out.println("ERROR: "+e.getMessage());
-		return null;
-	}
+            System.out.println("ERROR: " + e.getMessage());
+            return null;
+        }
 
         // Create the response element, <ctl:manifest>
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -222,7 +223,7 @@ public class ZipParser {
         // Unzip the file to a temporary location (java temp)
         ZipEntry entry = null;
         while ((entry = zis.getNextEntry()) != null) {
-            System.out.println("File: "+ entry.getName());
+            System.out.println("File: " + entry.getName());
             // Open the output file and get info from it
             String filename = entry.getName();
             long size = entry.getSize();
@@ -249,8 +250,8 @@ public class ZipParser {
 
             // Add the file information to the document
             Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
-            fileEntry.setAttribute("full-path", outFile.getPath().replace('\\',
-                    '/'));
+            fileEntry.setAttribute("full-path",
+                    outFile.getPath().replace('\\', '/'));
             fileEntry.setAttribute("media-type", mediaType);
             fileEntry.setAttribute("size", String.valueOf(size));
             root.appendChild(fileEntry);

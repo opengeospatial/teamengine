@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class HttpURLConnectionCopy extends HttpURLConnection {
     HttpURLConnection uc = null;
-    
+
     public HttpURLConnectionCopy(HttpURLConnection uc) {
         super(null);
         this.uc = uc;
@@ -104,7 +104,8 @@ public class HttpURLConnectionCopy extends HttpURLConnection {
     }
 
     @Override
-    public Object getContent(@SuppressWarnings("rawtypes") Class[] classes) throws IOException {
+    public Object getContent(@SuppressWarnings("rawtypes") Class[] classes)
+            throws IOException {
         return uc.getContent(classes);
     }
 
@@ -181,7 +182,7 @@ public class HttpURLConnectionCopy extends HttpURLConnection {
     @Override
     public OutputStream getOutputStream() throws IOException {
         return uc.getOutputStream();
-        
+
     }
 
     @Override

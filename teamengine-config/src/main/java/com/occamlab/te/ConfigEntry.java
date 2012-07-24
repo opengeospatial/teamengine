@@ -34,12 +34,14 @@ public final class ConfigEntry {
     }
 
     void readConfigFile(File file) throws Exception {
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        DocumentBuilder db = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder();
         Document doc = db.parse(file);
         Element config = doc.getDocumentElement();
         Element organizationEl = getElementByTagName(config, "organization");
         if (organizationEl != null) {
-            organization = getElementByTagName(organizationEl, "name").getTextContent();
+            organization = getElementByTagName(organizationEl, "name")
+                    .getTextContent();
         }
         Element standardEl = getElementByTagName(config, "standard");
         if (standardEl != null) {
@@ -55,9 +57,12 @@ public final class ConfigEntry {
         }
         Element suiteEl = getElementByTagName(config, "suite");
         if (suiteEl != null) {
-            String localName = getElementByTagName(suiteEl, "local-name").getTextContent();
-            String namespaceUri = getElementByTagName(suiteEl, "namespace-uri").getTextContent();
-            String prefix = getElementByTagName(suiteEl, "prefix").getTextContent();
+            String localName = getElementByTagName(suiteEl, "local-name")
+                    .getTextContent();
+            String namespaceUri = getElementByTagName(suiteEl, "namespace-uri")
+                    .getTextContent();
+            String prefix = getElementByTagName(suiteEl, "prefix")
+                    .getTextContent();
             suite = new QName(namespaceUri, localName, prefix);
             Element titleEl = getElementByTagName(suiteEl, "title");
             if (titleEl != null) {
@@ -83,23 +88,30 @@ public final class ConfigEntry {
         NodeList profileNodes = config.getElementsByTagName("profile");
         for (int i = 0; i < profileNodes.getLength(); i++) {
             Element profileEl = (Element) profileNodes.item(i);
-            String localName = getElementByTagName(profileEl, "local-name").getTextContent();
-            String namespaceUri = getElementByTagName(profileEl, "namespace-uri").getTextContent();
-            String prefix = getElementByTagName(profileEl, "prefix").getTextContent();
+            String localName = getElementByTagName(profileEl, "local-name")
+                    .getTextContent();
+            String namespaceUri = getElementByTagName(profileEl,
+                    "namespace-uri").getTextContent();
+            String prefix = getElementByTagName(profileEl, "prefix")
+                    .getTextContent();
             profiles.add(new QName(namespaceUri, localName, prefix));
             Element titleEl = getElementByTagName(profileEl, "title");
             profileTitles.add(titleEl == null ? "" : titleEl.getTextContent());
-            Element descriptionEl = getElementByTagName(profileEl, "description");
-            profileDescriptions.add(descriptionEl == null ? "" : descriptionEl.getTextContent());
+            Element descriptionEl = getElementByTagName(profileEl,
+                    "description");
+            profileDescriptions.add(descriptionEl == null ? "" : descriptionEl
+                    .getTextContent());
         }
         NodeList sourceNodes = config.getElementsByTagName("source");
         for (int i = 0; i < sourceNodes.getLength(); i++) {
             Element sourceEl = (Element) sourceNodes.item(i);
-            sources.add(new File(file.getParentFile(), sourceEl.getTextContent()));
+            sources.add(new File(file.getParentFile(), sourceEl
+                    .getTextContent()));
         }
         Element resourcesEl = getElementByTagName(config, "resources");
         if (resourcesEl != null) {
-            resources = new File(file.getParentFile(), resourcesEl.getTextContent());
+            resources = new File(file.getParentFile(),
+                    resourcesEl.getTextContent());
         }
         webdir = file.getParentFile().getName();
         Element webEl = getElementByTagName(config, "web");

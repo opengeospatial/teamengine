@@ -37,16 +37,19 @@ public class TEClassLoader extends ClassLoader {
     File resourcesDir;
     ClassLoader cl;
     HashSet<String> registeredClasses;
-    private static Logger logger = Logger.getLogger("com.occamlab.te.TEClassLoader");
-    
+    private static Logger logger = Logger
+            .getLogger("com.occamlab.te.TEClassLoader");
+
     public TEClassLoader(File resourcesDir) {
         this.resourcesDir = resourcesDir;
         cl = Thread.currentThread().getContextClassLoader();
         registeredClasses = new HashSet<String>();
         registeredClasses.add("com.occamlab.te.parsers.HTTPParser");
-        registeredClasses.add("com.occamlab.te.parsers.SchematronValidatingParser");
+        registeredClasses
+                .add("com.occamlab.te.parsers.SchematronValidatingParser");
         registeredClasses.add("com.occamlab.te.parsers.XMLValidatingParser");
-        registeredClasses.add("com.occamlab.te.parsers.XSLTransformationParser");
+        registeredClasses
+                .add("com.occamlab.te.parsers.XSLTransformationParser");
     }
 
     public URL getResource(String name) {
@@ -55,7 +58,7 @@ public class TEClassLoader extends ClassLoader {
             try {
                 return f.toURI().toURL();
             } catch (MalformedURLException e) {
-                logger.log(Level.SEVERE,"getResource",e);
+                logger.log(Level.SEVERE, "getResource", e);
             }
         }
         return cl.getResource(name);
@@ -87,18 +90,18 @@ public class TEClassLoader extends ClassLoader {
         }
         return resources;
     }
-    
-//    public void registerClass(String name) {
-//        if (!registeredClasses.contains(name)) {
-//            registeredClasses.add(name);
-//        }
-//    }
-    
+
+    // public void registerClass(String name) {
+    // if (!registeredClasses.contains(name)) {
+    // registeredClasses.add(name);
+    // }
+    // }
+
     private Class<?> readClass(String name) {
         String filename = name.replace('.', '/') + ".class";
         try {
             InputStream in = getResourceAsStream(filename);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024); 
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
             int i = in.read();
             while (i >= 0) {
                 baos.write(i);
@@ -107,12 +110,13 @@ public class TEClassLoader extends ClassLoader {
             in.close();
             return defineClass(name, baos.toByteArray(), 0, baos.size());
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"readClass",e);
+            logger.log(Level.SEVERE, "readClass", e);
             return null;
         }
     }
 
-    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    public Class<?> loadClass(String name, boolean resolve)
+            throws ClassNotFoundException {
         Class<?> c = findLoadedClass(name);
         if (c == null) {
             for (String registeredClass : registeredClasses) {

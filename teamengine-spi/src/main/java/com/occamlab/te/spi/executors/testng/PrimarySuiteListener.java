@@ -21,10 +21,10 @@ class PrimarySuiteListener implements ISuiteListener {
      * Constructs the listener. The test run arguments are expected to be
      * contained in an XML properties document. If a property has multiple
      * values they must be separated with a comma.
-     *
-     * @param testRunArgs A DOM Document node that contains a set of XML
-     * properties.
-     *
+     * 
+     * @param testRunArgs
+     *            A DOM Document node that contains a set of XML properties.
+     * 
      * @see java.util.Properties#loadFromXML(java.io.InputStream) loadFromXML
      */
     PrimarySuiteListener(Document testRunArgs) {

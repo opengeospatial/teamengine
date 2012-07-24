@@ -11,10 +11,10 @@ import org.testng.xml.XmlSuite;
 /**
  * A basic XML reporter that suppresses stack traces and writes the test results
  * to a single file (testng-results.xml) in the specified output directory.
- *
+ * 
  * @see <a
- * href="http://testng.org/doc/documentation-main.html#logging-xml-reports">
- * TestNG documentation, 6.2.5</a>
+ *      href="http://testng.org/doc/documentation-main.html#logging-xml-reports">
+ *      TestNG documentation, 6.2.5</a>
  */
 public final class BasicXMLReporter implements IReporter {
 
@@ -32,14 +32,14 @@ public final class BasicXMLReporter implements IReporter {
 
     XMLReporter createCustomXMLReporter() {
         // config data syntax: "class-name:prop1=val1,prop2=val2"
-        StringBuilder xmlReporterConf =
-                new StringBuilder(XMLReporter.class.getName());
+        StringBuilder xmlReporterConf = new StringBuilder(
+                XMLReporter.class.getName());
         xmlReporterConf.append(":");
-        xmlReporterConf.append("stackTraceOutputMethod=").append(
-                XMLReporterConfig.STACKTRACE_NONE).append(",");
+        xmlReporterConf.append("stackTraceOutputMethod=")
+                .append(XMLReporterConfig.STACKTRACE_NONE).append(",");
         xmlReporterConf.append("splitClassAndPackageNames=true");
-        ReporterConfig reporterConf = ReporterConfig.deserialize(
-                xmlReporterConf.toString());
+        ReporterConfig reporterConf = ReporterConfig
+                .deserialize(xmlReporterConf.toString());
         return (XMLReporter) reporterConf.newReporterInstance();
     }
 }

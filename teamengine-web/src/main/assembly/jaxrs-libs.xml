@@ -10,7 +10,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
-	  <includes>
+      <includes>
         <include>com.sun.jersey:jersey-*</include>
       </includes>
       <scope>runtime</scope>
@@ -19,11 +19,11 @@
       <useTransitiveFiltering>true</useTransitiveFiltering>
     </dependencySet>
     <dependencySet>
-	  <includes>
-	    <include>javax.ws.rs:jsr311*</include>
+      <includes>
+        <include>javax.ws.rs:jsr311*</include>
       </includes>
-	  <scope>provided</scope>
-	  <useProjectArtifact>false</useProjectArtifact>
+      <scope>provided</scope>
+      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
 </assembly>

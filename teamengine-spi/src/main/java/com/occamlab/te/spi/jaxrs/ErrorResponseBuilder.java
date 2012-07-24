@@ -6,9 +6,9 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 /**
  * Creates an error response that includes an entity body describing the error
  * condition. The entity conforms to the XHTML Basic 1.1 schema.
- *
+ * 
  * @see <a href="http://www.w3.org/TR/xhtml-basic/">XHTML Basic (W3C
- * Recommendation)</a>
+ *      Recommendation)</a>
  */
 public class ErrorResponseBuilder {
 
@@ -16,11 +16,12 @@ public class ErrorResponseBuilder {
      * Builds a response message that indicates some kind of error has occurred.
      * The error message is included as the content of the xhtml:body/xhtml:p
      * element.
-     *
-     * @param statusCode The relevant HTTP error code (4xx, 5xx).
-     * @param msg A brief description of the error condition.
-     * @return A
-     * <code>Response</code> instance containing an XHTML entity.
+     * 
+     * @param statusCode
+     *            The relevant HTTP error code (4xx, 5xx).
+     * @param msg
+     *            A brief description of the error condition.
+     * @return A <code>Response</code> instance containing an XHTML entity.
      */
     public Response buildErrorResponse(int statusCode, String msg) {
         ResponseBuilder rspBuilder = Response.status(statusCode);

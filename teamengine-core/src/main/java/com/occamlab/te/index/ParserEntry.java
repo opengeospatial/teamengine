@@ -21,7 +21,7 @@ public class ParserEntry extends IndexEntry {
 
     ParserEntry(Element parser) throws Exception {
         super(parser);
-        Element e = (Element)parser.getElementsByTagName("java").item(0);
+        Element e = (Element) parser.getElementsByTagName("java").item(0);
         if (e != null) {
             setClassName(e.getAttribute("class"));
             setMethod(e.getAttribute("method"));
@@ -31,8 +31,8 @@ public class ParserEntry extends IndexEntry {
                 setInitialized(true);
                 classParams = new ArrayList<Node>();
                 for (int i = 0; i < nl.getLength(); i++) {
-                    Element el = (Element)nl.item(i);
-//                    System.out.println(DomUtils.serializeNode(el));
+                    Element el = (Element) nl.item(i);
+                    // System.out.println(DomUtils.serializeNode(el));
                     Node value = null;
                     NodeList children = el.getChildNodes();
                     for (int j = 0; j < children.getLength(); j++) {
@@ -54,26 +54,32 @@ public class ParserEntry extends IndexEntry {
     public String getClassName() {
         return className;
     }
+
     public void setClassName(String className) {
         this.className = className;
     }
+
     public boolean isInitialized() {
         return initialized;
     }
+
     public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
+
     public String getMethod() {
         return method;
     }
+
     public void setMethod(String method) {
         this.method = method;
     }
+
     public List<Node> getClassParams() {
         return classParams;
     }
+
     public void setClassParams(List<Node> classParams) {
         this.classParams = classParams;
     }
 }
-

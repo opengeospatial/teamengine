@@ -27,17 +27,15 @@ import java.io.PrintWriter;
 import org.w3c.dom.Element;
 
 /**
- * Ignores the request information and returns <code>null</code>. This
- * request parser may be used to skip a request for some reason.
- *
+ * Ignores the request information and returns <code>null</code>. This request
+ * parser may be used to skip a request for some reason.
+ * 
  */
 public class NullParser {
-/*
-    public static String parse(HttpResponse resp, Element instruction,
-            PrintWriter logger) throws Exception {
-        return null;
-    }
-*/
+    /*
+     * public static String parse(HttpResponse resp, Element instruction,
+     * PrintWriter logger) throws Exception { return null; }
+     */
     public static String parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
         return null;
