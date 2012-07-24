@@ -32,7 +32,14 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.5.2</version>
+      <version>6.7</version>
+      <exclusions>
+        <!-- alternative YAML syntax for specifying test suite -->
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>snakeyaml</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
