@@ -1,16 +1,24 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -40,22 +48,87 @@ public class TestRunResource {
     @Context
     private UriInfo reqUriInfo;
 
+    @Context
+    private HttpHeaders headers;
+
+    /**
+     * Processes a request submitted using the GET method. The test run
+     * arguments are specified in the query component of the Request-URI as a
+     * sequence of key-value pairs.
+     * 
+     * @param etsCode
+     *            A String that identifies the test suite to be run.
+     * @param etsVersion
+     *            A String specifying the desired test suite version.
+     * @return An XML representation of the test results.
+     */
     @GET
-    public Source processGetRequest(@PathParam("etsCode") String etsCode,
+    public Source handleGet(@PathParam("etsCode") String etsCode,
             @PathParam("etsVersion") String etsVersion) {
-        TestSuiteController controller = findController(etsCode, etsVersion);
-        MultivaluedMap<String, String> requestParams = reqUriInfo
+        MultivaluedMap<String, String> params = this.reqUriInfo
                 .getQueryParameters();
-        if (LOGR.isLoggable(Level.CONFIG)) {
-            StringBuilder msg = new StringBuilder("Test run parameters - ");
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder("Test run arguments - ");
             msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append(requestParams.toString());
-            LOGR.config(msg.toString());
+            msg.append(params.toString());
+            LOGR.fine(msg.toString());
         }
-        Document testRunArgs = extractTestRunArguments(requestParams);
+        Source results = executeTestRun(etsCode, etsVersion, params);
+        return results;
+    }
+
+    /**
+     * Processes a request submitted using the POST method. The request entity
+     * represents the test subject or provides metadata about it. The entity
+     * body is written to a local file, the location of which is set as the
+     * value of the {@code iut} parameter.
+     * 
+     * @param etsCode
+     *            A String that identifies the test suite to be run.
+     * @param etsVersion
+     *            A String specifying the desired test suite version.
+     * @param entityBody
+     *            A File containing the request entity body.
+     * @return An XML representation of the test results.
+     */
+    @POST
+    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    public Source handlePost(@PathParam("etsCode") String etsCode,
+            @PathParam("etsVersion") String etsVersion, File entityBody) {
+        if (!entityBody.exists() || entityBody.length() == 0) {
+            throw new WebApplicationException(400);
+        }
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder("Test run arguments - ");
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append("Entity media type: " + this.headers.getMediaType());
+            msg.append("File location: " + entityBody.getAbsolutePath());
+            LOGR.fine(msg.toString());
+        }
+        Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
+        args.put("iut", Arrays.asList(entityBody.toURI().toString()));
+        Source results = executeTestRun(etsCode, etsVersion, args);
+        return results;
+    }
+
+    /**
+     * Executes a test run using the supplied arguments.
+     * 
+     * @param etsCode
+     *            A String that identifies the test suite to be run.
+     * @param etsVersion
+     *            A String specifying the desired test suite version.
+     * @param testRunArgs
+     *            A multi-valued Map containing the test run arguments.
+     * @return An XML representation of the test run results.
+     */
+    Source executeTestRun(String etsCode, String etsVersion,
+            Map<String, java.util.List<String>> testRunArgs) {
+        TestSuiteController controller = findController(etsCode, etsVersion);
+        Document xmlArgs = readTestRunArguments(testRunArgs);
         Source testResults = null;
         try {
-            testResults = controller.doTestRun(testRunArgs);
+            testResults = controller.doTestRun(xmlArgs);
         } catch (RuntimeException re) {
             LOGR.log(Level.WARNING, re.getMessage(), re);
             ErrorResponseBuilder builder = new ErrorResponseBuilder();
@@ -93,17 +166,17 @@ public class TestRunResource {
     }
 
     /**
-     * Extracts test run arguments from the submitted request parameters and
-     * puts them into a DOM Document.
+     * Extracts test run arguments from the given Map and inserts them into a
+     * DOM Document.
      * 
      * @param requestParams
-     *            A map of key-value pairs. Each key can have zero or more
-     *            values; only the first value is used.
+     *            A collection of key-value pairs. Each key can have zero or
+     *            more values but only the first value is used.
      * @return A DOM Document representing an XML properties file.
      * @see Properties
      */
-    private Document extractTestRunArguments(
-            MultivaluedMap<String, String> requestParams) {
+    Document readTestRunArguments(
+            Map<String, java.util.List<String>> requestParams) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Document propsDoc = null;
         try {

@@ -1,6 +1,5 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.logging.Level;
@@ -23,7 +22,6 @@ import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
 
 /**
  * A collection resource that provides a listing of all available test suites.
