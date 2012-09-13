@@ -1082,62 +1082,7 @@
             </xsl:choose>
 		</code>
 	</test>
-    
-    <test name="csw:csw-2.0.2-GetRecords-tc11.2">
-      <param name="csw.GetRecords.post.url"/>
-      <assertion>
-      The response to a GetRecords request that includes an ogc:Filter having a
-      PropertyIsLike predicate must include matching record representations.
-      </assertion>
-      <comment>Pass if the csw:SearchResults element contains only csw:SummaryRecord 
-      instances having a dc:date value satisfying the expression 200?-10-*.</comment>
-		<code>
-			<xsl:variable name="response">
-				<request>
-					<url>
-						<xsl:value-of select="$csw.GetRecords.post.url"/>
-					</url>
-                    <method>POST</method>
-					<body>
-<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2" resultType="results">
-    <csw:Query typeNames="csw:Record">
-      <csw:ElementSetName>full</csw:ElementSetName>
-      <csw:Constraint version="1.1.0">
-        <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
-          <ogc:PropertyIsLike wildCard="*" singleChar="?" escapeChar="\">
-            <ogc:PropertyName xmlns:dct="http://purl.org/dc/terms/">dc:date</ogc:PropertyName>
-            <ogc:Literal>200?-10-*</ogc:Literal>
-          </ogc:PropertyIsLike>
-        </ogc:Filter>
-      </csw:Constraint>
-    </csw:Query>
-</csw:GetRecords>
-					</body>
-					<p:XMLValidatingParser.CSW/>
-				</request>
-			</xsl:variable>
-			
-            <xsl:choose>
-              <xsl:when test="not($response/*)">
-                  <ctl:message>[FAILURE] Missing or invalid response entity.</ctl:message>
-                  <ctl:fail/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:if test="count($response//csw:SearchResults/csw:Record) lt 1">
-                  <ctl:message>[FAILURE] AT least one csw:Record element expected in response.</ctl:message>
-                  <ctl:fail/>
-                </xsl:if>
-                <xsl:for-each select="$response//csw:SearchResults/*">
-                  <xsl:if test="matches(dc:date,'200\d-10-.*') != true()">
-                    <ctl:message>[FAILURE] Unexpected record is included (dc:date value does not match expression "200?-10-*")</ctl:message>
-                    <ctl:fail/>
-                  </xsl:if>
-                </xsl:for-each>
-              </xsl:otherwise>
-            </xsl:choose>
-		</code>
-	</test>
-    
+        
     <test name="csw:csw-2.0.2-GetRecords-tc12.1">
       <param name="csw.GetRecords.post.url"/>
       <assertion>
