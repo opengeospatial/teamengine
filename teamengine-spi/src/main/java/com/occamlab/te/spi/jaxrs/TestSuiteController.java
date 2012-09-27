@@ -20,7 +20,7 @@ public interface TestSuiteController {
     /**
      * Returns the version of this ETS.
      * 
-     * @return A String indicating the version. It must comply with the Maven
+     * @return A String indicating the version; it complies with the Maven
      *         versioning scheme.
      */
     public String getVersion();
@@ -28,7 +28,7 @@ public interface TestSuiteController {
     /**
      * Returns the title of this ETS.
      * 
-     * @return
+     * @return A String denoting the title.
      */
     public String getTitle();
 

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * service provider mechanism is used to discover test suites. Only one registry
  * is created.
  * 
- * @see java.util.ServiceLoader<S>
+ * @see java.util.ServiceLoader ServiceLoader
  */
 public class TestSuiteRegistry {
 

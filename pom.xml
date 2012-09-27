@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>teamengine</artifactId>
-  <version>4.0-alpha2-SNAPSHOT</version>
+  <version>4.0-alpha2</version>
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
@@ -67,7 +67,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.5.1</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
