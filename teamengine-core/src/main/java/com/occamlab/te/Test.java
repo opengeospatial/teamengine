@@ -24,8 +24,6 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DocumentationHelper;
 import com.occamlab.te.util.LogUtils;
@@ -49,7 +47,7 @@ public class Test {
     public static final String CTLP_NS = "http://www.occamlab.com/te/parsers";
 
     /**
-     * Displays startup command syntax
+     * Displays startup command syntax.
      * 
      * @param cmd
      *            Name of the startup command (i.e. test.bat or test.sh)
@@ -58,12 +56,9 @@ public class Test {
         System.out.println();
         System.out.println("Test mode:");
         System.out.println("  Use to start a test session.\n");
-        System.out
-                .println("  "
-                        + cmd
-                        + " [-mode=test] -source=ctlfile|dir [-source=ctlfile|dir] ...");
-        System.out
-                .println("    [-workdir=dir] [-logdir=dir] [-session=session] [-base=baseURI]");
+        System.out.println("  " + cmd
+                + " [-mode=test] [-source=ctlfile|dir]...");
+        System.out.println("  [-session=session] [-base=baseURI]");
         System.out
                 .println("    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...\n");
         System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
@@ -103,10 +98,10 @@ public class Test {
         SetupOptions setupOpts = new SetupOptions();
         RuntimeOptions runOpts = new RuntimeOptions();
 
-        boolean sourcesSupplied = false;
         String cmd = "java com.occamlab.te.Test";
-        File workDir = null;
-        File logDir = null;
+        File workDir = setupOpts.getWorkDir();
+        runOpts.setWorkDir(workDir);
+        File logDir = runOpts.getLogDir();
         String session = null;
         int mode = TEST_MODE;
 
@@ -118,16 +113,11 @@ public class Test {
                 File f = new File(args[i].substring(8));
                 if (f.exists()) {
                     setupOpts.addSource(f);
-                    sourcesSupplied = true;
                 } else {
                     System.out.println("Error: Can't find source \""
                             + args[i].substring(8) + "\".");
                     return;
                 }
-            } else if (args[i].startsWith("-workdir=")) {
-                workDir = new File(args[i].substring(9));
-            } else if (args[i].startsWith("-logdir=")) {
-                logDir = new File(args[i].substring(8));
             } else if (args[i].startsWith("-session=")) {
                 session = args[i].substring(9);
             } else if (args[i].startsWith("-base=")) {
@@ -170,49 +160,11 @@ public class Test {
             }
         }
 
-        // Set work dir
-        if (workDir == null) {
-            String prop = System.getProperty("team.workdir");
-            if (prop == null) {
-                workDir = new File(System.getProperty("java.io.tmpdir"),
-                        "te_work");
-                workDir.mkdirs();
-                System.out.println("No working directory supplied.  Using "
-                        + workDir.toString());
-            } else {
-                workDir = new File(prop);
-            }
-        }
-        if (!workDir.isDirectory()) {
-            System.out.println("Error: Working directory " + workDir.toString()
-                    + " does not exist.");
-            return;
-        }
-        setupOpts.setWorkDir(workDir);
-        runOpts.setWorkDir(workDir);
-
-        // Set log dir
-        if (logDir == null) {
-            String prop = System.getProperty("team.logdir");
-            if (prop != null) {
-                logDir = new File(prop);
-            }
-        }
-        if (logDir != null) {
-            if (!logDir.isDirectory()) {
-                System.out.println("Error: Log directory " + logDir.toString()
-                        + " does not exist.");
-                return;
-            }
-        }
-        runOpts.setLogDir(logDir);
-
         // Set mode
         runOpts.setMode(mode);
 
         // Syntax checks
-        if ((mode == TEST_MODE && !sourcesSupplied)
-                || (mode == RETEST_MODE && (logDir == null || session == null))
+        if ((mode == RETEST_MODE && (logDir == null || session == null))
                 || (mode == RESUME_MODE && (logDir == null || session == null))) {
             syntax(cmd);
             return;
@@ -262,8 +214,6 @@ public class Test {
                         "Error: Documentation file already exists, check the file "
                                 + html_output_documentation_file
                                         .getAbsolutePath() + " ");
-
-            // docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(),runOpts.getSuiteName(),System.out);
             docCode.generateDocumentation(setupOpts.getSources().get(0)
                     .getAbsolutePath(), new FileOutputStream(
                     html_output_documentation_file));
@@ -298,7 +248,6 @@ public class Test {
         }
 
         masterIndex.setElements(null);
-
         TEClassLoader cl = new TEClassLoader(null);
         Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
 

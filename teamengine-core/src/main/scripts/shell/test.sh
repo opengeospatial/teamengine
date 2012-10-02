@@ -10,7 +10,7 @@ for x in $base/../lib/*.jar
 do
   cp=$cp:$x
 done
-for x in $base/../components/*
+for x in $TE_BASE/resources/*
 do
   cp=$cp:$x/resources
   for y in $x/lib/*.jar
@@ -18,7 +18,7 @@ do
     cp=$cp:$y
   done
 done
-for x in $base/../scripts/*
+for x in $TE_BASE/scripts/*
 do
   cp=$cp:$x/resources
 done

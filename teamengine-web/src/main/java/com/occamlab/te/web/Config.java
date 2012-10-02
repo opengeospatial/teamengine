@@ -37,6 +37,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.occamlab.te.SetupOptions;
 import com.occamlab.te.index.ProfileEntry;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.DomUtils;
@@ -51,7 +52,6 @@ public class Config {
     private File scriptsDir;
     private File resourcesDir;
     private File usersDir;
-    private File workDir;
     private List<String> organizationList; // A list of organizations
     private Map<String, List<String>> standardMap; // Key is org, value is a
                                                    // list of standards
@@ -83,19 +83,6 @@ public class Config {
                     .getElementsByTagName("home").item(0));
             home = homeElem.getTextContent();
 
-            Element scriptsDirEl = DomUtils.getElementByTagName(configElem,
-                    "scriptsdir");
-            if (scriptsDirEl == null) {
-                scriptsDir = null;
-            } else {
-                scriptsDir = findFile(scriptsDirEl.getTextContent(), cl);
-                if (!scriptsDir.isDirectory()) {
-                    LOGR.log(Level.WARNING,
-                            "Scripts directory not found at {0}",
-                            scriptsDir.getAbsolutePath());
-                }
-            }
-
             Element resourcesDirEl = DomUtils.getElementByTagName(configElem,
                     "resourcesdir");
             if (resourcesDirEl == null) {
@@ -107,23 +94,6 @@ public class Config {
                             "Resources directory not found at {0}",
                             resourcesDir.getAbsolutePath());
                 }
-            }
-
-            Element usersDirEl = DomUtils.getElementByTagName(configElem,
-                    "usersdir");
-            usersDir = findFile(usersDirEl.getTextContent(), cl);
-            if (!usersDir.isDirectory()) {
-                LOGR.log(Level.WARNING, "Users directory not found at {0}",
-                        usersDir.getAbsolutePath());
-            }
-
-            Element workDirEl = DomUtils.getElementByTagName(configElem,
-                    "workdir");
-            workDir = findFile(workDirEl.getTextContent(), cl);
-            if (!workDir.isDirectory() && !workDir.mkdirs()) {
-                LOGR.log(Level.WARNING,
-                        "Unable to create working directory at {0}",
-                        workDir.getAbsolutePath());
             }
 
             organizationList = new ArrayList<String>();
@@ -204,12 +174,12 @@ public class Config {
                                 ArrayList<File> list = new ArrayList<File>();
                                 for (Element sourceEl : DomUtils
                                         .getElementsByTagName(el, "source")) {
-                                    if (scriptsDir == null) {
+                                    if (getScriptsDir() == null) {
                                         list.add(new File(sourceEl
                                                 .getTextContent()));
                                     } else {
-                                        list.add(new File(scriptsDir, sourceEl
-                                                .getTextContent()));
+                                        list.add(new File(getScriptsDir(),
+                                                sourceEl.getTextContent()));
                                     }
                                 }
                                 sources.put(key, list);
@@ -264,42 +234,6 @@ public class Config {
                     }
                 }
             }
-
-            // File script_dir = new File(URLDecoder.decode(cl.getResource(
-            // "com/occamlab/te/scripts/parsers.ctl").getFile(),
-            // "UTF-8")).getParentFile();
-            //
-            // // automatically load extension modules
-            // URL modulesURL = cl.getResource("modules/");
-            // File modulesDir = null;
-            // if (modulesURL != null) {
-            // modulesDir = new File(URLDecoder.decode(modulesURL.getFile(),
-            // "UTF-8"));
-            // }
-            //
-            // availableSuites = new LinkedHashMap<String, List<File>>();
-            // NodeList sourcesList =
-            // configElem.getElementsByTagName("sources");
-            // for (int i = 0; i < sourcesList.getLength(); i++) {
-            // ArrayList<File> ctlLocations = new ArrayList<File>();
-            // ctlLocations.add(script_dir);
-            // if (modulesDir != null) {
-            // ctlLocations.add(modulesDir);
-            // }
-            // Element sources = (Element) sourcesList.item(i);
-            // String id = sources.getAttribute("id");
-            // NodeList sourceList = sources.getElementsByTagName("source");
-            // for (int j = 0; j < sourceList.getLength(); j++) {
-            // Element source = (Element) sourceList.item(j);
-            // File f = findFile(source.getTextContent(), cl);
-            // if (!f.exists()) {
-            // throw new FileNotFoundException("Source location "
-            // + source.getTextContent() + " does not exist.");
-            // }
-            // ctlLocations.add(f);
-            // }
-            // availableSuites.put(id, ctlLocations);
-            // }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -310,15 +244,28 @@ public class Config {
     }
 
     public File getScriptsDir() {
+        if (null == this.scriptsDir) {
+            File dir = new File(SetupOptions.getBaseConfigDirectory(),
+                    "scripts");
+            if (!dir.exists() && !dir.mkdir()) {
+                throw new RuntimeException("Failed to create directory at "
+                        + dir.getAbsolutePath());
+            }
+            this.scriptsDir = dir;
+        }
         return scriptsDir;
     }
 
     public File getUsersDir() {
+        if (null == this.usersDir) {
+            File dir = new File(SetupOptions.getBaseConfigDirectory(), "users");
+            if (!dir.exists() && !dir.mkdir()) {
+                throw new RuntimeException("Failed to create directory at "
+                        + dir.getAbsolutePath());
+            }
+            this.usersDir = dir;
+        }
         return usersDir;
-    }
-
-    public File getWorkDir() {
-        return workDir;
     }
 
     public List<String> getOrganizationList() {
@@ -357,10 +304,6 @@ public class Config {
         return resources;
     }
 
-    // public static LinkedHashMap<String, List<File>> getAvailableSuites() {
-    // return availableSuites;
-    // }
-    //
     /**
      * Finds a source file or directory. The location may be specified using:
      * <ul>

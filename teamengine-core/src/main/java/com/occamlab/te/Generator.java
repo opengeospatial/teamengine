@@ -22,7 +22,6 @@ package com.occamlab.te;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.Misc;
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -43,7 +42,8 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 /**
  * Generates XSL template files from CTL sources and a master index of metadata
- * about the CTL objects.
+ * about the CTL objects. The resulting files are stored in sub-directories of
+ * the main work directory (TE_BASE/work).
  */
 public class Generator {
 
@@ -89,15 +89,9 @@ public class Generator {
             File source = it.next();
             LOGR.log(Level.CONFIG, "Processing CTL source files in {0}",
                     source.getAbsolutePath());
-            String encodedName = URLEncoder.encode(source.getAbsolutePath(),
-                    "UTF-8");
-            encodedName = encodedName.replace('%', '~'); // In Java 5, the
-                                                         // Document.parse
-                                                         // function has trouble
-                                                         // with the URL %
-                                                         // encoding
+            String encodedName = createEncodedName(source);
             File workingDir = new File(opts.getWorkDir(), encodedName);
-            if (!workingDir.mkdir()) {
+            if (!workingDir.exists() && !workingDir.mkdir()) {
                 LOGR.log(Level.WARNING,
                         "Unable to create working directory at {0}",
                         workingDir.getAbsolutePath());
@@ -205,5 +199,22 @@ public class Generator {
         }
 
         return masterIndex;
+    }
+
+    /**
+     * Creates a directory name from a file path.
+     * 
+     * @param source
+     *            A File reference.
+     * @return A String representing a legal directory name.
+     */
+    public static String createEncodedName(File source) {
+        String fileURI = source.toURI().toString();
+        String userDirURI = new File(System.getProperty("user.dir")).toURI()
+                .toString();
+        fileURI = fileURI.replace(userDirURI, "");
+        String encodedName = fileURI.substring(fileURI.lastIndexOf(':') + 1)
+                .replace("%20", "-").replace('/', '_');
+        return encodedName;
     }
 }

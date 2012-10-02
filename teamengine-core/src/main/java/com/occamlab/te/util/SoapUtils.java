@@ -171,8 +171,7 @@ public class SoapUtils {
     public static Document createSoapMessage(String version, List headerBlocks,
             Element body) throws Exception {
         Document message = null;
-        NodeList children = null;
-        children = body.getChildNodes();
+        NodeList children = body.getChildNodes();
         // Loop in order to remove dummy nodes (spaces, CR)
         for (int i = 0; i < children.getLength(); i++) {
             if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -186,8 +185,6 @@ public class SoapUtils {
             }
             break;
         }
-        // System.out.println("SOAP MESSAGE: " +
-        // DomUtils.serializeNode(message.getDocumentElement()));
         return message;
     }
 }

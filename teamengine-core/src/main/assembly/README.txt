@@ -1,12 +1,22 @@
+The value of the TE_BASE system property or environment variable specifies the 
+location of the main configuration directory that contains several essential 
+sub-directories (see structure below). Unpack the contents of this archive into
+the TE_BASE directory.
 
-The "components" directory in the distribution assembly contains libraries and 
-resources required by a test suite. Subdirectories include suite-specific 
-content structured as indicated below.
+TE_BASE
+ |-- resources/
+ |-- scripts/
+ |-- work/
+ +-- users/
+     |-- ${user.name}
+ 
+The "resources" sub-directory contains libraries and other resources that are 
+required to execute a test suite; it is structured as indicated below.
 
-components
-|
-+-- ets-1
-|   |-- resources/
-|   +-- lib/*.jar
-|
-+-- /ets-N/
+resources/
+ |
+ +-- ets-1/
+ |   |-- resources/
+ |   +-- lib/*.jar
+ |
+ +-- /ets-N/

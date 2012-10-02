@@ -42,10 +42,6 @@
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
-      <directory>${project.build.scriptSourceDirectory}/ctl</directory>
-      <outputDirectory>scripts</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>${project.build.directory}/maven-shared-archive-resources</directory>
       <outputDirectory>resources</outputDirectory>
     </fileSet>
@@ -54,10 +50,4 @@
       <outputDirectory>docs</outputDirectory>
     </fileSet>
   </fileSets>
-  <files>
-    <file>
-      <source>${project.basedir}/src/main/assembly/README.txt</source>
-      <outputDirectory>components</outputDirectory>
-    </file>
-  </files>
 </assembly>

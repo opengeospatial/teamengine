@@ -70,6 +70,10 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -95,7 +99,10 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.3</version>
         <configuration>
-          <descriptor>${basedir}/src/main/assembly/distribution.xml</descriptor>
+          <descriptors>
+            <descriptor>${basedir}/src/main/assembly/distribution.xml</descriptor>
+            <descriptor>${basedir}/src/main/assembly/teamengine-base.xml</descriptor>
+          </descriptors>
         </configuration>
         <executions>
           <execution>

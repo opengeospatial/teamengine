@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Paths are relative to ${catalina.base} -->
 <config>
   <home>/teamengine</home>
-  <scriptsdir>scripts</scriptsdir>
   <resourcesdir>scripts</resourcesdir>
-  <usersdir>users</usersdir>
-  <workdir>work/teamengine</workdir>
   <scripts>
-<!-- Sample suite: scripts/example/note.ctl
+    <!-- Sample suite: TE_BASE/scripts/note.ctl -->
     <organization>
       <name>Example.net</name>
       <standard>
@@ -18,18 +14,17 @@
             <namespace-uri>http://example.net/note-test</namespace-uri>
             <prefix>note</prefix>
             <local-name>note-test</local-name>
-			<title>Sample test suite</title>
-			<description>Checks the content of a note.</description>
-	      </suite>
+            <title>Sample test suite</title>
+            <description>Checks the content of a note.</description>
+          </suite>
           <revision>
             <name>r0</name>
             <sources>
-              <source>example/note.ctl</source>
+              <source>note.ctl</source>
             </sources>
           </revision>
         </version>
       </standard>
     </organization>
--->
   </scripts>
 </config>

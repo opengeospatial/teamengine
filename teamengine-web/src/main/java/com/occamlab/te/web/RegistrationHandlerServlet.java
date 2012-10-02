@@ -37,10 +37,10 @@ public class RegistrationHandlerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7428127065308163495L;
 
-    Config Conf;
+    Config conf;
 
     public void init() throws ServletException {
-        Conf = new Config();
+        conf = new Config();
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -49,7 +49,7 @@ public class RegistrationHandlerServlet extends HttpServlet {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
             String email = request.getParameter("email");
-            File userDir = new File(Conf.getUsersDir(), username);
+            File userDir = new File(conf.getUsersDir(), username);
             if (userDir.exists()) {
                 String url = "register.jsp?error=duplicate&username="
                         + username;

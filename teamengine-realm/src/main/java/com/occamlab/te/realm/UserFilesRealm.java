@@ -20,8 +20,8 @@ import org.w3c.dom.NodeList;
 
 /**
  * A Realm implementation that reads user information from an XML file located
- * in a per-user subdirectory of the users directory. A sample representation
- * (to be found in users/p.fogg/user.xml) is shown below.
+ * in a subdirectory of the users directory. A sample representation is shown
+ * below.
  * <p>
  * 
  * <pre>
@@ -41,23 +41,30 @@ public class UserFilesRealm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(UserFilesRealm.class
             .getName());
-    private String Root = null;
+    private String rootPath = null;
     private DocumentBuilder DB = null;
-    private HashMap Principals = new HashMap();
+    private HashMap<String, Principal> principals = new HashMap<String, Principal>();
 
     public String getRoot() {
-        return Root;
+        return rootPath;
     }
 
+    /**
+     * Sets the location of the root users directory. This is specified by the
+     * "root" attribute of the Realm element in the context definition.
+     * 
+     * @param root
+     *            A String specifying a directory location (TE_BASE/users).
+     */
     public void setRoot(String root) {
-        Root = root;
+        rootPath = root;
     }
 
     private GenericPrincipal readPrincipal(String username) {
-        List roles = new ArrayList();
-        File usersdir = new File(Root);
+        List<String> roles = new ArrayList<String>();
+        File usersdir = new File(rootPath);
         if (!usersdir.isDirectory()) {
-            usersdir = new File(System.getProperty("catalina.base"), Root);
+            usersdir = new File(System.getProperty("TE_BASE"), "users");
         }
         File userfile = new File(new File(usersdir, username), "user.xml");
         if (!userfile.canRead()) {
@@ -104,6 +111,7 @@ public class UserFilesRealm extends RealmBase {
      *            with this user.
      * @return A GenericPrincipal for use by this Realm implementation.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     GenericPrincipal createGenericPrincipal(String username, String password,
             List<String> roles) {
         Class klass = null;
@@ -158,20 +166,20 @@ public class UserFilesRealm extends RealmBase {
         if (username.startsWith("*")) {
             principal = readPrincipal(username.substring(1));
             if (principal != null) {
-                synchronized (Principals) {
-                    Principals.put(username.substring(1), principal);
+                synchronized (principals) {
+                    principals.put(username.substring(1), principal);
                 }
             }
         }
 
-        synchronized (Principals) {
-            principal = (Principal) Principals.get(username);
+        synchronized (principals) {
+            principal = (Principal) principals.get(username);
         }
         if (principal == null) {
             principal = readPrincipal(username);
             if (principal != null) {
-                synchronized (Principals) {
-                    Principals.put(username, principal);
+                synchronized (principals) {
+                    principals.put(username, principal);
                 }
             }
         }

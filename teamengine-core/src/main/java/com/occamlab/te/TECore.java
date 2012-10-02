@@ -35,13 +35,11 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
@@ -113,9 +111,6 @@ public class TECore implements Runnable {
     Index index;
     RuntimeOptions opts;
     String testServletURL = null;
-    // String sessionId; // Session identifier
-    // String sourcesName; // Name of active collection of sources
-    // File logDir = null; // Log directory
     volatile PrintStream out; // Console destination
     boolean web = false; // True when running as a servlet
     // int mode = Test.TEST_MODE; // Test mode
@@ -155,16 +150,6 @@ public class TECore implements Runnable {
     static final String HEADER_BLOCKS = "header-blocks";
     private static Logger jlogger = Logger.getLogger("com.occamlab.te.TECore");
 
-    // public TECore(Engine engine, Index index, String sessionId, String
-    // sourcesName) {
-    // this.engine = engine;
-    // this.index = index;
-    // this.sessionId = sessionId;
-    // this.sourcesName = sourcesName;
-    //
-    // testPath = sessionId;
-    // out = System.out;
-    // }
     public TECore(Engine engine, Index index, RuntimeOptions opts) {
         this.engine = engine;
         this.index = index;
@@ -353,12 +338,6 @@ public class TECore implements Runnable {
         String sessionId = opts.getSessionId();
         Document log = LogUtils.readLog(opts.getLogDir(), sessionId);
         if (log == null) {
-            // if (opts.getLogDir() == null) {
-            // File tempLogDir = File.createTempFile("telog", null);
-            // tempLogDir.delete();
-            // tempLogDir.mkdir();
-            // opts.setLogDir(tempLogDir);
-            // }
             execute_suite(suite.getId(), params);
             log = LogUtils.readLog(opts.getLogDir(), sessionId);
         }
@@ -1851,7 +1830,7 @@ public class TECore implements Runnable {
         threadComplete = false;
         // activeThread = Thread.currentThread();
         try {
-            opts.logDir.mkdir();
+            opts.testLogDir.mkdir();
             threadOutput = new ByteArrayOutputStream();
             out = new PrintStream(threadOutput);
             execute();

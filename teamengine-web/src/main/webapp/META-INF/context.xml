@@ -1,4 +1,4 @@
 <Context reloadable="true">
   <Realm className="com.occamlab.te.realm.UserFilesRealm"
-         root="${catalina.base}/users"/>
+         root="${TE_BASE}/users"/>
 </Context>

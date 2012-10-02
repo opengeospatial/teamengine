@@ -22,12 +22,14 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import net.sf.saxon.s9api.XdmNode;
 
+/**
+ * Provides runtime configuration settings.
+ */
 public class RuntimeOptions {
     int mode = Test.TEST_MODE;
-    File logDir = null;
+    File testLogDir = null;
     File workDir = null;
     String sessionId = null;
     String testName = null;
@@ -37,6 +39,20 @@ public class RuntimeOptions {
     ArrayList<String> profiles = new ArrayList<String>();
     ArrayList<String> testPaths = new ArrayList<String>();
     ArrayList<String> params = new ArrayList<String>();
+
+    /**
+     * Default constructor sets the location of the test log directory to
+     * TE_BASE/users/{user.name}; it is created if it does not exist.
+     */
+    public RuntimeOptions() {
+        File baseDir = SetupOptions.getBaseConfigDirectory();
+        File usersDir = new File(baseDir, "users");
+        File userDir = new File(usersDir, System.getProperty("user.name"));
+        if (!userDir.exists()) {
+            userDir.mkdirs();
+        }
+        this.testLogDir = userDir;
+    }
 
     public String getBaseURI() {
         return baseURI;
@@ -54,12 +70,17 @@ public class RuntimeOptions {
         this.sourcesName = sourcesName;
     }
 
+    /**
+     * Returns the location of the directory for writing test logs to.
+     * 
+     * @return A File denoting a directory.
+     */
     public File getLogDir() {
-        return logDir;
+        return testLogDir;
     }
 
     public void setLogDir(File logDir) {
-        this.logDir = logDir;
+        this.testLogDir = logDir;
     }
 
     public File getWorkDir() {
