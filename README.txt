@@ -36,10 +36,17 @@ The main build artifacts include:
 
 teamengine-core-${version}-distribution.zip::
     The core binary distribution (CLI usage)
+teamengine-core-${version}-base.zip::
+    Content of main configuration directory (TE_BASE)
 teamengine.war::
     The JEE web application
 teamengine-jaxrs-libs.zip::
     Runtime JAX-RS 1.1 dependencies (Jersey)
+
+The value of the TE_BASE system property or environment variable specifies the 
+location of the main configuration directory that contains several essential 
+sub-directories. Unpack the contents of the *-base.zip archive into the TE_BASE 
+directory.
 
 
 How to deploy

@@ -101,7 +101,7 @@
         <configuration>
           <descriptors>
             <descriptor>${basedir}/src/main/assembly/distribution.xml</descriptor>
-            <descriptor>${basedir}/src/main/assembly/teamengine-base.xml</descriptor>
+            <descriptor>${basedir}/src/main/assembly/base.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
