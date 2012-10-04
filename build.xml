@@ -6,7 +6,7 @@
 
   <target name="xinclude">
     <mkdir dir="ctl"/>
-    <java fork="true" jar="../../apps/engine/lib/saxon9-9.0.0.6j.jar" output="ctl/all.xml">
+    <java fork="true" jar="lib/saxon9-9.0.0.6j.jar" output="ctl/all.xml">
       <arg line="src/main.xml xipr.xsl fix-xml-base=no"/>
     </java>
   </target>
