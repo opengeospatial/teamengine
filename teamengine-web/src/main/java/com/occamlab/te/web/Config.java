@@ -49,6 +49,8 @@ public class Config {
 
     private static final Logger LOGR = Logger.getLogger(Config.class.getName());
     private String home;
+    /** Location of base configuration directory (TE_BASE) */
+    private File baseDir;
     private File scriptsDir;
     private File resourcesDir;
     private File usersDir;
@@ -72,11 +74,12 @@ public class Config {
                                          // resource directory
 
     public Config() {
+        this.baseDir = SetupOptions.getBaseConfigDirectory();
         try {
             DocumentBuilder db = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder();
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            Document doc = db.parse(cl.getResourceAsStream("config.xml"));
+            Document doc = db.parse(new File(this.baseDir, "config.xml"));
             Element configElem = (Element) (doc.getElementsByTagName("config")
                     .item(0));
             Element homeElem = (Element) (configElem
@@ -245,8 +248,7 @@ public class Config {
 
     public File getScriptsDir() {
         if (null == this.scriptsDir) {
-            File dir = new File(SetupOptions.getBaseConfigDirectory(),
-                    "scripts");
+            File dir = new File(this.baseDir, "scripts");
             if (!dir.exists() && !dir.mkdir()) {
                 throw new RuntimeException("Failed to create directory at "
                         + dir.getAbsolutePath());
@@ -258,7 +260,7 @@ public class Config {
 
     public File getUsersDir() {
         if (null == this.usersDir) {
-            File dir = new File(SetupOptions.getBaseConfigDirectory(), "users");
+            File dir = new File(this.baseDir, "users");
             if (!dir.exists() && !dir.mkdir()) {
                 throw new RuntimeException("Failed to create directory at "
                         + dir.getAbsolutePath());

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <home>/teamengine</home>
+  <resourcesdir>scripts</resourcesdir>
+  <scripts>
+    <!-- Sample suite: TE_BASE/scripts/note.ctl -->
+    <organization>
+      <name>Example.net</name>
+      <standard>
+        <name>XML Note</name>
+        <version>
+          <name>1.0</name>
+          <suite>
+            <namespace-uri>http://example.net/note-test</namespace-uri>
+            <prefix>note</prefix>
+            <local-name>note-test</local-name>
+            <title>Sample test suite</title>
+            <description>Checks the content of a note.</description>
+          </suite>
+          <revision>
+            <name>r0</name>
+            <sources>
+              <source>note.ctl</source>
+            </sources>
+          </revision>
+        </version>
+      </standard>
+    </organization>
+  </scripts>
+</config>

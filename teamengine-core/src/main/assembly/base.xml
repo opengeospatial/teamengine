@@ -33,5 +33,9 @@
       <source>${project.basedir}/src/main/assembly/README.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
+    <file>
+      <source>${project.basedir}/src/main/config/config.xml</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
   </files>
 </assembly>
