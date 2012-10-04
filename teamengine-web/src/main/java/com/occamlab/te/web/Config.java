@@ -43,7 +43,7 @@ import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.DomUtils;
 
 /**
- * Reads the test harness configuration file.
+ * Reads the test harness configuration file at TE_BASE/config.xml.
  */
 public class Config {
 

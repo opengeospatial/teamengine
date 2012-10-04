@@ -35,11 +35,13 @@ import org.w3c.dom.Element;
  * 
  * <pre>
  * TE_BASE
- * |-- components/
- * |-- scripts/
- * |-- work/
- * +-- users/
- *     |-- ${user.name}
+ *  |-- config.xml
+ *  |-- resources/
+ *  |-- scripts/
+ *  |-- work/
+ *  +-- users/
+ *      |-- {username1}/
+ *      +-- {usernameN}/
  * </pre>
  * 
  * </p>
