@@ -110,12 +110,14 @@ public class Test {
             if (args[i].startsWith("-cmd=")) {
                 cmd = args[i].substring(5);
             } else if (args[i].startsWith("-source=")) {
-                File f = new File(args[i].substring(8));
+                File scriptsDir = new File(
+                        SetupOptions.getBaseConfigDirectory(), "scripts");
+                File f = new File(scriptsDir, args[i].substring(8));
                 if (f.exists()) {
                     setupOpts.addSource(f);
                 } else {
-                    System.out.println("Error: Can't find source \""
-                            + args[i].substring(8) + "\".");
+                    System.out.println("Error: Can't find CTL script(s) at "
+                            + f.getAbsolutePath());
                     return;
                 }
             } else if (args[i].startsWith("-session=")) {

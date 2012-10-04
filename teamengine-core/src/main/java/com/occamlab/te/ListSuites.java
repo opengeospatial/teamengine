@@ -17,12 +17,14 @@ public class ListSuites {
         // Parse source command-line argument
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-source=")) {
-                File f = new File(args[i].substring(8));
+                File scriptsDir = new File(
+                        SetupOptions.getBaseConfigDirectory(), "scripts");
+                File f = new File(scriptsDir, args[i].substring(8));
                 if (f.exists()) {
                     setupOpts.addSource(f);
                 } else {
-                    System.out.println("Error: Can't find source \""
-                            + args[i].substring(8) + "\".");
+                    System.out.println("Error: Can't find CTL script(s) at "
+                            + f.getAbsolutePath());
                     return;
                 }
             }

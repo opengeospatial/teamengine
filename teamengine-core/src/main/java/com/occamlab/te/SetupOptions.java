@@ -23,6 +23,8 @@ package com.occamlab.te;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -89,9 +91,11 @@ public class SetupOptions {
                     + System.getProperty("file.separator") + "teamengine";
         }
         File baseDir = new File(basePath);
-        if (!baseDir.exists()) {
+        if (!baseDir.isDirectory()) {
             baseDir.mkdirs();
         }
+        Logger.getLogger(SetupOptions.class.getName()).log(Level.CONFIG,
+                "Using TE_BASE at " + baseDir);
         return baseDir;
     }
 

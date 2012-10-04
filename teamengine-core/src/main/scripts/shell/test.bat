@@ -4,6 +4,7 @@ set home=%~dp0
 if exist "%home%setenv.bat" call "%home%setenv.bat"
 set cp="%home%..\resources"
 for %%a in ("%home%..\lib"\*.jar) do call :addtocp "%%~fa"
+set cp=%cp%;%TE_BASE%\resources
 for /d %%a in ("%TE_BASE%\resources"\*) do call :addcomponent "%%a"
 for /d %%a in ("%TE_BASE%\scripts"\*) do call :addscript "%%a"
 set java="%JAVA_HOME%\bin\java.exe"
@@ -13,8 +14,7 @@ endlocal
 goto:eof
 
 :addcomponent
-set cp=%cp%;%1\resources
-for %%b in (%1\lib\*.jar) do call :addtocp "%%~fb"
+for %%b in (%1\*.jar) do call :addtocp "%%~fb"
 goto:eof
 
 :addscript

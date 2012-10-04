@@ -5,6 +5,7 @@ then
   . $base/setenv.sh
 fi
 cp=$base/../resources
+cp=$cp:$TE_BASE/resources
 
 for x in $base/../lib/*.jar
 do
@@ -12,8 +13,7 @@ do
 done
 for x in $TE_BASE/resources/*
 do
-  cp=$cp:$x/resources
-  for y in $x/lib/*.jar
+  for y in $x/*.jar
   do
     cp=$cp:$y
   done
