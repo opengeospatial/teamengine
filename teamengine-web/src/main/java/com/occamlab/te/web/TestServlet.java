@@ -348,8 +348,8 @@ public class TestServlet extends HttpServlet {
                 if (webdir == null) {
                     webdir = ".";
                 }
-                opts.setBaseURI(new URL(contextURI.toURL(), webdir + "/")
-                        .toString());
+                URL baseURL = new URL(contextURI.toURL(), webdir + "/");
+                opts.setBaseURI(baseURL.toString());
                 // URI baseURI = new URL(contextURI.toURL(), webdir).toURI();
                 // String base = baseURI.toString() + URLEncoder.encode(webdir,
                 // "UTF-8") + "/";

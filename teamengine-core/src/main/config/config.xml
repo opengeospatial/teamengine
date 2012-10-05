@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
   <home>/teamengine</home>
-  <resourcesdir>scripts</resourcesdir>
   <scripts>
     <!-- Sample suite: TE_BASE/scripts/note.ctl -->
     <organization>

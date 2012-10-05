@@ -20,7 +20,9 @@
 
 package com.occamlab.te;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -126,11 +128,16 @@ public class Engine {
 
     }
 
-    // Loads all of the XSL executables.
-    // Throws an exception for any that won't compile.
-    // This is a time consuming operation.
-    public void preload(Index index, String sourcesName)
-            throws SaxonApiException {
+    /**
+     * Loads all of the XSL executables. This is a time consuming operation.
+     * 
+     * @param index
+     * @param sourcesName
+     *            A stylesheet reference.
+     * @throws Exception
+     *             If the stylesheet fail to compile.
+     */
+    public void preload(Index index, String sourcesName) throws Exception {
         for (String key : index.getTestKeys()) {
             TestEntry te = index.getTest(key);
             loadExecutable(te, sourcesName);
@@ -158,15 +165,18 @@ public class Engine {
     }
 
     public XsltExecutable loadExecutable(TemplateEntry entry, String sourcesName)
-            throws SaxonApiException {
+            throws Exception {
         String key = sourcesName + "," + entry.getId();
         if (entry instanceof FunctionEntry) {
             key += "_" + Integer.toString(((FunctionEntry) entry).getMinArgs());
         }
         XsltExecutable executable = loadedExecutables.get(key);
         while (executable == null) {
+            // capture messages written to System.err by default message emitter
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream console = System.err;
             try {
-                // System.out.println(template.getTemplateFile().getAbsolutePath());
+                System.setErr(new PrintStream(baos));
                 Source source = new StreamSource(entry.getTemplateFile());
                 executable = compiler.compile(source);
                 loadedExecutables.put(key, executable);
@@ -175,6 +185,11 @@ public class Engine {
                 if (!freed) {
                     throw e;
                 }
+            } catch (SaxonApiException e) {
+                throw new Exception(baos.toString() + e.getMessage(),
+                        e.getCause());
+            } finally {
+                System.setErr(console);
             }
         }
         while (loadedExecutables.size() > cacheSize) {

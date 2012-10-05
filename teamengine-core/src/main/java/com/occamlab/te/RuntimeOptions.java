@@ -22,6 +22,9 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import net.sf.saxon.s9api.XdmNode;
 
 /**
@@ -59,6 +62,8 @@ public class RuntimeOptions {
     }
 
     public void setBaseURI(String baseURI) {
+        Logger.getLogger(RuntimeOptions.class.getName()).log(Level.CONFIG,
+                "Setting baseURI = " + baseURI);
         this.baseURI = baseURI;
     }
 

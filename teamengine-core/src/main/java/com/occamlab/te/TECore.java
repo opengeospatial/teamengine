@@ -184,7 +184,7 @@ public class TECore implements Runnable {
     }
 
     XPathContext getXPathContext(TestEntry test, String sourcesName,
-            XdmNode contextNode) throws SaxonApiException {
+            XdmNode contextNode) throws Exception {
         XPathContext context = null;
         if (test.usesContext()) {
             XsltExecutable xe = engine.loadExecutable(test, sourcesName);
@@ -550,8 +550,7 @@ public class TECore implements Runnable {
         try {
             executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
-            jlogger.log(Level.SEVERE, "SaxonApiException", e);
-
+            jlogger.log(Level.SEVERE, e.getMessage(), e.getCause());
             out.println(e.getMessage());
             if (logger != null) {
                 logger.println("<exception><![CDATA[" + e.getMessage()

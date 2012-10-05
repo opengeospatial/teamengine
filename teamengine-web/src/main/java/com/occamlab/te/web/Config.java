@@ -70,35 +70,35 @@ public class Config {
                                              // a list of sources
     private Map<String, String> webdirs; // Key is org_std_ver_rev, value a
                                          // webdir
-    private Map<String, File> resources; // Key is org_std_ver_rev, value a
-                                         // resource directory
+    /**
+     * Collection of directories containing ETS resources. The map key
+     * identifies a given ETS revision ("$org_$std_$ver_$rev").
+     */
+    private Map<String, File> resources;
 
     public Config() {
         this.baseDir = SetupOptions.getBaseConfigDirectory();
         try {
             DocumentBuilder db = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder();
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            //ClassLoader cl = Thread.currentThread().getContextClassLoader();
             Document doc = db.parse(new File(this.baseDir, "config.xml"));
             Element configElem = (Element) (doc.getElementsByTagName("config")
                     .item(0));
             Element homeElem = (Element) (configElem
                     .getElementsByTagName("home").item(0));
             home = homeElem.getTextContent();
-
-            Element resourcesDirEl = DomUtils.getElementByTagName(configElem,
-                    "resourcesdir");
-            if (resourcesDirEl == null) {
-                resourcesDir = null;
-            } else {
-                resourcesDir = findFile(resourcesDirEl.getTextContent(), cl);
-                if (!resourcesDir.isDirectory()) {
-                    LOGR.log(Level.WARNING,
-                            "Resources directory not found at {0}",
-                            resourcesDir.getAbsolutePath());
-                }
-            }
-
+            // use TE_BASE/scripts so no need to move ETS resources
+            this.resourcesDir = getScriptsDir();
+            /*
+             * Element resourcesDirEl = DomUtils.getElementByTagName(configElem,
+             * "resourcesdir"); if (resourcesDirEl == null) { resourcesDir =
+             * null; } else { resourcesDir =
+             * findFile(resourcesDirEl.getTextContent(), cl); if
+             * (!resourcesDir.isDirectory()) { LOGR.log(Level.WARNING,
+             * "Resources directory not found at {0}",
+             * resourcesDir.getAbsolutePath()); } }
+             */
             organizationList = new ArrayList<String>();
             standardMap = new HashMap<String, List<String>>();
             versionMap = new HashMap<String, List<String>>();
@@ -190,15 +190,18 @@ public class Config {
                                 for (Element resourcesEl : DomUtils
                                         .getElementsByTagName(el, "resources")) {
                                     if (resourcesDir == null) {
-                                        resources.put(
-                                                key,
-                                                new File(resourcesEl
-                                                        .getTextContent()));
+                                        // path relative to TE_BASE
+                                        resources
+                                                .put(key,
+                                                        new File(
+                                                                this.baseDir,
+                                                                resourcesEl
+                                                                        .getTextContent()));
                                     } else {
                                         resources
                                                 .put(key,
                                                         new File(
-                                                                resourcesDir,
+                                                                this.resourcesDir,
                                                                 resourcesEl
                                                                         .getTextContent()));
                                     }
@@ -315,6 +318,7 @@ public class Config {
      * <li>a classpath location.</li>
      * </ul>
      */
+/*    
     private static File findFile(String path, ClassLoader loader) {
         File f = new File(path);
         if (!f.exists()) {
@@ -331,4 +335,5 @@ public class Config {
         }
         return f;
     }
+    */
 }
