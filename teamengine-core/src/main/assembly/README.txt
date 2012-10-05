@@ -4,13 +4,16 @@ sub-directories (see structure below). Unpack the contents of the *-base.zip
 archive into the TE_BASE directory.
 
 TE_BASE
-  |-- config.xml
-  |-- resources/
-  |-- scripts/
-  |-- work/
+  |-- config.xml             # main configuration file (web app)
+  |-- resources/             # Contains test suite resources (CLI)
+  |-- scripts/               # Contains CTL test suites
+  |   |--- ets.ctl           # Stand-alone script
+  |   +--- {ets}/            # A test suite package
+  |
+  |-- work/                  # teamengine work directory
   +-- users/
-      |-- {username1}/
-      +-- {usernameN}/
+      +-- {username}/        # user credentials & test runs (web app)
+
 
 The "resources" sub-directory contains libraries and other resources that are 
 required to execute a test suite using a command-line shell; it should be 
@@ -19,4 +22,3 @@ structured as indicated below.
 resources/
   |
   +-- lib/*.jar
- 
