@@ -17,7 +17,7 @@ public class SetupOptionsTest {
     @BeforeClass
     public static void setSystemProperty() {
         File dir = new File(System.getProperty("user.home")
-                + System.getProperty("file.separator") + "teamengine");
+                + System.getProperty("file.separator") + "teamengine-test");
         if (!dir.exists()) {
             createdDir = dir.mkdir();
         }
@@ -63,10 +63,7 @@ public class SetupOptionsTest {
     public void getScriptSources() {
         SetupOptions iut = new SetupOptions();
         List<File> sources = iut.getSources();
-        Assert.assertEquals("Unexpected size", 1, sources.size());
-        File parent = sources.get(0).getParentFile();
-        Assert.assertEquals("Unexpected parent directory",
-                SetupOptions.getBaseConfigDirectory(), parent);
+        Assert.assertEquals("Unexpected size", 0, sources.size());
     }
 
 }

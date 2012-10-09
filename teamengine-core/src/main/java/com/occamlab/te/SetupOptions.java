@@ -59,7 +59,8 @@ public class SetupOptions {
     ArrayList<File> sources = new ArrayList<File>();
 
     /**
-     * Default constructor. Adds TE_BASE/scripts as a known script location.
+     * Default constructor. Creates the TE_BASE/scripts directory if it does not
+     * exist.
      */
     public SetupOptions() {
         File scriptsDir = new File(teBaseDir, "scripts");
@@ -67,7 +68,6 @@ public class SetupOptions {
             throw new RuntimeException("Failed to create directory at "
                     + scriptsDir.getAbsolutePath());
         }
-        sources.add(scriptsDir);
     }
 
     /**
