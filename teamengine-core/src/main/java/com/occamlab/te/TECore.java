@@ -1845,20 +1845,6 @@ public class TECore implements Runnable {
         return opts.getLogDir();
     }
 
-    //
-    // public void setLogDir(File logDir) {
-    // this.logDir = logDir;
-    // }
-    //
-    // public int getMode() {
-    // return mode;
-    // }
-    //
-    // public void setMode(int mode) {
-    // this.mode = mode;
-    // }
-    //
-
     public PrintStream getOut() {
         return out;
     }
@@ -1869,6 +1855,17 @@ public class TECore implements Runnable {
 
     public String getTestPath() {
         return testPath;
+    }
+
+    /**
+     * Returns the location of the directory containing the test run output.
+     * 
+     * @return A String representing a file URI denoting the path name of a
+     *         directory.
+     */
+    public String getTestRunDirectory() {
+        String logDirURI = opts.getLogDir().toURI().toString();
+        return logDirURI + opts.getSessionId();
     }
 
     public void setTestPath(String testPath) {
@@ -1910,12 +1907,28 @@ public class TECore implements Runnable {
     public void setTestServletURL(String testServletURL) {
         this.testServletURL = testServletURL;
     }
-    //
-    // public String getSourcesName() {
-    // return sourcesName;
-    // }
-    //
-    // public String getSessionId() {
-    // return sessionId;
-    // }
+
+    /**
+     * Builds a DOM Document representing a classpath resource.
+     * 
+     * @param name
+     *            The name of an XML resource.
+     * @return A Document node, or {@code null} if the resource cannot be parsed
+     *         for any reason.
+     */
+    public Document findXMLResource(String name) {
+        URL url = this.getClass().getResource(name);
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory
+                .newInstance();
+        docFactory.setNamespaceAware(true);
+        Document doc = null;
+        try {
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            doc = docBuilder.parse(url.toURI().toString());
+        } catch (Exception e) {
+            LOGR.log(Level.WARNING, "Failed to parse classpath resource "
+                    + name, e);
+        }
+        return doc;
+    }
 }
