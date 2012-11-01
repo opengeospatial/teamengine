@@ -24,6 +24,8 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DocumentationHelper;
 import com.occamlab.te.util.LogUtils;
@@ -104,20 +106,25 @@ public class Test {
         File logDir = runOpts.getLogDir();
         String session = null;
         int mode = TEST_MODE;
+        File sourceFile = null;
 
         // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-cmd=")) {
                 cmd = args[i].substring(5);
             } else if (args[i].startsWith("-source=")) {
-                File scriptsDir = new File(
-                        SetupOptions.getBaseConfigDirectory(), "scripts");
-                File f = new File(scriptsDir, args[i].substring(8));
-                if (f.exists()) {
-                    setupOpts.addSource(f);
+                String sourcePath = args[i].substring(8);
+                sourceFile = new File(sourcePath);
+                if (!sourceFile.isAbsolute()) {
+                    File scriptsDir = new File(
+                            SetupOptions.getBaseConfigDirectory(), "scripts");
+                    sourceFile = new File(scriptsDir, sourcePath);
+                }
+                if (sourceFile.exists()) {
+                    setupOpts.addSource(sourceFile);
                 } else {
-                    System.out.println("Error: Can't find CTL script(s) at "
-                            + f.getAbsolutePath());
+                    System.out.println("Error: Cannot find CTL script(s) at "
+                            + sourceFile.getAbsolutePath());
                     return;
                 }
             } else if (args[i].startsWith("-session=")) {
@@ -250,7 +257,7 @@ public class Test {
         }
 
         masterIndex.setElements(null);
-        TEClassLoader cl = new TEClassLoader(null);
+        TEClassLoader cl = new TEClassLoader(findResourcesDirectory(sourceFile));
         Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
 
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
@@ -262,5 +269,31 @@ public class Test {
             core.execute();
         }
 
+    }
+
+    /**
+     * Seeks a "resources" directory by searching the file system from a
+     * starting location and continuing upwards into ancestor directories.
+     * 
+     * @param sourceFile
+     *            A File denoting a file system location (file or directory).
+     * @return A File representing a directory named "resources", or
+     *         {@code null} if one cannot be found.
+     */
+    private static File findResourcesDirectory(File sourceFile) {
+        File parent = sourceFile.getParentFile();
+        if (null == parent) {
+            return null;
+        }
+        File[] children = parent.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.equalsIgnoreCase("resources");
+            }
+        });
+        if (children.length == 0) {
+            findResourcesDirectory(parent);
+        }
+        return children[0];
     }
 }
