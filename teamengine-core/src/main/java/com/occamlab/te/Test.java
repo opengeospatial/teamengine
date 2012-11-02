@@ -280,20 +280,21 @@ public class Test {
      * @return A File representing a directory named "resources", or
      *         {@code null} if one cannot be found.
      */
-    private static File findResourcesDirectory(File sourceFile) {
+    static File findResourcesDirectory(File sourceFile) {
         File parent = sourceFile.getParentFile();
         if (null == parent) {
             return null;
         }
-        File[] children = parent.listFiles(new FilenameFilter() {
+        File[] resourceDirs = parent.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.equalsIgnoreCase("resources");
+                return (name.equalsIgnoreCase("resources") && new File(dir,
+                        name).isDirectory());
             }
         });
-        if (children.length == 0) {
-            findResourcesDirectory(parent);
+        if (resourceDirs.length > 0) {
+            return resourceDirs[0];
         }
-        return children[0];
+        return findResourcesDirectory(parent);
     }
 }
