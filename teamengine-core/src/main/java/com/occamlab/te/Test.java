@@ -25,6 +25,8 @@ package com.occamlab.te;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DocumentationHelper;
@@ -36,6 +38,7 @@ import com.occamlab.te.util.LogUtils;
  * 
  */
 public class Test {
+    private static final Logger LOGR = Logger.getLogger(Test.class.getName());
     public static final int TEST_MODE = 0;
     public static final int RETEST_MODE = 1;
     public static final int RESUME_MODE = 2;
@@ -262,6 +265,10 @@ public class Test {
 
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
             engine.preload(masterIndex, setupOpts.getSourcesName());
+        }
+
+        if (LOGR.isLoggable(Level.FINE)) {
+            LOGR.fine(runOpts.toString());
         }
 
         if (mode != CHECK_MODE) {

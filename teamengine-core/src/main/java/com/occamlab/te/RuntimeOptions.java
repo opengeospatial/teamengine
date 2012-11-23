@@ -155,4 +155,22 @@ public class RuntimeOptions {
     public void setTestName(String testName) {
         this.testName = testName;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("RuntimeOptions {\n");
+        sb.append("mode=").append(mode).append(",\n");
+        sb.append("testLogDir=").append(testLogDir).append(",\n");
+        sb.append("workDir=").append(workDir).append(",\n");
+        sb.append("sessionId=").append(sessionId).append(",\n");
+        sb.append("testName=").append(testName).append(",\n");
+        sb.append("suiteName=").append(suiteName).append(",\n");
+        sb.append("sourcesName=").append(sourcesName).append(",\n");
+        sb.append("baseURI=").append(baseURI).append(",\n");
+        sb.append("profiles=").append(profiles).append(",\n");
+        sb.append("testPaths=").append(testPaths).append(",\n");
+        sb.append("params=").append(params).append("\n}");
+        return sb.toString();
+    }
+
 }
