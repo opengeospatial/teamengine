@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" 
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:math="http://exslt.org/math"
-  xmlns:testng="http://testng.org">
-
-  <db:abstract xmlns:db="http://docbook.org/ns/docbook">
-    <db:para>Generates an HTML report from TestNG XML output. See the <ulink 
-    url="http://code.google.com/p/testng-xslt/"><citetitle>TestNG-XSLT</citetitle>
-      </ulink> project.</db:para>
-  </db:abstract>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:math="http://exslt.org/math"
+                xmlns:testng="http://testng.org">
 
   <xsl:output method="html" indent="yes" omit-xml-declaration="yes"
                 doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -18,7 +11,7 @@
   <xsl:output name="html" method="html" indent="yes" omit-xml-declaration="yes"/>
   <xsl:output name="xhtml" method="xhtml" indent="yes" omit-xml-declaration="yes"/>
 
-  <xsl:param name="testNgXslt.outputDir" />
+  <xsl:param name="testNgXslt.outputDir" select="resolve-uri('results')"/>
   <xsl:param name="testNgXslt.cssFile"/>
   <xsl:param name="testNgXslt.showRuntimeTotals"/>
   <xsl:param name="testNgXslt.reportTitle"/>
@@ -33,6 +26,7 @@
   <xsl:variable name="chartHeight" select="round(200 * testng:getVariableSafe($testNgXslt.chartScaleFactor, 1))"/>
 
   <xsl:template name="writeCssFile">
+    <xsl:message>Writing CSS to <xsl:value-of select="testng:absolutePath('style.css')"/></xsl:message>
     <xsl:result-document href="{testng:absolutePath('style.css')}" format="text">
       <xsl:choose>
         <xsl:when test="testng:isFilterSelected('CONF') = 'true'">
@@ -293,14 +287,8 @@
 
   <xsl:function name="testng:absolutePath">
     <xsl:param name="fileName"/>
-    <xsl:choose>
-      <xsl:when test="ends-with($testNgXslt.outputDir, '/')">
-        <xsl:value-of select="concat($testNgXslt.outputDir, $fileName)"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="concat($testNgXslt.outputDir, '/', $fileName)"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:value-of select="concat($testNgXslt.outputDir, '/', $fileName)"/>
+    <!--<xsl:value-of select="concat('file:///', $testNgXslt.outputDir, '/', $fileName)"/>-->
   </xsl:function>
 
   <xsl:function name="testng:safeFileName">
