@@ -14,6 +14,7 @@
       <includes>
         <include>com.sun.jersey:jersey-*</include>
         <include>org.apache.derby:derby</include>
+        <include>org.opengis.cite.teamengine:teamengine-realm</include>
       </includes>
       <scope>runtime</scope>
       <useProjectArtifact>false</useProjectArtifact>
