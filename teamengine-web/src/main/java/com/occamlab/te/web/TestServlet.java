@@ -82,7 +82,7 @@ import com.occamlab.te.util.StringUtils;
 public class TestServlet extends HttpServlet {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
 
-    private static Logger logger = Logger
+    private static Logger LOGR = Logger
             .getLogger("com.occamlab.te.web.TestServlet");
 
     DocumentBuilder DB;
@@ -92,71 +92,18 @@ public class TestServlet extends HttpServlet {
     Config conf;
     SetupOptions setupOpts;
 
-    /*
-     * static String testServletURL; static int monitorCallSeq = 0; static int
-     * monitorUrlSeq = 0; static Map<String, MonitorCall> monitors = new
-     * HashMap<String, MonitorCall>();
-     * 
-     * static public String allocateMonitorUrl(String url) { String monitorUrl =
-     * testServletURL + "/monitor/" + Integer.toString(monitorUrlSeq);
-     * monitorUrlSeq++; MonitorCall mc = new MonitorCall(url);
-     * monitors.put(monitorUrl, mc); return monitorUrl; }
-     * 
-     * // Monitor without parser that doesn't trigger a test static public
-     * String createMonitor(TECore core, String monitorUrl) { return
-     * createMonitor(core, monitorUrl, null, ""); }
-     * 
-     * // Monitor that doesn't trigger a test static public String
-     * createMonitor(TECore core, String monitorUrl, Node parserInstruction,
-     * String passThrough) { MonitorCall mc = monitors.get(monitorUrl);
-     * mc.setCore(core); if (parserInstruction != null) {
-     * mc.setParserInstruction(DomUtils.getElement(parserInstruction));
-     * mc.setPassThrough(Boolean.parseBoolean(passThrough)); } return ""; }
-     * 
-     * // Monitor without parser that triggers a test static public String
-     * createMonitor(TECore core, XPathContext context, String url, String
-     * localName, String namespaceURI, NodeInfo params, String callId) throws
-     * Exception { return createMonitor(core, context, url, localName,
-     * namespaceURI, params, null, "", callId); }
-     * 
-     * // Monitor that triggers a test static public String createMonitor(TECore
-     * core, XPathContext context, String monitorUrl, String localName, String
-     * namespaceURI, NodeInfo params, NodeInfo parserInstruction, String
-     * passThrough, String callId) throws Exception { MonitorCall mc =
-     * monitors.get(monitorUrl); mc.setCore(core); mc.setContext(context);
-     * mc.setLocalName(localName); mc.setNamespaceURI(namespaceURI); if (params
-     * != null) { Node node = (Node)NodeOverNodeInfo.wrap(params); if
-     * (node.getNodeType() == Node.DOCUMENT_NODE) {
-     * mc.setParams(((Document)node).getDocumentElement()); } else {
-     * mc.setParams((Element)node); } } if (parserInstruction != null) { Node
-     * node = (Node)NodeOverNodeInfo.wrap(parserInstruction); if
-     * (node.getNodeType() == Node.DOCUMENT_NODE) {
-     * mc.setParserInstruction(((Document)node).getDocumentElement()); } else {
-     * mc.setParserInstruction((Element)node); }
-     * mc.setPassThrough(Boolean.parseBoolean(passThrough)); }
-     * mc.setCallId(callId); return ""; }
-     * 
-     * 
-     * // File getDir(String dirname) throws ServletException { // File dir =
-     * new File(getInitParameter(dirname + "Dir")); // if (!dir.isDirectory()) {
-     * // dir = new File("WEB-INF", dirname); // } // if (!dir.isDirectory()) {
-     * // throw new ServletException("Can't find " + dirname); // } // return
-     * dir; // }
-     */
     /**
      * Generates executable test suites from available CTL sources.
      */
     public void init() throws ServletException {
         try {
             conf = new Config();
+            this.setupOpts = new SetupOptions();
 
             DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
             identityTransformer = TransformerFactory.newInstance()
                     .newTransformer();
-
-            // File logsDir = new File(System.getProperty("catalina.base"),
-            // "logs");
 
             indexes = new HashMap<String, Index>();
 
@@ -172,16 +119,20 @@ public class TestServlet extends HttpServlet {
                     .compile(new StreamSource(sourceGeneratorStylesheet));
             XsltTransformer sourceGeneratorTransformer = sourceGeneratorXsltExecutable
                     .load();
-
-            File listings = new File(getServletConfig().getServletContext()
-                    .getRealPath("/"), "listings");
-            listings.mkdir();
-            this.setupOpts = new SetupOptions();
+            // Generate simple HTML representation of CTL scripts referenced in
+            // test report; use real location of web app context (e.g.
+            // CATALINA_BASE/webapps/teamengine/)
+            File listingsBaseDir = new File(getServletConfig()
+                    .getServletContext().getRealPath("/"));
+            File listings = new File(listingsBaseDir, "listings");
+            if (!listings.mkdir() && !listings.exists()) {
+                LOGR.warning("Failed to create directory at "
+                        + listings.getAbsolutePath());
+            }
             for (Entry<String, List<File>> sourceEntry : conf.getSources()
                     .entrySet()) {
                 String sourcesName = sourceEntry.getKey();
-                logger.info("TestServlet - Processing Test Suite: "
-                        + sourcesName);
+                LOGR.fine("TestServlet - Processing Test Suite: " + sourcesName);
                 setupOpts.setSourcesName(sourcesName);
                 for (File source : sourceEntry.getValue()) {
                     setupOpts.addSource(source);
@@ -336,12 +287,6 @@ public class TestServlet extends HttpServlet {
                     s.save(logdir);
                 }
                 String webdir = conf.getWebDirs().get(s.getSourcesName());
-                // String requestURI = request.getRequestURI();
-                // String contextPath = requestURI.substring(0,
-                // requestURI.indexOf(request.getServletPath()) + 1);
-                // URI contextURI = new URI(request.getScheme(), null,
-                // request.getServerName(), request.getServerPort(),
-                // contextPath, null, null);
                 URI contextURI = new URI(request.getScheme(), null,
                         request.getServerName(), request.getServerPort(),
                         request.getRequestURI(), null, null);
@@ -350,11 +295,6 @@ public class TestServlet extends HttpServlet {
                 }
                 URL baseURL = new URL(contextURI.toURL(), webdir + "/");
                 opts.setBaseURI(baseURL.toString());
-                // URI baseURI = new URL(contextURI.toURL(), webdir).toURI();
-                // String base = baseURI.toString() + URLEncoder.encode(webdir,
-                // "UTF-8") + "/";
-                // opts.setBaseURI(base);
-                // System.out.println(opts.getSourcesName());
                 TECore core = new TECore(engine, indexes.get(opts
                         .getSourcesName()), opts);
                 String servletURL = request.getRequestURL().toString();
@@ -474,37 +414,4 @@ public class TestServlet extends HttpServlet {
             throw new ServletException(t);
         }
     }
-    /*
-     * Element encodeRequest(HttpServletRequest request, Document doc, byte[]
-     * data) throws Exception { Element eRequest = doc.createElementNS(CTL_NS,
-     * "ctl:request"); Element eURL = doc.createElementNS(CTL_NS, "ctl:url");
-     * eURL.setTextContent(request.getRequestURL() + request.getPathInfo());
-     * eRequest.appendChild(eURL); Element eMethod = doc.createElementNS(CTL_NS,
-     * "ctl:method"); eMethod.setTextContent(request.getMethod());
-     * eRequest.appendChild(eMethod); Enumeration requestHeaders =
-     * request.getHeaderNames(); while (requestHeaders.hasMoreElements()) {
-     * String key = (String)requestHeaders.nextElement(); Element eHeader =
-     * doc.createElementNS(CTL_NS, "ctl:header"); eHeader.setAttribute("name",
-     * key); eHeader.setTextContent(request.getHeader(key));
-     * eRequest.appendChild(eHeader); } Enumeration params =
-     * request.getParameterNames(); while (params.hasMoreElements()) { String
-     * key = (String)params.nextElement(); Element eParam =
-     * doc.createElementNS(CTL_NS, "ctl:param"); eParam.setAttribute("name",
-     * key); eParam.setTextContent(request.getParameter(key));
-     * eRequest.appendChild(eParam); } if (data != null) { String mime =
-     * request.getContentType(); if (mime.indexOf("text/xml") == 0 ||
-     * mime.indexOf("application/xml") == 0) { ByteArrayInputStream bais = new
-     * ByteArrayInputStream(data); Element eBody = doc.createElementNS(CTL_NS,
-     * "ctl:body"); Transformer t =
-     * TransformerFactory.newInstance().newTransformer(); t.transform(new
-     * StreamSource(bais), new DOMResult(eBody)); eRequest.appendChild(eBody); }
-     * else if (mime.indexOf("text/") == 0) { Element eBody =
-     * doc.createElementNS(CTL_NS, "ctl:body");
-     * eBody.appendChild(doc.createCDATASection(data.toString()));
-     * eRequest.appendChild(eBody); } } return eRequest; }
-     * 
-     * static void copy_stream(InputStream in, OutputStream out) throws
-     * IOException { int i = in.read(); while (i >= 0) { out.write(i); i =
-     * in.read(); } // in.close(); // out.close(); }
-     */
 }

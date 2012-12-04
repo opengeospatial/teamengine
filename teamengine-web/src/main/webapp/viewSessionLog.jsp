@@ -150,6 +150,8 @@ public void jspInit() {
 		</tr>
 		</table>
 --%>
+
+<%-- Insert link to TestNG report if it exists.  --%>
 <%
 File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
@@ -159,6 +161,7 @@ if ( htmlReportDir.isDirectory()) {
     See the <a href="/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
  		</p>
 <% } %>
+
     <p><a href="viewSessions.jsp">Sessions list</a></p>
 		<%@ include file="footer.jsp" %>				
 	</body>
