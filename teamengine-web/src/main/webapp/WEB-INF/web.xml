@@ -9,6 +9,12 @@
   Provides a web interface for executing test suites and viewing test results.
   </description>
 
+  <context-param>
+    <description xml:lang="en">Location of main configuration file.</description>
+    <param-name>teConfigFile</param-name>
+    <param-value>${TE_BASE}${file.separator}config.xml</param-value>
+  </context-param>
+
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
