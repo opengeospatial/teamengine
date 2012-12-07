@@ -162,7 +162,7 @@
 
   <repositories>
     <repository>
-      <!-- Add credentials to matching server entry in settings.xml -->
+      <!-- Allows public read-only access -->
       <id>opengeospatial-cite</id>
       <name>OGC CITE Repository</name>
       <url>https://svn.opengeospatial.org/ogc-projects/cite/maven</url>
