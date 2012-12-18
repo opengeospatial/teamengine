@@ -71,9 +71,6 @@
   <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc11.1">
     <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
   </ctl:call-test>
-  <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc11.2">
-    <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
-  </ctl:call-test>
   <ctl:call-test name="csw:csw-2.0.2-GetRecords-tc12.1">
     <ctl:with-param name="csw.GetRecords.post.url" select="$csw.GetRecords.post.url"/>
   </ctl:call-test>
