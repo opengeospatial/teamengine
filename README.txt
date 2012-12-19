@@ -1,6 +1,6 @@
 
-TEAM-Engine
-===========
+TEAM-Engine v4
+==============
 
 How to build
 ------------
@@ -15,43 +15,28 @@ code base, which consists of the following modules:
 * teamengine-spi: Extensibility framework and REST API
 
 Simply run `mvn package` in the root project directory to generate all build 
-artifacts (using JDK 6 or later). 
+artifacts (using JDK 6 or later).
 
-IMPORTANT: In order to download the Saxon 9.0 libraries from the OGC CITE 
-repository (id = 'opengeospatial-cite') it is necessary to add appropriate 
-user credentials to the matching server entry in $HOME/.m2/settings.xml.
+The main build artifacts are listed below.
 
-<servers>
-  <server>
-    <id>opengeospatial-cite</id>
-    <username>USERNAME</username>
-    <password>PASSWORD</password>
-  </server>
-</servers>
-
-NOTE: This setting will no longer be necessary when the libraries are available
-from a public Maven repository.
-
-The main build artifacts include:
-
-teamengine-core-${version}-distribution.zip::
+teamengine-core-${version}-distribution.zip
     The core binary distribution (CLI usage)
-teamengine-core-${version}-base.zip::
+teamengine-core-${version}-base.[zip|tar.gz]
     Content of main configuration directory (TE_BASE)
-teamengine.war::
+teamengine.war
     The JEE web application
-teamengine-jaxrs-libs.zip::
-    Runtime JAX-RS 1.1 dependencies (Jersey)
+teamengine-common-libs.[zip|tar.gz]
+    Common runtime dependencies (e.g. JAX-RS 1.1, Derby)
 
-The value of the TE_BASE system property or environment variable specifies the 
-location of the main configuration directory that contains several essential 
-sub-directories. Unpack the contents of the *-base.zip archive into the TE_BASE 
-directory.
+The value of the TE_BASE system property or environment variable specifies 
+the location of the main configuration directory that contains several 
+essential sub-directories. Unpack the contents of the *-base archive into 
+the TE_BASE directory.
 
 
 How to deploy
 -------------
-Apache Tomcat 6.0 or 7.0 (with JDK 6 or later) are supported servlet containers. 
+Apache Tomcat 7.0 (with JDK 6 or later) is a supported servlet container. 
 It is strongly recommended that a dedicated Tomcat instance be created to host 
 the teamengine application. Create one as suggested below.
 
@@ -69,9 +54,9 @@ $ sudo cp -r $CATALINA_HOME/conf .
 $ sudo mkdir lib logs temp webapps work
 ----
 
-Copy teamengine-realm-${version}.jar to the CATALINA_BASE/lib directory, and 
-also unpack the contents of teamengine-jaxrs-libs.zip in this directory. Deploy 
-the teamengine.war component and start the Tomcat instance.
+Unpack the contents of the teamengine-common-libs archive into the 
+CATALINA_BASE/lib directory. Deploy the teamengine.war component and start 
+the Tomcat instance.
 
 The following URIs provide starting points for discovering and executing test 
 suites:
