@@ -35,23 +35,23 @@
   </xsl:template>
 
   <xsl:template name="standards">
-    <xsl:for-each select="standard">
+    <xsl:for-each select="standard/version">
       <tr>
+        <td><xsl:value-of select="../name" /></td>
         <td><xsl:value-of select="name" /></td>
-        <td><xsl:value-of select="version/name" /></td>
         <td>
           <xsl:choose>
-            <xsl:when test="version/revision/webdir">
+            <xsl:when test="revision/webdir">
               <xsl:element name="a">
                 <xsl:attribute name="href">
-                  <xsl:value-of select="concat($BASE_URL, version/revision/webdir)"/>
+                  <xsl:value-of select="concat($BASE_URL, revision/webdir)"/>
                 </xsl:attribute>
                 <xsl:attribute name="target" select="'_blank'" />
-                <xsl:value-of select="version/revision/name" />
+                <xsl:value-of select="revision/name" />
               </xsl:element>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="version/revision/name" />
+              <xsl:value-of select="revision/name" />
             </xsl:otherwise>
           </xsl:choose> 
         </td>
