@@ -77,7 +77,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
 		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -121,7 +121,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
 		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:variable name="element" select="$response//csw:SchemaComponent/xsd:element/@name = 'Record'"/>
@@ -169,7 +169,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/DescribeRecord.sch</ctl:with-param>
 		            <ctl:with-param name="phase">NoSchemaComponentsPhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -254,7 +254,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'outputformat')">
@@ -304,7 +304,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:if test="not(lower-case($response//ows:Exception/@locator) = 'schemalanguage')">
@@ -353,7 +353,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>

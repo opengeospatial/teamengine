@@ -111,7 +111,7 @@
 		<ctl:code>
             <ctl:call-test name="ctl:SchematronValidatingParser">
 		        <ctl:with-param name="doc" select="$csw.capabilities.doc" />
-		        <ctl:with-param name="schema">sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
+		        <ctl:with-param name="schema">/sch/csw/2.0.2/Capabilities.sch</ctl:with-param>
 		        <ctl:with-param name="phase">RequiredElementsPhase</ctl:with-param>
 	        </ctl:call-test>
 

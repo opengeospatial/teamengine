@@ -161,7 +161,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -205,7 +205,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">TenRecordsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:if test="count($response/csw:GetRecordsResponse/csw:SearchResults/csw:SummaryRecord) != 10">
@@ -253,7 +253,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">TenRecordsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:if test="count($response/csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord) != 10">
@@ -356,7 +356,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">TenRecordsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:if test="count($response/csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord) != 10">
@@ -529,7 +529,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">OneToTenRecordsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:if test="count($response//csw:SearchResults/csw:Record) != count($response//csw:SearchResults/*)">
@@ -599,7 +599,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -761,7 +761,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -932,7 +932,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">OneToTenAdHocRecordsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:for-each select="$response//csw:SearchResults/*">
@@ -1001,7 +1001,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">OneToTenAdHocRecordsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:for-each select="$response//csw:SearchResults/*">
@@ -1393,7 +1393,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">NoApplicableCodePhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -1451,7 +1451,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/csw/2.0.2/GetRecords.sch</ctl:with-param>
 		            <ctl:with-param name="phase">TypeFormatElementsPhase</ctl:with-param>
 	            </ctl:call-test>
                 <xsl:for-each select="$response//csw:SummaryRecord">
@@ -1899,7 +1899,7 @@
               <xsl:otherwise>
                   <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	              </ctl:call-test>
               </xsl:otherwise>
@@ -1946,7 +1946,7 @@
               <xsl:otherwise>
                   <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	              </ctl:call-test>
               </xsl:otherwise>
@@ -2163,7 +2163,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
@@ -2209,7 +2209,7 @@
               <xsl:otherwise>
                 <ctl:call-test name="ctl:SchematronValidatingParser">
 		            <ctl:with-param name="doc" select="$response"/>
-		            <ctl:with-param name="schema">sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
+		            <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
 		            <ctl:with-param name="phase">InvalidParameterValuePhase</ctl:with-param>
 	            </ctl:call-test>
               </xsl:otherwise>
