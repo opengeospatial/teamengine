@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>User's Guide</title>
+  </head>
+  <body>
+    <p>This document provides some guidance about how to use TEAM Engine to 
+    execute a test run and view the results. There are three ways to interact 
+    with the test harness: a command shell, the web application, or a REST-like 
+    API.</p>
+
+    <h2>Command shell</h2>
+    <p>
+    The core binary distribution (teamengine-core-${project.version}-distribution.zip) 
+    includes shell scripts for Windows and GNU/Linux environments. Unpack the archive 
+    into a convenient location (TE_HOME); the contents are as shown below.
+    </p>
+    <pre>
+TE_HOME
+  |-- bin/          # shell scripts
+  |-- lib/          # supporting libraries
+  |-- resources/    # classpath resources (stylesheets, schemas, etc.)
+    </pre>
+
+    <h2>Web application</h2>
+    <p>
+    When the web application (teamengine.war) is deployed in a servlet container, 
+    the welcome page (e.g. http://localhost:8080/teamengine) provides a listing 
+    of available test suites. In a new installation a sample suite for the fictitious
+    "XML Note" specification should appear. Additional test suites correspond to 
+    entries in the main configuration file at TE_BASE/config.xml.
+    </p>
+
+    <p>
+    Select "Login" and then supply the appropriate credentials or register to create 
+    a new user account. After logging in, previous test sessions are displayed. Select 
+    "Create new session" and choose a test suite to execute.
+    </p>
+
+    <h2>REST API</h2>
+    <p>
+    A REST-like API (based on <a href="http://jcp.org/en/jsr/detail?id=311" target="_blank">
+    JAX-RS 1.1</a>) enables programmatic execution of some test suites; currently only
+    TestNG-based suites can be run in this manner. It exposes the endpoints listed in the 
+    table shown below. In the request URIs the <code>{etsCode}</code> and <code>{etsVersion}</code> 
+    variables denote the code and version, respectively, for a particular test suite.
+    </p>
+
+    <table>
+      <caption>REST endpoints</caption>
+      <thead>
+        <tr>
+          <th>URI (relative to base)</th>
+          <th>Resource</th>
+          <th>Representation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>/rest/suites</td>
+          <td>Test suite collection</td>
+          <td>application/xhtml+xml </td>
+        </tr>
+        <tr>
+          <td>/rest/suites/{etsCode}/{etsVersion}</td>
+          <td>Test suite documentation</td>
+          <td>text/html</td>
+        </tr>
+        <tr>
+          <td>/rest/suites/{etsCode}/{etsVersion}/run</td>
+          <td>Test run controller</td>
+          <td>application/xml </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><img src="./images/warn-16px.png"/> <strong>Warning:</strong> When using the REST API, 
+    if any test run argument includes a URI value that contains an ampersand ('&amp;') character 
+    in a query component, it must be percent-encoded as %26 since it is a "data octet" in 
+    this context (see <a href="http://tools.ietf.org/html/rfc3986#section-2.1" target="_blank">
+    RFC 3986, sec. 2.1</a>).</p>
+
+  </body>
+</html>

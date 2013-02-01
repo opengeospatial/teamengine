@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opengis.cite</groupId>
+    <artifactId>teamengine</artifactId>
+    <version>4.0-beta1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opengis.cite.teamengine</groupId>
+  <artifactId>teamengine-spi</artifactId>
+  <packaging>jar</packaging>
+
+  <name>TEAM Engine - Service Providers</name>
+  <description>
+  Provides various capabilities such as support for alternative test runners 
+  and a REST API that exposes endpoints for executing test suites.
+  </description>
+  <url>http://sourceforge.net/projects/teamengine/</url>
+  <licenses>
+    <license>
+      <name>Mozilla Public License 2.0 (MPL-2.0)</name>
+      <url>http://www.opensource.org/licenses/MPL-2.0</url>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.8</version>
+      <exclusions>
+        <!-- alternative YAML syntax for specifying test suite -->
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>snakeyaml</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>1.1.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-servlet</artifactId>
+      <version>1.12</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12.4</version>
+        <configuration>
+          <!-- Disable TestNG runner (enabled due to compile dependency) -->
+          <testNGArtifactName>null:null</testNGArtifactName>
+          <junitArtifactName>junit:junit</junitArtifactName>
+          <includes>
+            <include>**/Verify*.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/*Test.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+</project>

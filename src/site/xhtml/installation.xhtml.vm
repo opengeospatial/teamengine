@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>Installation</title>
+  </head>
+  <body>
+    <h1>Installation</h1>
+
+    <h2>How to build</h2>
+    <p>
+      <a href="http://maven.apache.org/" target="_blank">Apache Maven 3.0</a> is 
+    required to build the teamengine code base, which consists of the following 
+    modules:</p>
+
+    <ul>
+      <li>teamengine-core: Main CTL script processor</li>
+      <li>teamengine-resources: Includes shared resources such as stylesheets and schemas</li>
+      <li>teamengine-spi: Provides an extensibility framework and a REST-like API for test execution</li>
+      <li>teamengine-realm: A custom Tomcat user realm</li>
+      <li>teamengine-web: Web application</li>
+    </ul>
+
+    <p>Simply run <code>mvn package</code> in the root project directory to generate 
+    all build artifacts (using JDK 6 or later). The main build artifacts are listed 
+    below.</p>
+
+    <dl>
+      <dt><strong>teamengine-core-${project.version}-distribution.zip</strong></dt>
+      <dd>The core binary distribution (CLI usage)</dd>
+      <dt><strong>teamengine-core-${project.version}-base.[zip|tar.gz]</strong></dt>
+      <dd>Content of main configuration directory (TE_BASE)</dd>
+      <dt><strong>teamengine.war</strong></dt>
+      <dd>The JEE web application</dd>
+      <dt><strong>teamengine-common-libs.[zip|tar.gz]</strong></dt>
+      <dd>Common runtime dependencies (e.g. JAX-RS 1.1, Apache Derby)</dd>
+    </dl>
+
+    <h2>Configuration</h2>
+    <p>The value of the <code>TE_BASE</code> system property or environment variable 
+    specifies the location of the main configuration directory that contains several 
+    essential sub-directories. Create the TE_BASE directory (e.g. /srv/teamengine) 
+    and unpack the contents of the teamengine-core-${project.version}-base archive into this 
+    location and ensure that users (including the Tomcat user) have write access. 
+    The structure of the TE_BASE directory is shown below.</p>
+
+    <pre>
+TE_BASE
+  |-- config.xml        # main configuration file
+  |-- resources/        # shared test suite resources
+  |-- scripts/          # CTL test scripts
+  |-- work/             # teamengine work directory
+  +-- users/
+     |-- {user1}/       # user account details and test runs
+     |-- {user2}/
+     +-- ...
+    </pre>
+
+    <p><img src="./images/info-16px.png"/> <strong>Note:</strong> Some OGC test suites 
+    make use of an embedded Apache Derby database containing the <a href="http://www.epsg.org/Geodetic.html" 
+    target="_blank">EPSG geodetic parameters</a>. While not strictly necessary, it may be 
+    convenient to create a Derby system directory to contain one or more databases (e.g. 
+    DERBY_DATA, at /srv/derby).</p>
+
+    <p>CTL test scripts are placed in the TE_BASE/scripts directory and the TE_BASE/config.xml 
+    file is updated accordingly. A new installation already contains an entry for a sample 
+    test script ("XML Note"). Every test suite requires an entry in the configuration file--simply 
+    insert the &lt;standard&gt; element into the file under the matching organization (name). 
+    The following listing includes a sample entry.</p>
+
+    <pre>
+&lt;standard&gt;
+  &lt;name&gt;Web Map Tile Service (WMTS)&lt;/name&gt;
+  &lt;version&gt;
+    &lt;name&gt;1.0.0&lt;/name&gt;
+    &lt;suite&gt;
+      &lt;namespace-uri&gt;http://www.opengis.net/wmts/1.0&lt;/namespace-uri&gt;
+      &lt;prefix&gt;wmts&lt;/prefix&gt;
+      &lt;local-name&gt;server.suite.base&lt;/local-name&gt;
+      &lt;title&gt;WMTS 1.0 Conformance Test Suite&lt;/title&gt;
+      &lt;description&gt;Checks WMTS implementations for conformance to OGC 07-057r7.&lt;/description&gt;
+    &lt;/suite&gt;
+    &lt;revision&gt;
+      &lt;name&gt;r1&lt;/name&gt;
+      &lt;sources&gt;
+        &lt;source&gt;wmts/1.0.0/ctl&lt;/source&gt;
+      &lt;/sources&gt;
+      &lt;resources&gt;wmts/1.0.0/resources&lt;/resources&gt;
+      &lt;webdir&gt;wmts/1.0.0/web&lt;/webdir&gt;
+      &lt;profile&gt;
+        &lt;namespace-uri&gt;http://www.opengis.net/wmts/1.0&lt;/namespace-uri&gt;
+        &lt;prefix&gt;wmts&lt;/prefix&gt;
+        &lt;local-name&gt;server.profile.kvp.get&lt;/local-name&gt;
+        &lt;title&gt;GET binding&lt;/title&gt;
+      &lt;/profile&gt;
+      &lt;profile&gt;
+        &lt;namespace-uri&gt;http://www.opengis.net/wmts/1.0&lt;/namespace-uri&gt;
+        &lt;prefix&gt;wmts&lt;/prefix&gt;
+        &lt;local-name&gt;server.profile.kvp.post&lt;/local-name&gt;
+        &lt;title&gt;POST/KVP binding&lt;/title&gt;
+      &lt;/profile&gt;
+    &lt;/revision&gt;
+  &lt;/version&gt;
+&lt;/standard&gt;
+    </pre>
+
+    <h2>Web application deployment</h2>
+
+    <p>Apache Tomcat 7.0 (with JDK 6 or later) is a supported servlet container. It is 
+    strongly recommended that a dedicated Tomcat instance be created to host the teamengine 
+    application. Create one as suggested below.</p>
+
+    <p>Create a CATALINA_BASE directory (Windows):</p>
+    <pre>
+> mkdir base-1 &amp; cd base-1
+> xcopy %CATALINA_HOME%\conf conf\
+> mkdir lib logs temp webapps work
+</pre>
+
+<p>Create a CATALINA_BASE directory (GNU/Linux):</p>
+<pre>
+$ sudo mkdir -p /srv/tomcat/base-1; cd /srv/tomcat/base-1
+$ sudo cp -r $CATALINA_HOME/conf .
+$ sudo mkdir lib logs temp webapps work
+</pre>
+
+<p>These JVM options are recommended for the Tomcat instance:</p>
+<p>
+  <code>CATALINA_OPTS="-server -Xmx1024m -XX:MaxPermSize=128m -DTE_BASE=$TE_BASE -Dderby.system.home=$DERBY_DATA"</code>
+</p>
+
+<p>Unpack the contents of the teamengine-common-libs archive into the CATALINA_BASE/lib 
+directory. Add the following contexts for static web content to the CATALINA_BASE/conf/Catalina/localhost/
+directory.</p>
+
+<dl>
+  <dt>docs.xml</dt>
+  <dd>&lt;Context path="/docs" docBase="${TE_BASE}/resources/docs" /&gt;</dd>
+  <dt>reports.xml</dt>
+  <dd>&lt;Context path="/reports" docBase="${TE_BASE}/users" /&gt;</dd>
+  <dt>about.xml</dt>
+  <dd>&lt;Context path="/about" docBase="${TE_BASE}/scripts" /&gt;</dd>
+</dl>
+
+<p>Deploy the <code>teamengine.war</code> component and start the Tomcat instance. 
+The following URIs provide starting points for discovering and executing test suites:</p>
+
+<ul>
+  <li>/teamengine - Home page for selecting and running CTL test suites</li>
+  <li>/teamengine/rest/suites - Presents a listing of available (TestNG) test suites, 
+  with links to test suite documentation</li>
+</ul>
+
+</body>
+</html>

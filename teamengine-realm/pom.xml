@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opengis.cite</groupId>
+    <artifactId>teamengine</artifactId>
+    <version>4.0-beta1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opengis.cite.teamengine</groupId>
+  <artifactId>teamengine-realm</artifactId>
+  <packaging>jar</packaging>
+
+  <name>TEAM Engine - Tomcat Realm</name>
+  <description>
+  This module implements a custom Tomcat Realm for checking credentials 
+  from XML user files. Place it in the $CATALINA_BASE/lib directory of 
+  the Tomcat instance.
+  </description>
+  <url>http://sourceforge.net/projects/teamengine/</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>tomcat6</id>
+      <properties>
+        <container>tomcat6</container>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>catalina</artifactId>
+          <version>6.0.36</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>tomcat7</id>
+      <properties>
+        <container>tomcat7</container>
+      </properties>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-catalina</artifactId>
+          <version>7.0.33</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+</project>
