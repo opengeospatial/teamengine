@@ -21,6 +21,8 @@
     <coverSubTitle>Version: ${project.version}</coverSubTitle>
     <coverType>User Guide</coverType>
     <coverdate>${date}</coverdate>
+    <projectName>${project.name}</projectName>
+    <projectLogo>images/te-logo.png</projectLogo>
     <companyName>The Open Geospatial Consortium</companyName>
     <companyLogo>images/ogc-logo-149x75.png</companyLogo>
   </cover>

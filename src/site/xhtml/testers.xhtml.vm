@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>Tester's Guide</title>
+  </head>
+  <body>
+    <p>This document provides basic guidance about how to develop a test suite 
+    that can be executed using TEAM Engine. The test harness is capable of 
+    running tests implemented using the CTL (Compliance Test Language) scripting 
+    language and TestNG.</p>
+
+    <h2>CTL scripts</h2>
+    <p>
+    The OGC CTL grammar can be regarded as a kind of XML-based domain-specific language 
+    for defining test suites. A test suite is processed to produce XSLT 2.0 templates 
+    that are then executed by the Saxon processor. See the OGC specification <a 
+    href="http://portal.opengeospatial.org/files/?artifact_id=33085" target="_blank">
+    OGC 06-126r2</a> for details about developing test suites using CTL tags.
+    </p>
+    <p>
+    The teamengine-core-${project.version}-base.zip archive contains a sample test 
+    suite defined in <code>scripts/note.ctl</code>. The OGC compliance testing program 
+    also maintains a set of test scripts that are publicly available from the OGC
+    Suversion repository at this location:</p> 
+
+    <p><code>https://svn.opengeospatial.org/ogc-projects/cite/scripts</code></p>
+
+    <h2>TestNG framework</h2>
+    <p>
+    TestNG is a popular Java-based testing framework that is used to develop test 
+    suites at multiple levels. The TEAM Engine harness emphasizes functional or 
+    "black box" testing that aims to verify the behavior or structure of the test 
+    subject against its specification(s).
+    </p>
+    <p>A Maven <a href="http://maven.apache.org/archetype/maven-archetype-plugin/" 
+    target="_blank">archetype</a> is available that provides a template for creating 
+    new test suites. It may be used to quickly generate a basic implementation of 
+    a test suite that can be executed immediately. The archetype is not currently 
+    available in the central Maven repository; it resides in the <a 
+    href="https://svn.opengeospatial.org/ogc-projects/cite/maven" target="_blank">
+    OGC repository</a> with these coordinates:
+    </p>
+    <pre>
+    groupId: org.opengis.cite
+    artifactId: cite-archetype-testng
+    version: 1.0</pre>
+
+    <p>To create a test suite, invoke the 'generate' goal of the archetype plugin as 
+    indicated below, where the <code>ets-code</code> parameter specifies the identifier 
+    for the test suite (it must be a legal Java package name).</p>
+    <pre>
+    mvn archetype:generate \
+    -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/
+    maven/archetype-catalog.xml \
+    -Dets-code=?</pre>
+
+  </body>
+</html>

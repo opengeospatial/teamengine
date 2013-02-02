@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
-    <title>TEAM Engine - Overview</title>
+    <title>Overview</title>
   </head>
   <body>
     <h1>Overview</h1>
@@ -18,7 +18,29 @@
     TEAM Engine is a Java application that provides command-line and web interfaces to 
     execute test suites. A REST API is also available to run TestNG-based suites. A Java 
     runtime environment is necessary (JDK 6 or later), and <a href="http://tomcat.apache.org/" 
-    target="_blank">Apache Tomcat 7</a>  is required to host the web application.
+    target="_blank">Apache Tomcat 7</a> is required to host the web application.
+    </p>
+    <p>
+    When a CTL test suite is executed, the source scripts are transformed into a collection 
+    of XSLT (v2.0) templates, one for each test. A form may be presented to the user to collect 
+    test input parameters. The starting test is then invoked and the suite is executed using 
+    the Saxon processor. Test outputs are written to log files as the test run proceeds.
+    </p>
+    <p>
+    A light-weight plugin mechanism is provided by the <em>teamengine-api</em> module; it 
+    enables support for alternative test controllers that can be invoked using a REST-like 
+    API. The UML diagram shown below summarizes the essential design. A test controller 
+    must implement the <code>TestSuiteController</code> and <code>TestRunExecutor</code> 
+    interfaces.
+    </p>
+    <figure>
+      <figcaption>Figure 1 - Extensibility framework for alternative test runners</figcaption>
+      <img src="./images/teamengine-spi.png" alt="Fig. 1 - Extensibility framework" />
+    </figure>
+    <p>
+    Executable test suites are automatically discovered using the Java <a href="http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html" 
+    target="_blank">ServiceLoader facility</a>. A service provider is identified by placing 
+    the appropriate configuration file in the resource directory META-INF/services.
     </p>
   </body>
 </html>
