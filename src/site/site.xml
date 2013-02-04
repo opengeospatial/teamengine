@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="TEAM Engine" 
+<project name="${project.name}" 
   xmlns="http://maven.apache.org/DECORATION/1.3.0" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
@@ -15,9 +15,21 @@
     </fluidoSkin>
   </custom>
 
+  <bannerLeft>
+    <name>${project.name}</name>
+    <src>./images/te-logo-small.png</src>
+    <href>http://www.sourceforge.net/projects/teamengine/</href>
+  </bannerLeft>
+  <bannerRight>
+    <name>OGC Compliance Testing Program</name>
+    <src>./images/ogc-logo-100x50.png</src>
+    <href>http://cite.opengeospatial.org/</href>
+  </bannerRight>
+
   <body>
     <links>
-      <item name="TEAM Engine" href="http://www.sourceforge.net/projects/teamengine/"/>
+      <item name="Wiki" href="http://www.sourceforge.net/p/teamengine/wiki/Home/"/>
+      <item name="Tickets" href="http://www.sourceforge.net/p/teamengine/_list/tickets"/>
     </links>
 
     <menu name="Documentation">

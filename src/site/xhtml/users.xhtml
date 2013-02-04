@@ -13,23 +13,25 @@
     <h2>Command shell</h2>
     <p>
     The core binary distribution (teamengine-core-${project.version}-distribution.zip) 
-    includes shell scripts for Windows and GNU/Linux environments. Unpack the archive 
-    into a convenient location (TE_HOME); the contents are as shown below.
+    includes shell scripts for running tests in Windows and Unix-like (Bash shell) 
+    environments. Unpack the archive into a convenient location (TE_HOME); the contents 
+    are as shown below.
     </p>
     <pre>
 TE_HOME
-  |-- bin/          # shell scripts
-  |-- lib/          # supporting libraries
-  |-- resources/    # classpath resources (stylesheets, schemas, etc.)
+  |-- bin/              # shell scripts (/windows, /unix)
+  |-- lib/              # supporting libraries
+  |-- resources/        # classpath resources (stylesheets, schemas, etc.)
     </pre>
 
     <h2>Web application</h2>
     <p>
-    When the web application (teamengine.war) is deployed in a servlet container, 
-    the welcome page (e.g. http://localhost:8080/teamengine) provides a listing 
-    of available test suites. In a new installation a sample suite for the fictitious
-    "XML Note" specification should appear. Additional test suites correspond to 
-    entries in the main configuration file at TE_BASE/config.xml.
+    The web application (teamengine.war) provides a UI for selecting test suites, 
+    browsing test documentation, and launching test runs. The welcome page (e.g. 
+    http://localhost:8080/teamengine) provides a listing of available test suites. 
+    In a new installation a sample suite for the fictitious "XML Note" specification 
+    should appear. Additional test suites correspond to entries in the main configuration 
+    file located at TE_BASE/config.xml.
     </p>
 
     <p>

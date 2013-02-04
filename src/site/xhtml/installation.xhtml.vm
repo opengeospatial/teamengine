@@ -63,10 +63,22 @@ TE_BASE
     DERBY_DATA, at /srv/derby).</p>
 
     <p>CTL test scripts are placed in the TE_BASE/scripts directory and the TE_BASE/config.xml 
-    file is updated accordingly. A new installation already contains an entry for a sample 
-    test script ("XML Note"). Every test suite requires an entry in the configuration file--simply 
-    insert the &lt;standard&gt; element into the file under the matching organization (name). 
-    The following listing includes a sample entry.</p>
+    file is updated accordingly. As a convenience, the shell script <code>export-ctl</code> may 
+    be run to export test suites from the official OGC repository. The location of a CSV file 
+    is passed as the first argument to the script; each record in the file should contain two 
+    fields: a Subversion URL, and a local path name relative to TE_BASE/scripts.
+    </p>
+    <pre>
+https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,sensorml/1.0.1
+... 
+    </pre>
+
+    <p>
+    A new installation already contains an entry for a sample test script ("XML Note"). To enable 
+    another test suite an entry for it must appear in the configuration file--simply insert the 
+    &lt;standard&gt; element into the file under the matching organization (name). The following 
+    listing includes a sample entry.
+    </p>
 
     <pre>
 &lt;standard&gt;

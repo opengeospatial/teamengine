@@ -19,7 +19,7 @@
   <cover>
     <coverTitle>${project.name}</coverTitle>
     <coverSubTitle>Version: ${project.version}</coverSubTitle>
-    <coverType>User Guide</coverType>
+    <coverType>Getting Started Guide</coverType>
     <coverdate>${date}</coverdate>
     <projectName>${project.name}</projectName>
     <projectLogo>images/te-logo.png</projectLogo>
