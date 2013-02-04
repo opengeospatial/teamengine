@@ -1,9 +1,11 @@
 CSW 2.0.2 Test Suite Release Notes
 
-
 Changes included in latest revision:
 
---- revision R4 (to be released) -----------
+--- revision r4 -----------
+- Updated config for TEAM Engine v4
+- Fixed Schematron 1.5 validation
+
 2012-09-13 (lbigagli):
 - removed test csw-2.0.2-GetRecords-tc11.2 (see issue #583)
 - updated config.xml to version r4-beta
