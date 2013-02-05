@@ -40,8 +40,8 @@
     <p>The value of the <code>TE_BASE</code> system property or environment variable 
     specifies the location of the main configuration directory that contains several 
     essential sub-directories. Create the TE_BASE directory (e.g. /srv/teamengine) 
-    and unpack the contents of the teamengine-core-${project.version}-base archive into this 
-    location and ensure that users (including the Tomcat user) have write access. 
+    and unpack the contents of the teamengine-core-${project.version}-base archive into 
+    this location and ensure that users (including the Tomcat user) have write access. 
     The structure of the TE_BASE directory is shown below.</p>
 
     <pre>
@@ -51,7 +51,7 @@ TE_BASE
   |-- scripts/          # CTL test scripts
   |-- work/             # teamengine work directory
   +-- users/
-     |-- {user1}/       # user account details and test runs
+     |-- {user1}/       # user account details and test run outputs
      |-- {user2}/
      +-- ...
     </pre>
@@ -70,8 +70,7 @@ TE_BASE
     </p>
     <pre>
 https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,sensorml/1.0.1
-... 
-    </pre>
+...</pre>
 
     <p>
     A new installation already contains an entry for a sample test script ("XML Note"). To enable 

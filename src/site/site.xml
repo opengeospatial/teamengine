@@ -32,7 +32,7 @@
       <item name="Tickets" href="http://www.sourceforge.net/p/teamengine/_list/tickets"/>
     </links>
 
-    <menu name="Documentation">
+    <menu name="Getting Started">
       <item href="index.html" name="Overview" />
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
