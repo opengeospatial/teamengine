@@ -30,6 +30,10 @@ TE_HOME
     operating system in use. Once this is done, change to the appropriate script directory 
     (TE_HOME/bin/{unix,windows}) or add it to the system path.
     </p>
+    
+    <p><img src="./images/warn-16px.png"/> <strong>Warning:</strong> If a test suite 
+    requires any supporting libraries that are not included with the core distribution, 
+    these must be added to the TE_BASE/resources/lib directory.</p>
 
     <p>
     To view a brief summary of a test suite, call <code>listsuites</code> and specify the 

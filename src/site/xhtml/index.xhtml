@@ -33,10 +33,12 @@
     must implement the <code>TestSuiteController</code> and <code>TestRunExecutor</code> 
     interfaces.
     </p>
+
+    <p><strong>Figure 1 - Extensibility framework for alternative test runners</strong></p>
     <figure>
-      <figcaption>Figure 1 - Extensibility framework for alternative test runners</figcaption>
       <img src="./images/teamengine-spi.png" alt="Fig. 1 - Extensibility framework" />
     </figure>
+
     <p>
     Executable test suites are automatically discovered using the Java <a href="http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html" 
     target="_blank">ServiceLoader facility</a>. A service provider is identified by placing 

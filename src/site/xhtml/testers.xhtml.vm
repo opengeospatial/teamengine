@@ -27,6 +27,8 @@
     <p><code>https://svn.opengeospatial.org/ogc-projects/cite/scripts</code></p>
 
     <h2>TestNG framework</h2>
+
+    <h3>Creating a test suite</h3>
     <p>
     TestNG is a popular Java-based testing framework that is used to develop test 
     suites at multiple levels. The TEAM Engine harness emphasizes functional or 
@@ -46,14 +48,85 @@
     artifactId: cite-archetype-testng
     version: 1.0</pre>
 
-    <p>To create a test suite, invoke the 'generate' goal of the archetype plugin as 
-    indicated below, where the <code>ets-code</code> parameter specifies the identifier 
-    for the test suite (it must be a legal Java package name).</p>
+    <p>To create a test suite, invoke the interactive 'generate' goal of the archetype 
+    plugin as indicated below, where the <code>ets-code</code> parameter specifies the 
+    identifier for the test suite; this value must be a legal Java package name.</p>
     <pre>
     mvn archetype:generate \
     -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/
     maven/archetype-catalog.xml \
     -Dets-code=?</pre>
 
+    <p>Several prompts will ask for various property values in order to generate 
+    the test suite project. The suggested default values may be modified if desired.
+    The new project is created in a directory named using the value of the artifactId 
+    property.
+    </p>
+
+    <h3>Test suite structure</h3>
+
+    <p>The TestNG framework offers considerable flexibility regarding the overall 
+    organization of a test suite. A test run executes one or more test suites, each of 
+    which may include a collection of child test suites. A child test suite encapsulates 
+    tests for a specific functional area. For example, a so-called "class 2" profile 
+    (see ISO 19106) that introduces new capabilities still requires conformance to the 
+    base standard(s); there may be a child test suite defined for each applicable base 
+    standard. The essential structure of a test suite is illustrated in the following 
+    figure.</p>
+
+    <p><strong>Figure 2 - Structure of a TestNG test suite</strong></p>
+    <figure>
+      <img src="./images/testng-suite.png" 
+      alt="Figure 2 - Structure of a TestNG test suite" />
+    </figure>
+
+    <p>Each &lt;test&gt; element occurring within a top-level &lt;suite&gt; element 
+    denotes a test group that typically corresponds to a conformance class or level. 
+    A test group contains one or more test classes that focus on particular capabilities 
+    or feature sets (e.g., WFS GetFeature). A test class contains test methods that 
+    implement the actual test cases. The listing shown below includes the test suite 
+    definition produced when creating a new test suite from the ETS archetype 
+    (see src/main/resources/org/opengis/cite/${ets-code}/testng.xml).</p>
+
+    <pre>
+&lt;suite name="alpha-1.0-SNAPSHOT" verbose="0" configfailurepolicy="skip"&gt;
+  &lt;parameter name="iut"  value=""/&gt;
+  &lt;parameter name="ics"  value=""/&gt;
+
+  &lt;listeners&gt;
+    &lt;listener class-name="org.opengis.cite.alpha.TestRunListener" /&gt;
+    &lt;listener class-name="org.opengis.cite.alpha.SuiteFixtureListener" /&gt;
+  &lt;/listeners&gt;
+
+  &lt;test name="Conformance Level 1"&gt;
+    &lt;classes&gt;
+      &lt;class name="org.opengis.cite.alpha.level1.Capability1Tests" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+  &lt;test name="Conformance Level 2"&gt;
+    &lt;classes&gt;
+      &lt;class name="org.opengis.cite.alpha.level2.Capability2Tests" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+&lt;/suite&gt;</pre>
+
+    <p>The order of test execution can be controlled if necessary. The structure of 
+    the XML suite definition is the most important determinant. Keep the following 
+    default behaviors in mind when putting it together:</p>
+
+    <ul>
+      <li>Test groups (&lt;test&gt; elements) comprising a suite are executed in 
+    document order (as specified in the XML suite definition).</li>
+      <li>Within a given test group, constituent test classes are executed in document 
+    order.</li>
+      <li>A child test suite is run before its parent suite.</li>
+      <li>Test methods are run after their dependencies, which are declared using the 
+        <code>dependsOnMethods</code> or <code>dependsOnGroups</code> attributes on the 
+    @Test annotation. </li>
+    </ul>
+
+    <p>See the <a 
+    href="http://testng.org/doc/documentation-main.html" target="_blank">TestNG 
+    documentation</a> for more information.</p>
   </body>
 </html>

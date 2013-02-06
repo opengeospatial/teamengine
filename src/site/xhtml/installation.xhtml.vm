@@ -69,7 +69,8 @@ TE_BASE
     fields: a Subversion URL, and a local path name relative to TE_BASE/scripts.
     </p>
     <pre>
-https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,sensorml/1.0.1
+https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,\
+sensorml/1.0.1
 ...</pre>
 
     <p>
@@ -89,7 +90,9 @@ https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,se
       &lt;prefix&gt;wmts&lt;/prefix&gt;
       &lt;local-name&gt;server.suite.base&lt;/local-name&gt;
       &lt;title&gt;WMTS 1.0 Conformance Test Suite&lt;/title&gt;
-      &lt;description&gt;Checks WMTS implementations for conformance to OGC 07-057r7.&lt;/description&gt;
+      &lt;description&gt;
+      Checks WMTS implementations for conformance to OGC 07-057r7.
+      &lt;/description&gt;
     &lt;/suite&gt;
     &lt;revision&gt;
       &lt;name&gt;r1&lt;/name&gt;
