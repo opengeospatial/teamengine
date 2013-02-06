@@ -121,7 +121,7 @@
         </dependencies>
         <configuration>  
           <generateReports>false</generateReports>  
-        </configuration>
+        </configuration> 
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

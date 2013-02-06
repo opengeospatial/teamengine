@@ -1779,20 +1779,23 @@ public class TECore implements Runnable {
      * instruction, call it to return specified info from uc.
      */
     public Element parse(URLConnection uc, Node instruction,
-            Document response_doc) throws Throwable {
-        Transformer t = TransformerFactory.newInstance().newTransformer();
+            Document response_doc) throws Exception {
+        Transformer idt = TransformerFactory.newInstance().newTransformer();
         Element parser_e = response_doc.createElement("parser");
         Element response_e = response_doc.createElement("response");
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
+            InputStream is = null;
             try {
-                // InputStream is = uc.getInputStream();
-                InputStream is = URLConnectionUtils.getInputStream(uc);
-                t.transform(new StreamSource(is), new DOMResult(content_e));
+                // is = uc.getInputStream();
+                is = URLConnectionUtils.getInputStream(uc);
+                idt.transform(new StreamSource(is), new DOMResult(content_e));
             } catch (Exception e) {
                 jlogger.log(Level.SEVERE, "parse Error", e);
                 parser_e.setTextContent(e.getClass().getName() + ": "
                         + e.getMessage());
+            } finally {
+                is.close();
             }
         } else {
             Element instruction_e;
@@ -1839,6 +1842,12 @@ public class TECore implements Runnable {
             }
             Object return_object;
             try {
+                if (LOGR.isLoggable(Level.FINER)) {
+                    LOGR.finer("Invoking method " + method.toGenericString()
+                            + "size args[] = " + args.length + "\n args[0]: "
+                            + args[0].toString() + "\n args[1]:\n"
+                            + DomUtils.serializeNode((Node) args[1]));
+                }
                 return_object = method.invoke(instance, args);
             } catch (java.lang.reflect.InvocationTargetException e) {
                 Throwable cause = e.getCause();
@@ -1848,13 +1857,12 @@ public class TECore implements Runnable {
                     msg += ": " + cause.getMessage();
                 }
                 jlogger.log(Level.SEVERE, msg, e);
-
                 throw new Exception(msg, cause);
             }
             pwLogger.close();
             if (return_object instanceof Node) {
-                t.transform(new DOMSource((Node) return_object), new DOMResult(
-                        content_e));
+                idt.transform(new DOMSource((Node) return_object),
+                        new DOMResult(content_e));
             } else if (return_object != null) {
                 content_e.appendChild(response_doc.createTextNode(return_object
                         .toString()));
