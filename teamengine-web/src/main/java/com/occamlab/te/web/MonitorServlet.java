@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
 import com.occamlab.te.TECore;
 import com.occamlab.te.util.DomUtils;
 
+@SuppressWarnings("serial")
 public class MonitorServlet extends HttpServlet {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
 
@@ -162,16 +163,6 @@ public class MonitorServlet extends HttpServlet {
             uc.setRequestMethod(method);
             uc.setDoInput(true);
             uc.setDoOutput(post);
-            /*
-             * for (String key : uc.getRequestProperties().keySet()) {
-             * System.out.println(key + ": " + uc.getRequestProperty(key)); }
-             * 
-             * Enumeration requestHeaders = request.getHeaderNames(); while
-             * (requestHeaders.hasMoreElements()) { String key =
-             * (String)requestHeaders.nextElement(); System.out.println(key +
-             * ": " + request.getHeader(key)); uc.setRequestProperty(key,
-             * request.getHeader(key)); }
-             */
             byte[] data = null;
             if (post) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -207,18 +198,8 @@ public class MonitorServlet extends HttpServlet {
                 Element content = DomUtils.getElementByTagName(eResponse,
                         "content");
                 Element root = DomUtils.getChildElement(content);
-                // identityTransformer.transform(new DOMSource(root), new
-                // StreamResult(System.out));
                 identityTransformer.transform(new DOMSource(root),
                         new StreamResult(response.getOutputStream()));
-                /*
-                 * ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                 * identityTransformer.transform(new DOMSource(eResponse), new
-                 * StreamResult(baos)); data = baos.toByteArray();
-                 * response.setContentLength(data.length); ByteArrayInputStream
-                 * bais = new ByteArrayInputStream(data); copy_stream(bais,
-                 * response.getOutputStream());
-                 */
             } else {
                 response.setContentLength(uc.getLength());
                 copy_stream(uc.getInputStream(), response.getOutputStream());
@@ -253,11 +234,6 @@ public class MonitorServlet extends HttpServlet {
                 monitorCallSeq++;
                 String callId = mc.getCallId() + "_"
                         + Integer.toString(monitorCallSeq);
-                /*
-                 * while (!core.getTestPath().equals(mc.testPath)) { try{
-                 * Thread.sleep((int)(Math.random() * 200)); }catch (Exception
-                 * e){ e.printStackTrace(); } }
-                 */
                 core.callTest(mc.getContext(), mc.getLocalName(),
                         mc.getNamespaceURI(), paramsNode.getUnderlyingNode(),
                         callId);
@@ -290,6 +266,7 @@ public class MonitorServlet extends HttpServlet {
         process(request, response, true);
     }
 
+    @SuppressWarnings("unchecked")
     Element encodeRequest(HttpServletRequest request, Document doc, byte[] data)
             throws Exception {
         Element eRequest = doc.createElementNS(CTL_NS, "ctl:request");
@@ -299,7 +276,7 @@ public class MonitorServlet extends HttpServlet {
         Element eMethod = doc.createElementNS(CTL_NS, "ctl:method");
         eMethod.setTextContent(request.getMethod());
         eRequest.appendChild(eMethod);
-        Enumeration requestHeaders = request.getHeaderNames();
+        Enumeration<String> requestHeaders = request.getHeaderNames();
         while (requestHeaders.hasMoreElements()) {
             String key = (String) requestHeaders.nextElement();
             Element eHeader = doc.createElementNS(CTL_NS, "ctl:header");
@@ -307,7 +284,7 @@ public class MonitorServlet extends HttpServlet {
             eHeader.setTextContent(request.getHeader(key));
             eRequest.appendChild(eHeader);
         }
-        Enumeration params = request.getParameterNames();
+        Enumeration<String> params = request.getParameterNames();
         while (params.hasMoreElements()) {
             String key = (String) params.nextElement();
             Element eParam = doc.createElementNS(CTL_NS, "ctl:param");

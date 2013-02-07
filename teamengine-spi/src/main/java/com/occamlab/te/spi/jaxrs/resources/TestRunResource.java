@@ -173,7 +173,7 @@ public class TestRunResource {
      *            A collection of key-value pairs. Each key can have zero or
      *            more values but only the first value is used.
      * @return A DOM Document representing an XML properties file.
-     * @see Properties
+     * @see java.util.Properties
      */
     Document readTestRunArguments(
             Map<String, java.util.List<String>> requestParams) {
