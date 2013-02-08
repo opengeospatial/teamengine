@@ -29,6 +29,8 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +45,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
+import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
 /**
@@ -55,6 +58,9 @@ import com.occamlab.te.util.URLConnectionUtils;
  * representation of the message status, headers, and content.
  */
 public class HTTPParser {
+
+    private static final Logger LOGR = Logger.getLogger(HTTPParser.class
+            .getName());
     public static final String PARSERS_NS = "http://www.occamlab.com/te/parsers";
     public static final String EOS_ERR = "Error in multipart stream.  End of stream reached and with no closing boundary delimiter line";
 
@@ -184,7 +190,6 @@ public class HTTPParser {
         Document doc = db.newDocument();
         Element root = doc.createElement(multipart ? "multipart-response"
                 : "response");
-        String httpStatusCode = "200";
         if (uc.getHeaderFieldKey(0) == null) {
             Element status = doc.createElement("status");
             String status_line = uc.getHeaderField(0);
@@ -195,7 +200,6 @@ public class HTTPParser {
                 }
                 if (status_array.length > 1) {
                     status.setAttribute("code", status_array[1]);
-                    httpStatusCode = status_array[1];
                 }
                 if (status_array.length > 2) {
                     StringBuilder sb = new StringBuilder();
@@ -210,17 +214,6 @@ public class HTTPParser {
         }
 
         append_headers(uc, root);
-
-        // 2011-10-07 PwD
-        /*
-        if (httpStatusCode.equals("404")) {
-            // chained parser will fail; don't bother; return status code for
-            // ctl:script to check / report
-            doc.appendChild(root);
-            return doc;
-        }
-        */
-
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
         if (multipart) {
@@ -281,6 +274,12 @@ public class HTTPParser {
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
             // use TECore to invoke any chained parsers
+            if (LOGR.isLoggable(Level.FINER)) {
+                String msg = String.format(
+                        "Calling subsidiary parser for resource at %s:\n%s",
+                        uc.getURL(), DomUtils.serializeNode(parser));
+                LOGR.finer(msg);
+            }
             Element response_e = core.parse(uc, parser);
             Element parser_e = (Element) (response_e
                     .getElementsByTagName("parser").item(0));

@@ -45,10 +45,6 @@
       <directory>${project.build.directory}/maven-shared-archive-resources</directory>
       <outputDirectory>resources</outputDirectory>
     </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/src/site/resources</directory>
-      <outputDirectory>docs</outputDirectory>
-    </fileSet>
   </fileSets>
   <files>
     <file>

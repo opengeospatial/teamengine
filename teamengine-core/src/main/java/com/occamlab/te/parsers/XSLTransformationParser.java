@@ -7,6 +7,8 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,6 +30,9 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
 public class XSLTransformationParser {
+
+    private static final Logger LOGR = Logger
+            .getLogger(XSLTransformationParser.class.getName());
     DocumentBuilder db = null;
     TransformerFactory tf = null;
     Templates defaultTemplates = null;
@@ -144,13 +149,23 @@ public class XSLTransformationParser {
                 logger, ignoreErrors, ignoreWarnings);
         t.setErrorListener(el);
         Document doc = db.newDocument();
+        InputStream is = null;
         try {
-            t.transform(new StreamSource(uc.getInputStream()), new DOMResult(
-                    doc));
-            InputStream is = URLConnectionUtils.getInputStream(uc);
+            if (LOGR.isLoggable(Level.FINER)) {
+                String msg = String
+                        .format("Attempting to transform source from %s using instruction set:\n %s",
+                                uc.getURL(),
+                                DomUtils.serializeNode(instruction));
+                LOGR.finer(msg);
+            }
+            // may return error stream
+            is = URLConnectionUtils.getInputStream(uc);
             t.transform(new StreamSource(is), new DOMResult(doc));
         } catch (TransformerException e) {
             el.error(e);
+        } finally {
+            if (null != is)
+                is.close();
         }
         if (el.getErrorCount() > 0 && !ignoreErrors) {
             return null;

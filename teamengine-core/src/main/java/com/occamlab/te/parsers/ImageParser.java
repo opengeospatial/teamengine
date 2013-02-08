@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -553,8 +554,26 @@ public class ImageParser {
     }
 
     public static Document parse(URLConnection uc, Element instruction,
-            PrintWriter logger) throws Exception {
-        return parse(uc.getInputStream(), instruction, logger);
+            PrintWriter logger) {
+        Document doc = null;
+        InputStream is = null;
+        try {
+            is = uc.getInputStream();
+            doc = parse(is, instruction, logger);
+        } catch (Exception e) {
+            String msg = String.format(
+                    "Failed to parse %s resource from %s \n %s",
+                    uc.getContentType(), uc.getURL(), e.getMessage());
+            jlogger.warning(msg);
+        } finally {
+            if (null != is) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return doc;
     }
 
     public Document parseAsInitialized(URLConnection uc, Element instruction,
