@@ -74,11 +74,12 @@
     standard. The essential structure of a test suite is illustrated in the following 
     figure.</p>
 
-    <p><strong>Figure 2 - Structure of a TestNG test suite</strong></p>
-    <figure>
-      <img src="./images/testng-suite.png" 
-      alt="Figure 2 - Structure of a TestNG test suite" />
-    </figure>
+    <div class="figure">
+      <p><strong>Figure 2 - Structure of a TestNG test suite</strong></p>
+      <figure>
+        <img src="./images/testng-suite.png" alt="Figure 2 - Structure of a TestNG test suite" />
+      </figure>
+    </div>
 
     <p>Each &lt;test&gt; element occurring within a top-level &lt;suite&gt; element 
     denotes a test group that typically corresponds to a conformance class or level. 

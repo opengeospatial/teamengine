@@ -138,7 +138,10 @@ $ sudo cp -r $CATALINA_HOME/conf .
 $ sudo mkdir lib logs temp webapps work
 </pre>
 
-<p>These JVM options are recommended for the Tomcat instance:</p>
+<p>Recommended JVM options for the Tomcat instance are indicated below. Note that the 
+maximum memory heap size (<code>-Xmx</code>) may need to be increased as the number 
+of concurrent users increases.</p>
+
 <p>
   <code>CATALINA_OPTS="-server -Xmx1024m -XX:MaxPermSize=128m -DTE_BASE=$TE_BASE -Dderby.system.home=$DERBY_DATA"</code>
 </p>

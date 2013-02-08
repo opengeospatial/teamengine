@@ -580,11 +580,11 @@ public class TECore implements Runnable {
         } else if (result == NOT_TESTED) {
             return "Not Tested";
         } else if (result == SKIPPED) {
-            return "Skipped - Prerequisites Not Met";
+            return "Skipped - Prerequisites not satisfied.";
         } else if (result == WARNING) {
-            return ("generated a Warning.");
+            return ("Warning.");
         } else if (result == INHERITED_FAILURE) {
-            return "Failed (Inherited failure)";
+            return "Failed - Inherited)";
         } else {
             return "Failed";
         }
