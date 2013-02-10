@@ -14,10 +14,12 @@ code base, which consists of the following modules:
 * teamengine-realm: Custom Tomcat user realm
 * teamengine-spi: Extensibility framework and REST-like API
 
+
 Simply run 'mvn package' in the root project directory to generate all build 
 artifacts (using JDK 6 or later). Execute the 'mvn site' phase with the top-
 level POM to generate project documentation; this will also create an aggregate 
 PDF document in the target/pdf directory.
+
 
 The main build artifacts are listed below.
 

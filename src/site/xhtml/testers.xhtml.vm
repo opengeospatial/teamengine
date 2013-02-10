@@ -16,7 +16,7 @@
     for defining test suites. A test suite is processed to produce XSLT 2.0 templates 
     that are then executed by the Saxon processor. See the OGC specification <a 
     href="http://portal.opengeospatial.org/files/?artifact_id=33085" target="_blank">
-    OGC 06-126r2</a> for details about developing test suites using CTL tags.
+    OGC 06-126r2</a> for details about developing test suites using CTL elements.
     </p>
     <p>
     The teamengine-core-${project.version}-base.zip archive contains a sample test 
@@ -49,8 +49,9 @@
     version: 1.0</pre>
 
     <p>To create a test suite, invoke the interactive 'generate' goal of the archetype 
-    plugin as indicated below, where the <code>ets-code</code> parameter specifies the 
+    plugin as shown below, where the <code>ets-code</code> parameter specifies the 
     identifier for the test suite; this value must be a legal Java package name.</p>
+
     <pre>
     mvn archetype:generate \
     -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/
@@ -165,8 +166,8 @@
 &lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;
 &lt;properties version="1.0"&gt;
   &lt;comment&gt;Test run arguments for ets-iso19142&lt;/comment&gt;
-  &lt;entry key="wfs"&gt;http://ows9.lat-lon.de/deegree-webservices-3.2-pre7.1/services/wfs200?\
-request=GetCapabilities&amp;service=WFS&lt;/entry&gt;
+  &lt;entry key="wfs"&gt;http://ows9.lat-lon.de/deegree-webservices-3.2-pre7.1/
+services/wfs200?request=GetCapabilities&amp;service=WFS&lt;/entry&gt;
 &lt;/properties&gt;</pre>
 
     <p><img src="./images/info-16px.png"/> <strong>Note:</strong> The capabilities document 

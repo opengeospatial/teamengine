@@ -27,9 +27,9 @@
     the Saxon processor. Test outputs are written to log files as the test run proceeds.
     </p>
     <p>
-    A light-weight plugin mechanism is provided by the <em>teamengine-api</em> module; it 
+    A light-weight plugin mechanism is provided by the <em>teamengine-spi</em> module; it 
     enables support for alternative test controllers that can be invoked using a REST-like 
-    API. The UML diagram shown below summarizes the essential design. A test controller 
+    API. The UML diagram in Figure 1 summarizes the essential design. A test controller 
     must implement the <code>TestSuiteController</code> and <code>TestRunExecutor</code> 
     interfaces.
     </p>
@@ -44,7 +44,9 @@
     <p>
     Executable test suites are automatically discovered using the Java <a href="http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html" 
     target="_blank">ServiceLoader facility</a>. A service provider is identified by placing 
-    the appropriate configuration file in the resource directory META-INF/services.
+    the appropriate configuration file in the resource directory META-INF/services. The file 
+    contains the fully-qualified name of a class that implements the TestSuiteController 
+    interface.
     </p>
   </body>
 </html>

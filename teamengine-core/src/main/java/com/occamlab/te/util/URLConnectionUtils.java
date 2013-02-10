@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URLConnection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -73,10 +74,12 @@ public class URLConnectionUtils {
         try {
             is = huc.getInputStream();
         } catch (IOException ioe) {
-            String msg = String.format(
-                    "Failed to acquire input stream for %s\n", uc.getURL(),
-                    ioe.getMessage());
-            LOGR.warning(msg);
+            if (LOGR.isLoggable(Level.FINE)) {
+                String msg = String
+                        .format("Failed to successfully resolve URL %s.\nGetting error stream...\n %s",
+                                uc.getURL(), ioe.getMessage());
+                LOGR.fine(msg);
+            }
             is = huc.getErrorStream();
         }
         return is;

@@ -18,7 +18,7 @@
       <li>teamengine-resources: Includes shared resources such as stylesheets and schemas</li>
       <li>teamengine-spi: Provides an extensibility framework and a REST-like API for test execution</li>
       <li>teamengine-realm: A custom Tomcat user realm</li>
-      <li>teamengine-web: Web application</li>
+      <li>teamengine-web: A web application for executing test suites and browsing test results</li>
     </ul>
 
     <p>Simply run <code>mvn package</code> in the root project directory to generate 
@@ -29,11 +29,11 @@
       <dt><strong>teamengine-core-${project.version}-distribution.zip</strong></dt>
       <dd>The core binary distribution (CLI usage)</dd>
       <dt><strong>teamengine-core-${project.version}-base.[zip|tar.gz]</strong></dt>
-      <dd>Content of main configuration directory (TE_BASE)</dd>
+      <dd>Includes the contents of the main configuration directory (TE_BASE)</dd>
       <dt><strong>teamengine.war</strong></dt>
-      <dd>The JEE web application</dd>
+      <dd>The JEE (Servlet) web application</dd>
       <dt><strong>teamengine-common-libs.[zip|tar.gz]</strong></dt>
-      <dd>Common runtime dependencies (e.g. JAX-RS 1.1, Apache Derby)</dd>
+      <dd>Archive containing common runtime dependencies (e.g. JAX-RS 1.1, Apache Derby)</dd>
     </dl>
 
     <h2>Configuration</h2>
@@ -41,7 +41,7 @@
     specifies the location of the main configuration directory that contains several 
     essential sub-directories. Create the TE_BASE directory (e.g. /srv/teamengine) 
     and unpack the contents of the teamengine-core-${project.version}-base archive into 
-    this location and ensure that users (including the Tomcat user) have write access. 
+    this location; ensure that users (including the Tomcat user) have write access. 
     The structure of the TE_BASE directory is shown below.</p>
 
     <pre>
@@ -138,7 +138,7 @@ $ sudo cp -r $CATALINA_HOME/conf .
 $ sudo mkdir lib logs temp webapps work
 </pre>
 
-<p>Recommended JVM options for the Tomcat instance are indicated below. Note that the 
+<p>The recommended JVM options for the Tomcat instance are indicated below. Note that the 
 maximum memory heap size (<code>-Xmx</code>) may need to be increased as the number 
 of concurrent users increases.</p>
 
