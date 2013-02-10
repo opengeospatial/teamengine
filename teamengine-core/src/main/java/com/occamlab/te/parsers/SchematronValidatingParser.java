@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,27 +27,27 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.occamlab.te.ErrorHandlerImpl;
+import com.thaiopensource.util.PropertyMap;
 import com.thaiopensource.util.PropertyMapBuilder;
-import com.thaiopensource.validate.FlagPropertyId;
 import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.SchemaReaderLoader;
-import com.thaiopensource.validate.StringPropertyId;
 import com.thaiopensource.validate.ValidateProperty;
 import com.thaiopensource.validate.ValidationDriver;
+import com.thaiopensource.validate.prop.schematron.SchematronProperty;
 
 /**
  * Validates the given XML resource against the rules specified in a Schematron
  * (v1.5) file. Used in conjunction with standard XML Schema validator to
  * provide more thorough validation coverage.
  * 
- * @author jparrpearson
+ * Diagnostic messages will be included if any are defined.
+ * 
  */
 public class SchematronValidatingParser {
 
-    /** Configuration info for Schematron validation. */
-    private PropertyMapBuilder propMapBuilder = null;
-    /** Schema reader for Schematron validation. */
-    private SchemaReader schematronReader = null;
+    private static final Logger LOGR = Logger
+            .getLogger(SchematronValidatingParser.class.getName());
+    private PropertyMapBuilder configPropBuilder = null;
     private static String schemaLocation = null;
     private static File schemaFile = null;
     private static String phase = null;
@@ -57,7 +59,7 @@ public class SchematronValidatingParser {
     public static final String SCHEMATRON_NS_URI = "http://www.ascc.net/xml/schematron";
 
     /** Default constructor required for init */
-    public SchematronValidatingParser() throws Exception {
+    public SchematronValidatingParser() {
     }
 
     /** Overloaded constructor required for init */
@@ -87,21 +89,6 @@ public class SchematronValidatingParser {
             this.schemaLocation = e.getTextContent();
         }
         return localType;
-    }
-
-    /**
-     * Creates and initializes the schematron reader used in the validation
-     * process.
-     */
-    private void initSchematronReader() {
-        this.propMapBuilder = new PropertyMapBuilder();
-        // set general properties for schematron validation
-        FlagPropertyId diagnoseProp = new FlagPropertyId("DIAGNOSE");
-        diagnoseProp.add(this.propMapBuilder);
-        SchemaReaderLoader loader = new SchemaReaderLoader();
-        this.schematronReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
-        assert null != this.schematronReader : "Unable to create a SchemaReader for this schema language: "
-                + SCHEMATRON_NS_URI;
     }
 
     /**
@@ -164,15 +151,11 @@ public class SchematronValidatingParser {
     public boolean checkSchematronRules(Document doc, String schemaFile,
             String phase) throws Exception {
 
-        // The validation state (true = no validation errors)
         boolean isValid = false;
 
         if (doc == null || doc.getDocumentElement() == null)
             return isValid;
-
-        // Load schematron file
         try {
-            // Use ClassLoader to load schematron off classpath
             ClassLoader loader = this.getClass().getClassLoader();
             URL url = loader.getResource(schemaFile);
             this.schemaFile = new File(
@@ -181,12 +164,10 @@ public class SchematronValidatingParser {
             assert false : "Entity body not found. " + e.toString();
         }
         this.phase = phase;
-
         Document returnDoc = parse(doc, null, null);
         if (returnDoc != null) {
             isValid = true;
         }
-
         return isValid;
     }
 
@@ -229,10 +210,7 @@ public class SchematronValidatingParser {
     public boolean executeSchematronDriver(InputSource inputDoc,
             File schemaFile, String phase) {
 
-        // The validation state (true = no validation errors)
         boolean isValid = false;
-
-        // Load schematron file
         ValidationDriver driver = createSchematronDriver(phase);
         assert null != driver : "Unable to create Schematron ValidationDriver";
         InputSource is = null;
@@ -242,9 +220,7 @@ public class SchematronValidatingParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         try {
-            // Validate using the thaiopensource validation method
             if (driver.loadSchema(is)) {
                 isValid = driver.validate(inputDoc);
             } else {
@@ -256,7 +232,6 @@ public class SchematronValidatingParser {
         } catch (IOException e) {
             assert false : e.toString();
         }
-
         return isValid;
     }
 
@@ -269,24 +244,22 @@ public class SchematronValidatingParser {
      * @return The ValidationDriver to use in validating the XML document
      */
     private ValidationDriver createSchematronDriver(String phase) {
-        initSchematronReader();
+        SchemaReaderLoader loader = new SchemaReaderLoader();
+        SchemaReader schReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
+        this.configPropBuilder = new PropertyMapBuilder();
+        SchematronProperty.DIAGNOSE.add(this.configPropBuilder);
 
-        PropertyMapBuilder schematronConfig = this.propMapBuilder;
-        // add error handler
-        if (this.outputLogger == null) {
-            this.outputLogger = new PrintWriter(System.out);
+        if (SchematronValidatingParser.outputLogger == null) {
+            SchematronValidatingParser.outputLogger = new PrintWriter(
+                    System.out);
+        }
+        if (null != phase && !phase.isEmpty()) {
+            this.configPropBuilder.put(SchematronProperty.PHASE, phase);
         }
         eh = new ErrorHandlerImpl("Schematron", outputLogger);
-        ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
-        // validate using default phase
-        StringPropertyId phaseProp = new StringPropertyId("PHASE");
-        phaseProp.put(schematronConfig, "Default");
-        if (null != phase && phase.length() > 0) {
-            phaseProp.put(schematronConfig, phase);
-        }
-        SchemaReader reader = this.schematronReader;
+        this.configPropBuilder.put(ValidateProperty.ERROR_HANDLER, eh);
         ValidationDriver validator = new ValidationDriver(
-                schematronConfig.toPropertyMap(), reader);
+                this.configPropBuilder.toPropertyMap(), schReader);
         return validator;
     }
 
@@ -449,83 +422,80 @@ public class SchematronValidatingParser {
         }
     }
 
-    public NodeList validate(Document doc, String schemaFile, String phase)
-            throws Exception {
+    /**
+     * Checks the content of an XML entity against the applicable rules defined
+     * in a Schematron schema. The designated phase identifies the active
+     * patterns (rule sets); if not specified, the default phase is executed.
+     * 
+     * @param xmlEntity
+     *            A DOM Document representing the XML entity to validate.
+     * @param schemaRef
+     *            A (classpath) reference to a Schematron 1.5 schema.
+     * @param phase
+     *            The phase to execute.
+     * @return A NodeList containing validation errors (it may be empty).
+     */
+    public NodeList validate(Document xmlEntity, String schemaRef, String phase) {
 
-        if (doc == null || doc.getDocumentElement() == null)
-            return null;
-
-        // Create an empty list to store the errors in
-        NodeList errorStrings = null;
-        XmlErrorHandler eh = new XmlErrorHandler();
-
-        // PrintWriter logger = new PrintWriter(System.out);
-
-        // Get schematron file
-        File schema = null;
-        try {
-            // Use ClassLoader to load schematron off classpath
-            ClassLoader loader = this.getClass().getClassLoader();
-            URL url = loader.getResource(schemaFile);
-            schema = new File(URLDecoder.decode(url.getFile(), "UTF-8"));
-        } catch (Exception e) {
-            assert false : "Entity body not found. " + e.toString();
-        }
-
-        // Get stream to input document
+        if (xmlEntity == null || xmlEntity.getDocumentElement() == null)
+            throw new IllegalArgumentException("No XML entity supplied (null).");
         InputSource xmlInputSource = null;
         try {
-            InputStream inputStream = DocumentToInputStream(doc);
+            InputStream inputStream = DocumentToInputStream(xmlEntity);
             xmlInputSource = new InputSource(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        // Create schematron validator
-        ValidationDriver driver = createSchematronDriver(phase);
-        PropertyMapBuilder schematronConfig = this.propMapBuilder;
-        ValidateProperty.ERROR_HANDLER.put(schematronConfig, eh);
-        // validate using default phase
-        StringPropertyId phaseProp = new StringPropertyId("PHASE");
-        phaseProp.put(schematronConfig, "Default");
-        if (null != phase && phase.length() > 0) {
-            phaseProp.put(schematronConfig, phase);
+        PropertyMapBuilder builder = new PropertyMapBuilder();
+        SchematronProperty.DIAGNOSE.add(builder);
+        if (null != phase && !phase.isEmpty()) {
+            builder.put(SchematronProperty.PHASE, phase);
         }
-        SchemaReader reader = this.schematronReader;
-        driver = new ValidationDriver(schematronConfig.toPropertyMap(), reader);
-        assert null != driver : "Unable to create Schematron ValidationDriver";
-        InputSource is = null;
+        XmlErrorHandler errHandler = new XmlErrorHandler();
+        builder.put(ValidateProperty.ERROR_HANDLER, errHandler);
+        ValidationDriver driver = createDriver(builder.toPropertyMap());
+        InputStream schStream = this.getClass().getResourceAsStream(schemaRef);
         try {
-            FileInputStream fis = new FileInputStream(schema);
-            is = new InputSource(fis);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            // Validate using the thaiopensource validation method
-            if (driver.loadSchema(is)) {
-                driver.validate(xmlInputSource);
-                errorStrings = eh.toNodeList();
-            } else {
-                assert false : ("Failed to load Schematron schema: "
-                        + schemaFile + "\nIs the schema valid? Is the phase defined?");
+            InputSource input = new InputSource(schStream);
+            try {
+                boolean loaded = driver.loadSchema(input);
+                if (!loaded) {
+                    throw new Exception("Failed to load schema at " + schemaRef
+                            + "\nIs the schema valid? Is the phase defined?");
+                }
+            } finally {
+                schStream.close();
             }
-        } catch (SAXException e) {
-            assert false : e.toString();
-        } catch (IOException e) {
-            assert false : e.toString();
+            driver.validate(xmlInputSource);
+        } catch (Exception e) {
+            throw new RuntimeException("Schematron validation failed.", e);
         }
+        NodeList errList = errHandler.toNodeList();
+        if (LOGR.isLoggable(Level.FINER)) {
+            LOGR.finer(String.format(
+                    "Found %d Schematron rule violation(s):\n %s",
+                    errList.getLength(), errHandler.toString()));
+        }
+        return errList;
+    }
 
-        // Print error summary
-        /*
-         * boolean isEmpty = eh.isEmpty(); if (!isEmpty) { int error_count =
-         * errorStrings.getLength(); logger.println(error_count +
-         * " validation error" + (error_count == 1 ? "" : "s") + " detected.");
-         * logger.flush(); }
-         */
-
-        return errorStrings;
+    /**
+     * Creates and initializes a ValidationDriver to perform Schematron
+     * validation. A schema must be loaded before an instance can be validated.
+     * 
+     * @param configProps
+     *            A PropertyMap containing properties to configure schema
+     *            construction and validation behavior; it typically includes
+     *            {@code SchematronProperty} and {@code ValidationProperty}
+     *            items.
+     * @return A ValidationDriver that is ready to load a Schematron schema.
+     */
+    ValidationDriver createDriver(PropertyMap configProps) {
+        SchemaReaderLoader loader = new SchemaReaderLoader();
+        SchemaReader schReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
+        ValidationDriver validator = new ValidationDriver(configProps,
+                schReader);
+        return validator;
     }
 
 }

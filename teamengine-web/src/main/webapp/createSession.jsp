@@ -233,13 +233,15 @@
 <body onload="fillOrganization()" >
 <%@ include file="header.jsp"%>
 <form name="standardsForm" action="test.jsp" method="post" >
-Select test suite:
+
+Select a test suite:
+
 <table border="1" width="60%" >
 	<tr>
 		<th width="15%">Organization</th>
-		<th width="15%">Standard</th>
+		<th width="15%">Specification</th>
 		<th width="15%">Version</th>
-		<th width="15%">Test Suite Rev</th>
+		<th width="15%">Revision</th>
 	</tr>
 	<tr>
 		<td>
@@ -249,7 +251,7 @@ Select test suite:
 		</td>
 		<td>
 			<select id="Standard" name="Standard" onChange="SelectVersion();" >
-			<option value="">Standard</option>
+			<option value="">Specification</option>
 			</select>
 		</td>
 		<td>
@@ -259,13 +261,13 @@ Select test suite:
 		</td>
 		<td>
 			<select id="Test" name="Test" onChange="SelectProfile();" >
-			<option value="">Test</option>
+			<option value="">Revision</option>
 			</select>
 		</td>
 	</tr>
 </table>
 <br/>
-Select Profile(s):<br>
+Select Profile(s): <br />
 <%
 	for (int i=0; i < organizationList.size(); i++) {
 	    String org = organizationList.get(i);

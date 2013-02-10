@@ -245,9 +245,10 @@ public class TestServlet extends HttpServlet {
                     } else {
                         opts.addTestPath(test);
                     }
-                    for (Entry<String, String> entry : params.entrySet()) {
-                        if (entry.getKey().startsWith("profile_")) {
-                            String profileId = entry.getValue();
+                    for (String key : new java.util.TreeSet<String>(
+                            params.keySet())) {
+                        if (key.startsWith("profile_")) {
+                            String profileId = params.get(key);
                             int i = profileId.indexOf("}");
                             opts.addTestPath(sessionid + "/"
                                     + profileId.substring(i + 1));
@@ -261,6 +262,22 @@ public class TestServlet extends HttpServlet {
                     opts.setSessionId(sessionid);
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
+                } else if (mode.equals("cache")) {
+                    opts.setMode(Test.REDO_FROM_CACHE_MODE);
+                    String sessionid = params.get("session");
+                    opts.setSessionId(sessionid);
+                    s.load(logdir, sessionid);
+                    opts.setSourcesName(s.getSourcesName());
+                    ArrayList<String> profiles = new ArrayList<String>();
+                    for (String key : new java.util.TreeSet<String>(
+                            params.keySet())) {
+                        if (key.startsWith("profile_")) {
+                            String profileId = params.get(key);
+                            profiles.add(profileId);
+                            opts.addProfile(profileId);
+                        }
+                    }
+                    s.setProfiles(profiles);
                 } else {
                     opts.setMode(Test.TEST_MODE);
                     String sessionid = LogUtils.generateSessionId(logdir);
@@ -269,18 +286,18 @@ public class TestServlet extends HttpServlet {
                     s.setSourcesName(sources);
                     SuiteEntry suite = conf.getSuites().get(sources);
                     s.setSuiteName(suite.getId());
-                    // String suite = params.get("suite");
-                    // s.setSuiteName(suite);
                     String description = params.get("description");
                     s.setDescription(description);
                     opts.setSessionId(sessionid);
                     opts.setSourcesName(sources);
                     opts.setSuiteName(suite.getId());
                     ArrayList<String> profiles = new ArrayList<String>();
-                    for (Entry<String, String> entry : params.entrySet()) {
-                        if (entry.getKey().startsWith("profile_")) {
-                            profiles.add(entry.getValue());
-                            opts.addProfile(entry.getValue());
+                    for (String key : new java.util.TreeSet<String>(
+                            params.keySet())) {
+                        if (key.startsWith("profile_")) {
+                            String profileId = params.get(key);
+                            profiles.add(profileId);
+                            opts.addProfile(profileId);
                         }
                     }
                     s.setProfiles(profiles);
@@ -365,7 +382,8 @@ public class TestServlet extends HttpServlet {
                     while (iter.hasNext()) {
                         FileItem item = (FileItem) iter.next();
                         if (!item.isFormField() && !item.getName().equals("")) {
-                            File uploadedFile = new File(core.getLogDir(),
+                            File tempDir = core.getLogDir();
+                            File uploadedFile = new File(tempDir,
                                     StringUtils.getFilenameFromString(item
                                             .getName()));
                             item.write(uploadedFile);

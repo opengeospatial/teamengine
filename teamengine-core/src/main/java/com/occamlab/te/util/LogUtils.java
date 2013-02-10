@@ -5,7 +5,6 @@ import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -20,13 +19,10 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -193,25 +189,37 @@ public class LogUtils {
         }
         Element test = owner.createElement("test");
         int result = TECore.PASS;
+        String type = "Mandatory";
         boolean complete = false;
         boolean childrenFailed = false;
+        boolean hasCache = false;
         for (Element e : DomUtils.getChildElements(log_e)) {
             if (e.getNodeName().equals("starttest")) {
                 NamedNodeMap atts = e.getAttributes();
                 for (int j = 0; j < atts.getLength(); j++) {
-                    test.setAttribute(atts.item(j).getNodeName(), atts.item(j)
-                            .getNodeValue());
+                    String nodeName = atts.item(j).getNodeName();
+                    String nodeValue = atts.item(j).getNodeValue();
+                    if ("defaultResult".equals(nodeName)) {
+                        result = Integer.parseInt(nodeValue);
+                    } else if ("type".equals(nodeName)) { // 2011-03-07 PwD
+                        type = nodeValue;
+                    }
+                    test.setAttribute(nodeName, nodeValue);
                 }
-
             } else if (e.getNodeName().equals("endtest")) {
                 complete = true;
                 int code = Integer.parseInt(e.getAttribute("result"));
-                if (code == TECore.FAIL) {
-                    result = TECore.FAIL;
+                /*
+                 * if (code == TECore.FAIL) { result = TECore.FAIL; } else if
+                 * (childrenFailed) { result = TECore.INHERITED_FAILURE; } else
+                 * if (code == TECore.WARNING) { result = TECore.WARNING; }
+                 */
+                if ("Optional".equals(type)) {
+                    result = code;
                 } else if (childrenFailed) {
                     result = TECore.INHERITED_FAILURE;
-                } else if (code == TECore.WARNING) {
-                    result = TECore.WARNING;
+                } else {
+                    result = code;
                 }
             } else if (e.getNodeName().equals("testcall")) {
                 String newpath = e.getAttribute("path");
@@ -224,10 +232,13 @@ public class LogUtils {
                     }
                     test.appendChild(child);
                 }
+            } else if (e.getNodeName().equals("cache")) {
+                hasCache = true;
             }
         }
         test.setAttribute("result", Integer.toString(result));
         test.setAttribute("complete", complete ? "yes" : "no");
+        test.setAttribute("hasCache", hasCache ? "yes" : "no");
         return test;
     }
 

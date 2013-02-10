@@ -16,17 +16,28 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
-
+ Contributor(s): 
+ 		Paul Daisey (Image Matters LLC)
+ 		2011-05-13 add getImageWidth(), getImageHeight()
+ 		2011-08-23 add try/catch block to processFrame()to return image format
+		2011-08-24 add case to processFrame() to return image transparency for parsers:transparency tag
+		2011-08-24 add checkTransparentNodata(); call from processBufferedImage() for parsers:model/parsers:transparentNodata tag
+		2011-09-08 add getBase64Data(), parseBase64(), formatName param to processBufferedImage()
+		
  ****************************************************************************/
 package com.occamlab.te.parsers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+// 2011-11-15 PwD uncomment for Java 1.7 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -41,6 +52,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.ImageObserver;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.awt.Transparency; // 2011-08-24 PwD
 
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
@@ -50,8 +62,13 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
 
-import org.w3c.dom.*;
+import org.apache.commons.codec.binary.Base64;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Extracts the body of a response message and treats it as an image resource.
@@ -101,8 +118,89 @@ public class ImageParser {
         }
     }
 
+    /*
+     * 2011-09-08 PwD
+     * 
+     * @return image data as a base64 encoded string
+     */
+    private static String getBase64Data(BufferedImage buffImage,
+            String formatName, Node node) throws Exception {
+        int numBytes = buffImage.getWidth() * buffImage.getHeight() * 4;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(numBytes);
+        ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+        boolean status = ImageIO.write(buffImage, formatName, ios);
+        if (!status) {
+            throw new Exception(
+                    "No suitable ImageIO writer found by ImageParser.getBase64Data() for image format "
+                            + formatName);
+        }
+        byte[] imageData = baos.toByteArray();
+        // String base64String = Base64.encodeBase64String(imageData); this is
+        // unchunked (no line breaks) which is unwieldy
+        byte[] base64Data = Base64.encodeBase64Chunked(imageData);
+        // 2011-11-15 PwD uncomment for Java 1.7 String base64String = new
+        // String(base64Data, StandardCharsets.UTF_8);
+        String base64String = new String(base64Data, "UTF-8"); // 2011-11-15 PwD
+                                                               // for Java 1.6;
+                                                               // remove for
+                                                               // Java 1.7
+        return base64String;
+    }
+
+    /*
+     * 2011-08-24 PwD check that all pixels in image with no data are
+     * transparent
+     * 
+     * @return NA if all pixels contain data
+     * 
+     * @return true if all pixels with no data are transparent (alpha channel
+     * value 0)
+     * 
+     * @return false if any pixel with no data is non-transparent
+     */
+    private static String checkTransparentNodata(BufferedImage buffImage,
+            Node node) throws Exception {
+        String transparentNodata = "NA";
+        boolean noData = false;
+        boolean transparent = true;
+        int[] bandIndexes = new int[4];
+        bandIndexes[0] = 3; // A
+        bandIndexes[1] = 2; // B
+        bandIndexes[2] = 1; // G
+        bandIndexes[3] = 0; // R
+        Raster raster = buffImage.getRaster();
+        int minx = raster.getMinX();
+        int maxx = minx + raster.getWidth();
+        int miny = raster.getMinY();
+        int maxy = miny + raster.getHeight();
+        int bands[][] = new int[bandIndexes.length][raster.getWidth()];
+        for (int y = miny; y < maxy; y++) {
+            for (int i = 0; i < bandIndexes.length; i++) {
+                raster.getSamples(minx, y, maxx, 1, bandIndexes[i], bands[i]);
+            }
+            for (int x = minx; x < maxx; x++) {
+                int a = bands[0][x];
+                int b = bands[1][x];
+                int g = bands[2][x];
+                int r = bands[3][x];
+                if (b == 0 && g == 0 && r == 0) {
+                    noData = true;
+                    if (a != 0) {
+                        transparent = false;
+                    }
+                }
+            }
+        }
+        transparentNodata = (noData) ? (transparent) ? "true" : "false" : "NA";
+        return transparentNodata;
+    }
+
+    /*
+     * Process buffered image obtained from Reader 2011-09-08 PwD added
+     * formatName param to support getBase64Data()
+     */
     private static void processBufferedImage(BufferedImage buffimage,
-            NodeList nodes) throws Exception {
+            String formatName, NodeList nodes) throws Exception {
         HashMap<Object, Object> bandMap = new HashMap<Object, Object>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -115,7 +213,7 @@ public class ImageParser {
                     int w = Integer.parseInt(e.getAttribute("width"));
                     int h = Integer.parseInt(e.getAttribute("height"));
                     processBufferedImage(buffimage.getSubimage(x, y, w, h),
-                            e.getChildNodes());
+                            formatName, e.getChildNodes());
                 } else if (node.getLocalName().equals("checksum")) {
                     CRC32 checksum = new CRC32();
                     Raster raster = buffimage.getRaster();
@@ -151,6 +249,11 @@ public class ImageParser {
                         }
                         sampleMap.put(Integer.decode(sample), new Integer(0));
                     }
+                } else if (node.getLocalName().equals("transparentNodata")) { // 2011-08-24
+                                                                              // PwD
+                    String transparentNodata = checkTransparentNodata(
+                            buffimage, node);
+                    node.setTextContent(transparentNodata);
                 }
             }
         }
@@ -288,6 +391,102 @@ public class ImageParser {
     }
 
     /**
+     * Determines the width of the first image in an image file in pixels.
+     * 
+     * @param imageLoc
+     *            the string location of the image (uri syntax expected)
+     * @return int the image width in pixels, or -1 if unable.
+     * @author Paul Daisey added 2011-05-13 to support WMTS ETS
+     */
+    public static int getImageWidth(String imageLoc) {
+
+        // Get the image as an InputStream
+        InputStream is = null;
+        try {
+            URI imageUri = new URI(imageLoc);
+            URL imageUrl = imageUri.toURL();
+            is = imageUrl.openStream();
+        } catch (Exception e) {
+            jlogger.log(Level.SEVERE, "getImageWidth", e);
+
+            return -1;
+        }
+        // Determine the image width
+        try {
+            // Create an image input stream on the image
+            ImageInputStream iis = ImageIO.createImageInputStream(is);
+
+            // Find all image readers that recognize the image format
+            Iterator iter = ImageIO.getImageReaders(iis);
+
+            // No readers found
+            if (!iter.hasNext()) {
+                return -1;
+            }
+
+            // Use the first reader
+            ImageReader reader = (ImageReader) iter.next();
+            reader.setInput(iis, true);
+            int width = reader.getWidth(0);
+            iis.close();
+
+            return width;
+        } catch (IOException e) {
+            jlogger.log(Level.SEVERE, "getImageWidth", e);
+            // The image could not be read
+        }
+        return -1;
+    }
+
+    /**
+     * Determines the height of the first image in an image file in pixels.
+     * 
+     * @param imageLoc
+     *            the string location of the image (uri syntax expected)
+     * @return int the image width in pixels, or -1 if unable.
+     * @author Paul Daisey added 2011-05-13 to support WMTS ETS
+     */
+    public static int getImageHeight(String imageLoc) {
+
+        // Get the image as an InputStream
+        InputStream is = null;
+        try {
+            URI imageUri = new URI(imageLoc);
+            URL imageUrl = imageUri.toURL();
+            is = imageUrl.openStream();
+        } catch (Exception e) {
+            jlogger.log(Level.SEVERE, "getImageWidth", e);
+
+            return -1;
+        }
+        // Determine the image width
+        try {
+            // Create an image input stream on the image
+            ImageInputStream iis = ImageIO.createImageInputStream(is);
+
+            // Find all image readers that recognize the image format
+            Iterator iter = ImageIO.getImageReaders(iis);
+
+            // No readers found
+            if (!iter.hasNext()) {
+                return -1;
+            }
+
+            // Use the first reader
+            ImageReader reader = (ImageReader) iter.next();
+            reader.setInput(iis, true);
+            int height = reader.getHeight(0);
+            iis.close();
+
+            return height;
+        } catch (IOException e) {
+            jlogger.log(Level.SEVERE, "getImageWidth", e);
+            // The image could not be read
+        }
+        return -1;
+    }
+
+    /**
      * Determines the type of image, or null if not a valid image type
      * 
      * @param imageLoc
@@ -355,8 +554,26 @@ public class ImageParser {
     }
 
     public static Document parse(URLConnection uc, Element instruction,
-            PrintWriter logger) throws Exception {
-        return parse(uc.getInputStream(), instruction, logger);
+            PrintWriter logger) {
+        Document doc = null;
+        InputStream is = null;
+        try {
+            is = uc.getInputStream();
+            doc = parse(is, instruction, logger);
+        } catch (Exception e) {
+            String msg = String.format(
+                    "Failed to parse %s resource from %s \n %s",
+                    uc.getContentType(), uc.getURL(), e.getMessage());
+            jlogger.warning(msg);
+        } finally {
+            if (null != is) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return doc;
     }
 
     public Document parseAsInitialized(URLConnection uc, Element instruction,
@@ -373,7 +590,8 @@ public class ImageParser {
         if (nodes.getLength() == 0) {
             return null;
         }
-
+        String formatName = reader.getFormatName().toLowerCase(); // 2011-09-08
+                                                                  // PwD
         BufferedImage image = reader.read(frame);
 
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -381,23 +599,42 @@ public class ImageParser {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 // System.out.println(node.getLocalName());
                 if (node.getLocalName().equals("type")) {
-                    node.setTextContent(reader.getFormatName().toLowerCase());
+                    node.setTextContent(formatName); // 2011-09-08 PwD was
+                                                     // reader.getFormatName().toLowerCase()
                 } else if (node.getLocalName().equals("height")) {
                     node.setTextContent(Integer.toString(image.getHeight()));
                 } else if (node.getLocalName().equals("width")) {
                     node.setTextContent(Integer.toString(image.getWidth()));
                 } else if (node.getLocalName().equals("metadata")) {
-                    IIOMetadata metadata = reader.getImageMetadata(frame);
-                    if (metadata != null) {
-                        String format = ((Element) node).getAttribute("format");
-                        if (format.length() == 0) {
-                            format = metadata.getNativeMetadataFormatName();
+                    try { // 2011--08-23 PwD
+                        IIOMetadata metadata = reader.getImageMetadata(frame);
+                        if (metadata != null) {
+                            String format = ((Element) node)
+                                    .getAttribute("format");
+                            if (format.length() == 0) {
+                                format = metadata.getNativeMetadataFormatName();
+                            }
+                            Node tree = metadata.getAsTree(format);
+                            TransformerFactory tf = TransformerFactory
+                                    .newInstance();
+                            Transformer t = tf.newTransformer();
+                            t.transform(new DOMSource(tree),
+                                    new DOMResult(node));
                         }
-                        Node tree = metadata.getAsTree(format);
+                    } catch (javax.imageio.IIOException e) { // 2011--08-23 PwD
+                        DocumentBuilderFactory dbf = DocumentBuilderFactory
+                                .newInstance();
+                        DocumentBuilder db = dbf.newDocumentBuilder();
+                        Document doc = db.newDocument();
+                        String format = reader.getFormatName().toLowerCase();
+                        String formatEltName = "javax_imageio_" + format
+                                + "_1.0";
+                        Element formatElt = doc.createElement(formatEltName);
                         TransformerFactory tf = TransformerFactory
                                 .newInstance();
                         Transformer t = tf.newTransformer();
-                        t.transform(new DOMSource(tree), new DOMResult(node));
+                        t.transform(new DOMSource(formatElt), new DOMResult(
+                                node));
                     }
                 } else if (node.getLocalName().equals("model")) {
                     int imagetype = -1;
@@ -427,7 +664,35 @@ public class ImageParser {
                             }
                         }
                     }
-                    processBufferedImage(buffImage, node.getChildNodes());
+                    processBufferedImage(buffImage, formatName,
+                            node.getChildNodes());
+                } else if (node.getLocalName().equals("transparency")) { // 2011-08-24
+                                                                         // PwD
+                    int transparency = image.getTransparency();
+                    String transparencyName = null;
+                    switch (transparency) {
+                    case Transparency.OPAQUE: {
+                        transparencyName = "Opaque";
+                        break;
+                    }
+                    case Transparency.BITMASK: {
+                        transparencyName = "Bitmask";
+                        break;
+                    }
+                    case Transparency.TRANSLUCENT: {
+                        transparencyName = "Translucent";
+                        break;
+                    }
+                    default: {
+                        transparencyName = "Unknown";
+                    }
+                    }
+                    node.setTextContent(transparencyName);
+
+                } else if (node.getLocalName().equals("base64Data")) { // 2011-09-08
+                                                                       // PwD
+                    String base64Data = getBase64Data(image, formatName, node);
+                    node.setTextContent(base64Data);
                 } else {
                     logger.println("ImageParser Error: Invalid tag "
                             + node.getNodeName());
@@ -435,6 +700,18 @@ public class ImageParser {
             }
         }
         return null;
+    }
+
+    /*
+     * Parse a string of base64 encoded image data. 2011-09-08 PwD
+     */
+    public static Document parseBase64(String base64Data, Element instruction)
+            throws Exception {
+        byte[] imageData = Base64.decodeBase64(base64Data);
+        ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
+        StringWriter swLogger = new StringWriter();
+        PrintWriter pwLogger = new PrintWriter(swLogger);
+        return parse(bais, instruction, pwLogger);
     }
 
     private static Document parse(InputStream source, Element instruction,

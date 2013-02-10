@@ -1,4 +1,4 @@
-package com.occamlab.te;
+package com.occamlab.te.config;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

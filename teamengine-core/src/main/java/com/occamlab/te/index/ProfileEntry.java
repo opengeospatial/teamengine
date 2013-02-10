@@ -12,6 +12,7 @@ import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
 
 public class ProfileEntry extends IndexEntry {
+    String defaultResult = "Pass";
     QName baseSuite;
     List<List<QName>> excludes = new ArrayList<List<QName>>();
     QName startingTest;
@@ -38,6 +39,8 @@ public class ProfileEntry extends IndexEntry {
             }
             excludes.add(list);
         }
+        setDefaultResult(DomUtils.getElementByTagName(profile, "defaultResult")
+                .getTextContent());
         Element e = DomUtils.getElementByTagName(profile, "starting-test");
         startingTest = getQName(e);
         Element form_e = DomUtils.getElementByTagNameNS(profile, Test.CTL_NS,
@@ -100,5 +103,13 @@ public class ProfileEntry extends IndexEntry {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDefaultResult() {
+        return defaultResult;
+    }
+
+    public void setDefaultResult(String defaultResult) {
+        this.defaultResult = defaultResult;
     }
 }

@@ -6,9 +6,8 @@
 		<img style="position: absolute" src="images/banner.jpg"
 			alt="TEAM Engine Banner" />
 		<div style="position: absolute">
-			<span style="font-size: 2em">TEAM<br />Engine v4<br /></span> <span
-				style="font-size: 0.75em">Test, Evaluation, And Measurement
-				Engine</span>
+			<span style="font-size: 2em">TEAM<br />Engine v4 <img src="images/icon-beta.png"/><br /></span>
+      <span style="font-size: 0.75em">Test, Evaluation, And Measurement Engine</span>
 		</div>
 		<%
 		    String user = request.getRemoteUser();

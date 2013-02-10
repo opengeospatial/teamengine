@@ -5,6 +5,7 @@
 String mode;
 String test;
 String sessionId;
+java.util.Map<String,String[]> paramMap;
 %><!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   The contents of this file are subject to the Mozilla Public License
@@ -54,8 +55,9 @@ String sessionId;
 mode = request.getParameter("mode");
 test = request.getParameter("test");
 sessionId = request.getParameter("session");
+paramMap = request.getParameterMap();
 String params = "mode=" + mode;
-if (mode.equals("retest") || mode.equals("resume")) {
+if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
   if (test != null) {
     params += "&test=" + test;
   }
@@ -67,13 +69,15 @@ if (mode.equals("retest") || mode.equals("resume")) {
   params += "&suite=" + request.getParameter("suite");
   params += "&description=" + request.getParameter("description");
 }
-if (mode.equals("test") || mode.equals("retest")) {
-  String profile = request.getParameter("profile_0");
-  int i = 0;
-  while (profile != null) {
-      params += "&profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile, "UTF-8");
-      i++;
-      profile = request.getParameter("profile_" + Integer.toString(i));
+if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
+  for (String key: new java.util.TreeSet<String>(paramMap.keySet())) {
+	  if (key.startsWith("profile_")) {
+		  String values[] = paramMap.get(key);
+		  String profile = values[0];
+		  if (profile != null) {
+			  params += "&" + key + "=" + URLEncoder.encode(profile, "UTF-8");
+		  }
+	  }
   }
 }
 %>
@@ -160,7 +164,7 @@ if (mode.equals("test") || mode.equals("retest")) {
 			function loadLog() {
 			    var d = new Date();
 <%
-if (mode.equals("retest") || mode.equals("resume")) {
+if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
   if (test == null) {
     out.println("\t\t\t\tvar url = \"viewSessionLog.jsp?session=" + sessionId + "\";");
   } else {

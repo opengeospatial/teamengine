@@ -34,7 +34,7 @@
 		<%@ include file="header.jsp" %>
 		<h2>Welcome</h2>
 		<%@ include file="welcome.jsp" %>
-		<a href="viewSessions.jsp">Start Testing</a>
+		<a href="viewSessions.jsp">Login</a>
 		<%@ include file="footer.jsp" %>
 	</body>
 </html>

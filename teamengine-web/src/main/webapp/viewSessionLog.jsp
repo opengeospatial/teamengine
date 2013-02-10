@@ -92,36 +92,54 @@ public void jspInit() {
       String sessionId = request.getParameter("session");
       TestSession ts = new TestSession();
       ts.load(userlog, sessionId);
-
-      out.println("<h3>Test Suite: " + (Conf.getSuites().get(ts.getSourcesName())).getTitle() + "</h3>");
-
+      String suiteName = "null";
+      String sourcesName = ts.getSourcesName();
+      if (sourcesName == null) {
+          suiteName = "error: sourcesName is null";
+      } else {
+          SuiteEntry se = Conf.getSuites().get(sourcesName);
+          if (se == null) {
+             suiteName = "error: suitEntry is null";
+          } else {
+              String title = se.getTitle();
+              suiteName = (title == null) ? "error: suiteEntry title is null" : title;
+          }
+      }
+      out.println("<h3>Test Suite: " + suiteName + "</h3>");
       ArrayList tests = new ArrayList();
       boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
       if (!complete) {
           out.println("<input type=\"button\" value=\"Resume executing these tests\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
       }
-//      out.println("<input type=\"button\" value=\"Execute these tests again\" onclick=\"window.location = 'test.jsp?mode=retest&amp;test=" + sessionId + "'\"/>");
-      
+
       String profileParams = "";
       if (complete) {
-          int i = 0;
+        int i = 0;
 	      for (ProfileEntry profile : Conf.getProfiles().get(ts.getSourcesName())) {
 	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
 	          if (ts.getProfiles().contains(profile.getId())) {
 	        	  String path = sessionId + "/" + profile.getLocalName();
-	    	      complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out);
-				  out.println("<br/>");
-	//        	  if (!complete) {
-	//    	          out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
-	//	          }
-//	    	      out.println("<input type=\"button\" value=\"Execute these tests again\" onclick=\"window.location = 'test.jsp?mode=retest&amp;test=" + path + "'\"/>");
-                 profileParams += "&amp;" + "profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile.getId(), "UTF-8");
-                 i++;
+              complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out, (i+2));
+				      out.println("<br/>");
+              profileParams += "&amp;" + "profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile.getId(), "UTF-8");
+              i++;
 		      }
 	      }
       }
 %>
+
+<%-- Insert link to TestNG report if it exists.  --%>
+<%
+File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
+File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
+if ( htmlReportDir.isDirectory()) {
+%>
+    <p>
+    See the <a href="/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
+ 	</p>
+<% } %>
+
 <%--
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
@@ -134,34 +152,17 @@ public void jspInit() {
 --%>
 		<br/>
 		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%><%=profileParams%>'"/>
+<%
+      boolean hasCache = ViewLog.hasCache();
+      if (hasCache) {
+          out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + profileParams + "'\"/>");
+      }
+%>
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
 		<input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>
 <%--		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/> --%>
 		<br/>
-<%-- 
-		<br/>
-		<table id="summary" border="0" bgcolor="#EEEEEE" width="410">
-		<tr>
-		<th align="left"><font color="#000099">Summary</font></th>
-		<td align="right"><img src="images/pass.png" hspace="4"/>Pass:</td><td id="nPass" align="center" bgcolor="#00FF00"><%=ViewLog.passCount%></td>
-		<td align="right"><img src="images/warn.png" hspace="4"/>Warning:</td><td id="nWarn" align="center" bgcolor="#FFFF00"><%=ViewLog.warnCount%></td>
-		<td align="right"><img src="images/fail.png" hspace="4"/>Fail:</td><td id="nFail" align="center" bgcolor="#FF0000"><%=ViewLog.failCount%></td>
-		</tr>
-		</table>
---%>
-
-<%-- Insert link to TestNG report if it exists.  --%>
-<%
-File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
-File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
-if ( htmlReportDir.isDirectory()) {
-%>
-    <p>
-    See the <a href="/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
- 		</p>
-<% } %>
-
     <p><a href="viewSessions.jsp">Sessions list</a></p>
 		<%@ include file="footer.jsp" %>				
 	</body>

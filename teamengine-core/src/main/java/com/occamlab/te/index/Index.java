@@ -56,6 +56,10 @@ public class Index {
     }
 
     public Index(File indexFile) throws Exception {
+        if (null == indexFile || !indexFile.exists()) {
+            throw new IllegalArgumentException(
+                    "indexFile is null or does not exist.");
+        }
         this.indexFile = indexFile;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);

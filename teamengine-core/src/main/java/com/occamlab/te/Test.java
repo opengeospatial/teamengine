@@ -25,12 +25,18 @@ package com.occamlab.te;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.transform.Templates;
+import javax.xml.transform.stream.StreamSource;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DocumentationHelper;
 import com.occamlab.te.util.LogUtils;
+import com.occamlab.te.util.Misc;
 
 /**
  * 
@@ -42,6 +48,7 @@ public class Test {
     public static final int TEST_MODE = 0;
     public static final int RETEST_MODE = 1;
     public static final int RESUME_MODE = 2;
+    public static final int REDO_FROM_CACHE_MODE = 3;
     public static final int DOC_MODE = 4;
     public static final int CHECK_MODE = 5;
     public static final int PRETTYLOG_MODE = 6;
@@ -50,6 +57,32 @@ public class Test {
     public static final String TE_NS = "http://www.occamlab.com/te";
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
     public static final String CTLP_NS = "http://www.occamlab.com/te/parsers";
+
+    /**
+     * Returns name of mode.
+     * 
+     * @param mode
+     */
+    public static String getModeName(int mode) {
+        switch (mode) {
+        case 0:
+            return "Test Mode";
+        case 1:
+            return "Retest Mode";
+        case 2:
+            return "Resume Mode";
+        case 3:
+            return "Redo From Cache Mode";
+        case 4:
+            return "Doc Mode";
+        case 5:
+            return "Check Mode";
+        case 6:
+            return "Pretty Log Mode";
+        default:
+            return "Invalid Mode";
+        }
+    }
 
     /**
      * Displays startup command syntax.
@@ -89,6 +122,8 @@ public class Test {
                 .println("  Pretty Print Logs mode is used to generate a readable HTML report of execution.\n");
         System.out.println("  " + cmd
                 + " -mode=pplogs -logdir=<dir of a session log>  \n");
+        System.out.println("  " + cmd
+                + "-mode=cache -logdir=dir -session=session\n");
     }
 
     /**
@@ -154,6 +189,8 @@ public class Test {
                 mode = CHECK_MODE;
             } else if (args[i].equals("-mode=pplogs")) {
                 mode = PRETTYLOG_MODE;
+            } else if (args[i].equals("-mode=cache")) {
+                mode = REDO_FROM_CACHE_MODE;
             } else if (args[i].startsWith("-mode=")) {
                 System.out.println("Error: Invalid mode.");
                 return;
@@ -181,6 +218,10 @@ public class Test {
             syntax(cmd);
             return;
         }
+        if (mode == REDO_FROM_CACHE_MODE && (logDir == null || session == null)) {
+            syntax(cmd);
+            return;
+        }
         if (runOpts.getProfiles().size() > 0 && logDir == null) {
             System.out
                     .println("Error: A -logdir parameter is required for testing profiles");
@@ -204,10 +245,8 @@ public class Test {
             }
         }
         runOpts.setSessionId(session);
-
         Thread.currentThread().setName("TEAM Engine");
-
-        Index masterIndex;
+        Index masterIndex = null;
         File indexFile = null;
         if (logDir != null && session != null) {
             File dir = new File(logDir, runOpts.getSessionId());
@@ -247,6 +286,27 @@ public class Test {
             if (indexFile != null) {
                 masterIndex.persist(indexFile);
             }
+        } else if (mode == REDO_FROM_CACHE_MODE) {
+            boolean regenerate = false;
+            if (indexFile.canRead()) {
+                masterIndex = new Index(indexFile);
+                if (masterIndex.outOfDate()) {
+                    System.out
+                            .println("Warning: Scripts have changed since this session was first executed.");
+                    regenerate = true;
+                }
+            } else {
+                System.out.println("Error: Can't read index file.");
+                regenerate = true;
+            }
+            if (regenerate) {
+                System.out
+                        .println("Regenerating masterIndex from source scripts");
+                masterIndex = Generator.generateXsl(setupOpts);
+                if (indexFile != null) {
+                    masterIndex.persist(indexFile);
+                }
+            }
         } else {
             if (!indexFile.canRead()) {
                 System.out.println("Error: Can't read index file.");
@@ -256,6 +316,24 @@ public class Test {
             if (masterIndex.outOfDate()) {
                 System.out
                         .println("Warning: Scripts have changed since this session was first executed.");
+            }
+        }
+
+        if (mode == REDO_FROM_CACHE_MODE) {
+            File stylesheet = Misc
+                    .getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+            Templates ViewLogTemplates = ViewLog.transformerFactory
+                    .newTemplates(new StreamSource(stylesheet));
+            ArrayList tests = new ArrayList();
+            File userlog = logDir;
+            StringWriter sw = new StringWriter();
+            boolean complete = ViewLog.view_log(userlog, session, tests,
+                    ViewLogTemplates, sw);
+            boolean hasCache = ViewLog.hasCache();
+            if (!hasCache) {
+                File dir = new File(logDir, runOpts.getSessionId());
+                throw new Exception("Error: no cache for "
+                        + dir.getAbsolutePath());
             }
         }
 

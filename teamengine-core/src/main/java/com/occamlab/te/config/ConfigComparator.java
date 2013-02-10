@@ -1,7 +1,11 @@
-package com.occamlab.te;
+package com.occamlab.te.config;
 
 import java.util.Comparator;
 
+/**
+ * Compares two ConfigEntry objects for order.
+ * 
+ */
 public class ConfigComparator implements Comparator<ConfigEntry> {
 
     private String denull(String s) {

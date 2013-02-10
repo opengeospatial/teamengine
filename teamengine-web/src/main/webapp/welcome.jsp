@@ -8,10 +8,12 @@
 	value="${f:replace(teConfigFile, backSlash, '/')}" />
 
 <div>
-	<p>The Test, Evaluation, And Measurement (TEAM) Engine is a test
-		script interpreter. It executes test scripts written using Compliance
-		Test Language (CTL) tags to verify that an implementation of a
-		specification complies with the relevant specification(s).</p>
+	<p>
+		The Test, Evaluation, And Measurement (TEAM) Engine is a test harness
+		that executes test suites written using the OGC CTL test grammar or
+		the <a href="http://testng.org/" target="_blank">TestNG framework</a>.
+		It is typically used to verify specification compliance.
+	</p>
 
 	<h3>Available test suites</h3>
 	<c:import var="xslt" url="/styles/config2table.xsl" />

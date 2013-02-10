@@ -25,16 +25,16 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.build.scriptSourceDirectory}/shell</directory>
-      <outputDirectory>bin</outputDirectory>
+      <directory>${project.build.scriptSourceDirectory}/shell/mswin</directory>
+      <outputDirectory>bin/windows</outputDirectory>
       <includes>
         <include>*.bat</include>
       </includes>
       <lineEnding>dos</lineEnding>
     </fileSet>
     <fileSet>
-      <directory>${project.build.scriptSourceDirectory}/shell</directory>
-      <outputDirectory>bin</outputDirectory>
+      <directory>${project.build.scriptSourceDirectory}/shell/unix</directory>
+      <outputDirectory>bin/unix</outputDirectory>
       <includes>
         <include>*.sh</include>
       </includes>
@@ -44,10 +44,6 @@
     <fileSet>
       <directory>${project.build.directory}/maven-shared-archive-resources</directory>
       <outputDirectory>resources</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/src/site/resources</directory>
-      <outputDirectory>docs</outputDirectory>
     </fileSet>
   </fileSets>
   <files>

@@ -9,6 +9,7 @@ import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
 
 public class SuiteEntry extends IndexEntry {
+    String defaultResult = "Pass";
     QName startingTest;
     Document form = null;
     String title = null;
@@ -29,6 +30,8 @@ public class SuiteEntry extends IndexEntry {
         String prefix = e.getAttribute("prefix");
         String namespaceUri = e.getAttribute("namespace-uri");
         String localName = e.getAttribute("local-name");
+        setDefaultResult(DomUtils.getElementByTagName(suite, "defaultResult")
+                .getTextContent());
         startingTest = new QName(namespaceUri, localName, prefix);
         Element form_e = DomUtils.getElementByTagNameNS(suite, Test.CTL_NS,
                 "form");
@@ -83,6 +86,14 @@ public class SuiteEntry extends IndexEntry {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getDefaultResult() {
+        return defaultResult;
+    }
+
+    public void setDefaultResult(String defaultResult) {
+        this.defaultResult = defaultResult;
     }
 
 }

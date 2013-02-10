@@ -21,16 +21,25 @@ package com.occamlab.te;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.XMLParserUtils;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParser;
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+
+import org.xml.sax.InputSource;
+
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -50,6 +59,17 @@ public class Generator {
     private static final Logger LOGR = Logger.getLogger(Generator.class
             .getName());
 
+    private static String suiteDefaultResult = "Pass";
+
+    public static void setSuiteDefaultResult(String resultName) {
+        suiteDefaultResult = resultName.equals("BestPractice") ? "BestPractice"
+                : "Pass";
+    }
+
+    public static String getSuiteDefaultResult() {
+        return suiteDefaultResult;
+    }
+
     public static Index generateXsl(SetupOptions opts) throws Exception {
         Index masterIndex = new Index();
 
@@ -64,7 +84,6 @@ public class Generator {
 
         // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
-        processor.setConfigurationProperty(FeatureKeys.XINCLUDE, Boolean.TRUE);
         processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING,
                 Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
@@ -87,7 +106,7 @@ public class Generator {
         Iterator<File> it = sources.iterator();
         while (it.hasNext()) {
             File source = it.next();
-            LOGR.log(Level.CONFIG, "Processing CTL source files in {0}",
+            LOGR.log(Level.FINE, "Processing CTL source files in {0}",
                     source.getAbsolutePath());
             String encodedName = createEncodedName(source);
             File workingDir = new File(opts.getWorkDir(), encodedName);
@@ -120,14 +139,16 @@ public class Generator {
             }
         }
 
+        // resolve xinclude elements but omit xml:base attributes
+        SAXParser parser = XMLParserUtils.createXIncludeAwareSAXParser(false);
+
         // Process each CTL source file
         for (int i = 0; i < sourceFiles.size(); i++) {
             File sourceFile = sourceFiles.get(i);
             File workingDir = workDirs.get(i);
 
             // Read previous index for this file (if any), and determine whether
-            // the
-            // index and xsl need to be regenerated
+            // the index and xsl need to be regenerated
             File indexFile = new File(workingDir, "index.xml");
             Index index = null;
             boolean regenerate = true;
@@ -150,7 +171,7 @@ public class Generator {
                 boolean validationErrors = false;
                 if (opts.isValidate()) {
                     int old_count = validation_eh.getErrorCount();
-                    LOGR.log(Level.INFO, "Validating " + sourceFile);
+                    LOGR.log(Level.CONFIG, "Validating " + sourceFile);
                     ctl_validator.validate(new StreamSource(sourceFile));
                     validationErrors = (validation_eh.getErrorCount() > old_count);
                 }
@@ -159,12 +180,15 @@ public class Generator {
                     // Clean up the working directory
                     Misc.deleteDirContents(workingDir);
 
+                    InputSource input = new InputSource(new FileInputStream(
+                            sourceFile));
+                    input.setSystemId(sourceFile.toURI().toString());
+                    Source ctlSource = new SAXSource(parser.getXMLReader(),
+                            input);
                     // Run the generator transformation. Output is an index file
-                    // and is saved to disk.
-                    // The generator also creates XSL template files in the
-                    // working dir.
-                    generatorTransformer
-                            .setSource(new StreamSource(sourceFile));
+                    // and is saved to disk. The generator also creates XSL
+                    // template files in the working dir.
+                    generatorTransformer.setSource(ctlSource);
                     Serializer generatorSerializer = new Serializer();
                     generatorSerializer.setOutputFile(indexFile);
                     generatorTransformer.setDestination(generatorSerializer);
@@ -177,7 +201,6 @@ public class Generator {
                     index = new Index(indexFile);
                 }
             }
-
             // Add new index entries to the master index
             masterIndex.add(index);
         }

@@ -2,16 +2,10 @@ package com.occamlab.te.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
-import sun.net.www.protocol.http.HttpURLConnection;
-
-/*
- * sun.net.www.protocol.http.HttpURLConnection is not accessible from the 
- * Java Run-time Environment (JRE) rt.jar.  
- * It and other sun.www.protocol.* classes have been extracted into sun-rt.jar
- * which is copied to TeamEngineWMTS/apps/engine/lib to support this class.
- */
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class of utilities for URL Connections, Java 7 (JDK 1.7.0) and later.
@@ -21,17 +15,16 @@ import sun.net.www.protocol.http.HttpURLConnection;
  */
 public class URLConnectionUtils {
 
+    private static final Logger LOGR = Logger
+            .getLogger(URLConnectionUtils.class.getName());
+
     static {
-        // enable error stream buffering
         try {
-            String eb = System.setProperty(
-                    "sun.net.http.errorstream.enableBuffering", "true");
-            String est = System.setProperty("sun.net.http.errorstream.timeout",
-                    "600");
-            // String esb =
-            // System.getProperty("sun.net.http.errorstream.bufferSize");
+            System.setProperty("sun.net.http.errorstream.enableBuffering",
+                    "true");
+            System.setProperty("sun.net.http.errorstream.timeout", "600");
         } catch (Exception e) {
-            System.err.println("Error setting System properties "
+            LOGR.warning("Failed to enable buffering of error stream.\n"
                     + e.getMessage());
             e.fillInStackTrace();
             e.printStackTrace(System.err);
@@ -76,31 +69,19 @@ public class URLConnectionUtils {
      */
     public static InputStream getInputStream(URLConnection uc)
             throws IOException {
-        IOException savedException = null;
+        HttpURLConnection huc = (HttpURLConnection) uc;
         InputStream is = null;
         try {
-            is = uc.getInputStream();
+            is = huc.getInputStream();
         } catch (IOException ioe) {
-            savedException = ioe;
-            // System.err.println(ioe);
-        } finally {
-            if (savedException != null) {
-                try {
-                    if (uc instanceof sun.net.www.protocol.http.HttpURLConnection) {
-                        InputStream errorStream = ((sun.net.www.protocol.http.HttpURLConnection) uc)
-                                .getErrorStream();
-                        is = errorStream;
-                    }
-
-                } catch (Exception e) {
-                    // do nothing
-                } finally {
-                    if (is == null) {
-                        throw savedException;
-                    }
-                }
+            if (LOGR.isLoggable(Level.FINE)) {
+                String msg = String
+                        .format("Failed to successfully resolve URL %s.\nGetting error stream...\n %s",
+                                uc.getURL(), ioe.getMessage());
+                LOGR.fine(msg);
             }
-            return is;
+            is = huc.getErrorStream();
         }
+        return is;
     }
 }

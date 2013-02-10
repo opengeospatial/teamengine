@@ -2,34 +2,65 @@ package com.occamlab.te.index;
 
 import org.w3c.dom.Element;
 
+import com.occamlab.te.TECore;
+
 public class TestEntry extends TemplateEntry {
+    int defaultResult = TECore.PASS;
+    int result = TECore.PASS;
+    String context;
+    String type;
     String assertion;
 
-    TestEntry() {
+    public TestEntry() {
         super();
     }
 
     TestEntry(Element test) {
         super(test);
-        // try {
-        // setTemplateFile(new File(new URI(test.getAttribute("file"))));
-        // NodeList nl = test.getElementsByTagName("param");
-        // if (nl.getLength() > 0) {
-        // params = new ArrayList<QName>();
-        // for (int i = 0; i < nl.getLength(); i++) {
-        // Element el = (Element)nl.item(i);
-        // String prefix = el.getAttribute("prefix");
-        // String namespaceUri = el.getAttribute("namespace-uri");
-        // String localName = el.getAttribute("local-name");
-        // params.add(new QName(namespaceUri, localName, prefix));
-        // }
-        // }
-        // setUsesContext(Boolean.parseBoolean(test.getAttribute("uses-context")));
+        if (usesContext()) {
+            setContext(test.getElementsByTagName("context").item(0)
+                    .getTextContent());
+        }
+        setType(test.getElementsByTagName("type").item(0).getTextContent());
         setAssertion(test.getElementsByTagName("assertion").item(0)
                 .getTextContent());
-        // } catch (URISyntaxException e) {
-        // throw new RuntimeException(e);
-        // }
+        String defaultResultName = test.getElementsByTagName("defaultResult")
+                .item(0).getTextContent();
+        setDefaultResult(defaultResultName.equals("BestPractice") ? TECore.BEST_PRACTICE
+                : TECore.PASS);
+        setResult(getDefaultResult());
+    }
+
+    public int getDefaultResult() {
+        return defaultResult;
+    }
+
+    public void setDefaultResult(int defaultResult) {
+        this.defaultResult = defaultResult;
+    }
+
+    public int getResult() {
+        return result;
+    }
+
+    public void setResult(int result) {
+        this.result = result;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getAssertion() {

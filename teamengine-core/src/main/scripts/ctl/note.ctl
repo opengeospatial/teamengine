@@ -5,34 +5,67 @@
 
   <ctl:suite name="note:note-test">
     <ctl:title>Sample test suite</ctl:title>
-    <ctl:description>
-	Checks the content of a note retrieved from http://www.w3schools.com/xml/note.xml
-	</ctl:description>
+    <ctl:description>Checks the content of a note.</ctl:description>
     <ctl:starting-test>note:main</ctl:starting-test>
   </ctl:suite>
 
   <ctl:test name="note:main">
     <ctl:assertion>The note is valid.</ctl:assertion>
     <ctl:code>
-      <xsl:variable name="response">
-        <ctl:request>
-          <ctl:url>http://www.w3schools.com/xml/note.xml</ctl:url>
-        </ctl:request>
+      <xsl:variable name="form-data">
+        <ctl:form width="800" height="600">
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <h2>XML Note</h2>
+            <fieldset style="background:#ccffff">
+              <legend>Instance Under Test</legend>
+              <p>
+                <label class="form-label" for="uri">
+                  <h4 style="margin-bottom: 0.5em">Location of note (absolute URI)</h4>
+                </label>
+                <input name="uri" size="96" type="text" value="http://www.w3schools.com/xml/note.xml" />
+              </p>
+              <p>
+                <label class="form-label" for="doc">
+                  <h4 style="margin-bottom: 0.5em">Upload document</h4>
+                </label>
+                <input name="doc" size="96" type="file" />
+              </p>
+            </fieldset>
+            <p>
+              <input class="form-button" type="submit" value="Start"/>
+              <input class="form-button" type="reset" value="Clear"/>
+            </p>
+          </body>
+        </ctl:form>
+      </xsl:variable>
+      <xsl:variable name="uri" select="$form-data//value[@key='uri']" />
+      <xsl:variable name="file" select="$form-data//value[@key='doc']/ctl:file-entry" />
+      <xsl:variable name="iut">
+        <xsl:choose>
+          <xsl:when test="(string-length($uri) gt 0) and empty($file/@full-path)">
+            <ctl:request>
+              <ctl:url><xsl:value-of select="$uri"/></ctl:url>
+            </ctl:request>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="doc(concat('file:///', $file/@full-path))" />
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:variable>
       <xsl:choose>
-        <xsl:when test="$response/note">
+        <xsl:when test="exists($iut)">
           <ctl:call-test name="note:check-heading">
-            <ctl:with-param name="heading" select="$response/note/heading"/>
+            <ctl:with-param name="heading" select="$iut//heading"/>
           </ctl:call-test>
           <ctl:call-test name="note:check-user">
-            <ctl:with-param name="user" select="$response/note/to" label="The 'to' user"/>
+            <ctl:with-param name="user" select="$iut/note/to" label="The 'to' user"/>
           </ctl:call-test>
           <ctl:call-test name="note:check-user">
-            <ctl:with-param name="user" select="$response/note/from" label="The 'from' user"/>
+            <ctl:with-param name="user" select="$iut/note/from" label="The 'from' user"/>
           </ctl:call-test>
         </xsl:when>
         <xsl:otherwise>
-          <ctl:message>Failed to retrieve the note.</ctl:message>
+          <ctl:message>Failed to obtain note.</ctl:message>
           <ctl:fail/>
         </xsl:otherwise>
       </xsl:choose>
@@ -58,7 +91,7 @@
         <xsl:when test="$user='Jim'"/>
         <xsl:when test="$user='Jan'"/>
         <xsl:otherwise>
-        <ctl:fail/>
+          <ctl:fail/>
         </xsl:otherwise>
       </xsl:choose>
     </ctl:code>

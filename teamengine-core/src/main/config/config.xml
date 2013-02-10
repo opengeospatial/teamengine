@@ -17,7 +17,7 @@
             <description>Checks the content of a note.</description>
           </suite>
           <revision>
-            <name>r0</name>
+            <name>r1</name>
             <sources>
               <source>note.ctl</source>
             </sources>

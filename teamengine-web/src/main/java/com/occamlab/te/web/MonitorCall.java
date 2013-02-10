@@ -5,7 +5,6 @@ import org.w3c.dom.Element;
 import com.occamlab.te.TECore;
 
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.NodeInfo;
 
 public class MonitorCall {
     XPathContext context;

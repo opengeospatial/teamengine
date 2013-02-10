@@ -50,13 +50,22 @@ import com.occamlab.te.util.Misc;
  */
 public class ViewLog {
 
+    static public boolean hasCache = false;
     public static TransformerFactory transformerFactory = TransformerFactory
             .newInstance();
 
     public static boolean view_log(File logdir, String session,
             ArrayList tests, Templates templates, Writer out) throws Exception {
+        return view_log(logdir, session, tests, templates, out, 1);
+    }
+
+    public static boolean view_log(File logdir, String session,
+            ArrayList tests, Templates templates, Writer out, int testnum)
+            throws Exception {
+        hasCache = false;
         Transformer t = templates.newTransformer();
         t.setParameter("logdir", logdir.getAbsolutePath());
+        t.setParameter("testnum", Integer.toString(testnum));
         DocumentBuilder db = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder();
 
@@ -88,6 +97,7 @@ public class ViewLog {
             if (testElement == null) {
                 return false;
             } else {
+                setHasCache(testElement);
                 return testElement.getAttribute("complete").equals("yes");
             }
         } else {
@@ -98,9 +108,12 @@ public class ViewLog {
                 File f = new File(new File(logdir, test), "log.xml");
                 if (f.exists()) {
                     Document doc = LogUtils.makeTestList(logdir, test);
+                    Element testElement = DomUtils.getElementByTagName(doc,
+                            "test");
+                    if (testElement != null) {
+                        setHasCache(testElement);
+                    }
                     t.setParameter("index", doc);
-                    // t.transform(new StreamSource(f), new
-                    // StreamResult(System.out));
                     Document log = LogUtils.readLog(logdir, test);
                     t.transform(new DOMSource(log), new StreamResult(out));
                     Element logElement = (Element) (log
@@ -116,6 +129,16 @@ public class ViewLog {
             }
             return ret;
         }
+    }
+
+    static void setHasCache(Element testElement) {
+        String hasCacheAttributeValue = testElement.getAttribute("hasCache");
+        hasCache = (hasCacheAttributeValue == null) ? false
+                : (hasCacheAttributeValue.equals("yes") ? true : false);
+    }
+
+    public static boolean hasCache() {
+        return hasCache;
     }
 
     public static void main(String[] args) throws Exception {

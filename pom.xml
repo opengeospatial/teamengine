@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                        http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
@@ -10,11 +8,10 @@
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
-  A test harness used in the OGC Compliance Testing Program. It interprets 
-  test scripts written using the CTL vocabulary. A CTL script is processed 
-  to generate an XSLT 2.0 stylesheet that constitutes the executable test 
-  suite (ETS). An extension mechanism enables the use of alternative test 
-  runners such as TestNG.
+  A test harness that executes test suites written using the OGC CTL test 
+  grammar or the TestNG framework. It is typically used to verify specification 
+  compliance and is the official test harness of the OGC Compliance Testing 
+  Program (CITE).
   </description>
   <url>http://sourceforge.net/projects/teamengine/</url>
   <licenses>
@@ -25,13 +22,13 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.code.sf.net/p/teamengine/code/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/teamengine/code/trunk</developerConnection>
-    <url>http://sourceforge.net/p/teamengine/code/767/tree/</url>
+    <connection>scm:svn:http://svn.code.sf.net/p/teamengine/code/tags/4.0-beta1</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/teamengine/code/tags/4.0-beta1</developerConnection>
+    <url>scm:svn:https://svn.code.sf.net/p/teamengine/code/tags/4.0-beta1</url>
   </scm>
   <issueManagement>
-    <system>Bug Tracker</system>
-    <url>http://sourceforge.net/p/teamengine/bugs/</url>
+    <system>Ticket Tracker</system>
+    <url>http://www.sourceforge.net/p/teamengine/_list/tickets</url>
   </issueManagement>
 
   <prerequisites>
@@ -40,13 +37,13 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
+    <saxon.version>9.0.0.8</saxon.version>
   </properties>
 
   <modules>
     <module>teamengine-realm</module>
     <module>teamengine-resources</module>
     <module>teamengine-spi</module>
-    <module>teamengine-config</module>
     <module>teamengine-core</module>
     <module>teamengine-web</module>
   </modules>
@@ -109,9 +106,69 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.2</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-module-xhtml</artifactId>
+            <version>1.3</version>
+          </dependency>
+        </dependencies>
+        <configuration>  
+          <generateReports>false</generateReports>  
+        </configuration> 
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pdf-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <id>pdf</id>
+            <phase>site</phase>
+            <goals>
+              <goal>pdf</goal>
+            </goals>
+            <configuration>
+              <aggregate>true</aggregate>
+              <includeReports>false</includeReports>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <tagBase>https://svn.code.sf.net/p/teamengine/code/tags</tagBase>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.9</version>
+          <configuration>
+            <docfilessubdirs>true</docfilessubdirs>
+            <show>package</show>
+          </configuration>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <!-- Configures Eclipse m2e plug-in only and does not affect the Maven 
             build itself. -->
@@ -166,12 +223,6 @@
       <id>opengeospatial-cite</id>
       <name>OGC CITE Repository</name>
       <url>https://svn.opengeospatial.org/ogc-projects/cite/maven</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

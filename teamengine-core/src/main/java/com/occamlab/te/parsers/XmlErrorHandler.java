@@ -21,8 +21,6 @@ import org.xml.sax.SAXParseException;
  * A SAX error handler that collects validation errors raised while verifying
  * the structure and content of XML entities.
  * 
- * @author rmartell
- * @version $Rev$
  */
 public class XmlErrorHandler implements ErrorHandler {
 
@@ -51,8 +49,6 @@ public class XmlErrorHandler implements ErrorHandler {
      * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
      */
     public void warning(SAXParseException spex) {
-
-        // printError("Warning", spex);
         addError(ValidationError.WARNING, spex);
     }
 
@@ -65,8 +61,6 @@ public class XmlErrorHandler implements ErrorHandler {
      * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
      */
     public void error(SAXParseException spex) {
-
-        // printError("Error", spex);
         addError(ValidationError.ERROR, spex);
     }
 
@@ -75,8 +69,7 @@ public class XmlErrorHandler implements ErrorHandler {
      * handler.
      * 
      */
-    private void printError(String type, SAXParseException e) {
-
+    void printError(String type, SAXParseException e) {
         PrintWriter logger = new PrintWriter(System.out);
         logger.print(type);
         if (e.getLineNumber() >= 0) {
@@ -124,8 +117,9 @@ public class XmlErrorHandler implements ErrorHandler {
      *            XML source
      */
     private void addError(short severity, SAXParseException spex) {
-
-        buf.append("Line " + spex.getLineNumber() + " - ");
+        if (spex.getLineNumber() > 0) {
+            buf.append("Line " + spex.getLineNumber() + " - ");
+        }
         buf.append(spex.getMessage() + "\n");
         ValidationError error = new ValidationError(severity, buf.toString());
         errors.add(error);
@@ -138,7 +132,6 @@ public class XmlErrorHandler implements ErrorHandler {
      * @return a consolidated error message
      */
     public String toString() {
-
         buf.setLength(0);
         ErrorIterator errIterator = iterator();
         while (errIterator.hasNext()) {
@@ -165,26 +158,23 @@ public class XmlErrorHandler implements ErrorHandler {
     }
 
     /**
-     * Returns the errors in a simple nodelist (needed for CTL processing).
+     * Returns validation errors in a NodeList (needed for CTL processing). Each
+     * item in the list is an {@code <error>} element containing an error
+     * message as text content.
      * 
      * @return a list of errors in a NodeList.
      */
     public NodeList toNodeList() {
-
         Document doc = null;
         try {
-            System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
-                    "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.newDocument();
         } catch (Exception e) {
             jlogger.log(Level.SEVERE, "validate", e);
-
             e.printStackTrace();
         }
-
         Element root = doc.createElement("errors");
         doc.appendChild(root);
         ErrorIterator errIterator = iterator();
@@ -194,9 +184,7 @@ public class XmlErrorHandler implements ErrorHandler {
             elem.setTextContent(err.getMessage());
             root.appendChild(elem);
         }
-
-        return (NodeList) doc.getElementsByTagName("error");
-
+        return doc.getElementsByTagName("error");
     }
 
     /**
@@ -218,13 +206,10 @@ public class XmlErrorHandler implements ErrorHandler {
 
     /**
      * Helper class that provides a read-only iterator over validation errors.
-     * 
-     * @author rmartell
-     * @version $Rev$
      */
     public class ErrorIterator {
         /** The underlying errors for this iterator. */
-        Iterator underlying = errors.iterator();
+        Iterator<ValidationError> underlying = errors.iterator();
 
         /**
          * Indicates if more errors remain in the iteration.
