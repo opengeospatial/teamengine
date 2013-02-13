@@ -136,7 +136,7 @@ File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.sepa
 if ( htmlReportDir.isDirectory()) {
 %>
     <p>
-    See the <a href="/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
+    See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
  	</p>
 <% } %>
 

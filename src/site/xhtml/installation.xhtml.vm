@@ -22,7 +22,8 @@
     </ul>
 
     <p>Simply run <code>mvn package</code> in the root project directory to generate 
-    all build artifacts (using JDK 6 or later). The main build artifacts are listed 
+    all build artifacts (using JDK 6 or later), or run <code>mvn install</code> to 
+    install them into the local Maven repository. The main build artifacts are listed 
     below.</p>
 
     <dl>
@@ -147,20 +148,12 @@ of concurrent users increases.</p>
 </p>
 
 <p>Unpack the contents of the teamengine-common-libs archive into the CATALINA_BASE/lib 
-directory. Add the following contexts for static web content to the CATALINA_BASE/conf/Catalina/localhost/
-directory.</p>
-
-<dl>
-  <dt>docs.xml</dt>
-  <dd>&lt;Context path="/docs" docBase="${TE_BASE}/resources/docs" /&gt;</dd>
-  <dt>reports.xml</dt>
-  <dd>&lt;Context path="/reports" docBase="${TE_BASE}/users" /&gt;</dd>
-  <dt>about.xml</dt>
-  <dd>&lt;Context path="/about" docBase="${TE_BASE}/scripts" /&gt;</dd>
-</dl>
-
-<p>Deploy the <code>teamengine.war</code> component and start the Tomcat instance. 
-The following URIs provide starting points for discovering and executing test suites:</p>
+directory. Deploy the <code>teamengine.war</code> component by either copying it to the 
+CATALINA_BASE/webapps directory or using the Tomcat <em>Manager</em> application.
+If you wish to change the name of the WAR file (and hence the context path), modify 
+the value of the &lt;home&gt; property in the TE_BASE/config.xml file. Start the 
+Tomcat instance. The following URIs provide starting points for discovering and 
+executing test suites:</p>
 
 <ul>
   <li>/teamengine - Home page for selecting and running CTL test suites</li>

@@ -12,7 +12,7 @@
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes" />
 
-  <xsl:variable name="BASE_URL" select="'/about/'"/>
+  <xsl:variable name="BASE_URL" select="'about/'"/>
 
   <xsl:template match="/config">
     <xsl:for-each select="scripts/organization">
