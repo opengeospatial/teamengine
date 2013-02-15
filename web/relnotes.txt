@@ -1,6 +1,8 @@
 CSW 2.0.2 Test Suite Release Notes
+==================================
 
-Changes included in latest revision:
+--- revision r5 -----------
+- [functions.xml]: Added missing namespace declaration (for 'xsd' prefix).
 
 --- revision r4 -----------
 - Updated config for TEAM Engine v4
@@ -29,4 +31,3 @@ Changes included in latest revision:
 
 2009-12-10 (cmorris):
 - Correct schematron file for checking PostEncoding constraints (issue 453)
-
