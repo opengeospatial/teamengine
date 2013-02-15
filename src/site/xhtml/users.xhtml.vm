@@ -30,7 +30,7 @@ TE_HOME
     operating system in use. Once this is done, change to the appropriate script directory 
     (TE_HOME/bin/{unix,windows}) or add it to the system path.
     </p>
-    
+
     <p><img src="./images/warn-16px.png"/> <strong>Warning:</strong> If a test suite 
     requires any supporting libraries that are not included with the core distribution, 
     these must be added to the TE_BASE/resources/lib directory.</p>
@@ -40,7 +40,7 @@ TE_HOME
     specify the location of the root CTL script (relative to TE_BASE/scripts).
     </p>
     <pre>
-$ listsuites -source=note.ctl
+&gt; listsuites -source=note.ctl
 
 Suite note:note-test ({http://example.net/note-test}note-test)
 Sample test suite
@@ -53,7 +53,7 @@ Checks the content of a note.</pre>
     created in TE_BASE/users/<em>username</em>/.
     </p>
     <pre>
-$ test -source=note.ctl
+&gt; test -source=note.ctl
 
 Testing suite note:note-test in Test Mode with defaultResult of Pass ...
 Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
@@ -74,6 +74,13 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     a new user account. After logging in, previous test sessions are displayed. Select 
     "Create new session" and choose a test suite to execute.
     </p>
+
+    <p>The TE_BASE/config.xml file is a "watched" resource--the web application will be 
+    reloaded whenever this file is modified. This means that test suites can be added or 
+    updated and become available for use without having to restart the Tomcat instance.
+    Simply put the CTL scripts in TE_BASE/scripts and insert or update an entry in the 
+    main configuration file. Supporting libraries, if any, must be placed in the 
+    WEB-INF/lib directory.</p>
 
     <h2>REST API</h2>
     <p>
@@ -117,7 +124,7 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     in a query component, it must be percent-encoded as %26 since it is a "data octet" in 
     this context (see <a href="http://tools.ietf.org/html/rfc3986#section-2.1" target="_blank">
     RFC 3986, sec. 2.1</a>).</p>
-    
+
     <p>The test run parameters are described in the test suite summary document. This 
     document can be viewed from the web application by selecting the <em>Test Suite 
     Revision</em> link displayed on the home page; the REST API will also present the 
