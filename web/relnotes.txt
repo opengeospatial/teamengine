@@ -2,11 +2,16 @@ CSW 2.0.2 Test Suite Release Notes
 ==================================
 
 --- revision r5 -----------
+
+2013-02-15 (rmartell):
 - [functions.xml]: Added missing namespace declaration (for 'xsd' prefix).
 
 --- revision r4 -----------
-- Updated config for TEAM Engine v4
-- Fixed Schematron 1.5 validation
+
+2013-01-24 (rmartell):
+- updated config for TEAM Engine v4
+- removed unneeded build.xml, xipr.xsl, etc.
+- fixed Schematron 1.5 validation
 
 2012-09-13 (lbigagli):
 - removed test csw-2.0.2-GetRecords-tc11.2 (see issue #583)
