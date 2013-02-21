@@ -10,6 +10,7 @@
   </meta>
 
   <toc name="Table of Contents" depth="2">
+    <item name="Changes" ref="changes.xhtml"/>
     <item name="Overview" ref="index.xhtml"/>
     <item name="Installation" ref="installation.xhtml.vm"/>
     <item name="User's Guide" ref="users.xhtml.vm"/>
