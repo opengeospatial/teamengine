@@ -50,9 +50,9 @@
 	The document element must have [local name] = "ExceptionReport" and [namespace name] = "http://www.opengis.net/ows".
       </sch:assert>
       <sch:assert id="ExceptionReport.version" 
-        test="ows:ExceptionReport/@version = '2.0.2'"
+        test="ows:ExceptionReport/@version = '1.2.0'"
         diagnostics="reportedVersion">
-	The exception report must have @version = "2.0.2".
+	The exception report must have @version = "1.2.0".
       </sch:assert>
     </sch:rule>
   </sch:pattern>
