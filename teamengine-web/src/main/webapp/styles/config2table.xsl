@@ -6,7 +6,7 @@
 
   <db:abstract xmlns:db="http://docbook.org/ns/docbook">
     <db:para>
-    Transforms the TEAM-Engine configuration file to an HTML table representtaion.
+    Transforms the TEAM-Engine configuration file to an HTML table representation.
     </db:para>
   </db:abstract>
 
@@ -25,6 +25,7 @@
             <th>Specification</th>
             <th>Version</th>
             <th>Test Suite Revision</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -36,6 +37,8 @@
 
   <xsl:template name="standards">
     <xsl:for-each select="standard/version">
+      <xsl:sort select="../name" order="ascending" />
+      <xsl:sort select="name" order="ascending" />
       <tr>
         <td><xsl:value-of select="../name" /></td>
         <td><xsl:value-of select="name" /></td>
@@ -54,6 +57,9 @@
               <xsl:value-of select="revision/name" />
             </xsl:otherwise>
           </xsl:choose> 
+        </td>
+        <td><xsl:value-of 
+        select="if (revision/status) then revision/status else 'Final'" />
         </td>
       </tr>
     </xsl:for-each>

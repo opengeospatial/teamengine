@@ -11,7 +11,7 @@ h1, h2, h3 {
 }
 h1 { font-size: 1.50em; margin-top: 2em;}
 h2 { font-size: 1.25em; }
-h3 { font-size: 1em; margin-bottom: 0.5em; }
+h3 { font-size: 1em; margin-top: 2em; margin-bottom: 0.5em; }
 table {
   border: 1px solid black;
   margin-top: 0.5em;

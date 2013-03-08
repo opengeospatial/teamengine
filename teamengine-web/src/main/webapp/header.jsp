@@ -3,11 +3,12 @@
 		style="position: static; background-color: black; width: 100%; height: 100px; overflow: hidden"
 		onclick="window.location = ''">
 		<!-- Image derived from "Dinky the Steam Engine - main drive wheel", Steve Karg, http://www.burningwell.org -->
-		<img style="position: absolute" src="images/banner.jpg"
-			alt="TEAM Engine Banner" />
-		<div style="position: absolute">
-			<span style="font-size: 2em">TEAM<br />Engine v4 <img src="images/icon-beta.png"/><br /></span>
-      <span style="font-size: 0.75em">Test, Evaluation, And Measurement Engine</span>
+		<img style="position: absolute" src="images/banner.jpg" alt="TEAM Engine Banner" />
+		<div style="position: absolute;">
+      <div style="margin-bottom: 1em;"><img src="images/ogc-logo-127x58.png"/></div>
+			<span style="font-size: 1.25em;">
+        <strong>TEAM Engine v4</strong> <img src="images/icon-beta.png"/>
+      </span>
 		</div>
 		<%
 		    String user = request.getRemoteUser();
