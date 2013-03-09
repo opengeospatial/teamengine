@@ -12,7 +12,11 @@
   <context-param>
     <description xml:lang="en">Location of main configuration file.</description>
     <param-name>teConfigFile</param-name>
-    <param-value>${TE_BASE}${file.separator}config.xml</param-value>
+    <param-value>\${TE_BASE}\${file.separator}config.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>appVersion</param-name>
+    <param-value>${project.version}</param-value>
   </context-param>
 
   <servlet>

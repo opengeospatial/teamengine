@@ -106,6 +106,8 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.3</version>
         <configuration>
+          <escapeString>\</escapeString>
+          <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
           <!-- Shared resources are already present in WEB-INF/classes/ -->
           <!-- Common libraries (e.g. JAX-RS) are bundled separately -->
           <packagingExcludes>
