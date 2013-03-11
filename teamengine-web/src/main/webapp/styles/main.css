@@ -9,7 +9,7 @@ h1, h2, h3 {
   color: #000099;
   text-align: left;
 }
-h1 { font-size: 1.50em; margin-top: 2em;}
+h1 { font-size: 1.50em; margin-top: 2em; }
 h2 { font-size: 1.25em; }
 h3 { font-size: 1em; margin-top: 2em; margin-bottom: 0.5em; }
 table {
@@ -27,3 +27,4 @@ thead {text-align: left; background: #eeeeee;color: #000099;}
 td, th { padding: 0.25em;}
 pre { background: AliceBlue; }
 a:link img, a:visited img { border-style: none }
+hr { border: 1px solid #000099; }

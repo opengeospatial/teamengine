@@ -18,8 +18,8 @@
   <p>If you have any questions, issues, or great ideas please raise them at the 
   <a href="http://cite.opengeospatial.org/forum" target="_blank">CITE forum</a>, 
   where experts and enthusiasts will join the discussion and provide help. You can 
-  find more information about the tests and this testing facility in our 
-  <a href="http://sourceforge.net/p/teamengine/wiki/" target="_blank">wiki</a>.
+  find more information about the tests and this testing facility at the 
+  <a href="http://cite.opengeospatial.org/" target="_blank">main CITE website</a>.
   If you are thinking about providing a <a href="http://cite.opengeospatial.org/reference" 
   target="_blank">reference implementation</a> please email us at &lt;<code>compliance 
   at opengeospatial.org</code>&gt;.
