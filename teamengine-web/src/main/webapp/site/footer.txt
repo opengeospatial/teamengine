@@ -1,0 +1,4 @@
+<p>
+Questions or suggestions? Email the <a href="mailto:site-admin@example.net">
+site administrator</a>
+</p>

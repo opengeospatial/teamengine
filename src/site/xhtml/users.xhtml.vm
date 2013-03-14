@@ -86,13 +86,13 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     <p>
     A REST-like API (based on <a href="http://jcp.org/en/jsr/detail?id=311" target="_blank">
     JAX-RS 1.1</a>) enables programmatic execution of some test suites; currently only
-    TestNG-based suites can be run in this manner. It exposes the endpoints listed in Table 1. 
+    TestNG-based suites can be run in this manner. It exposes the endpoints listed in Table 2. 
     In the request URIs the <code>{etsCode}</code> and <code>{etsVersion}</code> variables 
     denote the code and version, respectively, for a particular test suite.
     </p>
 
     <table>
-      <caption>Table 1 - REST endpoints</caption>
+      <caption>Table 2 - REST endpoints</caption>
       <thead>
         <tr>
           <th>URI (relative to base)</th>
