@@ -12,6 +12,7 @@
   <toc name="Table of Contents" depth="2">
     <item name="Changes" ref="changes.xhtml"/>
     <item name="Overview" ref="index.xhtml"/>
+    <item name="Source Code" ref="sourceCode.xhtml.vm"/>
     <item name="Installation" ref="installation.xhtml.vm"/>
     <item name="User's Guide" ref="users.xhtml.vm"/>
     <item name="Tester's Guide" ref="testers.xhtml.vm"/>
