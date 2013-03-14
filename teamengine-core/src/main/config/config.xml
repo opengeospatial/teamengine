@@ -18,6 +18,7 @@
           </suite>
           <revision>
             <name>r1</name>
+            <status>Alpha</status>
             <sources>
               <source>note.ctl</source>
             </sources>

@@ -6,6 +6,7 @@
   <id>distribution</id>
   <formats>
     <format>zip</format>
+    <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
@@ -50,6 +51,16 @@
     <file>
       <source>${project.basedir}/src/main/assembly/README.txt</source>
       <outputDirectory>/</outputDirectory>
+    </file>
+    <file>
+      <source>${project.basedir}/src/main/config/ctl-suites-dev.csv</source>
+      <outputDirectory>bin/windows</outputDirectory>
+      <lineEnding>dos</lineEnding>
+    </file>
+    <file>
+      <source>${project.basedir}/src/main/config/ctl-suites-dev.csv</source>
+      <outputDirectory>bin/unix</outputDirectory>
+      <lineEnding>unix</lineEnding>
     </file>
   </files>
 </assembly>

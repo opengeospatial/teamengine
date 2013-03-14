@@ -10,8 +10,6 @@ then
 fi
 
 csvfile="$1"
-# remove CR (Windows line breaks)
-sed -i'.bak' -e 's/\x0D//g' $csvfile
 
 while IFS="," read url etspath
 do
