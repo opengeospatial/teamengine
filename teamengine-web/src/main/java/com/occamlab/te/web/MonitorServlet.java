@@ -7,12 +7,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,8 +42,16 @@ import org.w3c.dom.Node;
 import com.occamlab.te.TECore;
 import com.occamlab.te.util.DomUtils;
 
+/**
+ * A servlet that intercepts a client request and validates it in accord with a
+ * registered MonitorCall object. Each MonitorCall object is associated with an
+ * endpoint.
+ * 
+ */
 @SuppressWarnings("serial")
 public class MonitorServlet extends HttpServlet {
+    private static final Logger LOGR = Logger.getLogger(MonitorServlet.class
+            .getPackage().getName());
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
 
     static DocumentBuilder DB;
@@ -114,6 +125,7 @@ public class MonitorServlet extends HttpServlet {
             mc.setModifiesResponse(Boolean.parseBoolean(modifiesResponse));
         }
         mc.setCallId(callId);
+        LOGR.log(Level.CONFIG, "Created monitor\n {0}", mc);
         return "";
     }
 
@@ -142,9 +154,13 @@ public class MonitorServlet extends HttpServlet {
                 response.sendError(410, "This URL is no longer valid");
                 return;
             }
-
+            if (null == request.getContentType()) {
+                // check GET requests only
+                String query = null;
+                query = URLDecoder.decode(request.getQueryString(), "UTF-8");
+                mc.checkCoverage(query);
+            }
             TECore core = mc.getCore();
-
             String url = mc.getUrl();
             String queryString = request.getQueryString();
             if (queryString != null) {

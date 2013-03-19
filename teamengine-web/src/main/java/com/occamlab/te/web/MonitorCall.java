@@ -1,5 +1,7 @@
 package com.occamlab.te.web;
 
+import java.io.File;
+
 import org.w3c.dom.Element;
 
 import com.occamlab.te.TECore;
@@ -17,6 +19,7 @@ public class MonitorCall {
     boolean modifiesResponse;
     TECore core;
     String testPath;
+    private CoverageMonitor coverageMonitor;
 
     MonitorCall(String url) {
         setUrl(url);
@@ -92,10 +95,31 @@ public class MonitorCall {
 
     public void setCore(TECore core) {
         this.core = core;
-        testPath = core.getTestPath();
+        this.testPath = core.getTestPath();
+        this.coverageMonitor = new CoverageMonitor(this.url, new File(
+                core.getLogDir(), core.getTestPath()));
     }
 
     public String getTestPath() {
         return testPath;
     }
+
+    /**
+     * Determines which server capabilities are exercised by this query.
+     * 
+     * @param query
+     *            The (decoded) query string extracted from the request URI.
+     */
+    public void checkCoverage(String query) {
+        this.coverageMonitor.inspectQuery(query);
+    }
+
+    @Override
+    public String toString() {
+        return "MonitorCall [url=" + url + ", localName=" + localName
+                + ", NamespaceURI=" + NamespaceURI + ", callId=" + callId
+                + ", modifiesResponse=" + modifiesResponse + ", testPath="
+                + testPath + "]";
+    }
+
 }

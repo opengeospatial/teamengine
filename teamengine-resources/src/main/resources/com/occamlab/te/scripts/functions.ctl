@@ -104,4 +104,11 @@
       <xsl:value-of select="string(tec:isWeb($te:core))" xmlns:tec="java:com.occamlab.te.TECore"/>
     </ctl:code>
   </ctl:function>
+
+  <ctl:function name="ctl:getSessionDir">
+    <ctl:description>Returns the location of the current test session directory.</ctl:description>
+    <ctl:code>
+      <xsl:value-of select="tec:getTestRunDirectory($te:core)" xmlns:tec="java:com.occamlab.te.TECore"/>
+    </ctl:code>
+  </ctl:function>
 </ctl:package>

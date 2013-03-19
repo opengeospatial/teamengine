@@ -155,6 +155,7 @@
     <servlet-name>userProfile</servlet-name>
     <url-pattern>/userProfile</url-pattern>
   </servlet-mapping>
+
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>user-specific</web-resource-name>

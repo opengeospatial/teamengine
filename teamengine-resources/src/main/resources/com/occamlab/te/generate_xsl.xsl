@@ -224,6 +224,7 @@
         <xsl:call-template name="template-includes">
           <xsl:with-param name="qname" select="$qname" />
         </xsl:call-template>
+        <xsl:apply-templates select="processing-instruction('ctl-msg')" />
         <txsl:param name="te:core" />
         <txsl:param name="te:params" />
         <xsl:if test="ctl:param">
@@ -1002,4 +1003,17 @@
     <!-- <xsl:value-of select="substring(stack:pop($filename-stack), 1, 0)"/> -->
     <xsl:call-template name="pop" />
   </xsl:template>
+
+  <db:abstract xmlns:db="http://docbook.org/ns/docbook">
+    <db:para>
+    Generates a named xsl:output definition for formatting structured messages 
+    using the saxon:serialize() function. The name is obtained from the 'name' 
+    pseudo-attribute of a ctl-msg processing instruction appearing in a ctl:test 
+    element.
+    </db:para>
+  </db:abstract>
+  <xsl:template match="processing-instruction('ctl-msg')">
+    <txsl:output name="{saxon:get-pseudo-attribute('name')}" method="xml" omit-xml-declaration="yes" indent="yes" />
+  </xsl:template>
+
 </xsl:transform>
