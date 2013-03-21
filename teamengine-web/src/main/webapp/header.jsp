@@ -5,7 +5,7 @@
 		<!-- Image derived from "Dinky the Steam Engine - main drive wheel", Steve Karg, http://www.burningwell.org -->
 		<img style="position: absolute" src="images/banner.jpg" alt="TEAM Engine Banner" />
 		<div style="position: absolute;">
-      <div style="margin-bottom: 1em;"><img src="site/logo.png"/></div>
+      <div style="margin-bottom: 0.75em;"><img src="site/logo.png"/></div>
 			<span style="font-size: 1.25em;">
         <strong>TEAM Engine v4</strong> <img src="images/icon-beta.png"/>
       </span>
