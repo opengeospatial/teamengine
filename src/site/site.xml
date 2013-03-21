@@ -34,7 +34,6 @@
 
     <menu name="Getting Started">
       <item href="index.html" name="Overview" />
-      <item name="Source Code" ref="sourceCode.xhtml.vm"/>
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
       <item href="testers.html" name="Tester's Guide" />

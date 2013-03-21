@@ -8,11 +8,13 @@
     <h1>Changes</h1>
     <h2>Version 4.0-beta2</h2>
     <ul>
-      <li>Allow customization of welcome page</li>
+      <li>Allow customization of content on welcome page (teamengine-web module)</li>
       <li>Added test suite revision/status element ("Alpha","Beta","Final","Deprecated").</li>
       <li>Eliminated separate contexts for static web resources.</li>
       <li>Added TE_BASE/config.xml as a watched resource (update triggers reload).</li>
       <li>REST API presents Javadoc overview document at /rest/suites/{etsCode}/{etsVersion}/.</li>
+      <li>Added support for ctl-msg processing instruction on ctl:test tags to enable output 
+      of structured messages (via saxon:serialize() function).</li>
       <li>Various updates of the site documentation.</li>
     </ul>
   </body>

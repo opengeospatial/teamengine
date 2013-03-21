@@ -11,6 +11,7 @@ h2 {
 h3 {
   font-size: 1em; margin-bottom: 0.5em;
 }
+pre { margin-top: 1em; margin-bottom: 1em; }
 .figure { 
   margin-top: 2em; margin-bottom: 2em; text-align:center;
 }
