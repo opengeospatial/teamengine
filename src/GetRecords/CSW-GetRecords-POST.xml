@@ -570,7 +570,7 @@
       include an exception report.
     </assertion>
     <comment>Pass if all of the following conditions are true: (1) the response 
-      is a valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValuePhase".</comment>
+      is a valid ows:ExceptionReport; (2) the reported exceptionCode is "InvalidParameterValue".</comment>
     <code>
       <xsl:variable name="response">
         <request>
