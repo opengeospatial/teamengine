@@ -3,9 +3,10 @@ CSW 2.0.2 Test Suite Release Notes
 
 --- revision r5 -----------
 
-2013-03-20 (rmartell):
-- Added missing namespace declaration for 'xsd' prefix [functions.xml].
-- Allow for multiple POST endpoints in capabilities document [CITE-780]
+2013-03-22 (rmartell, lbigagli):
+- added missing namespace declaration for 'xsd' prefix [functions.xml]
+- allow for multiple POST endpoints in capabilities document [CITE-780]
+- fixed a couple of test comments
 
 --- revision r4 -----------
 
