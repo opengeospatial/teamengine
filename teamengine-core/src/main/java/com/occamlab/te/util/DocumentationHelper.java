@@ -23,8 +23,6 @@ package com.occamlab.te.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -100,8 +98,6 @@ public class DocumentationHelper {
      */
     private void prettyprint(String xmlLogsFile, FileOutputStream htmlReportFile)
             throws Exception {
-        // System.setProperty("javax.xml.transform.TransformerFactory",
-        // "net.sf.saxon.TransformerFactoryImpl");
         TransformerFactory tFactory = TransformerFactory.newInstance();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -169,8 +165,7 @@ public class DocumentationHelper {
             System.out.println("Trying to create it!");
             LogUtils.createFullReportLog(sessionDir.getAbsolutePath());
         }
-        File html_output_report_file = prettyPrintReportFile; // new
-                                                              // File(sessionDir.getAbsolutePath()+File.separator+"report.html");
+        File html_output_report_file = prettyPrintReportFile;
         if (html_output_report_file.exists()) {
             System.out.println("Report file \""
                     + html_output_report_file.getAbsolutePath() + "\" reused!");
