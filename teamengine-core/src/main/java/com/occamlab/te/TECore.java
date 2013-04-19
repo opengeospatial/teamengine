@@ -669,7 +669,9 @@ public class TECore implements Runnable {
                 }
             } else {
                 verdict = FAIL; // all other exceptions
-                parentTest.setResult(verdict);
+                if (null != parentTest) {
+                    parentTest.setResult(verdict);
+                }
             }
             testStack.pop();
         }
@@ -1416,8 +1418,16 @@ public class TECore implements Runnable {
         }
     }
 
-    // Create and send an HttpRequest then return an HttpResponse (HttpResponse)
-    // static public URLConnection build_request(Node xml) throws Exception {
+    /**
+     * Submits a request to some HTTP endpoint using the given request details.
+     * 
+     * @param xml
+     *            An ctl:request element.
+     * @return A URLConnection object representing an open communications link.
+     * @throws Exception
+     *             If any error occurs while submitting the request or
+     *             establishing a conection.
+     */
     public URLConnection build_request(Node xml) throws Exception {
         Node body = null;
         ArrayList<String[]> headers = new ArrayList<String[]>();
@@ -1446,7 +1456,9 @@ public class TECore implements Runnable {
                         sParams += "&";
                     }
                     sParams += ((Element) n).getAttribute("name") + "="
-                            + URLEncoder.encode(n.getTextContent(), "UTF-8");
+                            + n.getTextContent();
+                    // WARNING! May break some existing test suites
+                    // + URLEncoder.encode(n.getTextContent(), "UTF-8");
                 } else if (n.getLocalName().equals("dynamicParam")) {
                     String name = null;
                     String val = null;
@@ -1457,8 +1469,9 @@ public class TECore implements Runnable {
                             if (dpn.getLocalName().equals("name")) {
                                 name = dpn.getTextContent();
                             } else if (dpn.getLocalName().equals("value")) {
-                                val = URLEncoder.encode(dpn.getTextContent(),
-                                        "UTF-8");
+                                val = dpn.getTextContent();
+                                // val =
+                                // URLEncoder.encode(dpn.getTextContent(),"UTF-8");
                             }
                         }
                     }
@@ -1652,26 +1665,6 @@ public class TECore implements Runnable {
             OutputStream os = uc.getOutputStream();
             os.write(bytes);
         }
-        /*
-         * // Get URLConnection values InputStream is = uc.getInputStream();
-         * byte[] respBytes = IOUtils.inputStreamToBytes(is); int respCode =
-         * ((HttpURLConnection) uc).getResponseCode(); String respMess =
-         * ((HttpURLConnection) uc).getResponseMessage(); Map respHeaders =
-         * ((HttpURLConnection) uc).getHeaderFields();
-         * 
-         * // Construct the HttpResponse (BasicHttpResponse) to send to parsers
-         * HttpVersion version = new HttpVersion(1,1); BasicStatusLine
-         * statusLine = new BasicStatusLine(version, respCode, respMess);
-         * BasicHttpResponse resp = new BasicHttpResponse(statusLine); Set
-         * respHeadersSet = respHeaders.keySet(); for( Iterator it =
-         * respHeadersSet.iterator(); it.hasNext(); ) { String name = (String)
-         * it.next(); List valueList = (List) respHeaders.get(name); String
-         * value = (String) valueList.get(0); if (name == null) continue;
-         * resp.addHeader(name, value); } HttpEntity entity = new
-         * ByteArrayEntity(respBytes); resp.setEntity(entity);
-         * 
-         * return resp;
-         */
         return uc;
     }
 

@@ -64,23 +64,26 @@ public class URLConnectionUtils {
      * sun.net.http.errorstream.bufferSize = <int> the size (in bytes) to use
      * for the buffering the error stream; default is 4k
      * 
-     * @return InputStream from URLConnection if available, or ErrorStream, or
-     *         null;
+     * @return InputStream from URLConnection if available, or the error stream
+     *         if the connection failed but the server sent useful data, or
+     *         null.
      */
     public static InputStream getInputStream(URLConnection uc)
             throws IOException {
-        HttpURLConnection huc = (HttpURLConnection) uc;
         InputStream is = null;
         try {
-            is = huc.getInputStream();
+            is = uc.getInputStream();
         } catch (IOException ioe) {
             if (LOGR.isLoggable(Level.FINE)) {
                 String msg = String
-                        .format("Failed to successfully resolve URL %s.\nGetting error stream...\n %s",
+                        .format("Failed to resolve URL %s.\nTrying error stream...\n %s",
                                 uc.getURL(), ioe.getMessage());
                 LOGR.fine(msg);
             }
-            is = huc.getErrorStream();
+            if (HttpURLConnection.class.isInstance(uc)) {
+                HttpURLConnection huc = (HttpURLConnection) uc;
+                is = huc.getErrorStream();
+            }
         }
         return is;
     }

@@ -33,7 +33,6 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -722,8 +721,9 @@ public class ImageParser {
             reader = ImageIO.getImageReaders(iis).next();
             reader.setInput(iis);
         } catch (Exception e) {
-            logger.println("No image handlers available for the data stream.");
-            return null;
+            logger.println("No image handlers available for the data stream. "
+                    + e.getMessage());
+            throw e;
         }
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

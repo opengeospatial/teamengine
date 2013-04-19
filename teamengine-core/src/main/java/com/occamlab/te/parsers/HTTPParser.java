@@ -82,6 +82,9 @@ public class HTTPParser {
                 header.appendChild(doc.createTextNode(headerValue));
             }
         }
+        if (LOGR.isLoggable(Level.FINER)) {
+            LOGR.finer(DomUtils.serializeNode(e));
+        }
     }
 
     /**
