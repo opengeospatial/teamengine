@@ -25,8 +25,9 @@
       <excludes><exclude>*</exclude></excludes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/src/main/resources</directory>
-      <outputDirectory>resources</outputDirectory>
+      <directory>${project.basedir}/src/main/config</directory>
+      <outputDirectory>resources/lib</outputDirectory>
+      <excludes><exclude>*</exclude></excludes>
     </fileSet>
   </fileSets>
   <files>
@@ -37,6 +38,10 @@
     <file>
       <source>${project.basedir}/src/main/config/config.xml</source>
       <outputDirectory>/</outputDirectory>
+    </file>
+    <file>
+      <source>${project.basedir}/src/main/assembly/index.html</source>
+      <outputDirectory>resources/docs</outputDirectory>
     </file>
   </files>
 </assembly>

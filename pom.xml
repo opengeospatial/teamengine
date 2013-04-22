@@ -46,6 +46,7 @@
     <module>teamengine-spi</module>
     <module>teamengine-core</module>
     <module>teamengine-web</module>
+    <module>teamengine-console</module>
   </modules>
 
   <dependencyManagement>
@@ -68,42 +69,6 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-        <artifactId>svn-revision-number-maven-plugin</artifactId>
-        <version>1.13</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <entries>
-            <entry>
-              <depth>files</depth>
-              <prefix>svn</prefix>
-            </entry>
-          </entries>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-            <manifestEntries>
-              <Build-Time>${maven.build.timestamp}</Build-Time>
-              <Build-Revision>${svn.revision}</Build-Revision>
-            </manifestEntries>
-          </archive>
         </configuration>
       </plugin>
       <plugin>
@@ -152,6 +117,22 @@
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.4</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+              <manifestEntries>
+                <Build-Time>${maven.build.timestamp}</Build-Time>
+                <Build-Revision>${svn.revision}</Build-Revision>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -211,6 +192,26 @@
                 </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+          <artifactId>svn-revision-number-maven-plugin</artifactId>
+          <version>1.13</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>revision</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <entries>
+              <entry>
+                <depth>files</depth>
+                <prefix>svn</prefix>
+              </entry>
+            </entries>
           </configuration>
         </plugin>
       </plugins>

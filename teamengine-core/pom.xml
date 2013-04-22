@@ -88,44 +88,6 @@
         <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
         <artifactId>svn-revision-number-maven-plugin</artifactId>
       </plugin>
-<!--      
-      <plugin>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.4</version>
-        <configuration>
-          <resourceBundles>
-            <resourceBundle>${project.groupId}:teamengine-resources:${project.version}</resourceBundle>
-          </resourceBundles>
-          
-          <attached>false</attached>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>process</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <descriptors>
-            <descriptor>${basedir}/src/main/assembly/distribution.xml</descriptor>
-            <descriptor>${basedir}/src/main/assembly/base.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
--->
     </plugins>
   </build>
 </project>

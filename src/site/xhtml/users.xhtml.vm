@@ -12,7 +12,7 @@
 
     <h2>Command shell</h2>
     <p>
-    The core binary distribution (teamengine-core-${project.version}-distribution.zip) 
+    The console application (teamengine-console-${project.version}-bin.zip) 
     includes shell scripts for running test suites in Windows and Unix-like (Bash shell) 
     environments. Unpack the archive into a convenient location (TE_HOME); the contents 
     are as shown below.
@@ -48,9 +48,9 @@ Checks the content of a note.</pre>
 
     <p>
     To execute a test suite, run the <code>test</code> script and specify the location of the 
-    root CTL script; the file reference may be an absolute filesystem location or relative 
-    to TE_BASE/scripts. The test results will be written to a subdirectory <em>sNNNN</em> 
-    created in TE_BASE/users/<em>username</em>/.
+    root CTL script (this contains the ctl:suite element); the file reference may be an absolute 
+    filesystem location or relative to TE_BASE/scripts. The test results will be written to a 
+    subdirectory <em>sNNNN</em> created in TE_BASE/users/<em>username</em>/.
     </p>
     <pre>
 &gt; test -source=note.ctl

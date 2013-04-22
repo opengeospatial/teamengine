@@ -15,8 +15,8 @@
 
     <pre>
     $ svn checkout http://svn.code.sf.net/p/teamengine/code/trunk teamengine
-    $ svn checkout http://svn.code.sf.net/p/teamengine/code/tags/4.0-beta1 \
-    teamengine-4.0b1</pre>
+    $ svn checkout http://svn.code.sf.net/p/teamengine/code/tags/4.0-beta2 \
+    teamengine-4.0b2</pre>
 
     <p>
       <a href="http://maven.apache.org/" target="_blank">Apache Maven 3.0</a> is 
@@ -29,6 +29,8 @@
       <li>teamengine-spi: Provides an extensibility framework and a REST-like API for test execution</li>
       <li>teamengine-realm: A custom Tomcat user realm</li>
       <li>teamengine-web: A web application for executing test suites and browsing test results</li>
+      <li>teamengine-console: A console application that provides a command-line interface for 
+      executing test suites in Unix and Windows environments.</li>
     </ul>
 
     <p>Simply run <code>mvn package</code> in the root project directory to generate 
@@ -37,10 +39,10 @@
     below.</p>
 
     <dl>
-      <dt><strong>teamengine-core-${project.version}-distribution.[zip|tar.gz]</strong></dt>
-      <dd>The core binary distribution (CLI usage)</dd>
-      <dt><strong>teamengine-core-${project.version}-base.[zip|tar.gz]</strong></dt>
-      <dd>Includes the contents of the main configuration directory (TE_BASE)</dd>
+      <dt><strong>teamengine-console-${project.version}-bin.[zip|tar.gz]</strong></dt>
+      <dd>Archive containing the console application (command-line usage)</dd>
+      <dt><strong>teamengine-console-${project.version}-base.[zip|tar.gz]</strong></dt>
+      <dd>Archive containing the initial contents of the main configuration directory (TE_BASE)</dd>
       <dt><strong>teamengine.war</strong></dt>
       <dd>The JEE (Servlet) web application</dd>
       <dt><strong>teamengine-common-libs.[zip|tar.gz]</strong></dt>
@@ -55,7 +57,7 @@
     <p>The value of the <code>TE_BASE</code> system property or environment variable 
     specifies the location of the main configuration directory that contains several 
     essential sub-directories. Create the TE_BASE directory (e.g. /srv/teamengine) 
-    and unpack the contents of the teamengine-core-${project.version}-base archive into 
+    and unpack the contents of the teamengine-console-${project.version}-base archive into 
     this location; ensure that users (including the Tomcat user) have write access. 
     The structure of the TE_BASE directory is shown below.</p>
 
@@ -78,10 +80,11 @@ TE_BASE
     DERBY_DATA, at /srv/derby).</p>
 
     <p>CTL test scripts are placed in the TE_BASE/scripts directory and the TE_BASE/config.xml 
-    file is updated accordingly. As a convenience, the shell script <code>export-ctl</code> may 
-    be run to export CTL test suites from the official OGC repository. The location of a CSV file 
-    is passed as the first argument to the script; each record in the file should contain two 
-    fields: a Subversion URL, and a local path name relative to TE_BASE/scripts.
+    file is updated accordingly to register them. As a convenience, the shell script 
+    <code>export-ctl</code> may be run to export CTL test suites from the official OGC repository. 
+    The location of a CSV file is passed as the first argument to the script; each record in the 
+    file should contain two fields: a Subversion URL, and a local path name relative to 
+    TE_BASE/scripts.
     </p>
     <pre>
 https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,\
@@ -98,7 +101,7 @@ $ ./export-ctl.sh ctl-suites-dev.csv</pre>
 
     <p>
     A new installation already contains an entry for a sample test script ("XML Note"). To enable 
-    another test suite an entry for it must appear in the configuration file--simply insert the 
+    another test suite an entry for it must appear in the configuration file; simply insert the 
     &lt;standard&gt; element into the file under the matching organization (name). The following 
     listing includes a sample entry.
     </p>
@@ -185,31 +188,31 @@ executing test suites:</p>
   with links to test suite documentation</li>
 </ul>
 
-    <h3>Customizing the welcome page</h3>
-    <p>Several elements of the welcome page may be customized if desired: the logo in 
+<h3>Customizing the welcome page</h3>
+<p>Several elements of the welcome page may be customized if desired: the logo in 
     the header, the main text, and the content in the footer. The files in the /site 
     directory of the web application can be modified in order to provide site-specific 
     content (see Table 1). Tomcat does not need to be restarted to make the changes 
     visible.</p>
 
-    <table>
-      <caption>Table 1 - Site content</caption>
-      <tbody>
-        <tr>
-          <td>site/logo.png</td>
-          <td>The logo that appears in the header (at top left). The size of the 
+<table>
+  <caption>Table 1 - Site content</caption>
+  <tbody>
+    <tr>
+      <td>site/logo.png</td>
+      <td>The logo that appears in the header (at top left). The size of the 
           default image is 127x58 px.</td>
-        </tr>
-        <tr>
-          <td>site/welcome.txt</td>
-          <td>The main text.</td>
-        </tr>
-        <tr>
-          <td>site/footer.txt</td>
-          <td>Footer content.</td>
-        </tr>
-      </tbody>
-    </table>
+    </tr>
+    <tr>
+      <td>site/welcome.txt</td>
+      <td>The main text.</td>
+    </tr>
+    <tr>
+      <td>site/footer.txt</td>
+      <td>Footer content.</td>
+    </tr>
+  </tbody>
+</table>
 
 </body>
 </html>
