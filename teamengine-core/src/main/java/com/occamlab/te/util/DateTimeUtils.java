@@ -10,7 +10,6 @@ import org.joda.time.format.ISODateTimeFormat;
 /**
  * Provides various utility methods to manipulate temporal values.
  * 
- * @author jparrpearson
  */
 public class DateTimeUtils {
 
@@ -50,13 +49,10 @@ public class DateTimeUtils {
                 timeStamp = buf.toString();
             }
         }
-
-        // Create a formatter to parse the input string
         DateTimeFormatter formatter = ISODateTimeFormat
                 .dateOptionalTimeParser();
         DateTime dateTime = null;
         try {
-            // Format the input string as a ISO standard DateTime string
             dateTime = formatter.parseDateTime(timeStamp);
         } catch (Exception e) {
             System.out.println("DateTimeUtils ERROR: " + e.getMessage());
