@@ -30,6 +30,13 @@ public final class BasicXMLReporter implements IReporter {
         this.reporter.generateReport(xmlSuites, suites, outputDirectory);
     }
 
+    /**
+     * Creates an XML reporter that suppresses stack traces and includes test
+     * result attributes (if set).
+     * 
+     * @return A customized reporter that generates an XML representation of the
+     *         test results. The document element is &lt;testng-results&gt;.
+     */
     XMLReporter createCustomXMLReporter() {
         // config data syntax: "class-name:prop1=val1,prop2=val2"
         StringBuilder xmlReporterConf = new StringBuilder(
@@ -37,7 +44,8 @@ public final class BasicXMLReporter implements IReporter {
         xmlReporterConf.append(":");
         xmlReporterConf.append("stackTraceOutputMethod=")
                 .append(XMLReporterConfig.STACKTRACE_NONE).append(",");
-        xmlReporterConf.append("splitClassAndPackageNames=true");
+        xmlReporterConf.append("splitClassAndPackageNames=true").append(",");
+        xmlReporterConf.append("generateTestResultAttributes=true");
         ReporterConfig reporterConf = ReporterConfig
                 .deserialize(xmlReporterConf.toString());
         return (XMLReporter) reporterConf.newReporterInstance();
