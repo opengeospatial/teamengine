@@ -3,6 +3,10 @@
                 xmlns:math="http://exslt.org/math"
                 xmlns:testng="http://testng.org">
 
+  <db:abstract xmlns:db="http://docbook.org/ns/docbook">
+    <db:para>Based on ReportNG. See http://reportng.uncommons.org/.</db:para>
+  </db:abstract>
+
   <xsl:output method="html" indent="yes" omit-xml-declaration="yes"
                 doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
                 doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
@@ -943,6 +947,12 @@
                 <xsl:with-param name="value" select="testng:concatParams(./params/param)"/>
               </xsl:call-template>
             </xsl:if>
+            <xsl:if test="./attributes">
+              <xsl:call-template name="attributes">
+                <xsl:with-param name="label" select="'Attributes'"/>
+                <xsl:with-param name="attribs" select="./attributes/attribute"/>
+              </xsl:call-template>
+            </xsl:if>
             <xsl:call-template name="formField">
               <xsl:with-param name="label" select="'Start time'"/>
               <xsl:with-param name="value" select="substring(@started-at, 12, 8)"/>
@@ -1104,6 +1114,22 @@
                 TestNG XSLT
       </a>
     </div>
+  </xsl:template>
+
+  <xsl:template name="attributes">
+    <xsl:param name="label"/>
+    <xsl:param name="attribs"/>
+    <xsl:if test="count($attribs) > 0">
+      <div>
+        <b><xsl:value-of select="$label"/>:</b>
+        <dl>
+        <xsl:for-each select="$attribs">
+          <dt><xsl:value-of select="./@name"/></dt>
+          <dd><pre><xsl:value-of select="normalize-space(string(.))"/></pre></dd>
+        </xsl:for-each>
+        </dl>
+      </div>
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>
