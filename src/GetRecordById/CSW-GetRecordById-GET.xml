@@ -478,7 +478,7 @@
           <param name="Service">CSW</param>
           <param name="Version">2.0.2</param>
           <param name="Request">GetRecordById</param>
-          <param name="OutputSchema">http://www.w3.org/2005/Atom</param>
+          <param name="OutputSchema">http://example.org/unsupported</param>
           <param name="Id">urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f</param>
           <p:XMLValidatingParser.CSW/>
         </request>

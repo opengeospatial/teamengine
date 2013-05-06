@@ -2199,7 +2199,7 @@
         <body>
           <csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" resultType="results" 
-  outputSchema="http://www.w3.org/2005/Atom"
+  outputSchema="http://example.org/unsupported"
   maxRecords="5">
             <csw:Query typeNames="csw:Record">
               <csw:ElementSetName>summary</csw:ElementSetName>

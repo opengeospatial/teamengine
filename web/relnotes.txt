@@ -1,6 +1,10 @@
 CSW 2.0.2 Test Suite Release Notes
 ==================================
 
+== Revision r6 (2013-05-06) ===
+- CITE-793 (https://portal.opengeospatial.org/services/srv_public_issues.php?call=viewIssue&issue_id=793)
+
+
 --- revision r5 -----------
 
 2013-03-22 (rmartell, lbigagli):
