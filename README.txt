@@ -9,7 +9,8 @@ Apache Maven 3.0 <http://maven.apache.org/> is required to build the teamengine
 code base, which consists of the following modules:
 
 * teamengine-core: Main CTL script processor
-* teamengine-web: Web interface
+* teamengine-console: Console (CLI) application
+* teamengine-web: Web application
 * teamengine-resources: Shared resources (stylesheets, schemas, etc.)
 * teamengine-realm: Custom Tomcat user realm
 * teamengine-spi: Extensibility framework and REST-like API
@@ -23,12 +24,12 @@ PDF document in the target/pdf directory.
 
 The main build artifacts are listed below.
 
-teamengine-core-${version}-distribution.zip
-    The core binary distribution (CLI usage)
-teamengine-core-${version}-base.[zip|tar.gz]
+teamengine-console-${version}-bin.[zip|tar.gz]
+    The console application (command line usage)
+teamengine-console-${version}-base.[zip|tar.gz]
     Contents of the main configuration directory (TE_BASE)
 teamengine.war
-    The JEE web (servlet) application
+    The JEE web (Servlet 2.5) application
 teamengine-common-libs.[zip|tar.gz]
     Common runtime dependencies (e.g. JAX-RS 1.1, Apache Derby)
 
