@@ -34,8 +34,7 @@ java.util.Map<String,String[]> paramMap;
 		<script>
 			var LONG_TIMEOUT = 4000;
 			var SHORT_TIMEOUT = 1000;
-
-		    var timeout = SHORT_TIMEOUT;
+		  var timeout = LONG_TIMEOUT;
 			var timerId = 0;
 			var form;
 			var xhr;
@@ -115,7 +114,7 @@ if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
 
 			function formSubmitted() {
 				window.te_test_panel.location = "executing.html";
-				timeout = SHORT_TIMEOUT;
+				timeout = LONG_TIMEOUT;
 				update();
 			}
 			

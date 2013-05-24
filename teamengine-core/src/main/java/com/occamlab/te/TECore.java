@@ -580,9 +580,9 @@ public class TECore implements Runnable {
         } else if (result == NOT_TESTED) {
             return "Not Tested";
         } else if (result == SKIPPED) {
-            return "Skipped - Prerequisites not satisfied.";
+            return "Skipped - Prerequisites not satisfied";
         } else if (result == WARNING) {
-            return ("Warning.");
+            return ("Warning");
         } else if (result == INHERITED_FAILURE) {
             return "Failed - Inherited)";
         } else {
@@ -651,7 +651,8 @@ public class TECore implements Runnable {
 
         verdict = defaultResult;
         try {
-            executeTemplate(test, params, context); // May set worse result
+            // May set worse result
+            executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
             jlogger.log(Level.SEVERE, e.getMessage(), e.getCause());
             out.println(e.getMessage());
@@ -688,10 +689,10 @@ public class TECore implements Runnable {
         out.println(indent + "Test " + test.getName() + " "
                 + getResultDescription(verdict));
         test.setResult(verdict);
-        if (LOGR.isLoggable(Level.FINER)) {
+        if (LOGR.isLoggable(Level.FINE)) {
             String msg = String.format("Executed test %s - Verdict: %s",
                     test.getLocalName(), getResultDescription(verdict));
-            LOGR.log(Level.FINER, msg);
+            LOGR.log(Level.FINE, msg);
         }
         return verdict;
     }
@@ -744,7 +745,7 @@ public class TECore implements Runnable {
                 testTypeName.equals("Optional") ? OPTIONAL
                         : testTypeName.equals("MandatoryIfImplemented") ? MANDATORY_IF_IMPLEMENTED
                                 : MANDATORY);
-        if (verdict == BEST_PRACTICE) {
+        if (verdict == BEST_PRACTICE || verdict == WARNING) {
             verdict = oldResult; // leave the parent result unchanged
         } else if (verdict == PASS) {
             if (oldResult == BEST_PRACTICE) {
@@ -752,7 +753,7 @@ public class TECore implements Runnable {
             } else {
                 verdict = oldResult; // leave the parent result unchanged
             }
-        } else if (verdict == NOT_TESTED || verdict == WARNING) {
+        } else if (verdict == NOT_TESTED) {
             switch (testType) {
             case MANDATORY:
             case MANDATORY_IF_IMPLEMENTED: {
