@@ -35,7 +35,6 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -651,7 +650,7 @@ public class TECore implements Runnable {
 
         verdict = defaultResult;
         try {
-            // May set worse result
+            // Note: Test may alter default result
             executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
             jlogger.log(Level.SEVERE, e.getMessage(), e.getCause());
@@ -697,6 +696,23 @@ public class TECore implements Runnable {
         return verdict;
     }
 
+    /**
+     * Runs a subtest as directed by a &lt;ctl:call-test&gt; instruction.
+     * 
+     * @param context
+     *            The context in which the subtest is executed.
+     * @param localName
+     *            The [local name] of the subtest.
+     * @param namespaceURI
+     *            The [namespace name] of the subtest.
+     * @param params
+     *            A NodeInfo object containing test parameters.
+     * @param callId
+     *            A node identifier used to build a file path reference for the
+     *            test results.
+     * @throws Exception
+     *             If an error occcurs while executing the test.
+     */
     public synchronized void callTest(XPathContext context, String localName,
             String namespaceURI, NodeInfo params, String callId)
             throws Exception {
@@ -719,7 +735,7 @@ public class TECore implements Runnable {
                 if (result == WARNING) {
                     warning();
                 } else if (result == CONTINUE) {
-                    throw new Exception(
+                    throw new IllegalStateException(
                             "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
                 } else if (result != PASS) {
                     inheritedFailure();
@@ -734,15 +750,27 @@ public class TECore implements Runnable {
         testPath = oldTestPath;
         // called test result has been set; now setting parent result
         if (verdict == CONTINUE) {
-            throw new Exception(
+            throw new IllegalStateException(
                     "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
         }
-        TestEntry parentTest = getParentTest();
+        setParentTestResult(test.getType(), getParentTest());
+        testStack.pop();
+    }
+
+    /**
+     * Modifies the result of the parent test according to the result of the
+     * current test. A parent test will be 'tainted' by a fail verdict in a
+     * subtest.
+     * 
+     * @param testTypeName
+     *            The type of the current test.
+     * @param parentTest
+     *            The parent TestEntry.
+     */
+    private void setParentTestResult(String testTypeName, TestEntry parentTest) {
         int oldResult = parentTest.getResult();
-        String testTypeName = test.getType();
         int testType = (parentTest.getType().equals("Optional") ? OPTIONAL
-                : // 2011-04-08 PwD
-                testTypeName.equals("Optional") ? OPTIONAL
+                : testTypeName.equals("Optional") ? OPTIONAL
                         : testTypeName.equals("MandatoryIfImplemented") ? MANDATORY_IF_IMPLEMENTED
                                 : MANDATORY);
         if (verdict == BEST_PRACTICE || verdict == WARNING) {
@@ -792,7 +820,6 @@ public class TECore implements Runnable {
             }
         }
         parentTest.setResult(verdict);
-        testStack.pop();
     }
 
     public void repeatTest(XPathContext context, String localName,

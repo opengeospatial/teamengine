@@ -22,14 +22,10 @@
 package com.occamlab.te.web;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,8 +43,6 @@ import com.occamlab.te.util.DomUtils;
  */
 public class Config {
 
-    private static final Logger LOGR = Logger.getLogger(Config.class.getName());
-    private String home;
     /** Location of base configuration directory (TE_BASE) */
     private File baseDir;
     private File scriptsDir;
@@ -81,24 +75,11 @@ public class Config {
         try {
             DocumentBuilder db = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder();
-            //ClassLoader cl = Thread.currentThread().getContextClassLoader();
             Document doc = db.parse(new File(this.baseDir, "config.xml"));
             Element configElem = (Element) (doc.getElementsByTagName("config")
                     .item(0));
-            Element homeElem = (Element) (configElem
-                    .getElementsByTagName("home").item(0));
-            home = homeElem.getTextContent();
             // use TE_BASE/scripts so no need to move ETS resources
             this.resourcesDir = getScriptsDir();
-            /*
-             * Element resourcesDirEl = DomUtils.getElementByTagName(configElem,
-             * "resourcesdir"); if (resourcesDirEl == null) { resourcesDir =
-             * null; } else { resourcesDir =
-             * findFile(resourcesDirEl.getTextContent(), cl); if
-             * (!resourcesDir.isDirectory()) { LOGR.log(Level.WARNING,
-             * "Resources directory not found at {0}",
-             * resourcesDir.getAbsolutePath()); } }
-             */
             organizationList = new ArrayList<String>();
             standardMap = new HashMap<String, List<String>>();
             versionMap = new HashMap<String, List<String>>();
@@ -245,10 +226,6 @@ public class Config {
         }
     }
 
-    public String getHome() {
-        return home;
-    }
-
     public File getScriptsDir() {
         if (null == this.scriptsDir) {
             File dir = new File(this.baseDir, "scripts");
@@ -308,32 +285,4 @@ public class Config {
     public Map<String, File> getResources() {
         return resources;
     }
-
-    /**
-     * Finds a source file or directory. The location may be specified using:
-     * <ul>
-     * <li>an absolute system path;</li>
-     * <li>a path relative to the location identified by the
-     * <code>catalina.base</code> system property;</li>
-     * <li>a classpath location.</li>
-     * </ul>
-     */
-/*    
-    private static File findFile(String path, ClassLoader loader) {
-        File f = new File(path);
-        if (!f.exists()) {
-            f = new File(System.getProperty("catalina.base"), path);
-        }
-        if (!f.exists()) {
-            URL url = loader.getResource(path);
-            if (null != url) {
-                f = new File(url.getFile());
-            } else {
-                LOGR.log(Level.INFO,
-                        "Directory not found at this location: {0}", path);
-            }
-        }
-        return f;
-    }
-    */
 }

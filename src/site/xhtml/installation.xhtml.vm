@@ -176,11 +176,10 @@ of concurrent users increases.</p>
 
 <p>Unpack the contents of the teamengine-common-libs archive into the CATALINA_BASE/lib 
 directory. Deploy the <code>teamengine.war</code> component by either copying it to the 
-CATALINA_BASE/webapps directory or using the Tomcat <em>Manager</em> application.
-If you wish to change the name of the WAR file (and hence the context path), modify 
-the value of the &lt;home&gt; property in the TE_BASE/config.xml file. Start the 
-Tomcat instance. The following URIs provide starting points for discovering and 
-executing test suites:</p>
+CATALINA_BASE/webapps directory or using the Tomcat <em>Manager</em> application. Start 
+the Tomcat instance. The URIs listed below provide starting points for discovering and 
+executing test suites; modify the path if the name of the WAR file (and hence the context 
+path) has been changed from the default value "teamengine".</p>
 
 <ul>
   <li>/teamengine - Home page for selecting and running CTL test suites</li>

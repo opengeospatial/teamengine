@@ -173,7 +173,7 @@ public class TestServlet extends HttpServlet {
             String s = getServletConfig().getInitParameter("cacheSize");
             if (s != null) {
                 cacheSize = Integer.parseInt(s);
-                System.out.println("Set cacheSize to " + s);
+                LOGR.fine("Set cacheSize to " + s);
             }
             engine = new Engine(indexes.values(), classLoaders, cacheSize);
         } catch (ServletException e) {
@@ -226,7 +226,7 @@ public class TestServlet extends HttpServlet {
                 TestSession s = new TestSession();
                 String user = request.getRemoteUser();
                 File logdir = new File(conf.getUsersDir(), user);
-                System.out.println("TestServlet - " + logdir.getAbsolutePath());
+                LOGR.info("Creating test session in " + logdir.getAbsolutePath());
                 String mode = params.get("mode");
                 RuntimeOptions opts = new RuntimeOptions();
                 opts.setWorkDir(setupOpts.getWorkDir());
@@ -318,7 +318,6 @@ public class TestServlet extends HttpServlet {
                 core.setTestServletURL(servletURL);
                 MonitorServlet.setBaseServletURL(servletURL.substring(0,
                         servletURL.lastIndexOf('/')));
-                // System.out.println(indexes.get(opts.getSourcesName()).toString());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 PrintStream ps = new PrintStream(baos);
                 core.setOut(ps);
