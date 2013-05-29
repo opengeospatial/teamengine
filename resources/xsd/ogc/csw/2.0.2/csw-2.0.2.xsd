@@ -462,7 +462,7 @@
       <xsd:attribute name="numberOfRecordsReturned"
                      type="xsd:nonNegativeInteger" use="required"/>
       <xsd:attribute name="nextRecord"
-                     type="xsd:nonNegativeInteger" use="required"/>
+                     type="xsd:nonNegativeInteger" use="optional"/>
       <xsd:attribute name="expires" type="xsd:dateTime" use="optional"/>
    </xsd:complexType>
    <xsd:element name="GetRecordById" type="csw:GetRecordByIdType"
