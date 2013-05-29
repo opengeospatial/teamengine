@@ -226,7 +226,8 @@ public class TestServlet extends HttpServlet {
                 TestSession s = new TestSession();
                 String user = request.getRemoteUser();
                 File logdir = new File(conf.getUsersDir(), user);
-                LOGR.info("Creating test session in " + logdir.getAbsolutePath());
+                LOGR.info("Creating test session in "
+                        + logdir.getAbsolutePath());
                 String mode = params.get("mode");
                 RuntimeOptions opts = new RuntimeOptions();
                 opts.setWorkDir(setupOpts.getWorkDir());
@@ -311,10 +312,12 @@ public class TestServlet extends HttpServlet {
                     webdir = ".";
                 }
                 URL baseURL = new URL(contextURI.toURL(), webdir + "/");
+                LOGR.fine("Base URL is " + baseURL);
                 opts.setBaseURI(baseURL.toString());
                 TECore core = new TECore(engine, indexes.get(opts
                         .getSourcesName()), opts);
                 String servletURL = request.getRequestURL().toString();
+                LOGR.fine("Request URL is " + servletURL);
                 core.setTestServletURL(servletURL);
                 MonitorServlet.setBaseServletURL(servletURL.substring(0,
                         servletURL.lastIndexOf('/')));
@@ -381,7 +384,8 @@ public class TestServlet extends HttpServlet {
                     while (iter.hasNext()) {
                         FileItem item = (FileItem) iter.next();
                         if (!item.isFormField() && !item.getName().equals("")) {
-                            File tempDir = core.getLogDir();
+                            File tempDir = new File(URI.create(core
+                                    .getTestRunDirectory()));
                             File uploadedFile = new File(tempDir,
                                     StringUtils.getFilenameFromString(item
                                             .getName()));

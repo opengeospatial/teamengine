@@ -14,7 +14,7 @@
     <ctl:code>
       <xsl:variable name="form-data">
         <ctl:form width="800" height="600">
-          <body xmlns="http://www.w3.org/1999/xhtml">
+          <div id="input-form" xmlns="http://www.w3.org/1999/xhtml">
             <h2>XML Note</h2>
             <fieldset style="background:#ccffff">
               <legend>Instance Under Test</legend>
@@ -35,7 +35,7 @@
               <input class="form-button" type="submit" value="Start"/>
               <input class="form-button" type="reset" value="Clear"/>
             </p>
-          </body>
+          </div>
         </ctl:form>
       </xsl:variable>
       <xsl:variable name="uri" select="$form-data//value[@key='uri']" />

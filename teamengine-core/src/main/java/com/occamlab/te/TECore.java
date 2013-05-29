@@ -173,8 +173,6 @@ public class TECore implements Runnable {
         this.engine = engine;
         this.index = index;
         this.opts = opts;
-        // this.sessionId = opts.getSessionId();
-        // this.sourcesName = opts.getSourcesName();
         testPath = opts.getSessionId();
         out = System.out;
     }
@@ -1941,8 +1939,8 @@ public class TECore implements Runnable {
     }
 
     /**
-     * Converts CTL input form data to generate a Swing-based or XHTML form and
-     * reports the results of processing the submitted form. The results
+     * Converts CTL input form elements to generate a Swing-based or XHTML form
+     * and reports the results of processing the submitted form. The results
      * document is produced in (web context) or
      * {@link SwingForm.CustomFormView#submitData}.
      * 
@@ -2015,7 +2013,7 @@ public class TECore implements Runnable {
         xt.setParameter(new QName("method"), new XdmAtomicValue(method));
         xt.setParameter(new QName("base"),
                 new XdmAtomicValue(opts.getBaseURI()));
-        xt.setParameter(new QName("action"), new XdmAtomicValue(testServletURL));
+        xt.setParameter(new QName("action"), new XdmAtomicValue(getTestServletURL()));
         StringWriter sw = new StringWriter();
         Serializer serializer = new Serializer();
         serializer.setOutputWriter(sw);
@@ -2023,8 +2021,9 @@ public class TECore implements Runnable {
                 "yes");
         xt.setDestination(serializer);
         xt.transform();
-        formHtml = sw.toString();
-        // System.out.println(this.formHtml);
+        this.formHtml = sw.toString();
+        if (LOGR.isLoggable(Level.FINE))
+            LOGR.fine(this.formHtml);
 
         if (!web) {
             int width = 700;
@@ -2049,7 +2048,8 @@ public class TECore implements Runnable {
         }
 
         Document doc = formResults;
-        // System.out.println(DomUtils.serializeNode(doc));
+        if (LOGR.isLoggable(Level.FINE))
+            LOGR.fine(DomUtils.serializeNode(doc));
         formResults = null;
         formParsers.clear();
 
@@ -2058,7 +2058,6 @@ public class TECore implements Runnable {
             logger.println(DomUtils.serializeNode(doc));
             logger.println("</formresults>");
         }
-
         return doc;
     }
 
