@@ -30,7 +30,6 @@
   <xsl:variable name="chartHeight" select="round(200 * testng:getVariableSafe($testNgXslt.chartScaleFactor, 1))"/>
 
   <xsl:template name="writeCssFile">
-    <xsl:message>Writing CSS to <xsl:value-of select="testng:absolutePath('style.css')"/></xsl:message>
     <xsl:result-document href="{testng:absolutePath('style.css')}" format="text">
       <xsl:choose>
         <xsl:when test="testng:isFilterSelected('CONF') = 'true'">
