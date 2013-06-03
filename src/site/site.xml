@@ -21,9 +21,9 @@
     <href>http://www.sourceforge.net/projects/teamengine/</href>
   </bannerLeft>
   <bannerRight>
-    <name>OGC Compliance Testing Program</name>
-    <src>./images/ogc-logo-100x50.png</src>
-    <href>http://cite.opengeospatial.org/</href>
+    <name>OSGeo Incubator</name>
+    <src>./images/OSGeo_incubation.png</src>
+    <href>http://www.osgeo.org/incubator</href>
   </bannerRight>
 
   <body>
