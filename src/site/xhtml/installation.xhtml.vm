@@ -146,11 +146,21 @@ $ ./export-ctl.sh ctl-suites-dev.csv</pre>
 
     <h2>Deploying the web application</h2>
 
+    <h3>System requirements</h3>
+    <p>
+      <ul>
+        <li>Java runtime: Oracle JDK 7 (<a href="www.oracle.com/technetwork/java/javase/downloads/">
+        latest production release)</a></li>
+        <li>Servlet container: Apache Tomcat 7.0 (<a href="http://tomcat.apache.org/download-70.cgi">
+        latest production release</a>)</li>
+      </ul>
+    </p>
+
     <h3>Create a dedicated Tomcat instance</h3>
 
-    <p>Apache Tomcat 7.0 (with JDK 6 or later) is a supported servlet container. It is 
-    strongly recommended that a dedicated Tomcat instance be created to host the teamengine 
-    application. Create one as suggested below.</p>
+    <p>Apache Tomcat 7.0 is a supported servlet container. It is strongly recommended that a 
+    dedicated Tomcat instance be created to host the teamengine application. Create one as 
+    suggested below.</p>
 
     <p>Create a CATALINA_BASE directory (Windows):</p>
     <pre>
