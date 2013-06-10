@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -48,12 +49,11 @@ public class SchematronValidatingParser {
     private static final Logger LOGR = Logger
             .getLogger(SchematronValidatingParser.class.getName());
     private PropertyMapBuilder configPropBuilder = null;
-    private static String schemaLocation = null;
-    private static File schemaFile = null;
-    private static String phase = null;
-    private static String type = null;
-    private static ErrorHandlerImpl eh = null;
-    private static PrintWriter outputLogger = null;
+    private String schemaLocation = null;
+    private File schemaFile = null;
+    private String phase = null;
+    private String type = null;
+    private PrintWriter outputLogger = null;
 
     /** Namespace URI for the Schematron assertion language (v 1.5). */
     public static final String SCHEMATRON_NS_URI = "http://www.ascc.net/xml/schematron";
@@ -72,9 +72,9 @@ public class SchematronValidatingParser {
      * resource (from ctl file).
      * 
      * @param schema_links
-     *            Gets the location of the scehma (and type of resource) and
-     *            saves to global parameter @ return The type of resource (URL,
-     *            File, Resource)
+     *            Gets the location of the schema (and type of resource) and
+     *            saves to global parameter
+     * @return The type of resource (URL, File, Resource)
      */
     public String getFileType(Element schema_links) throws Exception {
         Document d = schema_links.getOwnerDocument();
@@ -86,7 +86,7 @@ public class SchematronValidatingParser {
             localType = e.getAttribute("type");
             this.type = e.getAttribute("type");
             this.phase = e.getAttribute("phase");
-            this.schemaLocation = e.getTextContent();
+            this.schemaLocation = e.getTextContent().trim();
         }
         return localType;
     }
@@ -101,7 +101,6 @@ public class SchematronValidatingParser {
     public InputStream DocumentToInputStream(org.w3c.dom.Document edoc)
             throws IOException {
 
-        // Create the input and output for use in the transformation
         final org.w3c.dom.Document doc = edoc;
         final PipedOutputStream pos = new PipedOutputStream();
         PipedInputStream pis = new PipedInputStream();
@@ -187,12 +186,9 @@ public class SchematronValidatingParser {
     public boolean checkSchematronRulesAdv(InputSource inputDoc,
             File schemaFile, String phase) throws Exception {
 
-        // The validation state (true = no validation errors)
         boolean isValid = false;
-
         if (inputDoc == null)
             return isValid;
-
         this.schemaFile = schemaFile;
         this.phase = phase;
 
@@ -200,7 +196,6 @@ public class SchematronValidatingParser {
         if (returnDoc != null) {
             isValid = true;
         }
-
         return isValid;
     }
 
@@ -243,20 +238,19 @@ public class SchematronValidatingParser {
      *            The string phase name (contained in schematron file)
      * @return The ValidationDriver to use in validating the XML document
      */
-    private ValidationDriver createSchematronDriver(String phase) {
+    ValidationDriver createSchematronDriver(String phase) {
         SchemaReaderLoader loader = new SchemaReaderLoader();
         SchemaReader schReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
         this.configPropBuilder = new PropertyMapBuilder();
         SchematronProperty.DIAGNOSE.add(this.configPropBuilder);
 
-        if (SchematronValidatingParser.outputLogger == null) {
-            SchematronValidatingParser.outputLogger = new PrintWriter(
-                    System.out);
+        if (this.outputLogger == null) {
+            this.outputLogger = new PrintWriter(System.out);
         }
         if (null != phase && !phase.isEmpty()) {
             this.configPropBuilder.put(SchematronProperty.PHASE, phase);
         }
-        eh = new ErrorHandlerImpl("Schematron", outputLogger);
+        ErrorHandler eh = new ErrorHandlerImpl("Schematron", outputLogger);
         this.configPropBuilder.put(ValidateProperty.ERROR_HANDLER, eh);
         ValidationDriver validator = new ValidationDriver(
                 this.configPropBuilder.toPropertyMap(), schReader);
@@ -264,106 +258,89 @@ public class SchematronValidatingParser {
     }
 
     /**
-     * Parses the document by first retieving it, then validating, before
-     * returning the parsed document (schematron in this case)
+     * Parses and validates a resource obtained by dereferencing a URI.
      * 
-     * @param resp
-     *            The HttpResponse for the response document
+     * @param uc
+     *            A URLConnection to access an XML resource.
      * @param instruction
-     *            A copy of the parser Element
+     *            An element containing parser instructions.
      * @param logger
-     *            The PrintWriter to log any errors to
-     * @return The Document response from the URL connection made
-     */
-    /*
-     * public Document parse(HttpResponse resp, Element instruction, PrintWriter
-     * logger) throws Exception { return parse(resp.getEntity().getContent(),
-     * instruction, logger); }
+     *            The PrintWriter used for logging errors.
+     * @return A Document node if parsing succeeds, or {@code null} if it fails.
+     * @throws Exception
      */
     public Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
         return parse(uc.getInputStream(), instruction, logger);
     }
 
-    private Document parse(InputStream is, Element instruction,
-            PrintWriter logger) throws Exception {
-
-        // Creates and sets document builder, to recieve response document from
-        // request
-        String property_name = "javax.xml.parsers.DocumentBuilderFactory";
-        String oldprop = System.getProperty(property_name);
-        System.setProperty(property_name,
-                "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        if (oldprop == null) {
-            System.clearProperty(property_name);
-        } else {
-            System.setProperty(property_name, oldprop);
-        }
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        // Gets the response document
-        Document doc = null;
-        try {
-            doc = db.parse(is);
-        } catch (Exception e) {
-            logger.println(e.getMessage());
-        }
-
-        return parse(doc, instruction, logger);
-    }
-
-    private Document parse(InputSource is, Element instruction,
-            PrintWriter logger) throws Exception {
-
-        // Creates and sets document builder, to recieve response document from
-        // request
-        String property_name = "javax.xml.parsers.DocumentBuilderFactory";
-        String oldprop = System.getProperty(property_name);
-        System.setProperty(property_name,
-                "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        if (oldprop == null) {
-            System.clearProperty(property_name);
-        } else {
-            System.setProperty(property_name, oldprop);
-        }
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        // Gets the response document
-        Document doc = null;
-        try {
-            doc = db.parse(is);
-        } catch (Exception e) {
-            logger.println(e.getMessage());
-        }
-
-        return parse(doc, instruction, logger);
-    }
-
-    private Document parse(Document doc, Element instruction, PrintWriter logger)
+    Document parse(InputStream is, Element instruction, PrintWriter logger)
             throws Exception {
 
-        this.outputLogger = logger;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = null;
+        try {
+            doc = db.parse(is);
+        } catch (Exception e) {
+            logger.println(e.getMessage());
+        }
+        return parse(doc, instruction, logger);
+    }
 
+    Document parse(InputSource is, Element instruction, PrintWriter logger)
+            throws Exception {
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = null;
+        try {
+            doc = db.parse(is);
+        } catch (Exception e) {
+            logger.println(e.getMessage());
+        }
+        return parse(doc, instruction, logger);
+    }
+
+    /**
+     * Checks the given Document against a Schematron schema. A schema reference
+     * is conveyed by a DOM Element node as indicated below.
+     * 
+     * <pre>
+     * {@code
+     * <tep:schemas xmlns:tep="http://www.occamlab.com/te/parsers">
+     *   <tep:schema type="resource" phase="#ALL">/class/path/schema1.sch</tep:schema>
+     * </tep:schemas>
+     * }
+     * </pre>
+     * 
+     * @param doc
+     *            The document to be validated.
+     * @param instruction
+     *            An Element containing schema information.
+     * @param logger
+     *            A Writer used for logging error messages.
+     * @return The valid document, or {@code null} if any errors were detected.
+     * @throws Exception
+     */
+    Document parse(Document doc, Element instruction, PrintWriter logger)
+            throws Exception {
+        this.outputLogger = logger;
         if (instruction != null) {
-            // Get schematron schema information from ctl file
             getFileType(instruction);
             if (type.equals("url")) {
-                URL schemaURL = new URL(schemaLocation);
+                URL schemaURL = new URL(this.schemaLocation);
                 this.schemaFile = new File(schemaURL.toURI());
             } else if (type.equals("file")) {
-                this.schemaFile = new File(schemaLocation);
+                this.schemaFile = new File(this.schemaLocation);
             } else if (type.equals("resource")) {
-                ClassLoader cl = this.getClass().getClassLoader();
-                URL url = cl.getResource(schemaLocation);
+                URL url = this.getClass().getResource(this.schemaLocation);
                 this.schemaFile = new File(URLDecoder.decode(url.getFile(),
                         "UTF-8"));
             }
         }
-
         boolean isValid = false;
         if (doc != null) {
             InputSource xmlInputSource = null;
@@ -376,45 +353,6 @@ public class SchematronValidatingParser {
             isValid = executeSchematronDriver(xmlInputSource, this.schemaFile,
                     this.phase);
         }
-
-        // Displays any validation errors that were caught
-        int error_count = eh.getErrorCount();
-        int warning_count = eh.getWarningCount();
-        if (error_count > 0 || warning_count > 0) {
-            String msg = "";
-            if (error_count > 0) {
-                msg += error_count + " validation error"
-                        + (error_count == 1 ? "" : "s");
-                if (warning_count > 0)
-                    msg += " and ";
-            }
-            if (warning_count > 0) {
-                msg += warning_count + " warning"
-                        + (warning_count == 1 ? "" : "s");
-            }
-            msg += " detected.";
-            this.outputLogger.println(msg);
-        }
-
-        if (instruction != null) {
-            boolean b_ignore_errors = false;
-            String s_ignore_errors = instruction.getAttribute("ignoreErrors");
-            if (s_ignore_errors.length() > 0)
-                b_ignore_errors = Boolean.parseBoolean(s_ignore_errors);
-            if (error_count > 0 && !b_ignore_errors)
-                return null;
-
-            boolean b_ignore_warnings = true;
-            String s_ignore_warnings = instruction
-                    .getAttribute("ignoreWarnings");
-            if (s_ignore_warnings.length() > 0)
-                b_ignore_warnings = Boolean.parseBoolean(s_ignore_warnings);
-            if (warning_count > 0 && !b_ignore_warnings)
-                return null;
-        }
-
-        // Return null if the schematron found an error, else return the valid
-        // document
         if (!isValid) {
             return null;
         } else {
