@@ -17,25 +17,6 @@ public class IndexEntry implements NamedEntry {
         setQName(new QName(namespaceUri, localName, prefix));
     }
 
-    // public void persistAttributes(PrintWriter out) {
-    // out.print(" prefix=\"" + getPrefix() + "\"" +
-    // " namespace-uri=\"" + getNamespaceURI() + "\"" +
-    // " local-name=\"" + getLocalName() + "\"");
-    // }
-    //
-    // public void persistTags(PrintWriter out) {
-    // }
-    //
-    // public void persist(PrintWriter out, String tagname) {
-    // out.print("<" + tagname);
-    // persistAttributes(out);
-    // out.println(">");
-    // persistTags(out);
-    // out.println("</" + tagname + ">");
-    // }
-    //
-    // public abstract void persist(PrintWriter out);
-
     public String getName() {
         String prefix = qname.getPrefix();
         if (prefix == null) {

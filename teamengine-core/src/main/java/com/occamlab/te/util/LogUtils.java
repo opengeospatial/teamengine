@@ -42,6 +42,17 @@ import com.occamlab.te.TECore;
 
 public class LogUtils {
 
+    /**
+     * Creates a Writer used to write test results to the log.xml file.
+     * 
+     * @param logDir
+     *            The directory containing the test session results.
+     * @param callpath
+     *            A test session identifier.
+     * @return A PrintWriter object, or {@code null} if one could not be
+     *         created.
+     * @throws Exception
+     */
     public static PrintWriter createLog(File logDir, String callpath)
             throws Exception {
         if (logDir != null) {
@@ -209,14 +220,7 @@ public class LogUtils {
             } else if (e.getNodeName().equals("endtest")) {
                 complete = true;
                 int code = Integer.parseInt(e.getAttribute("result"));
-                /*
-                 * if (code == TECore.FAIL) { result = TECore.FAIL; } else if
-                 * (childrenFailed) { result = TECore.INHERITED_FAILURE; } else
-                 * if (code == TECore.WARNING) { result = TECore.WARNING; }
-                 */
-                if ("Optional".equals(type)) {
-                    result = code;
-                } else if (childrenFailed) {
+                if (childrenFailed) {
                     result = TECore.INHERITED_FAILURE;
                 } else {
                     result = code;

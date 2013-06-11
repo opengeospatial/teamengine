@@ -1,10 +1,20 @@
 package com.occamlab.te.index;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.w3c.dom.Element;
 
 import com.occamlab.te.TECore;
 
+/**
+ * Describes a test in a test suite. It corresponds to a &lt;test&gt; element in
+ * an index file.
+ */
 public class TestEntry extends TemplateEntry {
+
+    private static final Logger LOGR = Logger.getLogger(TestEntry.class
+            .getName());
     int defaultResult = TECore.PASS;
     int result = TECore.PASS;
     String context;
@@ -44,6 +54,10 @@ public class TestEntry extends TemplateEntry {
     }
 
     public void setResult(int result) {
+        if (LOGR.isLoggable(Level.FINE)) {
+            LOGR.fine(String.format("Setting test result for %s: %d",
+                    getQName(), result));
+        }
         this.result = result;
     }
 

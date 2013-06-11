@@ -70,6 +70,15 @@ public class Generator {
         return suiteDefaultResult;
     }
 
+    /**
+     * Generates the XSLT stylesheets that constitute an executable test suite
+     * (ETS).
+     * 
+     * @param opts
+     *            Static configuration settings.
+     * @return A master Index object that describes the resulting stylesheets.
+     * @throws Exception
+     */
     public static Index generateXsl(SetupOptions opts) throws Exception {
         Index masterIndex = new Index();
 
