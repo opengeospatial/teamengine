@@ -117,7 +117,6 @@ public class TECore implements Runnable {
     String testServletURL = null;
     volatile PrintStream out; // Console destination
     boolean web = false; // True when running as a servlet
-    // int mode = Test.TEST_MODE; // Test mode
     String testPath; // Uniquely identifies a test instance
     String fnPath = ""; // Uniquely identifies an XSL function instance within a
                         // test instance
@@ -128,7 +127,7 @@ public class TECore implements Runnable {
     String defaultResultName = "Pass"; // Default result name for current test
     int defaultResult = PASS; // Default result for current test
     /** Test verdict for current test */
-    int verdict;
+    private int verdict;
     Document prevLog = null; // Log document for current test from previous test
                              // execution (resume and retest modes only)
     // Log document for suite to enable use of getLogCache by profile test
@@ -506,6 +505,10 @@ public class TECore implements Runnable {
             xt.setParameter(TEPARAMS_QNAME, params);
         }
         // test may set global verdict, e.g. by calling ctl:fail
+        if (LOGR.isLoggable(Level.FINE)) {
+            LOGR.log(Level.FINE,
+                    "Executing TemplateEntry {0}" + template.getQName());
+        }
         xt.transform();
         XdmNode ret = dest.getXdmNode();
         return ret;
@@ -646,7 +649,7 @@ public class TECore implements Runnable {
             logger.flush();
         }
 
-        verdict = defaultResult;
+        this.verdict = defaultResult;
         try {
             // Note: Test may alter default result
             executeTemplate(test, params, context);
@@ -751,73 +754,46 @@ public class TECore implements Runnable {
             throw new IllegalStateException(
                     "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
         }
-        setParentTestResult(test.getType(), getParentTest());
+        updateParentTestResult(test);
         testStack.pop();
     }
 
     /**
      * Modifies the result of the parent test according to the result of the
-     * current test. A parent test will be 'tainted' by a fail verdict in a
-     * subtest.
+     * current test. The parent test will be 'tainted' with an inherited failure
+     * if (a) a subtest failed, or (b) a non-optional subtest was skipped.
      * 
-     * @param testTypeName
-     *            The type of the current test.
-     * @param parentTest
-     *            The parent TestEntry.
+     * @param currTest
+     *            The TestEntry for the current test.
      */
-    private void setParentTestResult(String testTypeName, TestEntry parentTest) {
-        int oldResult = parentTest.getResult();
-        int testType = (parentTest.getType().equals("Optional") ? OPTIONAL
-                : testTypeName.equals("Optional") ? OPTIONAL
-                        : testTypeName.equals("MandatoryIfImplemented") ? MANDATORY_IF_IMPLEMENTED
-                                : MANDATORY);
-        if (verdict == BEST_PRACTICE || verdict == WARNING) {
-            verdict = oldResult; // leave the parent result unchanged
-        } else if (verdict == PASS) {
-            if (oldResult == BEST_PRACTICE) {
-                verdict = PASS; // Best Practice must be universal
-            } else {
-                verdict = oldResult; // leave the parent result unchanged
-            }
-        } else if (verdict == NOT_TESTED) {
-            switch (testType) {
-            case MANDATORY:
-            case MANDATORY_IF_IMPLEMENTED: {
-                verdict = INHERITED_FAILURE;
-                break;
-            }
-            case OPTIONAL:
-            default: {
-                verdict = oldResult; // leave the parent result unchanged
-            }
-            }
-        } else if (verdict == SKIPPED) {
-            switch (testType) {
-            case MANDATORY: {
-                verdict = INHERITED_FAILURE;
-                break;
-            }
-            case MANDATORY_IF_IMPLEMENTED:
-            case OPTIONAL:
-            default: {
-                verdict = oldResult; // leave the parent result unchanged
-
-            }
-            }
-        } else if (verdict == FAIL || verdict == INHERITED_FAILURE) {
-            switch (testType) {
-            case MANDATORY:
-            case MANDATORY_IF_IMPLEMENTED: {
-                verdict = INHERITED_FAILURE;
-                break;
-            }
-            case OPTIONAL:
-            default: {
-                verdict = oldResult; // leave the parent result unchanged
-            }
-            }
+    private void updateParentTestResult(TestEntry currTest) {
+        TestEntry parentTest = getParentTest();
+        if (null == parentTest)
+            return;
+        if (LOGR.isLoggable(Level.FINE)) {
+            LOGR.log(
+                    Level.FINE,
+                    "Entered setParentTestResult with TestEntry {0} (result={1})",
+                    new Object[] { currTest.getQName(), this.verdict });
+            LOGR.log(
+                    Level.FINE,
+                    "Parent TestEntry is {0} (result={1})",
+                    new Object[] { parentTest.getQName(),
+                            parentTest.getResult() });
         }
-        parentTest.setResult(verdict);
+        switch (this.verdict) {
+        case FAIL:
+        case INHERITED_FAILURE:
+            parentTest.setResult(INHERITED_FAILURE);
+            break;
+        case SKIPPED:
+            if (!parentTest.getType().equalsIgnoreCase("Optional")) {
+                parentTest.setResult(INHERITED_FAILURE);
+            }
+            break;
+        default:
+            break;
+        }
     }
 
     public void repeatTest(XPathContext context, String localName,
@@ -2013,7 +1989,8 @@ public class TECore implements Runnable {
         xt.setParameter(new QName("method"), new XdmAtomicValue(method));
         xt.setParameter(new QName("base"),
                 new XdmAtomicValue(opts.getBaseURI()));
-        xt.setParameter(new QName("action"), new XdmAtomicValue(getTestServletURL()));
+        xt.setParameter(new QName("action"), new XdmAtomicValue(
+                getTestServletURL()));
         StringWriter sw = new StringWriter();
         Serializer serializer = new Serializer();
         serializer.setOutputWriter(sw);
