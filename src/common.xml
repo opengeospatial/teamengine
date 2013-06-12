@@ -11,7 +11,7 @@
 	<!-- Sample usage:
 	<ctl:call-test name="ctl:SchematronValidatingParser">
 		<ctl:with-param name="doc" select="$response"/>
-		<ctl:with-param name="schema">sch/csw/2.0.2/CSWCapabilities.sch</ctl:with-param>
+		<ctl:with-param name="schema">/sch/csw/2.0.2/CSWCapabilities.sch</ctl:with-param>
 		<ctl:with-param name="phase">DefaultPhase</ctl:with-param>
 	</ctl:call-test>
     -->
@@ -144,7 +144,7 @@
 	<!-- Sample usage:
 	<p:SchematronValidatingParser>
 	    <ctlp:schemas>
-		    <ctlp:schema type="resource" phase="Default">sch/csw/2.0.2/CSWCapabilities.sch</ctlp:schema>
+		    <ctlp:schema type="resource" phase="Default">/sch/csw/2.0.2/CSWCapabilities.sch</ctlp:schema>
 	    </ctlp:schemas>
 	</p:SchematronValidatingParser>
     -->
@@ -164,7 +164,7 @@
                   initialized="true">
 			<ctl:with-param name="schema_link">
 					<ctlp:schemas>
-						<ctlp:schema type="resource" phase="DefaultPhase">sch/csw/2.0.2/Capabilities.sch</ctlp:schema>
+						<ctlp:schema type="resource" phase="DefaultPhase">/sch/csw/2.0.2/Capabilities.sch</ctlp:schema>
 					</ctlp:schemas>
 			</ctl:with-param>
 		</ctl:java>
