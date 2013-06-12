@@ -8,6 +8,9 @@ CSW 2.0.2 Test Suite Release Notes
 - CITE-580 (https://portal.opengeospatial.org/?m=projects&a=view&project_id=85&tab=5&act=details&issue_id=580)
 should have been fixed already, it may have been overwritten
 
+TODO: new ISO Schematron validator was introduced in OWS-9. It might be worth considering
+migrating the Schematron 1.5 schemas to standard Schematron (19757-3).
+
 --- revision r6 -----------
 
 2013-05-06 (rmartell)
