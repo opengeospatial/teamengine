@@ -331,11 +331,13 @@
     <param name="csw.DescribeRecord.post.url"/>
     <assertion>
       The response to an invalid DescribeRecord request must include an exception report.
+      In particular, type name definitions that are not fully qualified with their 
+      target namespace should cause an exception.
     </assertion>
     <comment>
       Pass if all of the following conditions are true: (1) the response 
       entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
-      ows:Exception/@exceptionCode="InvalidParameterValue" (csw:TypeName not qualified).
+      ows:Exception/@exceptionCode="InvalidParameterValue"
     </comment>
     <code>
       <xsl:variable name="response">
