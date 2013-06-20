@@ -269,7 +269,9 @@ public class HTTPParser {
                 }
                 Element content = (Element) (response_e
                         .getElementsByTagName("content").item(0));
-                t.transform(new DOMSource(content), new DOMResult(part));
+                if ((null != content) && content.hasChildNodes()) {
+                    t.transform(new DOMSource(content), new DOMResult(part));
+                }
                 root.appendChild(part);
                 line = in.readLine();
                 num++;
@@ -291,7 +293,9 @@ public class HTTPParser {
             }
             Element content = (Element) (response_e
                     .getElementsByTagName("content").item(0));
-            t.transform(new DOMSource(content), new DOMResult(root));
+            if ((null != content) && content.hasChildNodes()) {
+                t.transform(new DOMSource(content), new DOMResult(root));
+            }
         }
         doc.appendChild(root);
         return doc;

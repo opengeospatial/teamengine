@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-  <home>/teamengine</home>
   <scripts>
     <!-- Sample suite: TE_BASE/scripts/note.ctl -->
     <organization>
@@ -17,7 +16,8 @@
             <description>Checks the content of a note.</description>
           </suite>
           <revision>
-            <name>r0</name>
+            <name>r1</name>
+            <status>Beta</status>
             <sources>
               <source>note.ctl</source>
             </sources>

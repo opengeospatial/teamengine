@@ -37,6 +37,11 @@
           <groupId>org.yaml</groupId>
           <artifactId>snakeyaml</artifactId>
         </exclusion>
+        <!-- enables more flexible test method selection -->
+        <exclusion>
+          <groupId>org.beanshell</groupId>
+          <artifactId>bsh</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
