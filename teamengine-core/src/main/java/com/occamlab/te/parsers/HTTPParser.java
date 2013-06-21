@@ -49,8 +49,8 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
 /**
- * Parses an HTTP response message and produces a DOM Document representation of
- * the message content.
+ * Parses an HTTP response message and produces a DOM Document containing the
+ * message content.
  * 
  * HTTPParser returns HTTP status and header information. It uses other
  * parser(s) to parse the content; TECore by default if others are not
@@ -88,14 +88,25 @@ public class HTTPParser {
     }
 
     /**
-     * Select a parser for message part based on part number and MIME format
-     * type, if supplied in instructions.
+     * Selects a parser for a message part based on the part number and MIME
+     * format type, if supplied in instructions.
+     * 
+     * @param partnum
+     *            An integer indicating the message part number.
+     * @param mime
+     *            A MIME media type.
+     * @param instruction
+     *            An Element representing parser instructions.
+     * @return A Node containing parser info, or {@code null} if no matching
+     *         parser is found.
      */
-    private static Node select_parser(int partnum, String mime,
-            Element instruction) {
+    static Node select_parser(int partnum, String mime, Element instruction) {
+        if (null == instruction)
+            return null;
         NodeList instructions = instruction.getElementsByTagNameNS(PARSERS_NS,
                 "parse");
-        for (int i = 0; i < instructions.getLength(); i++) {
+        Node parserNode = null;
+        instructionsLoop: for (int i = 0; i < instructions.getLength(); i++) {
             Element parse = (Element) instructions.item(i);
             if (partnum != 0) {
                 String part_i = parse.getAttribute("part");
@@ -128,11 +139,12 @@ public class HTTPParser {
             NodeList children = parse.getChildNodes();
             for (int j = 0; j < children.getLength(); j++) {
                 if (children.item(j).getNodeType() == Node.ELEMENT_NODE) {
-                    return children.item(j);
+                    parserNode = children.item(j);
+                    break instructionsLoop;
                 }
             }
         }
-        return null;
+        return parserNode;
     }
 
     private static boolean queue_equals(int[] queue, int qPos, int qLen,
@@ -181,6 +193,8 @@ public class HTTPParser {
 
     /**
      * Invocation point: Method called by TECore for request or soap-request.
+     * 
+     * {@code <parsers:HTTPParser /> }
      */
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
@@ -259,7 +273,7 @@ public class HTTPParser {
                 URLConnection pc = temp.toURI().toURL().openConnection();
                 pc.setRequestProperty("Content-type", mime);
                 Node parser = select_parser(num, contentType, instruction);
-                // use TECore to invoke any chained parsers
+                // use TECore to invoke any subsidiary (chained) parsers
                 Element response_e = core.parse(pc, parser);
                 temp.delete();
                 Element parser_e = (Element) (response_e
@@ -278,7 +292,7 @@ public class HTTPParser {
             }
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
-            // use TECore to invoke any chained parsers
+            // use TECore to invoke any chained (subsidiary) parsers
             if (LOGR.isLoggable(Level.FINER)) {
                 String msg = String.format(
                         "Calling subsidiary parser for resource at %s:\n%s",
@@ -293,8 +307,8 @@ public class HTTPParser {
             }
             Element content = (Element) (response_e
                     .getElementsByTagName("content").item(0));
-            if ((null != content) && content.hasChildNodes()) {
-                t.transform(new DOMSource(content), new DOMResult(root));
+            if (null != content) {
+                root.appendChild(doc.importNode(content, true));
             }
         }
         doc.appendChild(root);

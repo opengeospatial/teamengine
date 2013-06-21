@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.logging.Logger;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -27,6 +28,9 @@ import org.w3c.dom.Document;
  * @author jparrpearson
  */
 public class IOUtils {
+
+    private static final Logger LOGR = Logger
+            .getLogger(IOUtils.class.getName());
 
     /**
      * Converts an org.w3c.dom.Document element to an java.io.InputStream.
@@ -74,22 +78,25 @@ public class IOUtils {
     }
 
     /**
-     * Converts an InputStream to a String
+     * Reads the content of an input stream into a String value using the UTF-8
+     * charset.
      * 
+     * @param in
+     *            The InputStream from which the content is read.
+     * @return A String representing the content of the input stream; an empty
+     *         string is returned if an error occurs.
      */
     public static String inputStreamToString(InputStream in) {
         StringBuffer buffer = new StringBuffer();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in),
-                    1024);
-            char[] cbuf = new char[1024];
-            int bytesRead;
-            while ((bytesRead = br.read(cbuf, 0, cbuf.length)) != -1) {
-                buffer.append(cbuf, 0, bytesRead);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in,
+                    "UTF-8"), 1024);
+            String line;
+            while ((line = br.readLine()) != null) {
+                buffer.append(line);
             }
-        } catch (Exception e) {
-            System.out.println("Error converting InputStream to String: "
-                    + e.getMessage());
+        } catch (IOException iox) {
+            LOGR.warning(iox.getMessage());
         }
         return buffer.toString();
     }

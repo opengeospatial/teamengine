@@ -90,6 +90,7 @@ import com.occamlab.te.index.TemplateEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.saxon.ObjValue;
 import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.IOUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
@@ -167,6 +168,10 @@ public class TECore implements Runnable {
     static final QName LABEL_QNAME = new QName("label");
     static final String HEADER_BLOCKS = "header-blocks";
     private static Logger jlogger = Logger.getLogger("com.occamlab.te.TECore");
+
+    public TECore() {
+
+    }
 
     public TECore(Engine engine, Index index, RuntimeOptions opts) {
         this.engine = engine;
@@ -1751,11 +1756,16 @@ public class TECore implements Runnable {
     }
 
     /**
-     * Build a Document to hold parser result content, and invoke specified
-     * parsers.
+     * Parses the content retrieved from some URI and builds a DOM Document
+     * containing information extracted from the response message. Subsidiary
+     * parsers are invoked in accord with the supplied parser instructions.
      * 
-     * @return selected info from uc as specified by instruction Element and
-     *         children.
+     * @param uc
+     *            A URLConnection object.
+     * @param instruction
+     *            A Document or Element node containing parser instructions.
+     * @return An Element containing selected info from a URLConnection as
+     *         specified by instruction Element and children.
      */
     public Element parse(URLConnection uc, Node instruction) throws Throwable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -1781,16 +1791,19 @@ public class TECore implements Runnable {
         Element content_e = response_doc.createElement("content");
         if (instruction == null) {
             InputStream is = null;
+            uc.connect();
+            String contentType = uc.getContentType();
             try {
-                // is = uc.getInputStream();
                 is = URLConnectionUtils.getInputStream(uc);
-                idt.transform(new StreamSource(is), new DOMResult(content_e));
-            } catch (Exception e) {
-                jlogger.log(Level.SEVERE, "parse Error", e);
-                parser_e.setTextContent(e.getClass().getName() + ": "
-                        + e.getMessage());
+                if (contentType.contains("xml")) { // a crude check
+                    idt.transform(new StreamSource(is),
+                            new DOMResult(content_e));
+                } else {
+                    content_e.setTextContent(IOUtils.inputStreamToString(is));
+                }
             } finally {
-                is.close();
+                if (null != is)
+                    is.close();
             }
         } else {
             Element instruction_e;
@@ -1852,7 +1865,7 @@ public class TECore implements Runnable {
                     msg += ": " + cause.getMessage();
                 }
                 jlogger.log(Level.SEVERE, msg, e);
-                throw new Exception(msg, cause);
+                throw e;
             }
             pwLogger.close();
             if (return_object instanceof Node) {
@@ -1862,7 +1875,6 @@ public class TECore implements Runnable {
                 content_e.appendChild(response_doc.createTextNode(return_object
                         .toString()));
             }
-
             parser_e.setAttribute("prefix", instruction_e.getPrefix());
             parser_e.setAttribute("local-name", instruction_e.getLocalName());
             parser_e.setAttribute("namespace-uri",
@@ -1871,7 +1883,6 @@ public class TECore implements Runnable {
         }
         response_e.appendChild(parser_e);
         response_e.appendChild(content_e);
-        // response_doc.appendChild(response_e);
         return response_e;
     }
 
