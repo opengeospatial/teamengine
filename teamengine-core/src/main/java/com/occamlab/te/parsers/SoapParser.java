@@ -38,8 +38,8 @@ import java.net.HttpURLConnection;
 import javax.xml.transform.dom.DOMSource;
 
 /**
- * Parse a SOAP message returning back the SOAP mssage itself or the content of
- * the SOAP Body element.
+ * Parses a SOAP message entity and returns the SOAP message itself or the
+ * content of the SOAP Body element.
  * 
  */
 public class SoapParser {
@@ -67,7 +67,6 @@ public class SoapParser {
 
         HttpURLConnection huc = (HttpURLConnection) uc;
         int responsecode = huc.getResponseCode();
-        String responsemessage = huc.getResponseMessage();
         InputStream soapMessage = null;
 
         if (responsecode == 200) {
@@ -108,7 +107,7 @@ public class SoapParser {
              * retrieval from the URI provided with the 303.]
              */
             soapMessage = huc.getErrorStream();
-        } else if (responsecode > 400) {
+        } else if (responsecode >= 400) {
             /*
              * Client or Server errors. The SOAP Fault has to be handled.
              */

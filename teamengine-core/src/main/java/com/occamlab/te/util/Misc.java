@@ -141,21 +141,6 @@ public class Misc {
         return getMethod(className, methodName, cl, argCount, argCount);
     }
 
-    // public static Method getMethod(String className, String methodName, int
-    // argCount) throws Exception {
-    // Class c = Class.forName(className);
-    // Method[] methods = c.getMethods();
-    // for (int i = 0; i < methods.length; i++) {
-    // Method m = methods[i];
-    // int count = m.getParameterTypes().length;
-    // if (m.getName().equals(methodName) && count == argCount) {
-    // return m;
-    // }
-    // }
-    // throw new Exception("Error: Method " + methodName + " with " +
-    // Integer.toString(argCount) + " arguments was not found in class " +
-    // className);
-    // }
     public static Object makeInstance(String className, List<Node> classParams,
             TEClassLoader cl) throws Exception {
         // cl.registerClass(className);
