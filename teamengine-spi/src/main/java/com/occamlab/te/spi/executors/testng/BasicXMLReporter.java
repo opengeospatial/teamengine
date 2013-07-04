@@ -39,15 +39,15 @@ public final class BasicXMLReporter implements IReporter {
      */
     XMLReporter createCustomXMLReporter() {
         // config data syntax: "class-name:prop1=val1,prop2=val2"
-        StringBuilder xmlReporterConf = new StringBuilder(
-                XMLReporter.class.getName());
-        xmlReporterConf.append(":");
-        xmlReporterConf.append("stackTraceOutputMethod=")
-                .append(XMLReporterConfig.STACKTRACE_NONE).append(",");
-        xmlReporterConf.append("splitClassAndPackageNames=true").append(",");
-        xmlReporterConf.append("generateTestResultAttributes=true");
-        ReporterConfig reporterConf = ReporterConfig
-                .deserialize(xmlReporterConf.toString());
+        StringBuilder reporterConfig = new StringBuilder(
+                XMLReporter.class.getName() + ":");
+        reporterConfig.append("stackTraceOutputMethod=").append(
+                XMLReporterConfig.STACKTRACE_NONE);
+        reporterConfig.append(",").append("splitClassAndPackageNames=true");
+        reporterConfig.append(",").append("generateTestResultAttributes=true");
+        reporterConfig.append(",").append("generateGroupsAttribute=true");
+        ReporterConfig reporterConf = ReporterConfig.deserialize(reporterConfig
+                .toString());
         return (XMLReporter) reporterConf.newReporterInstance();
     }
 }

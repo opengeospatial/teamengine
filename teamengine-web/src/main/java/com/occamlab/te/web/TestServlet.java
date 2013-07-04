@@ -165,9 +165,11 @@ public class TestServlet extends HttpServlet {
                         sourceGeneratorTransformer.transform();
                     }
                 }
-
-                classLoaders.put(sourcesName, new TEClassLoader(conf
-                        .getResources().get(sourcesName)));
+                File resourcesDir = conf.getResources().get(sourcesName);
+                LOGR.config(String.format(
+                        "Adding resources directory for %s: %s", sourcesName,
+                        resourcesDir));
+                classLoaders.put(sourcesName, new TEClassLoader(resourcesDir));
             }
             int cacheSize = 0;
             String s = getServletConfig().getInitParameter("cacheSize");

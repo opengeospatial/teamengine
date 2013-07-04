@@ -46,7 +46,7 @@
     <pre>
     groupId: org.opengis.cite
     artifactId: cite-archetype-testng
-    version: 1.0</pre>
+    version: 1.1</pre>
 
     <p>To create a test suite, invoke the interactive 'generate' goal of the archetype 
     plugin as shown below, where the <code>ets-code</code> parameter specifies the 

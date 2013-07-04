@@ -15,8 +15,8 @@
 
     <pre>
     $ svn checkout http://svn.code.sf.net/p/teamengine/code/trunk teamengine
-    $ svn checkout http://svn.code.sf.net/p/teamengine/code/tags/4.0-beta2 \
-    teamengine-4.0b2</pre>
+    $ svn checkout http://svn.code.sf.net/p/teamengine/code/tags/4.0 teamengine-4.0
+    </pre>
 
     <p>
       <a href="http://maven.apache.org/" target="_blank">Apache Maven 3.0</a> is 
@@ -34,9 +34,8 @@
     </ul>
 
     <p>Simply run <code>mvn package</code> in the root project directory to generate 
-    all build artifacts (using JDK 6 or later), or run <code>mvn install</code> to 
-    install them into the local Maven repository. The main build artifacts are listed 
-    below.</p>
+    all build artifacts, or run <code>mvn install</code> to install them into the local Maven 
+    repository. The main build artifacts are listed below.</p>
 
     <dl>
       <dt><strong>teamengine-console-${project.version}-bin.[zip|tar.gz]</strong></dt>
@@ -188,7 +187,7 @@ of concurrent users increases.</p>
 directory. Deploy the <code>teamengine.war</code> component by either copying it to the 
 CATALINA_BASE/webapps directory or using the Tomcat <em>Manager</em> application. Start 
 the Tomcat instance. The URIs listed below provide starting points for discovering and 
-executing test suites; modify the path if the name of the WAR file (and hence the context 
+executing test suites. Modify the path if the name of the WAR file (and hence the context 
 path) has been changed from the default value "teamengine".</p>
 
 <ul>
