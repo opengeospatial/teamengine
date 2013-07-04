@@ -43,7 +43,7 @@ the TE_BASE directory.
 How to deploy
 -------------
 
-Apache Tomcat 7.0 (with JDK 6 or later) is a supported servlet container. It 
+Apache Tomcat 7.0 (with JDK 7 or later) is a supported servlet container. It 
 is strongly recommended that a dedicated Tomcat instance be created to host 
 the teamengine application. Create one as suggested below.
 
