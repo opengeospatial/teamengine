@@ -14,7 +14,7 @@
         <description>Checks catalogue implementations for conformance to the CSW part of OGC 07-006r1.</description>
       </suite>
       <revision>
-        <name>r7</name>
+        <name>r8</name>
         <sources>
           <source>csw/2.0.2/src</source>
         </sources>
