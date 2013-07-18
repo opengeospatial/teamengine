@@ -1,7 +1,7 @@
 <%@ page
 	language="java"
 	session="false"
-	import="java.io.File, javax.xml.parsers.*, com.occamlab.te.web.*"
+	import="java.io.File, javax.xml.parsers.*, java.util.Arrays, com.occamlab.te.web.*"
 %><%!
 Config Conf;
 DocumentBuilder DB;
@@ -49,12 +49,22 @@ public void jspInit() {
 <%
     File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
     String[] dirs = userdir.list();
+    Arrays.sort(dirs);
+    
+    out.println("<tr>");
+    out.println("<td>" + "<b>Session</b>"+ "</td>");
+    out.println("<td>" + "<b>Test suite name</b>"+ "</td>");
+    out.println("<td>" + "<b>Description</b>"+ "</td>");
+    out.println("</tr>");
+    
+    
     for (int i = 0; i < dirs.length; i++) {
       if (new File(new File(userdir, dirs[i]), "session.xml").exists()) {
    	    TestSession s = new TestSession();
    	    s.load(userdir, dirs[i]);
     	out.println("<tr>");
         out.println("<td><a href=\"viewSessionLog.jsp?session=" + s.getSessionId() + "\">" + s.getSessionId() + "</a></td>" );
+        out.println("<td>" + s.getSourcesName() + "</td>");
         out.println("<td>" + s.getDescription() + "</td>");
     	out.println("</tr>");
 	  }
