@@ -7,7 +7,7 @@
 		<div style="position: absolute;">
       <div style="margin-bottom: 0.75em;"><img src="site/logo.png"/></div>
 			<span style="font-size: 1.25em;">
-        <strong>TEAM Engine v4</strong> <img src="images/icon-beta.png"/>
+        <strong>TEAM Engine v4</strong>
       </span>
 		</div>
 		<%
