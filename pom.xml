@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>teamengine</artifactId>
-  <version>4.1-SNAPSHOT</version>
+  <version>4.0.1</version>
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
@@ -22,9 +22,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.code.sf.net/p/teamengine/code/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/teamengine/code/trunk</developerConnection>
-    <url>http://www.sourceforge.net/p/teamengine/code</url>
+    <connection>scm:svn:http://svn.code.sf.net/p/teamengine/code/tags/4.0.1</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/teamengine/code/tags/4.0.1</developerConnection>
+    <url>scm:svn:https://svn.code.sf.net/p/teamengine/code/tags/4.0.1</url>
   </scm>
   <issueManagement>
     <system>Ticket Tracker</system>
