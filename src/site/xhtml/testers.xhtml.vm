@@ -150,7 +150,7 @@
     update sites.</p>
     <ul>
       <li>TestNG: Update from [http://beust.com/eclipse]</li>
-      <li>Subclipse (Subversion 1.6 client): Update from [http://subclipse.tigris.org/update_1.6.x]</li>
+      <li>Subclipse (Subversion 1.7 client): Update from [http://subclipse.tigris.org/update_1.8.x]</li>
       <li>m2e (Maven integration): From the main update site for the Eclipse release, select "General 
     Purpose Tools" &gt; m2e</li>
     </ul>
@@ -165,9 +165,9 @@
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;
 &lt;properties version="1.0"&gt;
-  &lt;comment&gt;Test run arguments for ets-iso19142&lt;/comment&gt;
+  &lt;comment&gt;Test run arguments for WFS v2 test suite&lt;/comment&gt;
   &lt;entry key="wfs"&gt;http://ows9.lat-lon.de/deegree-webservices-3.2-pre7.1/
-services/wfs200?request=GetCapabilities&amp;service=WFS&lt;/entry&gt;
+services/wfs200?request=GetCapabilities&#038;amp;service=WFS&lt;/entry&gt;
 &lt;/properties&gt;</pre>
 
     <p><img src="./images/info-16px.png"/> <strong>Note:</strong> The resource referenced by the 

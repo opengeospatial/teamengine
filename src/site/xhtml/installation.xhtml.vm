@@ -57,7 +57,7 @@
     specifies the location of the main configuration directory that contains several 
     essential sub-directories. Create the TE_BASE directory (e.g. /srv/teamengine) 
     and unpack the contents of the teamengine-console-${project.version}-base archive into 
-    this location; ensure that users (including the Tomcat user) have write access. 
+    this location; also ensure that users (including the Tomcat user) have write access. 
     The structure of the TE_BASE directory is shown below.</p>
 
     <pre>

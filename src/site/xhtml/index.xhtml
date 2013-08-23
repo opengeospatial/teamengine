@@ -8,7 +8,7 @@
     <h1>Overview</h1>
     <p>
     The Test, Evaluation, And Measurement (TEAM) Engine is a test harness that executes 
-    test suites written using the OGC CTL test grammar or the <a href="http://testng.org/" 
+    test suites written using the OGC Compliance Test Language (CTL) or the <a href="http://testng.org/" 
     target="_blank">TestNG framework</a>. It is typically used to verify specification 
     compliance and is the official test harness of the <a href="http://cite.opengeospatial.org/" 
     target="_blank">OGC Compliance Testing Program</a> (CITE), where it is used to certify 
@@ -22,10 +22,11 @@
     </p>
     <p>
     When a CTL test suite is executed, the source scripts are transformed into a collection 
-    of XSLT (v2.0) templates, one for each test (see Figure 1). A form may be presented to the 
-    user to collect test input parameters. The starting test is then called and the suite is 
-    executed using the Saxon XSLT processor. Test outputs are written to log files as the test 
-    run proceeds.
+    of XSLT (v2.0) templates, one for each test (see Figure 1). See OGC document <a target="_blank" 
+    href="http://portal.opengeospatial.org/files/?artifact_id=33085">06-126</a> for descriptions 
+    of CTL elements. A form may be presented to the user to collect test input parameters. 
+    The starting test is then called and the suite is executed using the Saxon XSLT processor. 
+    Test outputs are written to log files as the test run proceeds.
     </p>
     <div class="figure">
       <p><strong>Figure 1 - CTL test execution</strong></p>

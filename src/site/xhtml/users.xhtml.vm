@@ -65,7 +65,7 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     browsing test documentation, and launching test runs. The welcome page (e.g. 
     http://localhost:8080/teamengine) displays a table listing all available test suites. 
     In a new installation a sample suite for the fictitious "XML Note" specification 
-    should appear. Additional test suites correspond to entries in the main configuration 
+    should appear. The listed test suites correspond to entries in the main configuration 
     file located at TE_BASE/config.xml.
     </p>
 
@@ -81,6 +81,12 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     Simply put the CTL scripts in TE_BASE/scripts and insert or update an entry in the 
     main configuration file. Supporting libraries, if any, must be placed in the 
     WEB-INF/lib directory.</p>
+    
+    <p>As a convenience, the <code>ets-resources</code> project may be checked out from 
+    the OGC Subversion repository. Run 'mvn package' to generate an archive containing 
+    all supporting libraries for the latest OGC test suites. The project trunk may be 
+    obtained from this location:</p>
+    <pre>https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/trunk</pre>
 
     <h2>REST API</h2>
     <p>
@@ -132,12 +138,14 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     parameter is either mandatory, conditional (required under certain circumstances), 
     or optional.</p>
 
-    <p>There are two steps involved in deploying an executable test suite (ETS) implemented 
-    using the TestNG framework. The first step is not required in order to use the REST API.</p>
+    <p>There are three steps involved in deploying an executable test suite (ETS) implemented 
+    using the TestNG framework. The first two steps are not required in order to use the REST API.</p>
     <ol>
       <li>Unpack the *-ctl-scripts.zip archive into the TE_BASE/scripts directory; it 
       includes test suite documentation and a simple CTL script that invokes the main 
       controller.</li>
+      <li>Update the TE_BASE/config.xml file: Add or revise the &lt;standard&gt; element 
+      for the test suite.</li>
       <li>Put the ETS component (a binary JAR file) and any dependencies into 
         the <code>WEB-INF/lib</code> directory of the web application.</li>
     </ol>
