@@ -171,4 +171,20 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <!-- Set ets-resources-version property in ${user.home}/.m2/settings.xml -->
+      <id>ogc.cite</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.opengis.cite</groupId>
+          <artifactId>ets-resources</artifactId>
+          <version>${ets-resources-version}</version>
+          <type>pom</type>
+          <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
