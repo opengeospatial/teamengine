@@ -6,9 +6,9 @@
   </head>
   <body>
     <p>This document provides basic guidance about how to develop a test suite 
-    that can be executed using TEAM Engine. The test harness is capable of 
-    running tests implemented using the CTL (Compliance Test Language) scripting 
-    language and TestNG.</p>
+    that can be executed using TEAM Engine. The test harness is capable of running 
+    tests implemented using the OGC CTL (Compliance Test Language) scripting language 
+    and the TestNG framework.</p>
 
     <h2>CTL scripts</h2>
     <p>
@@ -127,9 +127,13 @@
     @Test annotation. </li>
     </ul>
 
-    <p>See the <a 
-    href="http://testng.org/doc/documentation-main.html" target="_blank">TestNG 
-    documentation</a> for more information.</p>
+    <p>See the <a href="http://testng.org/doc/documentation-main.html" target="_blank">TestNG 
+    documentation</a> for more information. The books listed below may also be of interest:</p>
+    <ul>
+      <li><a href="http://books.google.ca/books?id=9CuP8S2glWQC" target="_blank">TestNG Beginner's Guide</a></li>
+      <li><a href="http://books.google.ca/books?id=bCvcMcLZwV4C" target="_blank">Next Generation Java Testing: 
+      TestNG and Advanced Concepts</a></li>
+    </ul>
 
     <h3>Test suite development</h3>
 

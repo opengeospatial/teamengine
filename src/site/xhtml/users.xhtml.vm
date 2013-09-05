@@ -88,6 +88,28 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     obtained from this location:</p>
     <pre>https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/trunk</pre>
 
+    <p>Alternatively, one can build the teamengine-web module and activate the <code>ogc.cite</code> 
+    profile when doing so; this will automatically add the supporting libraries from the 
+    ets-resources project to the WEB-INF/lib directory in the WAR file. To activate the build 
+    profile, just add the -P command-line argument: <code>mvn -P ogc.cite package</code>. Specify 
+    the desired version of the ets-resources project in the user-specific Maven settings file 
+    located at <code>${user.home}/.m2/settings.xml</code></p>
+
+    <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- ${user.home}/.m2/settings.xml --&gt;
+&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" 
+  &lt;!-- other elements omitted --&gt;
+  &lt;profiles&gt;
+    &lt;profile&gt;
+      &lt;id&gt;ogc.cite&lt;/id&gt;
+      &lt;properties&gt;
+        &lt;ets-resources-version&gt;13.09.04&lt;/ets-resources-version&gt;
+      &lt;/properties&gt;
+    &lt;/profile&gt;
+  &lt;/profiles&gt;
+&lt;/settings&gt;</pre>
+
     <h2>REST API</h2>
     <p>
     A REST-like API (based on <a href="http://jcp.org/en/jsr/detail?id=311" target="_blank">
