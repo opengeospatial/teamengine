@@ -28,7 +28,7 @@ public class XMLValidatingParserTest {
     @Test
     public void createParserWithCswSchemaAsResource() throws Exception {
         Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-                "/schema-refs-csw.xml"));
+                "/schema-refs.xml"));
         XMLValidatingParser iut = new XMLValidatingParser(schemaRefs);
         assertNotNull(iut);
         assertEquals("Unexpected number of schema references", 1,
@@ -40,8 +40,8 @@ public class XMLValidatingParserTest {
     @Test
     public void parseCswCapabilities_valid() throws Exception {
         Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-                "/schema-refs-csw.xml"));
-        URL url = getClass().getResource("/capabilities-pycsw.xml");
+                "/schema-refs-ipo.xml"));
+        URL url = getClass().getResource("/ipo.xml");
         StringWriter strWriter = new StringWriter();
         PrintWriter logger = new PrintWriter(strWriter);
         XMLValidatingParser iut = new XMLValidatingParser();
@@ -55,8 +55,8 @@ public class XMLValidatingParserTest {
     @Test
     public void parseCswCapabilities_invalid() throws Exception {
         Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-                "/schema-refs-csw.xml"));
-        URL url = getClass().getResource("/capabilities-invalid.xml");
+                "/schema-refs-ipo.xml"));
+        URL url = getClass().getResource("/ipo-invalid.xml");
         StringWriter strWriter = new StringWriter();
         PrintWriter logger = new PrintWriter(strWriter);
         XMLValidatingParser iut = new XMLValidatingParser();
