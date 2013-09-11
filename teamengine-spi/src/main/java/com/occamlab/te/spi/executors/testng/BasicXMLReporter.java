@@ -43,7 +43,6 @@ public final class BasicXMLReporter implements IReporter {
                 XMLReporter.class.getName() + ":");
         reporterConfig.append("stackTraceOutputMethod=").append(
                 XMLReporterConfig.STACKTRACE_NONE);
-        reporterConfig.append(",").append("splitClassAndPackageNames=true");
         reporterConfig.append(",").append("generateTestResultAttributes=true");
         reporterConfig.append(",").append("generateGroupsAttribute=true");
         ReporterConfig reporterConf = ReporterConfig.deserialize(reporterConfig
