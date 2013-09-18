@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ctl:package xmlns="http://www.occamlab.com/ctl" 
+<ctl:package 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:ctl="http://www.occamlab.com/ctl" 
   xmlns:parsers="http://www.occamlab.com/te/parsers" 
@@ -11,7 +11,7 @@
   xmlns:xlink="http://www.w3.org/1999/xlink">
 
   <ctl:test name="csw:DescribeRecord-POST">
-    <param name="csw.capabilities.doc"/>
+    <ctl:param name="csw.capabilities.doc"/>
     <ctl:assertion>
       A conforming implementation must support DescribeRecord XML requests using the POST method.
     </ctl:assertion>
@@ -49,33 +49,32 @@
       <ctl:call-test name="csw:csw-2.0.2-DescribeRecord-tc7.1">
         <ctl:with-param name="csw.DescribeRecord.post.url" select="$csw.DescribeRecord.post.url"/>
       </ctl:call-test>
-
     </ctl:code>
   </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc1.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc1.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       The response to a DescribeRecord request that does not include any TypeName 
       elements and does not specify a schema language must produce a response that 
       describes all supported record types using the XML Schema language.
-    </assertion>
-    <comment>
+    </ctl:assertion>
+    <ctl:comment>
       Pass if the response is valid and contains XML Schema components for all 
       supported record types.
-    </comment>
-    <code>
+    </ctl:comment>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" service="CSW" version="2.0.2"/>
-          </body>
+          </ctl:body>
           <p:XMLValidatingParser.CSW/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -91,35 +90,35 @@
           </ctl:call-test>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc2.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc2.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       The response to a DescribeRecord request containing TypeName elements must 
       include schema components for each requested record type.
-    </assertion>
-    <comment>
+    </ctl:assertion>
+    <ctl:comment>
       Pass if the response is valid and contains XML Schema components (i.e., 
       element declarations or a schema containing element declarations) for 
       the record types in the correct target namespaces.
-    </comment>
-    <code>
+    </ctl:comment>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
               <csw:TypeName>csw:Record</csw:TypeName>
             </csw:DescribeRecord>
-          </body>
+          </ctl:body>
           <p:XMLValidatingParser.CSW/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -141,33 +140,33 @@
           </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc3.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc3.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       The response to a DescribeRecord request that contains an unknown TypeName 
       element must not include any csw:SchemaComponent elements.
-    </assertion>
-    <comment>
+    </ctl:assertion>
+    <ctl:comment>
       Pass if the response is valid and contains no csw:SchemaComponent elements.
-    </comment>
-    <code>
+    </ctl:comment>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
               <csw:TypeName>csw:DummyRecord</csw:TypeName>
             </csw:DescribeRecord>
-          </body>
+          </ctl:body>
           <p:XMLValidatingParser.CSW/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -183,32 +182,32 @@
           </ctl:call-test>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc4.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc4.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       A response message containing an entity body must contain a Content-Type entity 
       header field that correctly indicates the media type of the message body.
-    </assertion>
-    <comment>Pass if the Content-Type entity header field indicates an XML media type.</comment>
-    <link>OGC 05-008: 11.7 (p.61)</link>
-    <code>
+    </ctl:assertion>
+    <ctl:comment>Pass if the Content-Type entity header field indicates an XML media type.</ctl:comment>
+    <ctl:link>OGC 05-008: 11.7 (p.61)</ctl:link>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
               <csw:TypeName>csw:Record</csw:TypeName>
             </csw:DescribeRecord>
-          </body>
+          </ctl:body>
           <parsers:HTTPParser/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -224,35 +223,35 @@
           </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc5.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc5.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       The response to a DescribeRecord request that specifies an unsupported 
       output format must include an exception report.
-    </assertion>
-    <comment>
+    </ctl:assertion>
+    <ctl:comment>
       Pass if all of the following conditions are true: (1) the response 
       entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
       ows:Exception/@exceptionCode="InvalidParameterValue" (@outputFormat).
-    </comment>
-    <code>
+    </ctl:comment>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema" outputFormat="text/sgml">
               <csw:TypeName>csw:Record</csw:TypeName>
             </csw:DescribeRecord>
-          </body>
+          </ctl:body>
           <p:XMLValidatingParser.CSW/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -274,35 +273,35 @@
           </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc6.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc6.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       The response to a DescribeRecord request that specifies an unsupported 
       schema language must include an exception report.
-    </assertion>
-    <comment>
+    </ctl:assertion>
+    <ctl:comment>
       Pass if all of the following conditions are true: (1) the response 
       entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
       ows:Exception/@exceptionCode="InvalidParameterValue".
-    </comment>
-    <code>
+    </ctl:comment>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" schemaLanguage="http://purl.oclc.org/dsdl/schematron">
               <csw:TypeName>csw:Record</csw:TypeName>
             </csw:DescribeRecord>
-          </body>
+          </ctl:body>
           <p:XMLValidatingParser.CSW/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -324,36 +323,36 @@
           </xsl:if>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 
-  <test name="csw:csw-2.0.2-DescribeRecord-tc7.1">
-    <param name="csw.DescribeRecord.post.url"/>
-    <assertion>
+  <ctl:test name="csw:csw-2.0.2-DescribeRecord-tc7.1">
+    <ctl:param name="csw.DescribeRecord.post.url"/>
+    <ctl:assertion>
       The response to an invalid DescribeRecord request must include an exception report.
       In particular, type name definitions that are not fully qualified with their 
       target namespace should cause an exception.
-    </assertion>
-    <comment>
+    </ctl:assertion>
+    <ctl:comment>
       Pass if all of the following conditions are true: (1) the response 
       entity has &lt;ows:ExceptionReport&gt; as the document element; and (2) 
       ows:Exception/@exceptionCode="InvalidParameterValue"
-    </comment>
-    <code>
+    </ctl:comment>
+    <ctl:code>
       <xsl:variable name="response">
-        <request>
-          <url>
+        <ctl:request>
+          <ctl:url>
             <xsl:value-of select="$csw.DescribeRecord.post.url"/>
-          </url>
-          <method>POST</method>
-          <body>
+          </ctl:url>
+          <ctl:method>POST</ctl:method>
+          <ctl:body>
             <csw:DescribeRecord xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" 
   service="CSW" version="2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
               <csw:TypeName>Record</csw:TypeName>
             </csw:DescribeRecord>
-          </body>
+          </ctl:body>
           <p:XMLValidatingParser.CSW/>
-        </request>
+        </ctl:request>
       </xsl:variable>
 
       <xsl:choose>
@@ -369,6 +368,6 @@
           </ctl:call-test>
         </xsl:otherwise>
       </xsl:choose>
-    </code>
-  </test>
+    </ctl:code>
+  </ctl:test>
 </ctl:package>
