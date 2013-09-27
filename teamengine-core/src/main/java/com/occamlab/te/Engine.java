@@ -231,7 +231,10 @@ public class Engine {
     }
 
     public void setClassLoader(String sourcesName, TEClassLoader cl) {
-        classLoaders.put(sourcesName, cl);
+        if (null == this.classLoaders) {
+            this.classLoaders = new HashMap<String, TEClassLoader>();
+        }
+        this.classLoaders.put(sourcesName, cl);
     }
 
 }

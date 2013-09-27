@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -41,6 +43,9 @@ import org.w3c.dom.NodeList;
 import com.occamlab.te.TECore;
 
 public class LogUtils {
+
+    private static final Logger LOGR = Logger.getLogger(LogUtils.class
+            .getName());
 
     /**
      * Creates a Writer used to write test results to the log.xml file.
@@ -246,6 +251,19 @@ public class LogUtils {
         return test;
     }
 
+    /**
+     * Produces a document containing a collection of tests run in a base suite.
+     * 
+     * @param logdir
+     *            A File denoting the location of the test log directory.
+     * @param path
+     *            A session identifier.
+     * @param excludes
+     *            A list of tests to ignore.
+     * @return A Document node where &lt;test&gt; is the document element
+     * @throws Exception
+     *             If any errors occur.
+     */
     public static Document makeTestList(File logdir, String path,
             List<List<QName>> excludes) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -280,6 +298,12 @@ public class LogUtils {
             removeExcludes(doc.getDocumentElement(), new ArrayList<QName>(),
                     excludes);
             updateTestListElement(db, doc.getDocumentElement(), logdir, 0);
+        }
+        if (LOGR.isLoggable(Level.CONFIG)) {
+            StringBuilder msg = new StringBuilder("Read source test list in ");
+            msg.append(testListFile.getParent()).append("\n");
+            msg.append(DomUtils.serializeNode(doc));
+            LOGR.config(msg.toString());
         }
         return doc;
     }
