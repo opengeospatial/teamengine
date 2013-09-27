@@ -1,6 +1,7 @@
 package com.occamlab.te.parsers;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -11,7 +12,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.hamcrest.core.StringContains;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -72,21 +72,23 @@ public class XMLValidatingParserTest {
                 strWriter.toString().isEmpty());
     }
 
-    @Ignore
     @Test
-    public void parsePurchaseOrderWithMultipleSchemaRefs() throws Exception {
+    public void parseWithoutSchemasReportsNoGrammarFound() throws IOException,
+            Exception {
+        Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
+                "/conf/no-schema-refs.xml"));
         URL docUrl = getClass().getResource("/ipo-multipleSchemaRefs.xml");
         StringWriter strWriter = new StringWriter();
         PrintWriter logger = new PrintWriter(strWriter);
         XMLValidatingParser iut = new XMLValidatingParser();
-        Document result = iut.parse(docUrl.openConnection(), null, logger);
+        Document result = iut.parse(docUrl.openConnection(),
+                schemaRefs.getDocumentElement(), logger);
         assertNull(result);
         assertFalse("Expected validation error(s) but none reported.",
                 strWriter.toString().isEmpty());
-        assertThat(
-                "Expected error message containing: 'IRL' is not facet-valid with respect to enumeration",
+        assertThat("Expected error message containing: no grammar found",
                 strWriter.toString(),
-                StringContains
-                        .containsString("'IRL' is not facet-valid with respect to enumeration"));
+                StringContains.containsString("no grammar found"));
     }
+
 }

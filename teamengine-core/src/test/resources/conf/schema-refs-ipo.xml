@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ctlp:schemas xmlns:ctlp="http://www.occamlab.com/te/parsers">
-	<ctlp:schemas>
-		<ctlp:schema type="resource">xsd/ipo.xsd</ctlp:schema>
-	</ctlp:schemas>
+  <ctlp:schema type="resource">xsd/ipo.xsd</ctlp:schema>
 </ctlp:schemas>
