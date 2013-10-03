@@ -1366,8 +1366,7 @@
       The response to a GetRecords request that includes an invalid filter 
       expression must include an exception report.
     </assertion>
-    <comment>Pass if all of the following conditions are true: (1) the response 
-      is a valid ows:ExceptionReport; (2) the reported exceptionCode is "NoApplicableCode".</comment>
+    <comment>Pass if the response is a valid ows:ExceptionReport.</comment>
     <code>
       <xsl:variable name="response">
         <request>
@@ -1403,7 +1402,7 @@
           <ctl:call-test name="ctl:SchematronValidatingParser">
             <ctl:with-param name="doc" select="$response"/>
             <ctl:with-param name="schema">/sch/ows/1.0.0/ExceptionReport.sch</ctl:with-param>
-            <ctl:with-param name="phase">NoApplicableCodePhase</ctl:with-param>
+            <ctl:with-param name="phase">DefaultPhase</ctl:with-param>
           </ctl:call-test>
         </xsl:otherwise>
       </xsl:choose>
