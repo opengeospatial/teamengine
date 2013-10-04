@@ -37,16 +37,16 @@
     </p>
     <p>A Maven <a href="http://maven.apache.org/archetype/maven-archetype-plugin/" 
     target="_blank">archetype</a> is available that provides a template for creating 
-    new test suites. It may be used to quickly generate a basic implementation of 
+    new test suites. It may be used to quickly generate a rudimentary implementation of 
     a test suite that can be executed immediately. The archetype is not currently 
-    available in the central Maven repository; it resides in the <a 
+    available in the central Maven repository; it can be obtained from the <a 
     href="https://svn.opengeospatial.org/ogc-projects/cite/maven" target="_blank">
     OGC repository</a> with these coordinates:
     </p>
     <pre>
     groupId: org.opengis.cite
     artifactId: cite-archetype-testng
-    version: 1.1</pre>
+    version: 1.2</pre>
 
     <p>To create a test suite, invoke the interactive 'generate' goal of the archetype 
     plugin as shown below, where the <code>ets-code</code> parameter specifies the 
@@ -156,7 +156,10 @@
       <li>TestNG: Update from [http://beust.com/eclipse]</li>
       <li>Subclipse (Subversion 1.7 client): Update from [http://subclipse.tigris.org/update_1.8.x]</li>
       <li>m2e (Maven integration): From the main update site for the Eclipse release, select "General 
-    Purpose Tools" &gt; m2e</li>
+    Purpose Tools" &gt; m2e
+      <p><strong>Note:</strong> Some Eclipse packages (such as Eclipse 4.3 for Java EE Developers) may 
+      already include the m2e plug-in.</p>
+      </li>
     </ul>
 
     <p>The main class is <code>TestNGController</code>, located in the root package. The test run 

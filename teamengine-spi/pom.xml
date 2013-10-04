@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.8</version>
+      <version>6.8.7</version>
       <exclusions>
         <!-- alternative YAML syntax for specifying test suite -->
         <exclusion>
@@ -80,7 +80,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.14.1</version>
+        <version>2.16</version>
         <configuration>
           <!-- Disable TestNG runner (enabled due to compile dependency) -->
           <testNGArtifactName>null:null</testNGArtifactName>

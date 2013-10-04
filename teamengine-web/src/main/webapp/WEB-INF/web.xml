@@ -57,24 +57,24 @@
     <servlet-name>emailLog</servlet-name>
     <servlet-class>com.occamlab.te.web.EmailLogServlet</servlet-class>
     <init-param>
+      <description>SMTP Server</description>
       <param-name>mail.smtp.host</param-name>
       <param-value>smtpserver.example.com</param-value>
-      <description>SMTP Server</description>
     </init-param>
     <init-param>
+      <description>SMTP UserId</description>
       <param-name>mail.smtp.userid</param-name>
       <param-value>userid</param-value>
-      <description>SMTP UserId</description>
     </init-param>
     <init-param>
+      <description>SMTP Password</description>
       <param-name>mail.smtp.passwd</param-name>
       <param-value>password</param-value>
-      <description>SMTP Password</description>
     </init-param>
     <init-param>
+      <description>Mail To Address</description>
       <param-name>mail.to</param-name>
       <param-value>approver@example.com</param-value>
-      <description>Mail To Address</description>
     </init-param>
   </servlet>	
   <servlet>

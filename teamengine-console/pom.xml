@@ -41,7 +41,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
         <configuration>
           <resourceBundles>
             <resourceBundle>${project.groupId}:teamengine-resources:${project.version}</resourceBundle>
