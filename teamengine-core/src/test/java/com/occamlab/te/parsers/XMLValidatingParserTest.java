@@ -72,6 +72,17 @@ public class XMLValidatingParserTest {
                 strWriter.toString().isEmpty());
     }
 
+    @Test(expected = NullPointerException.class)
+    public void parseWithNullInstructionThrowsNPE() throws IOException,
+            Exception {
+        URL docUrl = getClass().getResource("/ipo-multipleSchemaRefs.xml");
+        StringWriter strWriter = new StringWriter();
+        PrintWriter logger = new PrintWriter(strWriter);
+        XMLValidatingParser iut = new XMLValidatingParser();
+        Document result = iut.parse(docUrl.openConnection(), null, logger);
+        assertNull(result);
+    }
+
     @Test
     public void parseWithoutSchemasReportsNoGrammarFound() throws IOException,
             Exception {
