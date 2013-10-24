@@ -1986,29 +1986,29 @@ public class TECore implements Runnable {
             method = "post";
         }
 
-        XsltTransformer xt = engine.getFormExecutable().load();
-        xt.setSource(new DOMSource(ctlForm));
-        xt.setParameter(new QName("title"), new XdmAtomicValue(name));
-        xt.setParameter(new QName("web"),
+        XsltTransformer formTransformer = engine.getFormExecutable().load();
+        formTransformer.setSource(new DOMSource(ctlForm));
+        formTransformer.setParameter(new QName("title"), new XdmAtomicValue(name));
+        formTransformer.setParameter(new QName("web"),
                 new XdmAtomicValue(web ? "yes" : "no"));
-        xt.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes"
+        formTransformer.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes"
                 : "no"));
-        xt.setParameter(
+        formTransformer.setParameter(
                 new QName("thread"),
                 new XdmAtomicValue(Long
                         .toString(Thread.currentThread().getId())));
-        xt.setParameter(new QName("method"), new XdmAtomicValue(method));
-        xt.setParameter(new QName("base"),
+        formTransformer.setParameter(new QName("method"), new XdmAtomicValue(method));
+        formTransformer.setParameter(new QName("base"),
                 new XdmAtomicValue(opts.getBaseURI()));
-        xt.setParameter(new QName("action"), new XdmAtomicValue(
+        formTransformer.setParameter(new QName("action"), new XdmAtomicValue(
                 getTestServletURL()));
         StringWriter sw = new StringWriter();
         Serializer serializer = new Serializer();
         serializer.setOutputWriter(sw);
         serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION,
                 "yes");
-        xt.setDestination(serializer);
-        xt.transform();
+        formTransformer.setDestination(serializer);
+        formTransformer.transform();
         this.formHtml = sw.toString();
         if (LOGR.isLoggable(Level.FINE))
             LOGR.fine(this.formHtml);

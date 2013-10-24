@@ -81,6 +81,8 @@ import com.occamlab.te.util.StringUtils;
  */
 public class TestServlet extends HttpServlet {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
+    /** Alias is declared in the web app Context element. */
+    private static final String ABOUT_ALIAS = "about/";
 
     private static Logger LOGR = Logger
             .getLogger("com.occamlab.te.web.TestServlet");
@@ -313,7 +315,8 @@ public class TestServlet extends HttpServlet {
                 if (webdir == null) {
                     webdir = ".";
                 }
-                URL baseURL = new URL(contextURI.toURL(), webdir + "/");
+                URL baseURL = new URL(contextURI.toURL(), ABOUT_ALIAS + webdir
+                        + "/");
                 LOGR.fine("Base URL is " + baseURL);
                 opts.setBaseURI(baseURL.toString());
                 TECore core = new TECore(engine, indexes.get(opts
