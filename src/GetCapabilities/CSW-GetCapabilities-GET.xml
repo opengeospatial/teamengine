@@ -70,7 +70,7 @@
       document corresponding to the latest supported version.
       </assertion>
       <comment>Pass if the response is schema valid and has no missing elements.</comment>
-      <link>OGC 05-008c1: 7.1 (p.10)</link>
+      <link>OGC 05-008c1, §7.1 (p.10), §7.4.2 (p.19)</link>
 		<code>
 			<xsl:variable name="response">
 				<request>
