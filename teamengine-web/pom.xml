@@ -43,13 +43,6 @@
       <artifactId>commons-fileupload</artifactId>
       <version>1.3</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.3.2</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
@@ -136,7 +129,8 @@
           <packagingExcludes>
             WEB-INF/lib/teamengine-resources*.jar,
             WEB-INF/lib/teamengine-realm*.jar,
-            WEB-INF/lib/jersey-*.jar,
+            WEB-INF/lib/jersey-core*.jar,
+            WEB-INF/lib/jersey-serv*.jar,
             WEB-INF/lib/jsr311-api-*.jar,
             WEB-INF/lib/asm-*.jar,
             WEB-INF/lib/derby-*.jar,
