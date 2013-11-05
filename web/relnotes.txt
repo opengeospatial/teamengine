@@ -8,7 +8,6 @@ CSW 2.0.2 Test Suite Release Notes
 --- r8 (2013-09-19) -----------
 - Removed default namespace binding in DescribeRecord request entities (CSW-DescribeRecord-POST.xml) 
 
-
 --- r7 (2013-07-04) -----------
 
 - clarified assertion in csw:csw-2.0.2-DescribeRecord-tc7.1 (lbigagli)
