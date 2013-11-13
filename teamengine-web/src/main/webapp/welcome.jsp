@@ -8,7 +8,7 @@
 	value="${f:replace(teConfigFile, backSlash, '/')}" />
 
 <div>
-  <%@include file="site/welcome.txt" %>
+  <%@include file="site/welcome.html" %>
 
 	<h3>Available test suites</h3>
 	<c:import var="xslt" url="/styles/config2table.xsl" />

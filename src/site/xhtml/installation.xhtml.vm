@@ -197,11 +197,10 @@ path) has been changed from the default value "teamengine".</p>
 </ul>
 
 <h3>Customizing the welcome page</h3>
-<p>Several elements of the welcome page may be customized if desired: the logo in 
-    the header, the main text, and the content in the footer. The files in the /site 
-    directory of the web application can be modified in order to provide site-specific 
-    content (see Table 1). Tomcat does not need to be restarted to make the changes 
-    visible.</p>
+<p>Several elements of the welcome page may be changed if desired: the logo in 
+the header, the main text, and the content in the footer. The files located in the 
+TE_BASE/resources/site directory can be modified so as to provide site-specific content 
+(see Table 1). Tomcat does not need to be restarted to make the changes visible.</p>
 
 <table>
   <caption>Table 1 - Site content</caption>

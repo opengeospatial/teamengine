@@ -2,5 +2,5 @@
 <div style="margin-top: 2em;">
 	<hr />
   <p>TEAM Engine <c:out value="${initParam.appVersion}" /> </p>
-	<%@include file="site/footer.txt" %>
+	<%@include file="site/footer.html" %>
 </div>
