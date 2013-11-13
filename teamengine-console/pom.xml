@@ -35,9 +35,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <skipIfEmpty>true</skipIfEmpty>
-        </configuration>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>disable</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-remote-resources-plugin</artifactId>

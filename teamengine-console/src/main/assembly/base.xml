@@ -29,6 +29,10 @@
       <outputDirectory>resources/lib</outputDirectory>
       <excludes><exclude>*</exclude></excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/site</directory>
+      <outputDirectory>resources/site</outputDirectory>
+    </fileSet>
   </fileSets>
   <files>
     <file>
