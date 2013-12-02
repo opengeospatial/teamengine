@@ -1,6 +1,8 @@
 CSW 2.0.2 Test Suite Release Notes
 ==================================
 
+--- r10 (TBD) -----------
+- CITE-901 amended describeRecord schemalocation check in Capabilities.sch
 
 --- r9 (2013-12-02) -----------
 - clarified documentation of csw:csw-2.0.2-GetCapabilities-tc1.1
