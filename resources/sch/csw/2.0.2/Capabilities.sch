@@ -121,9 +121,9 @@
         test="ows:Parameter[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='outputformat']/ows:Value = 'application/xml'"
         > Missing mandatory outputFormat parameter for DescribeRecord, "application/xml". </sch:assert>
       <sch:assert id="DescribeRecordSchemaLanguage"
-        test="ows:Parameter[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='schemalanguage']/ows:Value = 'http://www.w3.org/TR/xmlschema-1/'"
+        test="ows:Parameter[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='schemalanguage']/ows:Value = 'http://www.w3.org/XML/Schema'"
         > Missing mandatory schemaLanguage parameter for DescribeRecord,
-        "http://www.w3.org/TR/xmlschema-1/". </sch:assert>
+        "http://www.w3.org/XML/Schema". </sch:assert>
     </sch:rule>
     <sch:rule id="RequiredGetRecordsParameters"
       context="//ows:OperationsMetadata/ows:Operation[@name='GetRecords']">
