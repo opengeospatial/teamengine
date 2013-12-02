@@ -2,7 +2,7 @@ CSW 2.0.2 Test Suite Release Notes
 ==================================
 
 
---- r9 (YYYY-MM-DD) -----------
+--- r9 (2013-12-02) -----------
 - clarified documentation of csw:csw-2.0.2-GetCapabilities-tc1.1
 - CITE-582 removed the "not-matching" id from the test
 
