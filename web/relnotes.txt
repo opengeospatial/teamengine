@@ -4,6 +4,7 @@ CSW 2.0.2 Test Suite Release Notes
 
 --- r9 (YYYY-MM-DD) -----------
 - clarified documentation of csw:csw-2.0.2-GetCapabilities-tc1.1
+- CITE-582 removed the "not-matching" id from the test
 
 --- r8 (2013-09-19) -----------
 - Removed default namespace binding in DescribeRecord request entities (CSW-DescribeRecord-POST.xml) 

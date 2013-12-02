@@ -132,10 +132,10 @@
     <param name="csw.GetRecords.post.url"/>
     <assertion>
       The response to a GetRecordById request without the ElementSetName parameter
-      must produce a response containing a summary view of all matching records.
+      must produce a response containing a summary view of the matching records.
     </assertion>
     <comment>
-      Pass if the response is schema valid and includes only 1 csw:BriefRecord element.
+      Pass if the response is schema valid and includes one csw:BriefRecord element.
     </comment>
     <code>
       <xsl:variable name="response0">
@@ -167,7 +167,7 @@
           <ctl:param name="service">CSW</ctl:param>
           <ctl:param name="version">2.0.2</ctl:param>
           <ctl:param name="request">GetRecordById</ctl:param>
-          <ctl:param name="id">urn:uuid:ce8627a0-685c-11db-bd13-0800200c9a66,<xsl:value-of select="escape-html-uri($id.2)"/></ctl:param>
+          <ctl:param name="id"><xsl:value-of select="escape-html-uri($id.2)"/></ctl:param>
           <p:XMLValidatingParser.CSW/>
         </ctl:request>
       </xsl:variable>
