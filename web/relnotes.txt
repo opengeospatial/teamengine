@@ -42,7 +42,7 @@ migrating the Schematron 1.5 schemas to standard Schematron (ISO 19757-3).
 - fixed Schematron 1.5 validation
 
 2012-09-13 (lbigagli):
-- removed test csw-2.0.2-GetRecords-tc11.2 (see issue #583)
+- CITE-583: removed test csw-2.0.2-GetRecords-tc11.2
 - updated config.xml to version r4-beta
 
 --- revision R3 -----------
