@@ -84,39 +84,34 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     
     <p>As a convenience, the <code>ets-resources</code> project may be checked out from 
     the OGC Subversion repository. Run 'mvn package' to generate an archive containing 
-    all supporting libraries for the latest OGC test suites. The project trunk may be 
+    all supporting libraries for the latest OGC test suites. Available releases may be 
     obtained from this location:</p>
-    <pre>https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/trunk</pre>
 
-    <p>Alternatively, one can build the teamengine-web module and activate the <code>ogc.cite</code> 
-    profile when doing so; this will automatically add the supporting libraries from the 
-    ets-resources project to the WEB-INF/lib directory in the WAR file. To activate the build 
-    profile, just add the -P command-line argument: <code>mvn -P ogc.cite package</code>. Specify 
-    the desired version of the ets-resources project in the user-specific Maven settings file 
-    located at <code>${user.home}/.m2/settings.xml</code></p>
+    <pre>https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags</pre>
 
-    <pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!-- ${user.home}/.m2/settings.xml --&gt;
-&lt;settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" 
-  &lt;!-- other elements omitted --&gt;
-  &lt;profiles&gt;
-    &lt;profile&gt;
-      &lt;id&gt;ogc.cite&lt;/id&gt;
-      &lt;properties&gt;
-        &lt;ets-resources-version&gt;13.09.04&lt;/ets-resources-version&gt;
-      &lt;/properties&gt;
-    &lt;/profile&gt;
-  &lt;/profiles&gt;
-&lt;/settings&gt;</pre>
+    <p>The contents of the resulting archive are described below.</p>
+    <dl>
+      <dt><code>config.xml</code></dt>
+      <dd>TEAMengine configuration file that includes all released OGC test suites; put this 
+      in TE_BASE/config.xml</dd>
+      <dt><code>config-approved.xml</code></dt>
+      <dd>TEAMengine configuration file that includes all OGC test suites approved for production 
+      use; put this in TE_BASE/config.xml</dd>
+      <dt><code>ctl-scripts-release.csv</code></dt>
+      <dd>CSV file for exporting CTL test scripts (using the <code>export-ctl</code> shell 
+      script in TE_HOME/bin)</dd>
+      <dt><code>lib/*.jar</code></dt>
+      <dd>Supporting libraries; put these in WEB-INF/lib (web app) or TE_BASE/resources/lib 
+      (CLI app)</dd>
+    </dl>
 
     <h2>REST API</h2>
     <p>
-    A REST-like API (based on <a href="http://jcp.org/en/jsr/detail?id=311" target="_blank">
+    A simple REST-like API (based on <a href="http://jcp.org/en/jsr/detail?id=311" target="_blank">
     JAX-RS 1.1</a>) enables programmatic execution of some test suites; currently only
     TestNG-based suites can be run in this manner. It exposes the endpoints listed in Table 2. 
     In the request URIs the <code>{etsCode}</code> and <code>{etsVersion}</code> variables 
-    denote the code and version, respectively, for a particular test suite.
+    denote the test suite code and version, respectively, for a particular test suite.
     </p>
 
     <table>
