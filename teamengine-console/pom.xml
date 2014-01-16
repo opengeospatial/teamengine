@@ -8,10 +8,10 @@
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-console</artifactId>
 
-  <name>TEAM Engine - Console Module</name>
+  <name>TEAM Engine - Console Application</name>
   <description>
-  This module assembles a binary distribution that provides a command-line interface 
-  for executing test suites in Unix and Windows environments.
+  This module assembles a console-based application that provides a command-line
+  interface for executing test suites in Unix and Windows environments.
   </description>
   <url>http://sourceforge.net/projects/teamengine/</url>
 

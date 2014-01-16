@@ -9,9 +9,9 @@
   <artifactId>teamengine-web</artifactId>
   <packaging>war</packaging>
 
-  <name>TEAM Engine - Web Module</name>
+  <name>TEAM Engine - Web Application</name>
   <description>
-  This module provides a web application for executing test suites and 
+  This module provides a web-based application for executing test suites and 
   managing test reports.
   </description>
   <url>http://sourceforge.net/projects/teamengine/</url>
