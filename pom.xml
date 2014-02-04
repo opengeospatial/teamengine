@@ -13,7 +13,7 @@
   compliance and is the official test harness of the OGC Compliance Testing 
   Program (CITE).
   </description>
-  <url>http://sourceforge.net/projects/teamengine/</url>
+  <url>https://github.com/opengeospatial/teamengine</url>
   <licenses>
     <license>
       <name>Mozilla Public License 2.0 (MPL-2.0)</name>
@@ -22,13 +22,13 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.code.sf.net/p/teamengine/code/trunk</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/teamengine/code/trunk</developerConnection>
-    <url>http://www.sourceforge.net/p/teamengine/code</url>
+    <connection>scm:git:https://github.com/opengeospatial/teamengine.git</connection>
+    <developerConnection>scm:git:https://github.com/opengeospatial/teamengine.git</developerConnection>
+    <url>https://github.com/opengeospatial/teamengine</url>
   </scm>
   <issueManagement>
-    <system>Ticket Tracker</system>
-    <url>http://www.sourceforge.net/p/teamengine/_list/tickets</url>
+    <system>GitHub Issue Tracker</system>
+    <url>https://github.com/opengeospatial/teamengine/issues</url>
   </issueManagement>
 
   <prerequisites>
@@ -128,7 +128,7 @@
               </manifest>
               <manifestEntries>
                 <Build-Time>${maven.build.timestamp}</Build-Time>
-                <Build-Revision>${svn.revision}</Build-Revision>
+                <Build-Revision>${buildNumber}</Build-Revision>
               </manifestEntries>
             </archive>
           </configuration>
@@ -194,22 +194,21 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-          <artifactId>svn-revision-number-maven-plugin</artifactId>
-          <version>1.13</version>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>buildnumber-maven-plugin</artifactId>
+          <version>1.2</version>
           <executions>
             <execution>
+              <phase>validate</phase>
               <goals>
-                <goal>revision</goal>
+                <goal>create</goal>
               </goals>
             </execution>
           </executions>
           <configuration>
-            <entries>
-              <entry>
-                <depth>files</depth>
-              </entry>
-            </entries>
+            <doCheck>false</doCheck>
+            <doUpdate>false</doUpdate>
+            <shortRevisionLength>7</shortRevisionLength>
           </configuration>
         </plugin>
       </plugins>

@@ -17,20 +17,20 @@ code base, which consists of the following modules:
 
 
 Simply run 'mvn package' in the root project directory to generate all build 
-artifacts (using JDK 6 or later). Execute the 'mvn site' phase with the top-
+artifacts (using JDK 7 or later). Execute the 'mvn site' phase with the top-
 level POM to generate project documentation; this will also create an aggregate 
 PDF document in the target/pdf directory.
 
 
 The main build artifacts are listed below.
 
-teamengine-console-${version}-bin.[zip|tar.gz]
-    The console application (command line usage)
-teamengine-console-${version}-base.[zip|tar.gz]
+teamengine-console/target/teamengine-console-${version}-bin.[zip|tar.gz]
+    The console (command line) application
+teamengine-console/target/teamengine-console-${version}-base.[zip|tar.gz]
     Contents of the main configuration directory (TE_BASE)
-teamengine.war
-    The JEE web (Servlet 2.5) application
-teamengine-common-libs.[zip|tar.gz]
+teamengine-web/target/teamengine.war
+    The Java EE web application
+teamengine-web/target/teamengine-common-libs.[zip|tar.gz]
     Common runtime dependencies (e.g. JAX-RS 1.1, Apache Derby)
 
 
@@ -75,4 +75,4 @@ The following URIs provide starting points for discovering and executing test
 suites:
 
 * /teamengine  - Home page for selecting and running CTL test suites
-* /teamengine/rest/suites  - Shows a listing of available (TestNG) test suites
+* /teamengine/rest/suites  - A listing of available (TestNG) test suites
