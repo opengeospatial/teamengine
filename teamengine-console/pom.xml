@@ -13,7 +13,7 @@
   This module assembles a console-based application that provides a command-line
   interface for executing test suites in Unix and Windows environments.
   </description>
-  <url>http://sourceforge.net/projects/teamengine/</url>
+  <url>https://github.com/opengeospatial/teamengine</url>
 
   <dependencies>
     <dependency>

@@ -43,8 +43,8 @@ import com.occamlab.te.TECore;
 import com.occamlab.te.util.DomUtils;
 
 /**
- * A servlet that intercepts a client request and validates it in accord with a
- * registered MonitorCall object. Each MonitorCall object is associated with an
+ * A servlet that intercepts a client request and validates it with a registered
+ * MonitorCall object. Each MonitorCall object is associated with a service
  * endpoint.
  * 
  */
@@ -86,6 +86,7 @@ public class MonitorServlet extends HttpServlet {
             mc.setParserInstruction(DomUtils.getElement(parserInstruction));
             mc.setModifiesResponse(Boolean.parseBoolean(modifiesResponse));
         }
+        LOGR.log(Level.CONFIG, "Configured monitor without test:\n {0}", mc);
         return "";
     }
 
@@ -103,10 +104,10 @@ public class MonitorServlet extends HttpServlet {
             NodeInfo parserInstruction, String modifiesResponse, String callId,
             TECore core) throws Exception {
         MonitorCall mc = monitors.get(monitorUrl);
-        mc.setCore(core);
         mc.setContext(context);
         mc.setLocalName(localName);
         mc.setNamespaceURI(namespaceURI);
+        mc.setCore(core);
         if (params != null) {
             Node node = (Node) NodeOverNodeInfo.wrap(params);
             if (node.getNodeType() == Node.DOCUMENT_NODE) {
@@ -125,7 +126,7 @@ public class MonitorServlet extends HttpServlet {
             mc.setModifiesResponse(Boolean.parseBoolean(modifiesResponse));
         }
         mc.setCallId(callId);
-        LOGR.log(Level.CONFIG, "Created monitor\n {0}", mc);
+        LOGR.log(Level.CONFIG, "Configured monitor with test:\n {0}", mc);
         return "";
     }
 
@@ -136,6 +137,7 @@ public class MonitorServlet extends HttpServlet {
             if (mc.getCore() == core) {
                 if (mc.getTestPath().equals(core.getTestPath())) {
                     keysToDelete.add(entry.getKey());
+                    mc.destroy();
                 }
             }
         }
@@ -211,6 +213,7 @@ public class MonitorServlet extends HttpServlet {
             }
 
             if (mc.getModifiesResponse()) {
+                LOGR.log(Level.FINE, DomUtils.serializeNode(eResponse));
                 Element content = DomUtils.getElementByTagName(eResponse,
                         "content");
                 Element root = DomUtils.getChildElement(content);
@@ -334,8 +337,6 @@ public class MonitorServlet extends HttpServlet {
             out.write(i);
             i = in.read();
         }
-        // in.close();
-        // out.close();
     }
 
     public static String getBaseServletURL() {

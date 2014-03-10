@@ -1,5 +1,5 @@
 <Context reloadable="true"
-  aliases="/docs=${TE_BASE}/resources/docs,/about=${TE_BASE}/scripts,/reports=${TE_BASE}/users,/site=${TE_BASE}/resources/site">
+  aliases="/docs=${TE_BASE}/resources/docs,/about=${TE_BASE}/scripts,/reports=${TE_BASE}/users">
 
   <Realm className="com.occamlab.te.realm.UserFilesRealm"
          root="${TE_BASE}/users"/>

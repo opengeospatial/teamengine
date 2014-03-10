@@ -14,7 +14,7 @@
   This module provides a web-based application for executing test suites and 
   managing test reports.
   </description>
-  <url>http://sourceforge.net/projects/teamengine/</url>
+  <url>https://github.com/opengeospatial/teamengine</url>
 
   <dependencies>
     <dependency>

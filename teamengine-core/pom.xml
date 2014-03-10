@@ -14,7 +14,7 @@
   The core module includes the main CTL script processor along with various 
   supporting test utilities.
   </description>
-  <url>http://sourceforge.net/projects/teamengine/</url>
+  <url>https://github.com/opengeospatial/teamengine</url>
 
   <dependencies>
     <dependency>

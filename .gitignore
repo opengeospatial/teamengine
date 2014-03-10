@@ -1,41 +1,9 @@
-# /
-/.project
-/.classpath
-/.settings
-/target
+# Eclipse config
+.project
+.classpath
+.settings/
 
-# /teamengine-console/
-/teamengine-console/.classpath
-/teamengine-console/.project
-/teamengine-console/.settings
-/teamengine-console/target
-
-# /teamengine-core/
-/teamengine-core/.project
-/teamengine-core/.classpath
-/teamengine-core/.settings
-/teamengine-core/target
-
-# /teamengine-realm/
-/teamengine-realm/.project
-/teamengine-realm/.classpath
-/teamengine-realm/.settings
-/teamengine-realm/target
-
-# /teamengine-resources/
-/teamengine-resources/.project
-/teamengine-resources/.classpath
-/teamengine-resources/.settings
-/teamengine-resources/target
-
-# /teamengine-spi/
-/teamengine-spi/.project
-/teamengine-spi/.classpath
-/teamengine-spi/.settings
-/teamengine-spi/target
-
-# /teamengine-web/
-/teamengine-web/.project
-/teamengine-web/.classpath
-/teamengine-web/.settings
-/teamengine-web/target
+# Maven output
+target/
+pom.xml.releaseBackup
+release.properties

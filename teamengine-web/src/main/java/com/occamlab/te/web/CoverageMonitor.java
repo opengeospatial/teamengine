@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -29,26 +30,29 @@ import org.w3c.dom.ls.LSSerializer;
 /**
  * Monitors which service capabilities are exercised by a client request. A
  * representation of a service implementation conformance statement (ICS) is
- * updated according to the content of a request message. The residual document
- * includes only those request parameter values that were not requested, thus
- * indicating which implemented options were not covered.
+ * updated according to the content of a request message; that is, any supplied
+ * parameter options are pruned from the initial tree.
+ * <p>
+ * When the test session is terminated the residual tree includes only those
+ * request parameter values that did <strong>not</strong> appear in any request,
+ * thus indicating which implemented options were not covered.
+ * </p>
  * 
  * <p>
- * A sample representation of a server ICS is shown in the listing below.
+ * A sample representation of an ICS for the GetCapabilities request is shown in
+ * the listing below.
  * </p>
  * 
  * <pre>
  * {@code
- * <service uri="http://ri.opengeospatial.org:8680/degree-wms-130/services">
- *   <request name="GetCapabilities">
- *     <param name="format">
- *       <value>text/xml</value>
- *     </param>
- *     <param name="updatesequence">
- *       <value>0</value>
- *     </param>
- *   </request>
- * </service>
+ * <request name="GetCapabilities">
+ *   <param name="format">
+ *     <value>text/xml</value>
+ *   </param>
+ *   <param name="updatesequence">
+ *     <value>0</value>
+ *   </param>
+ * </request>
  * }
  * </pre>
  * 
@@ -57,69 +61,78 @@ public class CoverageMonitor {
 
     private static final Logger LOGR = Logger.getLogger(CoverageMonitor.class
             .getPackage().getName());
-    private static final String COVERAGE_FILE = "coverage.xml";
-    DocumentBuilder docBuilder;
+    private static final Map<URI, String> ICS_MAP = createICSMap();
+
+    private static Map<URI, String> createICSMap() {
+        HashMap<URI, String> icsMap = new HashMap<URI, String>();
+        icsMap.put(URI.create("urn:wms_client_test_suite/GetCapabilities"),
+                "WMS-GetCapabilities.xml");
+        icsMap.put(URI.create("urn:wms_client_test_suite/GetMap"),
+                "WMS-GetMap.xml");
+        icsMap.put(URI.create("urn:wms_client_test_suite/GetFeatureInfo"),
+                "WMS-GetFeatureInfo.xml");
+        return icsMap;
+    }
+
+    private URI requestId;
+    private Document coverageDoc;
     private File testSessionDir;
 
     /**
-     * Creates a CoverageMonitor for a given service implementation. A fresh
-     * copy of a service implementation conformance statement (ICS) is written
-     * to the specified test session directory in the file "coverage.xml".
+     * Creates a CoverageMonitor for a given service request.
      * 
-     * @param url
-     *            A URL value that identifies a service endpoint.
-     * @param sessionDir
-     *            A test session directory.
+     * @param uri
+     *            A URI value that identifies a service request message.
      */
-    public CoverageMonitor(String url, File sessionDir) {
+    public CoverageMonitor(String uri) {
+        this.requestId = URI.create(uri);
+        String icsPath = "/coverage/" + ICS_MAP.get(this.requestId);
+        try {
+            DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            this.coverageDoc = docBuilder.parse(
+                    getClass().getResourceAsStream(icsPath), null);
+        } catch (Exception e) {
+            LOGR.warning(e.getMessage());
+        }
+        LOGR.config("Created coverage monitor using ICS at " + icsPath);
+    }
+
+    /**
+     * Returns the location of the test session directory.
+     * 
+     * @return A File object denoting a directory in the local file system.
+     */
+    public File getTestSessionDir() {
+        return testSessionDir;
+    }
+
+    /**
+     * Sets the location of the test session directory where the coverage
+     * results will be written to.
+     * 
+     * @param sessionDir
+     *            A File object (it should correspond to a directory).
+     */
+    public void setTestSessionDir(File sessionDir) {
         if (!sessionDir.isDirectory()) {
             throw new IllegalArgumentException("Not a directory: "
                     + testSessionDir);
         }
         this.testSessionDir = sessionDir;
-        File file = new File(testSessionDir, COVERAGE_FILE);
-        if (!file.exists()) {
-            // Only one known client test suite (WMS); use url in future
-            String icsRef = "/ics/service-wms.xml";
-            OutputStream fos = null;
-            try {
-                this.docBuilder = DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder();
-                Document coverage = this.docBuilder.parse(getClass()
-                        .getResourceAsStream(icsRef), null);
-                fos = new FileOutputStream(file);
-                writeDocument(fos, coverage);
-            } catch (Exception e) {
-                LOGR.warning(e.getMessage());
-            } finally {
-                try {
-                    fos.close();
-                } catch (IOException ioe) {
-                    LOGR.warning(ioe.getMessage());
-                }
-            }
-        }
     }
 
     /**
-     * Inspects the query part of a GET request URI and updates the coverage
-     * file by removing parameter values that occur in the request. The initial
+     * Inspects the query part of a GET request URI and updates the ICS document
+     * by removing parameter values that occur in the request. The initial
      * coverage report is modified over the course of the test run as requests
-     * are received; the residual document includes only unrequested parameter
-     * values.
+     * are received; the residual document includes only those parameter values
+     * that were <em>not requested</em>.
      * 
      * @param query
      *            The (decoded) query component of a GET request.
      */
     void inspectQuery(String query) {
-        File coverageFile = new File(testSessionDir, COVERAGE_FILE);
-        Document coverage = null;
-        try {
-            coverage = this.docBuilder.parse(coverageFile);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse coverage file at "
-                    + coverageFile, e);
-        }
         Map<String, String> qryParams = new HashMap<String, String>();
         for (String param : query.split("&")) {
             String[] nvp = param.split("=");
@@ -135,7 +148,7 @@ public class CoverageMonitor {
                                 reqType, paramEntry.getKey(), paramValues[i]);
                 NodeList result = null;
                 try {
-                    result = (NodeList) xpath.evaluate(expr, coverage,
+                    result = (NodeList) xpath.evaluate(expr, this.coverageDoc,
                             XPathConstants.NODESET);
                 } catch (XPathExpressionException xpe) {
                     LOGR.log(Level.WARNING, "Failed to evaluate expression "
@@ -155,18 +168,32 @@ public class CoverageMonitor {
                 }
             }
         }
+    }
+
+    /**
+     * Writes the residual ICS document to a file in the test session directory.
+     */
+    public void writeCoverageResults() {
+        File coverageFile = new File(this.testSessionDir,
+                ICS_MAP.get(this.requestId));
+        if (coverageFile.exists()) {
+            return;
+        }
         OutputStream fos = null;
         try {
             fos = new FileOutputStream(coverageFile, false);
-            writeDocument(fos, coverage);
+            writeDocument(fos, this.coverageDoc);
         } catch (FileNotFoundException e) {
         } finally {
             try {
                 fos.close();
+                LOGR.config("Wrote coverage results to "
+                        + coverageFile.getCanonicalPath());
             } catch (IOException ioe) {
                 LOGR.warning(ioe.getMessage());
             }
         }
+
     }
 
     /**

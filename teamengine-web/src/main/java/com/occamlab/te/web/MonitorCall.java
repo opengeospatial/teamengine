@@ -5,17 +5,25 @@ import java.io.File;
 import org.w3c.dom.Element;
 
 import com.occamlab.te.TECore;
+import com.occamlab.te.util.DomUtils;
 
 import net.sf.saxon.expr.XPathContext;
 
+/**
+ * A monitor that examines the content of a service request. It may be
+ * configured to modify the response before forwarding it to the requester. A
+ * monitor may also perform simple coverage reporting by keeping track of which
+ * service capabilities were invoked by the client (for GET requests only).
+ * 
+ */
 public class MonitorCall {
     XPathContext context;
     String url;
     String localName;
-    String NamespaceURI;
+    String namespaceURI;
     Element params;
     String callId;
-    Element parserInstruction;
+    Element parserConfig;
     boolean modifiesResponse;
     TECore core;
     String testPath;
@@ -50,11 +58,11 @@ public class MonitorCall {
     }
 
     public String getNamespaceURI() {
-        return NamespaceURI;
+        return namespaceURI;
     }
 
     public void setNamespaceURI(String namespaceURI) {
-        NamespaceURI = namespaceURI;
+        this.namespaceURI = namespaceURI;
     }
 
     public Element getParams() {
@@ -74,11 +82,11 @@ public class MonitorCall {
     }
 
     public Element getParserInstruction() {
-        return parserInstruction;
+        return parserConfig;
     }
 
     public void setParserInstruction(Element parserInstruction) {
-        this.parserInstruction = parserInstruction;
+        this.parserConfig = parserInstruction;
     }
 
     public boolean getModifiesResponse() {
@@ -96,8 +104,13 @@ public class MonitorCall {
     public void setCore(TECore core) {
         this.core = core;
         this.testPath = core.getTestPath();
-        this.coverageMonitor = new CoverageMonitor(this.url, new File(
-                core.getLogDir(), core.getTestPath()));
+        if (null == this.namespaceURI) {
+            throw new RuntimeException(
+                    "Cannot create coverage monitor: namespaceURI is null.");
+        }
+        this.coverageMonitor = new CoverageMonitor(this.namespaceURI);
+        this.coverageMonitor.setTestSessionDir(new File(core.getLogDir(), core
+                .getTestPath()));
     }
 
     public String getTestPath() {
@@ -105,7 +118,7 @@ public class MonitorCall {
     }
 
     /**
-     * Determines which server capabilities are exercised by this query.
+     * Determines which server capabilities are invoked by this query.
      * 
      * @param query
      *            The (decoded) query string extracted from the request URI.
@@ -114,12 +127,32 @@ public class MonitorCall {
         this.coverageMonitor.inspectQuery(query);
     }
 
+    /**
+     * Ensures that any resources used by this monitor are cleaned up in an
+     * orderly manner.
+     */
+    public void destroy() {
+        if (null != this.coverageMonitor) {
+            this.coverageMonitor.writeCoverageResults();
+        }
+    }
+
     @Override
     public String toString() {
-        return "MonitorCall [url=" + url + ", localName=" + localName
-                + ", NamespaceURI=" + NamespaceURI + ", callId=" + callId
-                + ", modifiesResponse=" + modifiesResponse + ", testPath="
-                + testPath + "]";
+        StringBuilder str = new StringBuilder("MonitorCall {\n");
+        str.append(" url: ").append(url).append(",\n");
+        str.append(" localName: ").append(localName).append(",\n");
+        str.append(" NamespaceURI: ").append(namespaceURI).append(",\n");
+        str.append(" callId: ").append(callId).append(",\n");
+        str.append(" modifiesResponse: ").append(modifiesResponse)
+                .append(",\n");
+        str.append(" testPath: ").append(testPath).append(",\n");
+        str.append(" params: ").append(DomUtils.serializeNode(params))
+                .append(",\n");
+        str.append(" parserConfig: ")
+                .append(DomUtils.serializeNode(parserConfig)).append(",\n");
+        str.append("}");
+        return str.toString();
     }
 
 }

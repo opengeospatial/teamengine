@@ -14,7 +14,7 @@
   Provides various capabilities such as support for alternative test runners 
   and a REST API that exposes endpoints for executing test suites.
   </description>
-  <url>http://sourceforge.net/projects/teamengine/</url>
+  <url>https://github.com/opengeospatial/teamengine</url>
   <licenses>
     <license>
       <name>Mozilla Public License 2.0 (MPL-2.0)</name>

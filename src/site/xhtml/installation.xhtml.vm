@@ -225,8 +225,8 @@ from the default value "teamengine".</p>
 <h3>Customizing the welcome page</h3>
 <p>Several elements of the welcome page may be changed if desired: the logo in 
 the header, the main text, and the content in the footer. The files located in the 
-TE_BASE/resources/site directory can be modified so as to provide site-specific content 
-(see Table 1). Tomcat does not need to be restarted to make the changes visible.</p>
+TE_BASE/resources/site directory can be modified to provide site-specific content 
+(see Table 1).</p>
 
 <table>
   <caption>Table 1 - Site content</caption>
@@ -252,6 +252,12 @@ TE_BASE/resources/site directory can be modified so as to provide site-specific 
     </tr>
   </tbody>
 </table>
+
+<p>An alias path must be added to the <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/context.html" 
+target="_blank">web application context</a> in order to make the content visible. Append the <code>/site</code> 
+alias to the aliases attribute value in the META-INF/context.xml file as shown below. Reload the application 
+(or restart Tomcat) to enable the new alias.</p>
+<pre>&lt;Context aliases="...,/site=${TE_BASE}/resources/site"&gt;</pre>
 
 </body>
 </html>

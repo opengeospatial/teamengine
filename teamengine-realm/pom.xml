@@ -15,7 +15,7 @@
   from XML user files. Place it in the $CATALINA_BASE/lib directory of 
   the Tomcat instance.
   </description>
-  <url>http://sourceforge.net/projects/teamengine/</url>
+  <url>https://github.com/opengeospatial/teamengine</url>
 
   <dependencies>
     <dependency>
@@ -34,7 +34,7 @@
         <dependency>
           <groupId>org.apache.tomcat</groupId>
           <artifactId>catalina</artifactId>
-          <version>6.0.37</version>
+          <version>6.0.39</version>
           <scope>provided</scope>
         </dependency>
       </dependencies>
@@ -51,7 +51,7 @@
         <dependency>
           <groupId>org.apache.tomcat</groupId>
           <artifactId>tomcat-catalina</artifactId>
-          <version>7.0.42</version>
+          <version>7.0.47</version>
           <scope>provided</scope>
         </dependency>
       </dependencies>

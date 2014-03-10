@@ -21,18 +21,18 @@ import org.xml.sax.SAXException;
 public class CoverageMonitorTest {
 
     private static DocumentBuilder docBuilder;
-    private static File sessionDir;
+    private static File tempDir;
     private static final String COVERAGE_FILE = "coverage.xml";
 
     @BeforeClass
     public static void initFixture() throws ParserConfigurationException {
         docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        sessionDir = new File(System.getProperty("java.io.tmpdir"));
+        tempDir = new File(System.getProperty("java.io.tmpdir"));
     }
 
     @After
     public void deleteCoverageFile() {
-        File file = new File(sessionDir, COVERAGE_FILE);
+        File file = new File(tempDir, COVERAGE_FILE);
         if (file.exists() && !file.delete()) {
             throw new RuntimeException("Failed to delete file at " + file);
         }
@@ -41,21 +41,21 @@ public class CoverageMonitorTest {
     @Test
     public void createCoverageMonitor() {
         File sessionDir = new File(System.getProperty("java.io.tmpdir"));
-        CoverageMonitor monitor = new CoverageMonitor("", sessionDir);
+        CoverageMonitor monitor = new CoverageMonitor("http://example.org/req1");
+        monitor.setTestSessionDir(sessionDir);
         assertNotNull(monitor);
-        File coverageFile = new File(sessionDir, "coverage.xml");
-        assertTrue("Expected to find coverage.xml file in session dir.",
-                coverageFile.exists());
-        assertTrue("File coverage.xml is empty.", coverageFile.length() > 0);
     }
 
     @Test
     public void testInspectQuery() throws SAXException, IOException,
             XPathExpressionException {
-        CoverageMonitor monitor = new CoverageMonitor("", sessionDir);
+        CoverageMonitor monitor = new CoverageMonitor(
+                "urn:wms_client_test_suite/GetMap");
+        monitor.setTestSessionDir(tempDir);
         String query = "REQUEST=GetMap&LAYERS=cite:BasicPolygons,cite:Terrain";
         monitor.inspectQuery(query);
-        File coverageFile = new File(sessionDir, "coverage.xml");
+        monitor.writeCoverageResults();
+        File coverageFile = new File(tempDir, "WMS-GetMap.xml");
         Document coverage = docBuilder.parse(coverageFile);
         String expr = String
                 .format("not(//request[@name='GetMap']/param[@name='%s']/value[text() = '%s'])",

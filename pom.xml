@@ -83,7 +83,8 @@
           </dependency>
         </dependencies>
         <configuration>  
-          <generateReports>false</generateReports>  
+          <generateReports>false</generateReports>
+          <relativizeDecorationLinks>false</relativizeDecorationLinks>
         </configuration> 
       </plugin>
       <plugin>
