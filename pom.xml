@@ -239,4 +239,11 @@
   	
   </profiles>
   
+  <dependencies>
+  	<dependency>
+  		<groupId>org.opengis.cite.teamengine</groupId>
+  		<artifactId>teamengine-core</artifactId>
+  		<version>4.0.6-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
