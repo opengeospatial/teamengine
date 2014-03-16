@@ -198,6 +198,13 @@
       </plugins>
     </pluginManagement>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.opengis.cite.teamengine</groupId>
+  		<artifactId>teamengine-core</artifactId>
+  		<version>LATEST</version>
+  	</dependency>
+  </dependencies>
 
   <repositories>
     <repository>
