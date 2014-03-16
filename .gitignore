@@ -2,6 +2,7 @@
 .project
 .classpath
 .settings/
+bin/
 
 # Maven output
 target/
