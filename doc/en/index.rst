@@ -193,42 +193,33 @@ CTL tests are located at:
    
 TestNG test are located at:
    https://svn.opengeospatial.org/ogc-projects/cite/ets
-   
-.. list-table::
-   :widths: 60 20 20
-   :header-rows: 1
 
-	* 	- **Test**
-   	  	- **Abbrev**		
-   	  	- **Language**
-	* 	- Catalogue Service - Web (CSW)
-     	- 2.0.2
-     	- CTL
-     
-Catalogue Service - Web (CSW)	2.0.2	r10	Final
-Geography Markup Language (GML)	3.2.1	3.2.1-r13	Beta
-OGC KML	2.2	2.2-r6	Beta
-OWS Context (OWC)	1.0 (pending)	1.0-r4	Alpha
-Sensor Model Language (SensorML)	1.0.1	r4	Beta
-Sensor Observation Service (SOS)	1.0.0	r11	Final
-Sensor Observation Service (SOS)	2.0	r6	Final
-Sensor Planning Service (SPS)	1.0	r4	Final
-Sensor Planning Service (SPS)	2.0	r7	Final
-Simple Feature Access - SQL (SFS)	1.1	r3	Final
-Simple Feature Access - SQL (SFS)	1.2.1	r3	Final
-Web Coverage Service (WCS)	1.0.0	r6	Final
-Web Coverage Service (WCS)	1.1.1	r1	Final
-Web Coverage Service (WCS)	2.0.1	r6	Final
-Web Coverage Service - Earth Observation Profile	1.0 (pending)	r2	Beta
-Web Feature Service (WFS)	1.0.0	r7	Final
-Web Feature Service (WFS)	1.1.0	r17	Final
-Web Feature Service (WFS)	2.0	2.0-r14	Beta
-Web Map Server (WMS) - Client	1.3.0	r4	Beta
-Web Map Service (WMS)	1.1.1	r5	Final
-Web Map Service (WMS)	1.3.0	r8	Final
-Web Map Service - SLD Profile (WMS-SLD)	1.1.0	r1	Beta
-Web Map Tile Service (WMTS)	1.0.0	r3	Beta
-Web Processing Service (WPS)	1.0.0	r2	Beta   
+This is the list of the current test ant the language they are built in:
+
+	* Catalogue Service - Web (CSW)	2.0.2	- CTL
+	* Geography Markup Language (GML)	3.2.1	- TestNG
+	* OGC KML	2.2	- TestNG
+	* OWS Context (OWC)	1.0 - TestNG
+	* Sensor Model Language (SensorML)	1.0.1	- CTL
+	* Sensor Observation Service (SOS)	1.0.0	- CTL
+	* Sensor Observation Service (SOS)	2.0	r6	- CTL
+	* Sensor Planning Service (SPS)	1.0		- CTL
+	* Sensor Planning Service (SPS)	2.0	- CTL
+	* Simple Feature Access - SQL (SFS)	1.1		- CTL
+	* Simple Feature Access - SQL (SFS)	1.2.1	- CTL
+	* Web Coverage Service (WCS)	1.0.0	- CTL
+	* Web Coverage Service (WCS)	1.1.1	- CTL
+	* Web Coverage Service (WCS)	2.0.1	- CTL
+	* Web Coverage Service - Earth Observation Profile	1.0 	- CTL
+	* Web Feature Service (WFS)	1.0.0	- CTL
+	* Web Feature Service (WFS)	1.1.0	- CTL
+	* Web Feature Service (WFS)	2.0	- TestNG
+	* Web Map Server (WMS) - Client	1.3.0	- CTL
+	* Web Map Service (WMS)	1.1.1	- CTL
+	* Web Map Service (WMS)	1.3.0	- CTL
+	* Web Map Service - SLD Profile (WMS-SLD)	1.1.0	- CTL
+	* Web Map Tile Service (WMTS)	1.0.0	- CTL
+	* Web Processing Service (WPS)	1.0.0	- CTL 
 
 
 Installling a CTL test
@@ -263,6 +254,7 @@ To run a test, run **test.sh** under **~/te-install/bin/unix** with a parameter 
 The source file has the word *main*.
 
 To run the CSW 2.0.2 test do the following::
+
 	% cd ~/teamengine/scripts
 	% ~/te-install/bin/unix/test.sh -source=csw-2.0.2/src/main.xml
 
@@ -270,8 +262,9 @@ A form asking to provide more information should appear. For example asking for 
 The `OGC Reference Implementations Page <http://cite.opengeospatial.org/reference>`_ provides
 examples of services that can be exercised
 
-For example for CSW 2.0.2 PyCSW
-http://demo.pycsw.org/cite/csw?service=CSW&version=2.0.2&request=GetCapabilities
+For example for CSW 2.0.2 PyCSW:
+
+	http://demo.pycsw.org/cite/csw?service=CSW&version=2.0.2&request=GetCapabilities
 
 The result should be a sucessfull pass::
 
@@ -281,4 +274,129 @@ The result should be a sucessfull pass::
 	Suite csw:csw-2.0.2-compliance-suite Passed
 
 Installing TestNG Tests
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The **ets-resources** branch in the OGC SVN (https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/) contains  
+all the mvn artifacts required to install TestNG tests. Look at the dates to figure out the correct download.
+
+Checkout ets-resources in a conveniente location::
+
+	% svn -q export https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/14.02.04/ ~/ets
+	
+This is new directory structure under **ets**::
+
+	/ets
+	├── pom.xml
+	└── src
+		└── main
+			├── assembly
+			│   └── dist.xml
+			└── config
+				├── ctl-scripts-release.csv
+				└── teamengine
+					├── config-approved.xml
+					└── config.xml
+
+	
+Go to the directory and build::
+	
+	% cd ~/ets
+	% mvn install
+	
+Maven generates a zip file: ets-resources-14.02.04.zip	
+
+Unzip it::
+	
+	% unzip ets-resources-14.02.04.zip
+
+	
+The following is the directory under target::
+
+    /ets/target/
+	├── archive-tmp
+	├── config-approved.xml
+	├── config.xml
+	├── ctl-scripts-release.csv
+	├── ets-resources-14.02.04.tar.gz
+	├── ets-resources-14.02.04.zip
+	├── lib
+	└── surefire
+	
+Generate the scripts using ctl.csv
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The ctl.csv file includes entries for the latest development versions of several OGC test suites. 
+Running the following command will populate the TE_BASE/scripts directory with these test suites:
+
+	$ export TE_BASE=/some/path
+	$ ./export-ctl.sh ctl.csv
+	
+For example::
+
+	$ export TE_BASE=~/teamengine
+	$ ~/te-install/bin/unix/export-ctl.sh ~/ets/target/ctl-scripts-release.csv 
+
+This script downloaded all the scripts in the csv file to the **teamengine/scripts** folder::
+
+	scripts/
+	├── csw
+	├── csw-2.0.2
+	├── ets-gml-3.2.1-r13-ctl-scripts.zip
+	├── ets-kml22-2.2-r6-ctl-scripts.zip
+	├── ets-owc-1.0-r4-ctl-scripts.zip
+	├── ets-wfs-2.0-r14-ctl-scripts.zip
+	├── note.ctl
+	├── sensorml
+	├── sfs
+	├── sos
+	├── sps
+	├── wcs
+	├── wcseo
+	├── wfs
+	├── wms
+	├── wms-client
+	├── wms-sld
+	├── wmts
+	└── wps
+	
+Unzipped in zipped files::
+	
+	$ unzip ets-kml22-2.2-r6-ctl-scripts.zip
+
+
+Install libraries under resources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Under teamengine (the TE_BASE) copy all the libraries in the ETS (ets/target) folder::
+	
+	cp ~/ets/target/lib/*.jar ~/teamengine/resources/
+
+The **resources** directory should like::
+	
+	/teamengine/resources
+	.
+	├── cite1-utils-1.1.0.jar
+	├── docs
+	├── ets-gml-3.2.1-r13.jar
+	├── ets-kml22-2.2-r6.jar
+	├── ets-owc-1.0-r4.jar
+	├── ets-wfs-2.0-r14.jar
+	...
+	
+Copy config file in TE_BASE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Copy the config.xml file to TE_BASE::
+	
+	cp ~/ets/target/config.xml ~/teamengine/
+	
+Run a TestNG Test
+^^^^^^^^^^^^^^^^^^^^^
+
+Run as follows::
+
+	~/te-install/bin/unix/test.sh -source=kml22/2.2-r6/kml22-suite.ctl 
+
+
+
+
+
+
