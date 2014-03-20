@@ -27,6 +27,7 @@ Prerequisites
 Download TE Source
 ---------------------
 Go to a local directory where TE will be downloaded. For example a directory called **repo**::
+
 	% mkdir repo
 	% cd repo
 	
@@ -34,23 +35,24 @@ The TE code is located in GitHub: https://github.com/opengeospatial/teamengine. 
 
 	% git clone https://github.com/opengeospatial/teamengine.git
 	
-The directory structure should now be as follows.
+The directory structure should now be as follows::
 
-repo
-	teamengine
-	 	LICENSE.txt
-		README.md
-		README.txt
-		pom.xml
-		src
-		teamengine-console
-		teamengine-core
-		teamengine-realm
-		teamengine-resources
-		teamengine-spi
-		teamengine-web
+		/teamengine/
+		├── LICENSE.txt
+		├── README.md
+		├── README.txt
+		├── pom.xml
+		├── src
+		├── target
+		├── teamengine-console
+		├── teamengine-core
+		├── teamengine-realm
+		├── teamengine-resources
+		├── teamengine-spi
+		└── teamengine-web
 
 List available tags::
+
 	% git tag
 		4.0
 		4.0.1
@@ -58,14 +60,17 @@ List available tags::
 		4.0.5
 
 Switch to a specific tag::
+
 	% git checkout 4.0.5
 
 Build TE Source
 ----------------
-Go to the directory of teamengine
+Go to the directory of teamengine::
+
 	% cd repo/teamengine
 	
-Build with MAVEN
+Build with MAVEN::
+
 	% mvn install
 	
 It can take few minutes to install. It will download all the code dependencies to **.m2/** folder. 
@@ -97,10 +102,10 @@ the folder **teamengine-console** contains the build invoking TE via console::
 		├── teamengine-console-4.0.5-base.tar.gz
 		├── teamengine-console-4.0.5-base.zip
 		├── teamengine-console-4.0.5-bin.tar.gz
-    └── teamengine-console-4.0.5-bin.zip
+    	└── teamengine-console-4.0.5-bin.zip
     
 The build also create under the user directory a **teamengine** folder. This is the TE Base, which 
-contains the tests, users sessions and other configuration files.
+contains the tests, users sessions and other configuration files::
 
 	teamengine/
 	├── scripts
@@ -183,25 +188,23 @@ Locating OGC Tests
 
 OGC Tests can be written either in CTL (Compliance Test Language) or TestNG. Tests are located at the public OGC SVN Repository:
 
-CTL tests are located at:: 
+CTL tests are located at:
    https://svn.opengeospatial.org/ogc-projects/cite/scripts/
    
-TestNG test are located at:: 
+TestNG test are located at:
    https://svn.opengeospatial.org/ogc-projects/cite/ets
    
 .. list-table::
    :widths: 60 20 20
    :header-rows: 1
 
-	* - **Test**
-   	  - **Abbrev**		
-   	  - **Language**
-   * - Square
-     - Four sides of equal length, 90 degree angles
-   * - Rectangle
-     - Four sides, 90 degree angles
-   
-	* Specification	Version	Test Suite Revision	Status
+	* 	- **Test**
+   	  	- **Abbrev**		
+   	  	- **Language**
+	* 	- Catalogue Service - Web (CSW)
+     	- 2.0.2
+     	- CTL
+     
 Catalogue Service - Web (CSW)	2.0.2	r10	Final
 Geography Markup Language (GML)	3.2.1	3.2.1-r13	Beta
 OGC KML	2.2	2.2-r6	Beta
@@ -264,8 +267,8 @@ To run the CSW 2.0.2 test do the following::
 	% ~/te-install/bin/unix/test.sh -source=csw-2.0.2/src/main.xml
 
 A form asking to provide more information should appear. For example asking for the getCapabilities URL.
-The `OGC Reference Implementations Page <http://cite.opengeospatial.org/reference> provides
-examples of services that can be exercised`_
+The `OGC Reference Implementations Page <http://cite.opengeospatial.org/reference>`_ provides
+examples of services that can be exercised
 
 For example for CSW 2.0.2 PyCSW
 http://demo.pycsw.org/cite/csw?service=CSW&version=2.0.2&request=GetCapabilities
