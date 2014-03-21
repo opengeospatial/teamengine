@@ -1,3 +1,26 @@
+TEAM Engine Tutorial
+####################
+
+:author: Luis Bermudez <lbermudez@opengeospatial.org>, Richard Martell
+:version: 4.0.5
+:date: March 22, 2014
+:questions: http://cite.opengeospatial.org/forum
+
+.. contents::
+
+.. footer::
+
+  .. class:: right
+
+    Page ###Page###
+
+.. section-numbering::
+
+.. raw:: pdf
+   
+   PageBreak oneColumn
+   
+
 Introduction
 ==============
 
@@ -113,7 +136,7 @@ The TE_BASE contains the tests, users sessions and other configuration files. Th
 the TE_BASE directory was created under the 
 **teamengine-console/target**.
 
-TE_BASE directory is structured as follows:
+TE_BASE directory is structured as follows::
 
 	TE_BASE
 	  |-- config.xml             # main configuration file (web app)
@@ -158,7 +181,7 @@ For example unzipping it to a new dir  **~/te-install**::
 	& mkdir ~/te-install
 	$ unzip ~/repo/teamengine/teamengine-console/target/teamengine-console-4.0.5-bin.zip -d ~/te-install
 
-The *te-install** dir now looks like this::
+The **te-install** dir now looks like this::
 
 	.
 	├── README.txt
@@ -223,7 +246,7 @@ This is the list of the current test ant the language they are built in:
 Installing a CTL test
 -----------------------
 
-Located a URL for a test for download. For example for CSW 2.0.2 r10::
+Located a URL for a test for download. For example for CSW 2.0.2 r10:
 	https://svn.opengeospatial.org/ogc-projects/cite/scripts/csw/2.0.2/tags/r10/
 
 Install the test under scripts::
@@ -248,7 +271,7 @@ The scripts directory should look as follows::
 Executing a CTL test
 ---------------------
 
-To run a test, run **test.sh** under **~/te-install/bin/unix** with a parameter -source=<source of the ctl file>. 
+To run a test, run **test.sh** under **~/te-install/bin/unix** with a parameter **-source=<source of the ctl file>**. 
 The source file has the word *main*.
 
 To run the CSW 2.0.2 test do the following::
@@ -290,7 +313,7 @@ This is the structure under the svn directory::
 		├── pom.xml
 		└── src
 
-Un mvn Install::
+Do mvn Install::
 	
 	$ mvn install
 	
@@ -326,7 +349,7 @@ Installing TestNG Tests
 The **ets-resources** branch in the OGC SVN (https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/) contains  
 all the mvn artifacts required to install TestNG tests. Look at the dates to figure out the correct download.
 
-Checkout ets-resources in a convenient location::
+Checkout ets-resources in a convenient location (for example ~/svn/ets-resources)::
 
 	$ svn -q export https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/14.03.20/ -d ~/svn/ets-resources
 	
@@ -384,7 +407,7 @@ It creates the following directory::
 Generate the scripts using ctl-scripts-release.csv
 ------------------------------------------------------
 The ctl.csv file (ctl-scripts-release.csv) includes entries for the latest development versions of several OGC test suites. 
-Running the following command will populate the TE_BASE/scripts directory with these test suites:
+Running the following command will populate the **TE_BASE/scripts** directory with these test suites:
 
 	$ ~/te-install/bin/unix/export-ctl.sh ~/svn/ets-resources/target/ctl-scripts-release.csv
 
@@ -417,7 +440,7 @@ Unzip all the zipped files::
 
 Install libraries under resources/lib
 -------------------------------------
-Under teamengine (the TE_BASE) copy all the libraries in the ETS (ets/target) folder::
+Copy all the libraries genereated to the **resources/lib** directory under TE_BASE::
 	
 	cp ~/svn/ets-resources/target/lib/*.jar $TE_BASE/resources/lib
 
