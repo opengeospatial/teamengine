@@ -220,7 +220,7 @@ This is the list of the current test ant the language they are built in:
 	* Web Processing Service (WPS)	1.0.0	- CTL 
 
 
-Installling a CTL test
+Installing a CTL test
 -----------------------
 
 Located a URL for a test for download. For example for CSW 2.0.2 r10::
@@ -264,7 +264,7 @@ For example for CSW 2.0.2 PyCSW:
 
 	http://demo.pycsw.org/cite/csw?service=CSW&version=2.0.2&request=GetCapabilities
 
-The result should be a sucessfull pass::
+The result should be a successful pass::
 
 	...
 			Test csw:capability-tests Passed
@@ -274,10 +274,10 @@ The result should be a sucessfull pass::
 Installing a TestNG Tests	
 ---------------------------
 
-Cheskout the test from the OGC SVN repository:
+Checkout the test from the OGC SVN repository:
 	https://svn.opengeospatial.org/ogc-projects/cite/ets/testng/
 
-For example to chekout KML 2.2 in an svn directory::
+For example to checkout KML 2.2 in an svn directory::
 	$ cd ~/
 	$ svn mkdir svn
 	$ svn -q export https://svn.opengeospatial.org/ogc-projects/cite/ets/testng/ets-kml22/tags/2.2-r8/ ~/svn/kml22
@@ -326,7 +326,7 @@ Installing TestNG Tests
 The **ets-resources** branch in the OGC SVN (https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/) contains  
 all the mvn artifacts required to install TestNG tests. Look at the dates to figure out the correct download.
 
-Checkout ets-resources in a conveniente location::
+Checkout ets-resources in a convenient location::
 
 	$ svn -q export https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/14.03.20/ -d ~/svn/ets-resources
 	
@@ -411,10 +411,9 @@ This script downloaded all the scripts in the csv file to the **$TE_BASE/scripts
 	├── wmts
 	└── wps
 	
-Unzip the zipped files::
+Unzip all the zipped files::
 	
-	$ unzip ets-kml22-2.2-r6-ctl-scripts.zip
-
+	$ unzip '*.zip'
 
 Install libraries under resources/lib
 -------------------------------------
@@ -439,7 +438,7 @@ Copy config file in TE_BASE
 
 Copy the config.xml file to TE_BASE::
 	
-	cp ~/svn/ets-resources/target//config.xml $TE_BASE
+	cp ~/svn/ets-resources/target/config.xml $TE_BASE
 	
 Run a TestNG Test
 ---------------------
@@ -496,7 +495,7 @@ Download and Install Tomcat
    - If problems with the JRE_HOME go to Catalina.bat and declare the JRE_HOME variable.
 
 
-3. Unzip and put it somehere. For example under ~/tomcat::
+3. Unzip and put it somewhere. For example under ~/tomcat::
 
 	$ mv %/Downloads/apache-tomcat-7.0.52/ ~/tomcat
 	
@@ -540,7 +539,7 @@ Create a setenv.sh in bin::
 
 	$ touch setenv.sh
 	
-And copy the folowing in setenv.sh::
+And copy the following in setenv.sh::
 
 	cat bin/setenv.sh
 	!/bin/sh
@@ -556,7 +555,7 @@ And copy the folowing in setenv.sh::
 	CATALINA_BASE=~/CATALINA_BASE
 	export CATALINA_BASE
 	
-CATALINA_BASE directory shold like the following::
+CATALINA_BASE directory should like the following::
 
 	CATALINA_BASE/
 	├── bin
@@ -582,7 +581,7 @@ Build a WAR file
 ---------------------
 A war file with all the libraries can be build by running a maven profile. 
 
-Copy or edit the maven settings in ~/.m2/settings.xml and put the corret ets-resources version. For example 04.03.20::
+Copy or edit the maven settings in ~/.m2/settings.xml and put the correct ets-resources version. For example 04.03.20::
 
 
 	<?xml version="1.0" encoding="UTF-8"?>
@@ -600,7 +599,7 @@ Copy or edit the maven settings in ~/.m2/settings.xml and put the corret ets-res
 	</settings>
 
 
-Go to the teamengine local sourc code repository ::
+Go to the teamengine local source code repository ::
 	
 	$ cd ~/repo/teamengine/
 
@@ -608,7 +607,7 @@ Run the maven profile::
 	
 	$ mvn -P ogc.cite package
 	
-You should geat a build sucess message::
+You should get a build success message::
 
 	INFO] ------------------------------------------------------------------------
 	...
@@ -616,7 +615,7 @@ You should geat a build sucess message::
 	[INFO] BUILD SUCCESS
 	...
 
-The war file should be avialble at::
+The war file should be available at::
 
 	/repo/teamengine/teamengine-web/target/teamengine.war
 
