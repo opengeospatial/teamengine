@@ -75,12 +75,14 @@ public class TestNGExecutor implements TestRunExecutor {
      * structured as shown in the following example.
      * 
      * <pre>
+     * {@code
      * <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
      * <properties version="1.0">
      *   <comment>Test run arguments</comment>
      *   <entry key="uri">atom-feed.xml</entry>
      *   <entry key="classes">L2</entry>
      * </properties>
+     * }
      * </pre>
      * 
      * <p>

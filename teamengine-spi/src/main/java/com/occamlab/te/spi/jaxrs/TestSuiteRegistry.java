@@ -30,7 +30,7 @@ public class TestSuiteRegistry {
     /**
      * Returns a singleton registry instance in a lazy (but thread-safe) manner.
      * 
-     * @return the <code>TestSuiteRegistry</code> instance.
+     * @return the {@code TestSuiteRegistry} instance.
      */
     public static TestSuiteRegistry getInstance() {
 
@@ -61,8 +61,7 @@ public class TestSuiteRegistry {
      *            The alphanumeric code for the ETS.
      * @param etsVersion
      *            The version of the ETS.
-     * @return A TestSuiteController, or <code>null></code> if one cannot be
-     *         found.
+     * @return A TestSuiteController, or {@code null} if one cannot be found.
      */
     public TestSuiteController getController(String etsCode, String etsVersion) {
         if (etsCode.length() == 0 || etsCode == null) {

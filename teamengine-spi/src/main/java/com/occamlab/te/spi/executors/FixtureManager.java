@@ -49,8 +49,8 @@ public class FixtureManager {
      * 
      * @param runId
      *            The test run identifier (may be an empty String).
-     * @return A TestRunFixture, or <code>null></code> if a matching one cannot
-     *         be found.
+     * @return A TestRunFixture, or {@code null } if a matching one cannot be
+     *         found.
      */
     public TestRunFixture getFixture(String runId) {
         if (runId.isEmpty() && this.fixtures.size() == 1) {
