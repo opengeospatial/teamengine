@@ -36,10 +36,6 @@
     <saxon.version>9.0.0.8</saxon.version>
   </properties>
 
-  <modules>
-    <module>csw-2.0.2</module>
-    
-  </modules>
 
  
 
@@ -219,4 +215,7 @@
  
   <groupId>org.opengis.cite</groupId>
   <version>1.0-SNAPSHOT</version>
+  <modules>
+  	<module>note-1.0</module>
+  </modules>
 </project>
