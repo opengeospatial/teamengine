@@ -40,12 +40,12 @@
     new test suites. It may be used to quickly generate a rudimentary implementation of 
     an executable test suite (ETS) that can be run immediately. The archetype is not 
     currently available in the central Maven repository, but it can be obtained from 
-    the <a href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/cite-archetype-testng/" 
+    the <a href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/ets-archetype-testng" 
     target="_blank">OGC repository</a> with these coordinates (use the latest version):</p>
 
     <pre>
     groupId: org.opengis.cite
-    artifactId: cite-archetype-testng
+    artifactId: ets-archetype-testng
     version: 1.3</pre>
 
     <p>To create a new test suite, invoke the interactive 'generate' goal of the archetype 
