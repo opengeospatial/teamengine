@@ -28,39 +28,39 @@
 
     <h2>TestNG framework</h2>
 
-    <h3>Creating a test suite</h3>
+    <h3>Creating a new test suite</h3>
     <p>
-    TestNG is a popular Java-based testing framework that is used to develop test 
-    suites at multiple levels. The TEAM Engine harness emphasizes functional or 
-    "black box" testing that aims to verify the behavior or structure of the test 
-    subject against its specification(s).
-    </p>
+    TestNG is a popular Java-based testing framework that is used to perform testing 
+    at multiple levels, from unit to system testing. The TEAM Engine harness concentrates 
+    on functional or "black box" testing that aims to verify the behavior or structure 
+    of the test subject against the relevant specifications.</p>
+
     <p>A Maven <a href="http://maven.apache.org/archetype/maven-archetype-plugin/" 
     target="_blank">archetype</a> is available that provides a template for creating 
     new test suites. It may be used to quickly generate a rudimentary implementation of 
-    a test suite that can be executed immediately. The archetype is not currently 
-    available in the central Maven repository; it can be obtained from the <a 
-    href="https://svn.opengeospatial.org/ogc-projects/cite/maven" target="_blank">
-    OGC repository</a> with these coordinates:
-    </p>
+    an executable test suite (ETS) that can be run immediately. The archetype is not 
+    currently available in the central Maven repository, but it can be obtained from 
+    the <a href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/cite-archetype-testng/" 
+    target="_blank">OGC repository</a> with these coordinates (use the latest version):</p>
+
     <pre>
     groupId: org.opengis.cite
     artifactId: cite-archetype-testng
-    version: 1.2</pre>
+    version: 1.3</pre>
 
-    <p>To create a test suite, invoke the interactive 'generate' goal of the archetype 
-    plugin as shown below, where the <code>ets-code</code> parameter specifies the 
-    identifier for the test suite; this value must be a legal Java package name.</p>
+    <p>To create a new test suite, invoke the interactive 'generate' goal of the archetype 
+    plugin and supply the <code>ets-code</code> parameter to specify the identifier for the 
+    test suite; this value must be a legal Java package name (for example, 'alpha' as shown 
+    below).</p>
 
     <pre>
     mvn archetype:generate \
-    -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/
-    maven/archetype-catalog.xml \
-    -Dets-code=?</pre>
+    -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/maven/archetype-catalog.xml \
+    -Dets-code=<em>alpha</em></pre>
 
-    <p>Several prompts will ask for various property values in order to generate 
+    <p>Several prompts will collect various property values in order to generate 
     the test suite project. The suggested default values may be modified if desired.
-    The new project is created in a directory named using the value of the artifactId 
+    The new project is created in a subdirectory named using the value of the artifactId 
     property.
     </p>
 
