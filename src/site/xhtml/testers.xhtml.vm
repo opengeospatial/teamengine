@@ -29,19 +29,20 @@
     <h2>TestNG framework</h2>
 
     <h3>Creating a new test suite</h3>
-    <p>
-    TestNG is a popular Java-based testing framework that is used to perform testing 
-    at multiple levels, from unit to system testing. The TEAM Engine harness concentrates 
-    on functional or "black box" testing that aims to verify the behavior or structure 
-    of the test subject against the relevant specifications.</p>
+    <p>The TEAM Engine test harness concentrates on functional or "black box" testing that 
+    aims to verify the behavior or structure of a test subject against the relevant 
+    specifications. It can execute test suites implemented using <a href="http://testng.org" 
+    target="_blank">TestNG</a>, a popular Java-based testing framework that is used to 
+    perform testing at multiple levels, from unit to system testing. </p>
 
     <p>A Maven <a href="http://maven.apache.org/archetype/maven-archetype-plugin/" 
-    target="_blank">archetype</a> is available that provides a template for creating 
-    new test suites. It may be used to quickly generate a rudimentary implementation of 
-    an executable test suite (ETS) that can be run immediately. The archetype is not 
-    currently available in the central Maven repository, but it can be obtained from 
-    the <a href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/ets-archetype-testng" 
-    target="_blank">OGC repository</a> with these coordinates (use the latest version):</p>
+    target="_blank">archetype</a> is available that provides a template for creating new 
+    test suites; it quickly generates a rudimentary implementation of an executable test 
+    suite (ETS) that can be run immediately. The archetype is not currently available in 
+    the central Maven repository, but it can be obtained from the <a target="_blank" 
+    href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/ets-archetype-testng">
+    OGC repository</a> with these coordinates (using the latest version is always 
+    recommended):</p>
 
     <pre>
     groupId: org.opengis.cite
@@ -58,11 +59,16 @@
     -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/maven/archetype-catalog.xml \
     -Dets-code=<em>alpha</em></pre>
 
-    <p>Several prompts will collect various property values in order to generate 
-    the test suite project. The suggested default values may be modified if desired.
-    The new project is created in a subdirectory named using the value of the artifactId 
-    property.
-    </p>
+    <p>Several prompts will collect various property values in order to generate the test 
+    suite project. The suggested default values may be modified if desired. The new project 
+    is created in a subdirectory named using the value of the artifactId property.</p>
+    
+    <p>The main class, <code>TestNGController</code>, resides in the root package; it implements 
+    the <code>TestSuiteController</code> interface declared in the teamengine-spi module (see 
+    Figure 2). The test suite configuration file (testng.xml, also located in the root package 
+    under src/main/resources) imposes a high-level structure on a test suite by organizing the 
+    test classes into test sets, each of which corresponds to a conformance class. For more 
+    information see the following section, <em>Basic anatomy of a test suite</em>.</p>
 
     <h3>Basic anatomy of a test suite</h3>
 
@@ -76,19 +82,19 @@
     figure.</p>
 
     <div class="figure">
-      <p><strong>Figure 2 - Structure of a TestNG test suite</strong></p>
+      <p><strong>Figure 3 - Structure of a TestNG test suite</strong></p>
       <figure>
-        <img src="./images/testng-suite.png" alt="Figure 2 - Structure of a TestNG test suite" />
+        <img src="./images/testng-suite.png" alt="Figure 3 - Structure of a TestNG test suite" />
       </figure>
     </div>
 
     <p>Each &lt;test&gt; element occurring within a top-level &lt;suite&gt; element 
-    denotes a test group that typically corresponds to a conformance class or level. 
-    A test group contains one or more test classes that focus on particular capabilities 
+    denotes a set of tests that typically corresponds to a conformance class or level. 
+    The set contains one or more test classes that focus on particular capabilities 
     or feature sets (e.g., WFS GetFeature). A test class contains test methods that 
-    implement the actual test cases. The listing shown below includes the test suite 
-    definition produced when creating a new test suite from the ETS archetype 
-    (see src/main/resources/org/opengis/cite/${ets-code}/testng.xml).</p>
+    implement the actual test cases; these methods are annotated with <code>@Test</code>. 
+    The listing shown below includes the test suite definition produced when creating 
+    a new test suite from the ETS archetype (see src/main/resources/org/opengis/cite/${ets-code}/testng.xml).</p>
 
     <pre>
 &lt;suite name="alpha-1.0-SNAPSHOT" verbose="0" configfailurepolicy="skip"&gt;
@@ -112,9 +118,9 @@
   &lt;/test&gt;
 &lt;/suite&gt;</pre>
 
-    <p>The order of test execution can be controlled if necessary. The structure of 
-    the XML suite definition is the most important determinant. Keep the following 
-    default behaviors in mind when putting it together:</p>
+    <p>The order of test execution can be controlled to some extent, although this should 
+    rarely be necessary. The structure of the XML suite definition is the most important 
+    determinant. Keep the following default behaviors in mind when putting it together:</p>
 
     <ul>
       <li>Test groups (&lt;test&gt; elements) comprising a suite are executed in 
@@ -138,17 +144,17 @@
     <h3>Test suite development</h3>
 
     <p>
-    Projects based on the Maven ETS archetype depend on the <code>teamengine-spi</code> and 
-      <code>schema-utils</code> components. These are not currently available in any public 
-    Maven repository; they can be obtained from the <a href="http://sourceforge.net/projects/teamengine/" 
-    target="_blank">SourceForge project site</a> and the <a 
-    href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/schema-utils" 
-    target="_blank">OGC repository</a>, respectively. Install them into the local repository 
-    (mvn install) to make them available to other modules.</p>
+    Projects based on the Maven ETS archetype depend on the <code>teamengine-spi</code> 
+    and <code>schema-utils</code> components. These are not currently available in the 
+    central Maven repository, but they can be obtained from the <a target="_blank" 
+    href="https://svn.opengeospatial.org/ogc-projects/cite/maven/">OGC repository</a>. 
+    The project POM contains a repository element (with id = 'opengeospatial-cite') 
+    for this alternate source of artifacts. When the test suite is first built these 
+    components will be retrieved and put into the local repository.</p>
 
-    <p>Most IDEs have integrated support for working with Maven projects (e.g. Eclipse, NetBeans, 
-    IntelliJ), so test developers may use their IDE of choice. Some tips for using Eclipse are 
-    provided below.</p>
+    <p>Most IDEs have integrated support for working with Maven projects (e.g. Eclipse, 
+    NetBeans, IntelliJ), so test developers may use their IDE of choice. Some tips for using 
+    Eclipse are provided below.</p>
 
     <p>The Eclipse plug-ins listed below are strongly recommended; install them from the indicated 
     update sites.</p>
@@ -156,11 +162,12 @@
       <li>TestNG: Update from [http://beust.com/eclipse]</li>
       <li>Subclipse (Subversion 1.7 client): Update from [http://subclipse.tigris.org/update_1.8.x]</li>
       <li>m2e (Maven integration): From the main update site for the Eclipse release, select "General 
-    Purpose Tools" &gt; m2e
-      <p><strong>Note:</strong> Some Eclipse packages (such as Eclipse 4.3 for Java EE Developers) may 
-      already include the m2e plug-in.</p>
-      </li>
+    Purpose Tools" &gt; m2e</li>
+      <li>EGit (Git SCM client): Available from the main update site.</li>
     </ul>
+
+    <p><strong>Note:</strong> Some Eclipse packages (such as Eclipse 4.3 for Java EE Developers) 
+    may already include some of these plug-ins by default.</p>
 
     <p>The main class is <code>TestNGController</code>, located in the root package. The test run 
     arguments are supplied as an XML representation of a Java properties file. Specify the location 
@@ -172,15 +179,14 @@
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;
 &lt;properties version="1.0"&gt;
-  &lt;comment&gt;Test run arguments for WFS v2 test suite&lt;/comment&gt;
-  &lt;entry key="wfs"&gt;http://ows9.lat-lon.de/deegree-webservices-3.2-pre7.1/
-services/wfs200?request=GetCapabilities&#038;amp;service=WFS&lt;/entry&gt;
+  &lt;comment&gt;Sample test run arguments&lt;/comment&gt;
+  &lt;entry key="iut"&gt;http://www.w3schools.com/xml/note.xml&lt;/entry&gt;
+  &lt;entry key="ics"&gt;level-2&lt;/entry&gt;
 &lt;/properties&gt;</pre>
 
-    <p><img src="./images/info-16px.png"/> <strong>Note:</strong> The resource referenced by the 
-    'wfs' argument in the listing above does not need to be obtained directly from the system 
-    under test. It could be obtained from some other source such as the local filesystem or even 
-    a registry (the <code>file</code> and <code>http</code> URI schemes are supported).</p>
+    <p><img src="./images/info-16px.png"/> <strong>Note:</strong> The value of the 'iut' argument 
+    in the listing above must be an absolute URI that conforms to the <code>http</code> or 
+    <code>file</code> schemes.</p>
 
     <p>The test results will be written to a subdirectory (named by a UUID value) created in the 
     user home directory specified by the system property "user.home". By default this is the XML 
@@ -191,12 +197,18 @@ services/wfs200?request=GetCapabilities&#038;amp;service=WFS&lt;/entry&gt;
     <p>As an alternative to invoking the main test controller, it is also possible to create 
     a TestNG run configuration if the <a href="http://testng.org/doc/eclipse.html" target="_blank">
     TestNG Eclipse plugin</a> has been installed. Select Run &gt; Run Configurations... and choose 
-      <strong>TestNG</strong>. Create a new launch configuration from a test suite definition file 
+    <strong>TestNG</strong>. Create a new launch configuration from a test suite definition file 
     by clicking the "Suite" option and browsing to the <code>testng.xml</code> file located within 
     the src/main/resources directory. Specify a value for all required test suite parameters. Note 
     that any values appearing here are superseded by those given in the properties file when the 
     suite is run using the TestNGController class. When the configuration is run the results are 
     displayed in the TestNG view.</p>
+
+    <p>Each test suite should contain unit tests to verify that all test methods (and supporting 
+    utility methods) behave as expected. The <a href="http://junit.org/" target="_blank">JUnit</a> 
+    and <a href="http://code.google.com/p/mockito/" target="_blank">Mockito</a> frameworks are 
+    used for this purpose. A new test suite generated from the Maven archetype includes several 
+    sample unit tests.</p>
 
   </body>
 </html>
