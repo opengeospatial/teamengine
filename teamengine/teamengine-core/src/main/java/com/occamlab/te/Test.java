@@ -126,6 +126,20 @@ public class Test {
                 + "-mode=cache -logdir=dir -session=session\n");
     }
 
+   
+    public void execute(String relativePathToMainCtl) throws Exception{
+    	Test test = new Test();
+    	//File file =Misc.getResourceAsFile(relativePathToMainCtl);
+    	String[] arguments=new String[1];
+    	arguments[0]="-source="+relativePathToMainCtl;
+    	test.execute(arguments);
+    	
+    }
+    
+    public static void main(String[] args)  throws Exception{
+    	Test test = new Test();
+    	test.execute(args);
+    }
     /**
      * The main TEAM Engine command line interface.
      * 
@@ -134,7 +148,7 @@ public class Test {
      *            Command line arguments
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
+    public  void execute(String[] args) throws Exception {
         SetupOptions setupOpts = new SetupOptions();
         RuntimeOptions runOpts = new RuntimeOptions();
 

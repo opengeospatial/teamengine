@@ -77,6 +77,7 @@
     <ctl:assertion>The heading contains more than whitespace.</ctl:assertion>
     <ctl:code>
       <xsl:if test="normalize-space($heading)=''">
+         <ctl:message>The heading has whitespace.</ctl:message>
         <ctl:fail/>
       </xsl:if>
     </ctl:code>
@@ -84,13 +85,14 @@
 
   <ctl:test name="note:check-user">
     <ctl:param name="user"/>
-    <ctl:assertion>{$user} is valid.</ctl:assertion>
+    <ctl:assertion>User has Tove, Jim or Jan.</ctl:assertion>
     <ctl:code>
       <xsl:choose>
         <xsl:when test="$user='Tove'"/>
         <xsl:when test="$user='Jim'"/>
         <xsl:when test="$user='Jan'"/>
         <xsl:otherwise>
+         <ctl:message>{$user} is no Tove, Jim or Jan</ctl:message>
           <ctl:fail/>
         </xsl:otherwise>
       </xsl:choose>
