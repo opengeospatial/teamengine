@@ -151,7 +151,7 @@
         <version>2.4</version>
         <configuration>
           <descriptors>
-            <descriptor>${basedir}/src/main/assembly/common-libs.xml</descriptor>
+            <descriptor>${basedir}/src/assembly/common-libs.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>

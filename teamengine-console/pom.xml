@@ -65,8 +65,8 @@
         <version>2.4</version>
         <configuration>
           <descriptors>
-            <descriptor>${basedir}/src/main/assembly/bin.xml</descriptor>
-            <descriptor>${basedir}/src/main/assembly/base.xml</descriptor>
+            <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
+            <descriptor>${basedir}/src/assembly/base.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>

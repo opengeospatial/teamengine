@@ -36,7 +36,7 @@
   </fileSets>
   <files>
     <file>
-      <source>${project.basedir}/src/main/assembly/README.txt</source>
+      <source>${project.basedir}/src/assembly/README.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
@@ -44,7 +44,7 @@
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
-      <source>${project.basedir}/src/main/assembly/index.html</source>
+      <source>${project.basedir}/src/assembly/index.html</source>
       <outputDirectory>resources/docs</outputDirectory>
     </file>
   </files>

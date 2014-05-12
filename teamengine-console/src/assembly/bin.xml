@@ -50,7 +50,7 @@
   </fileSets>
   <files>
     <file>
-      <source>${project.basedir}/src/main/assembly/README.txt</source>
+      <source>${project.basedir}/src/assembly/README.txt</source>
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
