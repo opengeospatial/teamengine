@@ -351,7 +351,7 @@ all the mvn artifacts required to install TestNG tests. Look at the dates to fig
 
 Checkout ets-resources in a convenient location (for example ~/svn/ets-resources)::
 
-	$ svn -q export https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/14.03.20/ -d ~/svn/ets-resources
+	$ svn -q export https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags/14.03.20/ ~/svn/ets-resources
 	
 This is new directory structure under **ets**::
 
