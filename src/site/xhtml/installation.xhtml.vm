@@ -8,18 +8,17 @@
     <h1>Installation</h1>
 
     <h2>How to build</h2>
-    <p>The source code is available from a Subversion repository hosted at SourceForge. The entire 
-    tree may be <a href="http://sourceforge.net/p/teamengine/code/" target="_blank">viewed in a 
-    browser</a>, including the commit logs. Use a Subversion client to checkout a working copy of 
-    the trunk (main development branch) or a tagged release as indicated below.</p>
+    <p>The source code is available from GitHub. The entire tree may be 
+    <a href="https://github.com/opengeospatial/teamengine" target="_blank">viewed in a 
+    browser</a>, including the commit logs. Use a Git client to clone a working copy of the 
+    main development branch or a tagged release as indicated below.</p>
 
     <pre>
-    $ svn checkout http://svn.code.sf.net/p/teamengine/code/trunk teamengine
-    $ svn checkout http://svn.code.sf.net/p/teamengine/code/tags/4.0 teamengine-4.0
+    $ git clone https://github.com/opengeospatial/teamengine.git
+    $ git checkout ${project.version}
     </pre>
 
-    <p>
-      <a href="http://maven.apache.org/" target="_blank">Apache Maven 3.0</a> is 
+    <p><a href="http://maven.apache.org/" target="_blank">Apache Maven 3.0</a> is 
     required to build the teamengine code base, which consists of the following 
     modules:</p>
 
