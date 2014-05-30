@@ -15,7 +15,6 @@
   from XML user files. Place it in the $CATALINA_BASE/lib directory of 
   the Tomcat instance.
   </description>
-  <url>https://github.com/opengeospatial/teamengine</url>
 
   <dependencies>
     <dependency>

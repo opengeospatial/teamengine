@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
@@ -13,14 +15,18 @@
   compliance and is the official test harness of the OGC Compliance Testing 
   Program (CITE).
   </description>
-  <url>https://github.com/opengeospatial/teamengine</url>
+  <url>http://opengeospatial.github.io/teamengine/</url>
   <licenses>
     <license>
-      <name>Mozilla Public License 2.0 (MPL-2.0)</name>
-      <url>http://www.opensource.org/licenses/MPL-2.0</url>
+      <name>Apache License, Version 2.0</name>
+      <url>http://opensource.org/licenses/Apache-2.0</url>
     </license>
   </licenses>
 
+  <organization>
+    <name>Open Geospatial Consortium</name>
+    <url>http://www.opengeospatial.org/</url>
+  </organization>
   <scm>
     <connection>scm:git:https://github.com/opengeospatial/teamengine.git</connection>
     <developerConnection>scm:git:git@github.com:opengeospatial/teamengine.git</developerConnection>
@@ -31,6 +37,37 @@
     <system>GitHub Issue Tracker</system>
     <url>https://github.com/opengeospatial/teamengine/issues</url>
   </issueManagement>
+  <developers>
+    <developer>
+      <name>Luis Bermudez</name>
+      <email>lbermudez {AT} opengeospatial {DOT} org</email>
+      <timezone>US/Eastern</timezone>
+    </developer>
+    <developer>
+      <name>Paul Daisey</name>
+      <email>pdaisey1331 {AT} gmail {DOT} com</email>
+      <timezone>US/Eastern</timezone>
+    </developer>
+    <developer>
+      <name>R. Martell</name>
+      <url>https://github.com/rjmartell</url>
+      <timezone>Canada/Pacific</timezone>
+    </developer>
+    <developer>
+      <name>Chuck Morris</name>
+      <email>chuck {DOT} morris {AT} ngc {DOT} com</email>
+      <timezone>US/Eastern</timezone>
+    </developer>
+    <developer>
+      <name>Andreas Schmitz</name>
+      <email>schmitz {AT} lat-lon {DOT} de</email>
+      <timezone>Europe/Berlin</timezone>
+    </developer>
+    <developer>
+      <name>Sumit Sen</name>
+      <email>sumits1 {AT} yahoo {DOT} com</email>
+    </developer>
+  </developers>
 
   <prerequisites>
     <maven>3.0</maven>
@@ -64,7 +101,6 @@
   <build>
     <plugins> 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
@@ -73,13 +109,17 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.3</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-xhtml</artifactId>
+            <version>1.5</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-module-markdown</artifactId>
             <version>1.5</version>
           </dependency>
         </dependencies>
@@ -89,7 +129,6 @@
         </configuration> 
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pdf-plugin</artifactId>
         <version>1.2</version>
         <executions>
@@ -107,7 +146,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.5</version>
         <configuration>
@@ -120,6 +158,20 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.17</version>
+          <configuration>
+            <!-- Disable TestNG runner (enabled due to compile dependency) -->
+            <testNGArtifactName>null:null</testNGArtifactName>
+            <junitArtifactName>junit:junit</junitArtifactName>
+            <includes>
+              <include>**/Verify*.java</include>
+              <include>**/*Tests.java</include>
+              <include>**/*Test.java</include>
+            </includes>
+          </configuration>
+        </plugin>
+        <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.4</version>
           <configuration>
@@ -128,6 +180,7 @@
                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               </manifest>
               <manifestEntries>
+                <Build-Host>${hostname}</Build-Host>
                 <Build-Time>${maven.build.timestamp}</Build-Time>
                 <Build-Revision>${buildNumber}</Build-Revision>
               </manifestEntries>
@@ -135,7 +188,6 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.9.1</version>
           <configuration>
@@ -197,7 +249,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>1.2</version>
+          <version>1.3</version>
           <executions>
             <execution>
               <phase>validate</phase>
@@ -209,22 +261,65 @@
           <configuration>
             <doCheck>false</doCheck>
             <doUpdate>false</doUpdate>
-            <shortRevisionLength>7</shortRevisionLength>
+            <shortRevisionLength>10</shortRevisionLength>
           </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
 
-  <repositories>
-    <repository>
-      <!-- Allows public read-only access -->
-      <id>opengeospatial-cite</id>
-      <name>OGC CITE Repository</name>
-      <url>https://svn.opengeospatial.org/ogc-projects/cite/maven</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+  <profiles>
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os><family>windows</family></os>
+      </activation>
+      <properties>
+        <hostname>${env.COMPUTERNAME}</hostname>
+      </properties>
+    </profile>
+    <profile>
+      <id>unix</id>
+      <activation>
+        <os><family>unix</family></os>
+      </activation>
+      <properties>
+        <hostname>${env.HOSTNAME}</hostname>
+      </properties>
+    </profile>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

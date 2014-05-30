@@ -14,7 +14,6 @@
   The core module includes the main CTL script processor along with various 
   supporting test utilities.
   </description>
-  <url>https://github.com/opengeospatial/teamengine</url>
 
   <dependencies>
     <dependency>
@@ -40,7 +39,7 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -81,7 +80,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
       </plugin>
       <plugin>

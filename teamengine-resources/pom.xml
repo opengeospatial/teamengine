@@ -14,7 +14,6 @@
   This resource bundle includes various file system resources that are shared 
   between modules: stylesheets, schemas, and common CTL scripts.
   </description>
-  <url>https://github.com/opengeospatial/teamengine</url>
 
   <build>
     <plugins>
