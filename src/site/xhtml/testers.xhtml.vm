@@ -38,27 +38,23 @@
     <p>A Maven <a href="http://maven.apache.org/archetype/maven-archetype-plugin/" 
     target="_blank">archetype</a> is available that provides a template for creating new 
     test suites; it quickly generates a rudimentary implementation of an executable test 
-    suite (ETS) that can be run immediately. The archetype is not currently available in 
-    the central Maven repository, but it can be obtained from the <a target="_blank" 
-    href="https://svn.opengeospatial.org/ogc-projects/cite/maven/org/opengis/cite/ets-archetype-testng">
-    OGC repository</a> with these coordinates (using the latest version is always 
+    suite (ETS) that can be run immediately. The <a href="https://github.com/opengeospatial/ets-archetype-testng" 
+    target="_blank">source code</a> is hosted at GitHub. Project releases are available in 
+    the central Maven repository with these coordinates (using the latest version is always 
     recommended):</p>
 
     <pre>
     groupId: org.opengis.cite
     artifactId: ets-archetype-testng
-    version: 1.3</pre>
+    version: 2.0</pre>
 
     <p>To create a new test suite, invoke the interactive 'generate' goal of the archetype 
     plugin and supply the <code>ets-code</code> parameter to specify the identifier for the 
-    test suite; this value must be a legal Java package name (for example, 'alpha' as shown 
+    test suite; this value must be a legal Java package name (for example, 'alpha10' as shown 
     below).</p>
 
     <pre>
-    mvn archetype:generate \
-    -DarchetypeCatalog=https://svn.opengeospatial.org/ogc-projects/cite/
-maven/archetype-catalog.xml \
-    -Dets-code=alpha
+    mvn archetype:generate -Dets-code=alpha10 -DarchetypeGroupId=org.opengis.cite
     </pre>
 
     <p>Several prompts will collect various property values in order to generate the test 

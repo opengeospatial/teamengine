@@ -1,8 +1,11 @@
 #!/bin/bash
 # Reads a CSV file (first argument) where each record contains two fields:
-# Subversion tag URL, local path name relative to TE_BASE/scripts
+# URL, local path name relative to TE_BASE/scripts
 # Example:
 # http://svn.example.org/scripts/alpha/1.0.0/tags/r2,alpha/1.0.0
+# http://search.maven.org/remotecontent?filepath=org/example/beta/1.0/beta-1.0.zip,beta-1.0.zip
+#
+# Note: wget or curl is required to download Maven artifacts.
 
 base=`dirname $0`
 if [ -r $base/setenv.sh ]
@@ -15,7 +18,11 @@ csvfile="$1"
 
 while IFS="," read url etspath
 do
-  svn -q export $url $TE_BASE/scripts/$etspath
+  if [[ $url == *filepath=* ]]; then
+    wget -O $TE_BASE/scripts/$etspath $url 2>/dev/null || curl -o $TE_BASE/scripts/$etspath $url
+  else
+    svn export $url $TE_BASE/scripts/$etspath -q 2>/dev/null
+  fi
 done < "$csvfile"
 
 pushd $TE_BASE/scripts
@@ -26,4 +33,3 @@ do
   "$JAVA_HOME"/bin/jar xf "$f"
   rm "$f"
 done
-

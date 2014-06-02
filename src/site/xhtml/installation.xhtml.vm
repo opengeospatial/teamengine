@@ -101,15 +101,19 @@ TE_BASE
     necessary.</p>
 
     <p>CTL test scripts are placed in the TE_BASE/scripts directory and the TE_BASE/config.xml 
-    file is updated accordingly to register them. As a convenience, the shell script 
-    <code>export-ctl</code> may be run to export CTL test suites from the official OGC repository. 
-    The location of a CSV file is passed as the first argument to the script; each record in the 
-    file should contain two fields: a Subversion URL, and a local path name relative to 
-    TE_BASE/scripts.
+    file is updated accordingly to register them. As a convenience, the shell script <code>get-ctl</code> 
+    may be run to retrieve CTL scripts from Subversion or Maven repositories. The 'svn' command 
+    must be available on the command path in order to use this script; in addition, PowerShell 3.0 
+    or higher is required to run the Windows script.</p>
+
+    <p>The location of a CSV file is passed as the first argument to the script. Each record in 
+    the file should contain two fields: a URL, and a local path name relative to TE_BASE/scripts.
     </p>
     <pre>
 https://svn.opengeospatial.org/ogc-projects/cite/scripts/sensorml/1.0.1/trunk,\
 sensorml/1.0.1
+http://search.maven.org/remotecontent?filepath=org/example/beta/1.0/beta-1.0.zip,\
+beta-1.0.zip
 ...</pre>
 
     <p>The <code>ctl-suites-dev.csv</code> file can be found in the same directory as the 
@@ -118,7 +122,7 @@ sensorml/1.0.1
     with these test suites:</p>
     <pre>
 $ export TE_BASE=/some/path
-$ ./export-ctl.sh ctl-suites-dev.csv</pre>
+$ ./get-ctl.sh ctl-suites-dev.csv</pre>
 
     <p>
     A new installation already contains an entry for a sample test script ("XML Note"). To enable 
