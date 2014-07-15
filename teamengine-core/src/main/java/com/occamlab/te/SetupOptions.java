@@ -97,6 +97,7 @@ public class SetupOptions {
         Logger.getLogger(SetupOptions.class.getName()).log(Level.CONFIG,
                 "Using TE_BASE at " + baseDir);
         return baseDir;
+//        return new File("/home/bitnami/TE_BASE");
     }
 
     public String getSourcesName() {
