@@ -96,6 +96,12 @@ import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
 import com.occamlab.te.util.SoapUtils;
 import com.occamlab.te.util.URLConnectionUtils;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import org.w3c.dom.Comment;
@@ -105,7 +111,7 @@ import org.w3c.dom.Comment;
  * Primary ones include implementation and execution of ctl:suite, ctl:profile,
  * ctl:test, ctl:function, ctl:request and ctl:soap-request instructions, and
  * invocation of any parsers specified therein.
- * 
+ *
  */
 public class TECore implements Runnable {
 
@@ -120,23 +126,25 @@ public class TECore implements Runnable {
     boolean web = false; // True when running as a servlet
     String testPath; // Uniquely identifies a test instance
     String fnPath = ""; // Uniquely identifies an XSL function instance within a
-                        // test instance
+    // test instance
     String indent = ""; // Contains the appropriate number of spaces for the
-                        // current indent level
+    // current indent level
     String contextLabel = ""; // Current context label set by ctl:for-each
     String testType = "Mandatory"; // Type of current test
     String defaultResultName = "Pass"; // Default result name for current test
     int defaultResult = PASS; // Default result for current test
-    /** Test verdict for current test */
+    /**
+     * Test verdict for current test
+     */
     private int verdict;
     Document prevLog = null; // Log document for current test from previous test
-                             // execution (resume and retest modes only)
+    // execution (resume and retest modes only)
     // Log document for suite to enable use of getLogCache by profile test
     Document suiteLog = null;
     PrintWriter logger = null; // Logger for current test
     volatile String formHtml; // HTML representation for an active form
     volatile Document formResults; // Holds form results until they are
-                                   // retrieved
+    // retrieved
     Map<String, Element> formParsers = new HashMap<String, Element>();
     Map<Integer, Object> functionInstances = new HashMap<Integer, Object>();
     Map<String, Object> parserInstances = new HashMap<String, Object>();
@@ -153,6 +161,10 @@ public class TECore implements Runnable {
     public static final int WARNING = 4;
     public static final int INHERITED_FAILURE = 5;
     public static final int FAIL = 6;
+
+    int passedTest = 0;
+    int failedTest = 0;
+    int skippedTest = 0;
 
     public static final int MANDATORY = 0;
     public static final int MANDATORY_IF_IMPLEMENTED = 1;
@@ -389,6 +401,19 @@ public class TECore implements Runnable {
         setIndentLevel(1);
         int result = execute_test(suite.getStartingTest().toString(), kvps,
                 null);
+        File report_path = new File(System.getProperty("PATH") + "/testng");
+        if (!report_path.exists()) {
+            out.println("\n\t\tTest suite: "+ suite.getPrefix() + ":" + suite.getLocalName());
+            out.println("\t\t======== Test Result Summary ========");
+            out.println("\t\tPassed test : " + passedTest);
+            out.println("\t\tFailed test : " + failedTest);
+            out.println("\t\tSkipped test : " + skippedTest);
+            System.out.println("\t\t\tSee the detail test Report " + System.getProperty("PATH") + "/log.xml");
+            File path = new File(System.getProperty("PATH") + "/error_log/log.txt");
+            if (path.exists()) {
+                System.out.println("\t\t\tSee the detail error Report " + System.getProperty("PATH") + "/error_log/log.txt");
+            }
+        }
         out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName()
                 + " ");
         if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
@@ -611,10 +636,13 @@ public class TECore implements Runnable {
             prevLog = null;
         }
         String assertion = getAssertionValue(test.getAssertion(), params);
+        out.println("******************************************************************************************************************************");
         out.print("Testing ");
         out.print(test.getName() + " type " + test.getType());
         out.print(" in " + getMode() + " with defaultResult "
                 + defaultResultName + " ");
+        String testName=test.getName() + " type " + test.getType();
+        System.setProperty("TestName", testName);
         out.println("(" + testPath + ")...");
         String oldIndent = indent;
         indent += INDENT;
@@ -659,8 +687,38 @@ public class TECore implements Runnable {
             // Note: Test may alter default result
             executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
-            jlogger.log(Level.SEVERE, e.getMessage(), e.getCause());
-            out.println(e.getMessage());
+            jlogger.log(Level.SEVERE, e.getMessage());
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            try {
+                    String path=System.getProperty("PATH")+"/error_log";
+                    File file=new File(path);
+                    if (!file.exists()) {
+                        if (!file.mkdir()) {
+                            System.out.println("Failed to create Error Log!");
+                        }
+                    }
+                    file=new File(path,"log.txt");
+                    if(!file.exists()){
+                        try {
+                            boolean fileCreated = file.createNewFile();
+                        } catch (IOException ioe) {
+                            System.out.println("Error while creating empty file: " + ioe);
+                        }
+                    }
+                    OutputStreamWriter writer = new OutputStreamWriter(
+                            new FileOutputStream(file, true), "UTF-8");
+                    BufferedWriter fbw = new BufferedWriter(writer);
+                    fbw.write(dateFormat.format(date)+ " ERROR");
+                    fbw.newLine();
+                    fbw.write("Test Name : " +System.getProperty("TestName"));
+                    fbw.newLine();
+                    e.printStackTrace(new PrintWriter(fbw));
+                    fbw.newLine();
+                    fbw.close();
+                } catch (IOException exep) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             if (logger != null) {
                 logger.println("<exception><![CDATA[" + e.getMessage()
                         + "]]></exception>");
@@ -679,7 +737,9 @@ public class TECore implements Runnable {
                     parentTest.setResult(verdict);
                 }
             }
-            testStack.pop();
+            if (!testStack.isEmpty()) {
+                testStack.pop();
+            }
         }
 
         if (logger != null) {
@@ -693,6 +753,13 @@ public class TECore implements Runnable {
         indent = oldIndent;
         out.println(indent + "Test " + test.getName() + " "
                 + getResultDescription(verdict));
+        if (getResultDescription(verdict).equals("Failed")) {
+            failedTest++;
+        } else if (getResultDescription(verdict).equals("Passed")) {
+            passedTest++;
+        } else {
+            skippedTest++;
+        }
         test.setResult(verdict);
         if (LOGR.isLoggable(Level.FINE)) {
             String msg = String.format("Executed test %s - Verdict: %s",
@@ -704,20 +771,14 @@ public class TECore implements Runnable {
 
     /**
      * Runs a subtest as directed by a &lt;ctl:call-test&gt; instruction.
-     * 
-     * @param context
-     *            The context in which the subtest is executed.
-     * @param localName
-     *            The [local name] of the subtest.
-     * @param namespaceURI
-     *            The [namespace name] of the subtest.
-     * @param params
-     *            A NodeInfo object containing test parameters.
-     * @param callId
-     *            A node identifier used to build a file path reference for the
-     *            test results.
-     * @throws Exception
-     *             If an error occcurs while executing the test.
+     *
+     * @param context The context in which the subtest is executed.
+     * @param localName The [local name] of the subtest.
+     * @param namespaceURI The [namespace name] of the subtest.
+     * @param params A NodeInfo object containing test parameters.
+     * @param callId A node identifier used to build a file path reference for
+     * the test results.
+     * @throws Exception If an error occcurs while executing the test.
      */
     public synchronized void callTest(XPathContext context, String localName,
             String namespaceURI, NodeInfo params, String callId)
@@ -767,37 +828,37 @@ public class TECore implements Runnable {
      * Modifies the result of the parent test according to the result of the
      * current test. The parent test will be 'tainted' with an inherited failure
      * if (a) a subtest failed, or (b) a non-optional subtest was skipped.
-     * 
-     * @param currTest
-     *            The TestEntry for the current test.
+     *
+     * @param currTest The TestEntry for the current test.
      */
     private void updateParentTestResult(TestEntry currTest) {
         TestEntry parentTest = getParentTest();
-        if (null == parentTest)
+        if (null == parentTest) {
             return;
+        }
         if (LOGR.isLoggable(Level.FINE)) {
             LOGR.log(
                     Level.FINE,
                     "Entered setParentTestResult with TestEntry {0} (result={1})",
-                    new Object[] { currTest.getQName(), this.verdict });
+                    new Object[]{currTest.getQName(), this.verdict});
             LOGR.log(
                     Level.FINE,
                     "Parent TestEntry is {0} (result={1})",
-                    new Object[] { parentTest.getQName(),
-                            parentTest.getResult() });
+                    new Object[]{parentTest.getQName(),
+                        parentTest.getResult()});
         }
         switch (this.verdict) {
-        case FAIL:
-        case INHERITED_FAILURE:
-            parentTest.setResult(INHERITED_FAILURE);
-            break;
-        case SKIPPED:
-            if (!parentTest.getType().equalsIgnoreCase("Optional")) {
+            case FAIL:
+            case INHERITED_FAILURE:
                 parentTest.setResult(INHERITED_FAILURE);
-            }
-            break;
-        default:
-            break;
+                break;
+            case SKIPPED:
+                if (!parentTest.getType().equalsIgnoreCase("Optional")) {
+                    parentTest.setResult(INHERITED_FAILURE);
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -1223,27 +1284,25 @@ public class TECore implements Runnable {
     /**
      * Create SOAP request, sends it and return an URL Connection ready to be
      * parsed.
-     * 
-     * @param xml
-     *            the soap-request node (from CTL)
-     * 
+     *
+     * @param xml the soap-request node (from CTL)
+     *
      * @return The URL Connection
-     * 
-     * @throws Exception
-     *             the exception
-     * 
-     *             <soap-request version="1.1|1.2" charset="UTF-8">
-     *             <url>http://blah</url> <action>Some-URI</action> <headers>
-     *             <header MutUnderstand="true" rely="true" role="http://etc">
-     *             <t:Transaction xmlns:t="some-URI" >5</t:Transaction>
-     *             </header> </headers> <body> <m:GetLastTradePrice
-     *             xmlns:m="Some-URI"> <symbol>DEF</symbol>
-     *             </m:GetLastTradePrice> </body> <parsers:SOAPParser
-     *             return="content"> <parsers:XMLValidatingParser>
-     *             <parsers:schemas> <parsers:schema
-     *             type="url">http://blah/schema.xsd</parsers:schema>
-     *             </parsers:schemas> </parsers:XMLValidatingParser>
-     *             </parsers:SOAPParser> </soap-request>
+     *
+     * @throws Exception the exception
+     *
+     * <soap-request version="1.1|1.2" charset="UTF-8">
+     * <url>http://blah</url> <action>Some-URI</action> <headers>
+     * <header MutUnderstand="true" rely="true" role="http://etc">
+     * <t:Transaction xmlns:t="some-URI" >5</t:Transaction>
+     * </header> </headers> <body> <m:GetLastTradePrice xmlns:m="Some-URI">
+     * <symbol>DEF</symbol>
+     * </m:GetLastTradePrice> </body> <parsers:SOAPParser return="content">
+     * <parsers:XMLValidatingParser>
+     * <parsers:schemas> <parsers:schema
+     * type="url">http://blah/schema.xsd</parsers:schema>
+     * </parsers:schemas> </parsers:XMLValidatingParser>
+     * </parsers:SOAPParser> </soap-request>
      */
     static public URLConnection build_soap_request(Node xml) throws Exception {
         String sUrl = null;
@@ -1265,10 +1324,10 @@ public class TECore implements Runnable {
                 } else if (n.getLocalName().equals("action")) {
                     action = n.getTextContent();
                 } // else if (n.getLocalName().equals("header")) {
-                  // header = (org.w3c.dom.Element) n;
+                // header = (org.w3c.dom.Element) n;
                 /*
                  * }
-                 */else if (n.getLocalName().equals("body")) {
+                 */ else if (n.getLocalName().equals("body")) {
                     body = (org.w3c.dom.Element) n;
                 }
             }
@@ -1427,13 +1486,11 @@ public class TECore implements Runnable {
 
     /**
      * Submits a request to some HTTP endpoint using the given request details.
-     * 
-     * @param xml
-     *            An ctl:request element.
+     *
+     * @param xml An ctl:request element.
      * @return A URLConnection object representing an open communications link.
-     * @throws Exception
-     *             If any error occurs while submitting the request or
-     *             establishing a conection.
+     * @throws Exception If any error occurs while submitting the request or
+     * establishing a conection.
      */
     public URLConnection build_request(Node xml) throws Exception {
         Node body = null;
@@ -1455,9 +1512,9 @@ public class TECore implements Runnable {
                 } else if (n.getLocalName().equals("method")) {
                     method = n.getTextContent().toUpperCase();
                 } else if (n.getLocalName().equals("header")) {
-                    headers.add(new String[] {
-                            ((Element) n).getAttribute("name"),
-                            n.getTextContent() });
+                    headers.add(new String[]{
+                        ((Element) n).getAttribute("name"),
+                        n.getTextContent()});
                 } else if (n.getLocalName().equals("param")) {
                     if (sParams.length() > 0) {
                         sParams += "&";
@@ -1483,8 +1540,9 @@ public class TECore implements Runnable {
                         }
                     }
                     if (name != null && val != null) {
-                        if (sParams.length() > 0)
+                        if (sParams.length() > 0) {
                             sParams += "&";
+                        }
                         sParams += name + "=" + val;
                     }
                 } else if (n.getLocalName().equals("body")) {
@@ -1624,7 +1682,7 @@ public class TECore implements Runnable {
                                         contentBytes,
                                         DomUtils.serializeNode(
                                                 currentPart.getFirstChild())
-                                                .getBytes(charset));
+                                        .getBytes(charset));
                             }
                         }
                     }
@@ -1759,13 +1817,12 @@ public class TECore implements Runnable {
      * Parses the content retrieved from some URI and builds a DOM Document
      * containing information extracted from the response message. Subsidiary
      * parsers are invoked in accord with the supplied parser instructions.
-     * 
-     * @param uc
-     *            A URLConnection object.
-     * @param instruction
-     *            A Document or Element node containing parser instructions.
+     *
+     * @param uc A URLConnection object.
+     * @param instruction A Document or Element node containing parser
+     * instructions.
      * @return An Element containing selected info from a URLConnection as
-     *         specified by instruction Element and children.
+     * specified by instruction Element and children.
      */
     public Element parse(URLConnection uc, Node instruction) throws Throwable {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -1802,8 +1859,9 @@ public class TECore implements Runnable {
                     content_e.setTextContent(IOUtils.inputStreamToString(is));
                 }
             } finally {
-                if (null != is)
+                if (null != is) {
                     is.close();
+                }
             }
         } else {
             Element instruction_e;
@@ -1930,12 +1988,11 @@ public class TECore implements Runnable {
      * and reports the results of processing the submitted form. The results
      * document is produced in (web context) or
      * {@link SwingForm.CustomFormView#submitData}.
-     * 
-     * @param ctlForm
-     *            a DOM Document representing a &lt;ctl:form&gt; element.
+     *
+     * @param ctlForm a DOM Document representing a &lt;ctl:form&gt; element.
      * @throws java.lang.Exception
      * @return a DOM Document containing the resulting &lt;values&gt; element as
-     *         the document element.
+     * the document element.
      */
     public Node form(Document ctlForm, String id) throws Exception {
         if (opts.getMode() == Test.RESUME_MODE && prevLog != null) {
@@ -2010,8 +2067,9 @@ public class TECore implements Runnable {
         formTransformer.setDestination(serializer);
         formTransformer.transform();
         this.formHtml = sw.toString();
-        if (LOGR.isLoggable(Level.FINE))
+        if (LOGR.isLoggable(Level.FINE)) {
             LOGR.fine(this.formHtml);
+        }
 
         if (!web) {
             int width = 700;
@@ -2036,8 +2094,9 @@ public class TECore implements Runnable {
         }
 
         Document doc = formResults;
-        if (LOGR.isLoggable(Level.FINE))
+        if (LOGR.isLoggable(Level.FINE)) {
             LOGR.fine(DomUtils.serializeNode(doc));
+        }
         formResults = null;
         formParsers.clear();
 
@@ -2107,9 +2166,9 @@ public class TECore implements Runnable {
 
     /**
      * Returns the location of the directory containing the test run output.
-     * 
+     *
      * @return A String representing a file URI denoting the path name of a
-     *         directory.
+     * directory.
      */
     public String getTestRunDirectory() {
         String logDirURI = opts.getLogDir().toURI().toString();
@@ -2158,11 +2217,10 @@ public class TECore implements Runnable {
 
     /**
      * Builds a DOM Document representing a classpath resource.
-     * 
-     * @param name
-     *            The name of an XML resource.
+     *
+     * @param name The name of an XML resource.
      * @return A Document node, or {@code null} if the resource cannot be parsed
-     *         for any reason.
+     * for any reason.
      */
     public Document findXMLResource(String name) {
         URL url = this.getClass().getResource(name);
