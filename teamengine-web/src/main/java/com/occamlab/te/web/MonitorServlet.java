@@ -173,6 +173,7 @@ public class MonitorServlet extends HttpServlet {
                 }
             }
 
+            LOGR.log(Level.FINE, "Opening connection to " + url);
             HttpURLConnection huc = (HttpURLConnection) (new URL(url)
                     .openConnection());
             CachedHttpURLConnection uc = new CachedHttpURLConnection(huc);

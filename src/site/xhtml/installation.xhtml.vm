@@ -52,9 +52,9 @@
     directory in the WAR file. To activate the build profile, just add the -P command-line argument: 
     <code>mvn -P ogc.cite package</code>. Specify the desired version of the ets-resources project 
     in the user-specific Maven settings file located at <code>${user.home}/.m2/settings.xml</code>.
-    See <a href="https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags" 
-    target="_blank">ets-resources releases</a> to determine the latest version number (this is 
-    denoted by YY.MM.DD in the listing below).</p>
+    See the <a href="https://github.com/opengeospatial/ets-resources" target="_blank">ets-resources 
+    project at GitHub</a> to determine the latest version number (this is denoted by YY.MM.DD in 
+    the listing below).</p>
 
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!-- ${user.home}/.m2/settings.xml --&gt;

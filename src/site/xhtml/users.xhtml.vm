@@ -81,13 +81,13 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     Simply put the CTL scripts in TE_BASE/scripts and insert or update an entry in the 
     main configuration file. Supporting libraries, if any, must be placed in the 
     WEB-INF/lib directory.</p>
-    
+
     <p>As a convenience, the <code>ets-resources</code> project may be checked out from 
     the OGC Subversion repository. Run 'mvn package' to generate an archive containing 
     all supporting libraries for the latest OGC test suites. Available releases may be 
-    obtained from this location:</p>
+    obtained from GitHub:</p>
 
-    <pre>https://svn.opengeospatial.org/ogc-projects/cite/ets/ets-resources/tags</pre>
+    <pre>https://github.com/opengeospatial/ets-resources</pre>
 
     <p>The contents of the resulting archive are described below.</p>
     <dl>
@@ -103,6 +103,13 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
       <dt><code>lib/*.jar</code></dt>
       <dd>Supporting libraries; put these in WEB-INF/lib (web app) or TE_BASE/resources/lib 
       (CLI app)</dd>
+      <dt><code>bin/</code></dt>
+      <dd>A directory containing shell scripts for Windows- and UNIX-based hosts:
+        <ul>
+          <li>setup-tebase: Sets up a TEAM-engine instance (TE_BASE) with the test 
+          suites listed in a CSV file.</li>
+        </ul>
+      </dd>
     </dl>
 
     <h2>REST API</h2>
@@ -170,7 +177,7 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     <p>The <code>*-deps</code> archive assembles the ETS and its dependencies into a single 
     bundle that is unpacked into the lib directory in step 2 above. In some cases it may be 
     necessary to add other (transitive) dependencies. Note that the Tomcat instance does 
-    <strong>not</strong> need to be restarted to enable the test suite.</p>
+      <strong>not</strong> need to be restarted to enable the test suite.</p>
 
   </body>
 </html>
