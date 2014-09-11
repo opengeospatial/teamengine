@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.occamlab.te.spi.report;
 
 import java.text.DateFormat;
@@ -15,11 +10,22 @@ import org.testng.ITestContext;
 import org.testng.Reporter;
 
 /**
- *
- * @author upendra
+ *  A service to send test statistics and test run results to TestNG HTML report.
+ *  The test statistics are printed on 'Result overview' page and 
+ *  'Reporter output page' of the HTML reports.
+ *  Modifications are made in testng-report.xsl file  to change the 
+ *  styling of the result table in the reports as well as to display 
+ *  test name, test description and the reason why a test failed.
+ * 
  */
 public class ReportLog {
-
+    
+    /**
+     * Creates report logs that consists of test statics by extracting information from 
+     * the Test suite results. These Report logs are then printed in the TestNG HTML reports.
+     * 
+     * @param suite is the test suite from which you want to extract test results information.
+     */
     public void generateLogs(ISuite suite) {
         Reporter.clear(); // clear output from previous test runs
         // Reporter.log("Test suite parameters:");

@@ -679,7 +679,9 @@ public class TECore implements Runnable {
                     parentTest.setResult(verdict);
                 }
             }
+            if(!testStack.isEmpty()){
             testStack.pop();
+            }
         }
 
         if (logger != null) {
