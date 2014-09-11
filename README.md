@@ -15,20 +15,12 @@ for more information.
 
 ### How to build
 
-[Apache Maven](http://maven.apache.org/) 3.0 or higher is required to build 
-the teamengine code base, which consists of the following modules:
+[Apache Maven](http://maven.apache.org/) 3.0 or higher is required to build teamengine.
 
-* teamengine-core: Main CTL script processor
-* teamengine-console: Console (CLI) application
-* teamengine-web: Web application
-* teamengine-resources: Shared resources (stylesheets, schemas, etc.)
-* teamengine-realm: Custom Tomcat user realm
-* teamengine-spi: Extensibility framework and REST-like API
-
-Simply run `mvn package` in the root project directory to generate all build 
-artifacts (using JDK 7 or later). Execute the `mvn site` phase with the top-
-level POM to generate project documentation; this will also create an aggregate 
-PDF document in the target/pdf directory.
+* Run `git clone https://github.com/opengeospatial/teamengine.git`
+* Go the "teamengine" created folder and run `mvn install`.
+* Execute the `mvn site` to generate project documentation;
+* A PDF document is created at the target/pdf directory.
 
 **Note**
 
@@ -50,3 +42,7 @@ file (${user.home}/.m2/settings.xml).
         </repository>
       </repositories>
     </profile>
+
+### Installing the tests
+
+To install the test read the PDF test look at the PDF created in the previous step
