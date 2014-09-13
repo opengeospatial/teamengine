@@ -22,27 +22,6 @@ for more information.
 * Execute the `mvn site` to generate project documentation;
 * A PDF document is created at the target/pdf directory.
 
-**Note**
-
-Some dependencies may not be not available in the central repository. To obtain 
-them, add the following remote repository to a profile in the Maven settings 
-file (${user.home}/.m2/settings.xml).
-
-    <profile>
-      <id>ogc.cite</id>
-      <!-- activate profile by default or explicitly -->
-      <repositories>
-        <repository>
-          <id>opengeospatial-cite</id>
-          <name>OGC CITE Repository</name>
-          <url>https://svn.opengeospatial.org/ogc-projects/cite/maven</url>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-      </repositories>
-    </profile>
-
 ### Installing the tests
 
 To install the test read the PDF test look at the PDF created in the previous step
