@@ -25,9 +25,11 @@
         </version>
       </standard>
     </organization>
+    <!-- Insert OGC test suites 
     <organization>
       <name>OGC</name>
-      <!-- Insert OGC test suites -->
+      
     </organization>
+    -->
   </scripts>
 </config>
