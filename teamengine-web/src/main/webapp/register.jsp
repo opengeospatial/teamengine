@@ -119,7 +119,7 @@ if ("duplicate".equals(request.getParameter("error"))) {
 <% if (!request.isSecure()) { %>
 				<br/>
 				<div style="width:600px; border-width: 1px; border-style:solid; padding:2px">
-					<b>WARNING:</b> This site cannot guarantee the confidentiality of information sent. It  uses a basic HTTP authentication protocol and the information sent by you and to by the server is not encrypted. Do not enter a valuable password, and do not use this site if you are concerned with secrecy for your test sessions.<br/>
+					<b>WARNING:</b> This site cannot guarantee the confidentiality of information sent. It  uses a basic HTTP authentication protocol and the information sent by you and by the server to you is not encrypted. Do not enter a valuable password, and do not use this site if you are concerned with secrecy for your test sessions.<br/>
 					<input name="disclaimer" type="checkbox"/>I have read and acknowledge this warning.<br/>
 				</div>
 				<br/>
