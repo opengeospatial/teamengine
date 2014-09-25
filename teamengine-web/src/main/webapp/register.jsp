@@ -90,13 +90,13 @@ String email = request.getParameter("email");
 		<div id="error" style="color: red">
 <%
 if ("duplicate".equals(request.getParameter("error"))) {
-	out.println("Sorry, username \"" + username + "\" is not available.  Please try another.");
+	out.println("Sorry, username \"" + username + "\" is not available.  Please try another user.");
 }
 %>
 		</div>
 		<form name="registration" method="post" action="registrationHandler">
 			<p>
-				Create a username and password:<br/>
+				Create a username (with at least 6 characters) and password:<br/>
 				<br/>
 				<table>
 					<tr>
@@ -119,10 +119,7 @@ if ("duplicate".equals(request.getParameter("error"))) {
 <% if (!request.isSecure()) { %>
 				<br/>
 				<div style="width:600px; border-width: 1px; border-style:solid; padding:2px">
-					<b>WARNING:</b> This site does not use a secure protocol.
-					The information presented to you and the information you enter is not encrypted.
-					Do not enter a valuable password, and do not use this
-					site if you are concerned with secrecy for your test sessions.<br/>
+					<b>WARNING:</b> This site cannot guarantee the confidentiality of information sent. It  uses a basic HTTP authentication protocol and the information sent by you and to by the server is not encrypted. Do not enter a valuable password, and do not use this site if you are concerned with secrecy for your test sessions.<br/>
 					<input name="disclaimer" type="checkbox"/>I have read and acknowledge this warning.<br/>
 				</div>
 				<br/>
