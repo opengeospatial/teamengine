@@ -6,7 +6,6 @@
   <id>base</id>
   <formats>
     <format>zip</format>
-    <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
@@ -21,17 +20,16 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/main/config</directory>
-      <outputDirectory>users</outputDirectory>
-      <excludes><exclude>*</exclude></excludes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/src/main/config</directory>
       <outputDirectory>resources/lib</outputDirectory>
       <excludes><exclude>*</exclude></excludes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/src/main/resources/site</directory>
       <outputDirectory>resources/site</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/users</directory>
+      <outputDirectory>users</outputDirectory>
     </fileSet>
   </fileSets>
   <files>
