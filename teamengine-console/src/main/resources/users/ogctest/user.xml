@@ -1,0 +1,8 @@
+<user>
+ <name>ogctest</name>
+ <roles>
+  <name>user</name>
+ </roles>
+ <password>ogctest</password>
+ <email></email>
+</user>
