@@ -13,15 +13,46 @@ It is the official test harness used by the Open Geospatial Consortium's
 [project documentation website](http://opengeospatial.github.io/teamengine/) 
 for more information.
 
+An example installation can be found at: http://cite.opengeospatial.org/teamengine/ 
+
 ### How to build
 
 [Apache Maven](http://maven.apache.org/) 3.0 or higher is required to build teamengine.
 
-* Run `git clone https://github.com/opengeospatial/teamengine.git`
-* Go the "teamengine" created folder and run `mvn install`.
-* Execute the `mvn site` to generate project documentation;
-* A PDF document is created at the target/pdf directory.
+* Clone the repository
 
-### Installing the tests
+   `git clone https://github.com/opengeospatial/teamengine.git`
 
-To install the test read the PDF test look at the PDF created in the previous step
+* Go to the folder
+
+   `cd teamengine created folder and run `mvn install`.
+
+* intall via maven 
+
+   `mvn install`
+
+### More information 
+The following sources including documentation about how to install the tests, run TEAM Engine via command line and run TEAM Engine as a web application.
+
+* An extensive tutorial can be found in the [doc folder](https://github.com/opengeospatial/teamengine/blob/master/doc/en/index.rst) 
+
+* A simple set of instructions can be found by building the documentation using running mvn site, which creates a PDF document at the target/pdf directory.
+
+   `mvn site` 
+
+### License
+
+[Apache 2.0 License](LICENSE.txt)
+
+### Bugs
+
+Issue tracker is available at [github](https://github.com/opengeospatial/teamengine/issues)
+
+## Mailing Lists
+
+The [cite-forum](http://cite.opengeospatial.org/forum) is where software developers discuss issues and solutions related to OGC tests and TEAM Engine. 
+
+## More Information
+
+Visit the [CITE website](http://cite.opengeospatial.org/) to get more information about the CITE program and tools.
+
