@@ -23,18 +23,18 @@ An example installation can be found at: http://cite.opengeospatial.org/teamengi
 
    `git clone https://github.com/opengeospatial/teamengine.git`
 
-* Go to the folder
+* Go to the folder where the local repository was created
 
-   `cd teamengine created folder and run `mvn install`.
+   `cd teamengine`
 
-* intall via maven 
+* install via maven 
 
    `mvn install`
 
 ### More information 
-The following sources including documentation about how to install the tests, run TEAM Engine via command line and run TEAM Engine as a web application.
+The following sources include documentation about how to install the tests, run TEAM Engine via command line and run TEAM Engine as a web application.
 
-* An extensive tutorial can be found in the [doc folder](https://github.com/opengeospatial/teamengine/blob/master/doc/en/index.rst) 
+* An extensive tutorial can be found in the [doc folder](https://github.com/opengeospatial/teamengine/blob/master/doc/en/index.rst). 
 
 * A simple set of instructions can be found by building the documentation using running mvn site, which creates a PDF document at the target/pdf directory.
 
