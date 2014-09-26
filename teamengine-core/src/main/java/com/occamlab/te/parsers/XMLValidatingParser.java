@@ -1,39 +1,49 @@
-/****************************************************************************
-
- The contents of this file are subject to the Mozilla Public License
- Version 1.1 (the "License"); you may not use this file except in
- compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- the specific language governing rights and limitations under the License.
-
- The Original Code is TEAM Engine.
-
- The Initial Developer of the Original Code is Northrop Grumman Corporation
- jointly with The National Technology Alliance.  Portions created by
- Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
- Grumman Corporation. All Rights Reserved.
-
- Contributor(s): No additional contributors to date
-
- ****************************************************************************/
+/**
+ * **************************************************************************
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ *
+ * The Original Code is TEAM Engine.
+ *
+ * The Initial Developer of the Original Code is Northrop Grumman Corporation
+ * jointly with The National Technology Alliance. Portions created by Northrop
+ * Grumman Corporation are Copyright (C) 2005-2006, Northrop Grumman
+ * Corporation. All Rights Reserved.
+ *
+ * Contributor(s): No additional contributors to date
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.parsers;
 
+import com.occamlab.te.ErrorHandlerImpl;
+import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.URLConnectionUtils;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,21 +56,18 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
-import com.occamlab.te.ErrorHandlerImpl;
-import com.occamlab.te.util.DomUtils;
-import com.occamlab.te.util.URLConnectionUtils;
 
 /**
  * Validates an XML resource using a set of W3C XML Schema documents.
- * 
+ *
  */
 public class XMLValidatingParser {
+
     static SchemaFactory SF = null;
     static TransformerFactory TF = null;
     static DocumentBuilderFactory nonValidatingDBF = null;
@@ -193,16 +200,14 @@ public class XMLValidatingParser {
 
     /**
      * A method to validate a pool of schemas within the ctl:request element.
-     * 
-     * @param xml
-     *            the xml to parse and validate. May be an InputStream object or
-     *            a Document object.
-     * @param instruction
-     *            the xml encapsulated schema information (file locations)
-     * @param logger
-     *            the PrintWriter to log all results to
+     *
+     * @param xml the xml to parse and validate. May be an InputStream object or
+     * a Document object.
+     * @param instruction the xml encapsulated schema information (file
+     * locations)
+     * @param logger the PrintWriter to log all results to
      * @return null if there were errors, the parse document otherwise
-     * 
+     *
      * @author jparrpearson
      */
     private Document parse(Object xml, Element instruction, PrintWriter logger)
@@ -239,7 +244,38 @@ public class XMLValidatingParser {
             try {
                 doc = db.parse(xmlInput);
             } catch (Exception e) {
-                jlogger.log(Level.SEVERE, "error parsing", e);
+                jlogger.log(Level.SEVERE, "This error is related to a byte order mark (BOM) prior to the actual XML content. That means, there are some extra characters before the tag <?xml> in the XML file which is being tested.");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date date = new Date();
+                try {
+                    String path=System.getProperty("PATH")+"/error_log";
+                    File file=new File(path);
+                    if (!file.exists()) {
+                        if (!file.mkdir()) {
+                            System.out.println("Failed to create Error Log!");
+                        }
+                    }
+                    file=new File(path,"log.txt");
+                    if(!file.exists()){
+                        try {
+                            boolean fileCreated = file.createNewFile();
+                        } catch (IOException ioe) {
+                            System.out.println("Error while creating empty file: " + ioe);
+                        }
+                    }
+                    OutputStreamWriter writer = new OutputStreamWriter(
+                            new FileOutputStream(file, true), "UTF-8");
+                    BufferedWriter fbw = new BufferedWriter(writer);
+                    fbw.write(dateFormat.format(date)+ " ERROR");
+                    fbw.newLine();
+                    fbw.write("Test Name : " +System.getProperty("TestName"));
+                    fbw.newLine();
+                    e.printStackTrace(new PrintWriter(fbw));
+                    fbw.newLine();
+                    fbw.close();
+                } catch (IOException exep) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             } finally {
                 xmlInput.close();
             }
@@ -262,8 +298,9 @@ public class XMLValidatingParser {
             if (error_count > 0) {
                 msg += error_count + " validation error"
                         + (error_count == 1 ? "" : "s");
-                if (warning_count > 0)
+                if (warning_count > 0) {
                     msg += " and ";
+                }
             }
             if (warning_count > 0) {
                 msg += warning_count + " warning"
@@ -292,21 +329,20 @@ public class XMLValidatingParser {
 
     /**
      * A method to validate a pool of schemas outside of the request element.
-     * 
-     * @param Document
-     *            doc The file document to validate
-     * @param Document
-     *            instruction The xml encapsulated schema information (file
-     *            locations)
+     *
+     * @param Document doc The file document to validate
+     * @param Document instruction The xml encapsulated schema information (file
+     * locations)
      * @return false if there were errors, true if none
-     * 
+     *
      * @author jparrpearson
      */
     public boolean checkXMLRules(Document doc, Document instruction)
             throws Exception {
 
-        if (doc == null || doc.getDocumentElement() == null)
+        if (doc == null || doc.getDocumentElement() == null) {
             return false;
+        }
 
         Element e = instruction.getDocumentElement();
         PrintWriter logger = new PrintWriter(System.out);
