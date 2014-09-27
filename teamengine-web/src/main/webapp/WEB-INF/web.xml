@@ -1,23 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
-                      http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-
+<?xml version="1.0" encoding="utf-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <display-name>TEAM Engine Test Harness</display-name>
-  <description>
-  Provides a web interface for executing test suites and viewing test results.
-  </description>
-
+  <description>Provides a web interface for executing test suites and viewing test results.</description>
+  <context-param>
+    <description xml:lang="en">Location of main configuration file.</description>
+    <param-name>teConfigFile</param-name>
+    <param-value>\${TE_BASE}\${file.separator}config.xml</param-value>
+  </context-param>
   <context-param>
     <param-name>appVersion</param-name>
     <param-value>${project.version}</param-value>
   </context-param>
-
   <listener>
     <listener-class>com.occamlab.te.web.TEServletContextListener</listener-class>
   </listener>
-
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
@@ -43,7 +39,7 @@
   <servlet>
     <servlet-name>downloadLog</servlet-name>
     <servlet-class>com.occamlab.te.web.DownloadLogServlet</servlet-class>
-  </servlet>	
+  </servlet>
   <servlet>
     <servlet-name>prettyPrintLogs</servlet-name>
     <servlet-class>com.occamlab.te.web.PrettyPrintLogsServlet</servlet-class>
@@ -87,20 +83,14 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-
   <listener id="FileCleanup">
-    <description xml:lang="en">
-    Ensures that the file reaper thread (which deletes temp files) is terminated
-    when the web application is shut down.
-    </description>
+    <description xml:lang="en">Ensures that the file reaper thread (which deletes temp files) is terminated when the web application is shut down.</description>
     <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
   </listener>
-
   <servlet-mapping>
     <servlet-name>TestSuiteController</servlet-name>
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>test</servlet-name>
     <url-pattern>/test</url-pattern>
@@ -133,7 +123,6 @@
     <servlet-name>emailLog</servlet-name>
     <url-pattern>/emailLog</url-pattern>
   </servlet-mapping>
-
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>user-specific</web-resource-name>
@@ -168,7 +157,6 @@
   <security-role>
     <role-name>user</role-name>
   </security-role>
-
   <resource-ref>
     <description>DataSource factory to access EPSG database.</description>
     <res-ref-name>jdbc/EPSG</res-ref-name>
