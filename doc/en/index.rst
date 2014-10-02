@@ -437,7 +437,7 @@ A window form asking the user to provide more information should appear. For exa
 The `OGC Reference Implementations Page <http://cite.opengeospatial.org/reference>`_ provides
 examples of services that can be exercised.
 
-For example for CSW 2.0.2 PyCSW:
+For example for CSW 2.0.2 pycsw:
 
 	http://demo.pycsw.org/cite/csw?service=CSW&version=2.0.2&request=GetCapabilities
 
