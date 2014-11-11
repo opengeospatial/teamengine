@@ -19,16 +19,13 @@
  */
 package com.occamlab.te;
 
-import com.occamlab.te.index.Index;
-import com.occamlab.te.util.Misc;
-import com.occamlab.te.util.XMLParserUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.transform.Source;
@@ -38,8 +35,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.xml.sax.InputSource;
-
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -48,6 +43,12 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
+
+import org.xml.sax.InputSource;
+
+import com.occamlab.te.index.Index;
+import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.XMLParserUtils;
 
 /**
  * Generates XSL template files from CTL sources and a master index of metadata
@@ -85,8 +86,8 @@ public class Generator {
         // Create CTL validator
         SchemaFactory sf = SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema ctl_schema = sf.newSchema(Misc
-                .getResourceAsFile("com/occamlab/te/schemas/ctl.xsd"));
+        Schema ctl_schema = sf.newSchema(new StreamSource(Misc
+                .getResourceURL("com/occamlab/te/schemas/ctl.xsd")));
         Validator ctl_validator = ctl_schema.newValidator();
         CtlErrorHandler validation_eh = new CtlErrorHandler();
         ctl_validator.setErrorHandler(validation_eh);
@@ -96,16 +97,16 @@ public class Generator {
         processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING,
                 Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
-        File generatorStylesheet = Misc
-                .getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
-        XsltExecutable generatorXsltExecutable = generatorCompiler
-                .compile(new StreamSource(generatorStylesheet));
+        XsltExecutable generatorXsltExecutable = generatorCompiler.compile(
+                new StreamSource(Misc.getResourceURL("com/occamlab/te/generate_xsl.xsl")));
         XsltTransformer generatorTransformer = generatorXsltExecutable.load();
 
         // Create a list of CTL sources (may be files or dirs)
         ArrayList<File> sources = new ArrayList<File>();
         File f = Misc.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl");
-        sources.add(f.getParentFile());
+        if (f.exists()) {
+            sources.add(f.getParentFile());
+        }
         sources.addAll(opts.getSources());
 
         // Create a list of source CTL files only (no dirs),
@@ -151,6 +152,8 @@ public class Generator {
         // resolve xinclude elements but omit xml:base attributes
         SAXParser parser = XMLParserUtils.createXIncludeAwareSAXParser(false);
 
+        File generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
+        
         // Process each CTL source file
         for (int i = 0; i < sourceFiles.size(); i++) {
             File sourceFile = sourceFiles.get(i);
@@ -161,7 +164,11 @@ public class Generator {
             File indexFile = new File(workingDir, "index.xml");
             Index index = null;
             boolean regenerate = true;
-            if (indexFile.isFile()) {
+            
+            if (generatorStylesheet == null) {
+                //generatorStylesheet couldn't be found as a file (it was loaded from classpath jar)                
+                regenerate = true;
+            } else if (indexFile.isFile()) {
                 try {
                     if (indexFile.lastModified() > generatorStylesheet
                             .lastModified()) {
