@@ -620,7 +620,7 @@ public class TECore implements Runnable {
             prevLog = null;
         }
         String assertion = getAssertionValue(test.getAssertion(), params);
-        out.print("Testing ");
+        out.print(indent + "Testing ");
         out.print(test.getName() + " type " + test.getType());
         out.print(" in " + getMode() + " with defaultResult "
                 + defaultResultName + " ");
