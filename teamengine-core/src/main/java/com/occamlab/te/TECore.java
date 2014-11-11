@@ -663,6 +663,7 @@ public class TECore implements Runnable {
             logger.flush();
         }
 
+        int oldVerdict = this.verdict;
         this.verdict = defaultResult;
         try {
             // Note: Test may alter default result
@@ -710,7 +711,13 @@ public class TECore implements Runnable {
                     test.getLocalName(), getResultDescription(verdict));
             LOGR.log(Level.FINE, msg);
         }
-        return verdict;
+
+        //restore previous verdict if the result isn't worse
+        if (this.verdict <= oldVerdict) {
+            this.verdict = oldVerdict;
+        }
+        
+        return test.getResult();
     }
 
     /**
@@ -797,7 +804,7 @@ public class TECore implements Runnable {
                     new Object[] { parentTest.getQName(),
                             parentTest.getResult() });
         }
-        switch (this.verdict) {
+        switch (currTest.getResult()) {
         case FAIL:
         case INHERITED_FAILURE:
             parentTest.setResult(INHERITED_FAILURE);
