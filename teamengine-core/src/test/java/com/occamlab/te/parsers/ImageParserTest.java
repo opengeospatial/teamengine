@@ -64,6 +64,22 @@ public class ImageParserTest {
     }
 
     @Test
+    public void parsePNG_tRNSChunk() throws SAXException, IOException {
+        URL url = getClass().getResource("/img/square-white.png");
+        Document instruct = docBuilder.parse(getClass().getResourceAsStream(
+                "/img/metadata.xml"));
+        StringWriter strWriter = new StringWriter();
+        PrintWriter logger = new PrintWriter(strWriter);
+        Document result = ImageParser.parse(url.openConnection(),
+                instruct.getDocumentElement(), logger);
+        assertNotNull(result);
+        Element tRNSElem = (Element) result.getElementsByTagName("tRNS")
+                .item(0);
+        // used to specify a single color as fully transparent
+        assertTrue("Expected tRNS chunk in image.", tRNSElem.hasChildNodes());
+    }
+
+    @Test
     public void parsePNG_hasAlphaChannelWithTransparentPixels()
             throws SAXException, IOException {
         URL url = getClass().getResource("/img/dice-alpha-transparency.png");
