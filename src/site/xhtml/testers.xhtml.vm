@@ -21,10 +21,10 @@
     <p>
     The teamengine-core-${project.version}-base.zip archive contains a sample test 
     suite defined in <code>scripts/note.ctl</code>. The OGC compliance testing program 
-    also maintains a set of test scripts that are publicly available from the OGC
-    Suversion repository at this location:</p> 
+    also maintains a set of test suites that are publicly available from GitHub at 
+    this location:</p> 
 
-    <p><code>https://svn.opengeospatial.org/ogc-projects/cite/scripts</code></p>
+    <p><code>https://github.com/opengeospatial</code></p>
 
     <h2>TestNG framework</h2>
 
@@ -46,7 +46,7 @@
     <pre>
     groupId: org.opengis.cite
     artifactId: ets-archetype-testng
-    version: 2.0</pre>
+    version: 2.2</pre>
 
     <p>To create a new test suite, invoke the interactive 'generate' goal of the archetype 
     plugin and supply the <code>ets-code</code> parameter to specify the identifier for the 
@@ -141,15 +141,6 @@
 
     <h3>Test suite development</h3>
 
-    <p>
-    Projects based on the Maven ETS archetype depend on the <code>teamengine-spi</code> 
-    and <code>schema-utils</code> components. These are not currently available in the 
-    central Maven repository, but they can be obtained from the <a target="_blank" 
-    href="https://svn.opengeospatial.org/ogc-projects/cite/maven/">OGC repository</a>. 
-    The project POM contains a repository element (with id = 'opengeospatial-cite') 
-    for this alternate source of artifacts. When the test suite is first built these 
-    components will be retrieved and put into the local repository.</p>
-
     <p>Most IDEs have integrated support for working with Maven projects (e.g. Eclipse, 
     NetBeans, IntelliJ), so test developers may use their IDE of choice. Some tips for using 
     Eclipse are provided below.</p>
@@ -226,8 +217,9 @@ suite.setAttribute(SuiteAttribute.TEST_SUBJECT.getName(), iutDoc);
     
     <p>A test suite may require some additional libraries in order to perform more specialized 
     assertion checking. Currently there are a couple of utility libraries available that 
-    facilitate schema validation and geospatial data processing; they're available in the 
-    OGC Maven repository (see Table 3).</p>
+    facilitate schema validation and geospatial data processing; these are available at 
+    GitHub, and releases are published in the <a href="http://search.maven.org/#search|ga|1|g%3A%22org.opengis.cite%22" 
+    target="_blank">Maven Central repository</a> (see Table 3).</p>
 
     <table>
       <caption>Table 3 - Utility libraries</caption>
@@ -241,14 +233,14 @@ suite.setAttribute(SuiteAttribute.TEST_SUBJECT.getName(), iutDoc);
       <tbody>
         <tr>
           <td>org.opengis.cite</td>
-          <td>schema-utils</td>
+          <td><a href="https://github.com/opengeospatial/schema-utils" target="_blank">schema-utils</a></td>
           <td>Provides support for validating XML representations using the following 
           schema languages: W3C XML Schema 1.0, Schematron (ISO/IEC 19757-3:2006), and 
           RELAX NG (ISO/IEC 19757-2:2008).</td>
         </tr>
         <tr>
           <td>org.opengis.cite</td>
-          <td>geomatics-geotk</td>
+          <td><a href="https://github.com/opengeospatial/geomatics-geotk" target="_blank">geomatics-geotk</a></td>
           <td>Provides support for processing spatial data and associated metadata using 
           various Geotk modules (see http://www.geotoolkit.org/).</td>
         </tr>

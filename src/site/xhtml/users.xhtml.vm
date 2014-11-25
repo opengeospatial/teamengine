@@ -82,29 +82,28 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     main configuration file. Supporting libraries, if any, must be placed in the 
     WEB-INF/lib directory.</p>
 
-    <p>As a convenience, the <code>ets-resources</code> project may be checked out from 
-    the OGC Subversion repository. Run 'mvn package' to generate an archive containing 
-    all supporting libraries for the latest OGC test suites. Available releases may be 
-    obtained from GitHub:</p>
+    <p>As a convenience, the <code>ets-resources</code> project may be <a target="_blank" 
+    href="https://github.com/opengeospatial/ets-resources">cloned from GitHub</a>. Run 
+    'mvn package' to generate an archive containing all supporting libraries for the 
+    latest OGC test suites. The contents of the archive are described below.</p>
 
-    <pre>https://github.com/opengeospatial/ets-resources</pre>
-
-    <p>The contents of the resulting archive are described below.</p>
     <dl>
       <dt><code>config.xml</code></dt>
-      <dd>TEAMengine configuration file that includes all released OGC test suites; put this 
-      in TE_BASE/config.xml</dd>
+      <dd>TEAM-engine instance configuration file (TE_BASE/config.xml)</dd>
       <dt><code>config-approved.xml</code></dt>
-      <dd>TEAMengine configuration file that includes all OGC test suites approved for production 
-      use; put this in TE_BASE/config.xml</dd>
+      <dd>TEAMengine configuration file that includes only test suite releases that 
+      have been formally approved for compliance certification by the OGC Technical 
+      Committee</dd>
       <dt><code>ctl-scripts-release.csv</code></dt>
-      <dd>CSV file for exporting CTL test scripts (using the <code>export-ctl</code> shell 
-      script in TE_HOME/bin)</dd>
+      <dd>A CSV file that contains a list of test suite releases. Each line has two 
+      fields as shown below (Git repository URL, tag name). </dd>
       <dt><code>lib/*.jar</code></dt>
-      <dd>Supporting libraries; put these in WEB-INF/lib (web app) or TE_BASE/resources/lib 
-      (CLI app)</dd>
+      <dd>A directory containing the required Java libraries; these must be available 
+      on the class path (WEB-INF/lib for the web application, TE_BASE/resources/lib 
+      for command-line execution)</dd>
       <dt><code>bin/</code></dt>
-      <dd>A directory containing shell scripts for Windows- and UNIX-based hosts:
+      <dd>A directory containing shell scripts for Windows- and UNIX-based (Linux/Mac) 
+      hosts:
         <ul>
           <li>setup-tebase: Sets up a TEAM-engine instance (TE_BASE) with the test 
           suites listed in a CSV file.</li>
@@ -162,10 +161,11 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     parameter is either mandatory, conditional (required under certain circumstances), 
     or optional.</p>
 
-    <p>There are three steps involved in deploying an executable test suite (ETS) implemented 
-    using the TestNG framework. The first two steps are not required in order to use the REST API.</p>
+    <p>If a test suite is being deployed manually, several steps are required to set 
+    up an executable test suite (ETS) implemented using the TestNG framework. Note that 
+    the first two steps are <strong>not</strong> required to use the REST API.</p>
     <ol>
-      <li>Unpack the *-ctl-scripts.zip archive into the TE_BASE/scripts directory; it 
+      <li>Unpack the *-ctl.zip archive into the TE_BASE/scripts directory; it 
       includes test suite documentation and a simple CTL script that invokes the main 
       controller.</li>
       <li>Update the TE_BASE/config.xml file: Add or revise the &lt;standard&gt; element 
@@ -176,8 +176,8 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
 
     <p>The <code>*-deps</code> archive assembles the ETS and its dependencies into a single 
     bundle that is unpacked into the lib directory in step 2 above. In some cases it may be 
-    necessary to add other (transitive) dependencies. Note that the Tomcat instance does 
-      <strong>not</strong> need to be restarted to enable the test suite.</p>
+    necessary to add other (transitive) dependencies. The Tomcat instance does not need to 
+    be restarted to enable the test suite.</p>
 
   </body>
 </html>
