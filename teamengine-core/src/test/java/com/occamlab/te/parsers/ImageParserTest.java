@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -93,5 +92,29 @@ public class ImageParserTest {
                 "count").item(0);
         int pixelCount = Integer.parseInt(countElem.getTextContent().trim());
         assertTrue("Expected transparent pixels in image.", pixelCount > 0);
+    }
+
+    @Test
+    public void parseUnsupportedImageFormat_WebP() throws SAXException,
+            IOException {
+        URL url = getClass().getResource("/img/fjord.webp");
+        Document instruct = docBuilder.parse(getClass().getResourceAsStream(
+                "/img/metadata.xml"));
+        StringWriter strWriter = new StringWriter();
+        PrintWriter logger = new PrintWriter(strWriter);
+        Document result = ImageParser.parse(url.openConnection(),
+                instruct.getDocumentElement(), logger);
+        assertNull(result);
+        assertTrue("Unexpected error message",
+                strWriter.toString().startsWith("No image handlers available"));
+    }
+
+    @Test
+    public void supportedImageFormats() throws SAXException, IOException {
+        String types = ImageParser.getSupportedImageTypes();
+        String[] formats = types.split(",");
+        // https://docs.oracle.com/javase/7/docs/api/javax/imageio/package-summary.html
+        assertTrue("Expected at least 5 supported image types",
+                formats.length >= 5);
     }
 }
