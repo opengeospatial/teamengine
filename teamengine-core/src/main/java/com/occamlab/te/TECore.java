@@ -227,9 +227,7 @@ public class TECore implements Runnable {
             grandParent.setType("Mandatory");
             testStack.push(grandParent);
             String sessionId = opts.getSessionId();
-            // File logDir = opts.getLogDir();
             int mode = opts.getMode();
-            // String sourcesName = opts.getSourcesName();
             ArrayList<String> params = opts.getParams();
 
             if (mode == Test.RESUME_MODE) {
@@ -516,6 +514,9 @@ public class TECore implements Runnable {
         }
         xt.transform();
         XdmNode ret = dest.getXdmNode();
+        if (ret != null && LOGR.isLoggable(Level.FINE)) {
+            LOGR.log(Level.FINE, "Output:\n" + ret.toString());
+        }
         return ret;
     }
 
@@ -554,7 +555,6 @@ public class TECore implements Runnable {
         if (text.indexOf("$") < 0) {
             return text;
         }
-
         String newText = text;
         XdmNode params = (XdmNode) paramsVar.axisIterator(Axis.CHILD).next();
         XdmSequenceIterator it = params.axisIterator(Axis.CHILD);
@@ -595,6 +595,20 @@ public class TECore implements Runnable {
         }
     }
 
+    /**
+     * Executes a test implemented as an XSLT template.
+     * 
+     * @param test
+     *            Provides information about the test (gleaned from an entry in
+     *            the test suite index).
+     * @param params
+     *            A node representing test run arguments.
+     * @param context
+     *            A context in which the template is evaluated.
+     * @return An integer value indicating the test result.
+     * @throws Exception
+     *             If any error arises while executing the test.
+     */
     public int executeTest(TestEntry test, XdmNode params, XPathContext context)
             throws Exception {
         testStack.push(test);
@@ -656,7 +670,6 @@ public class TECore implements Runnable {
 
         this.verdict = defaultResult;
         try {
-            // Note: Test may alter default result
             executeTemplate(test, params, context);
         } catch (SaxonApiException e) {
             jlogger.log(Level.SEVERE, e.getMessage(), e.getCause());
@@ -665,28 +678,17 @@ public class TECore implements Runnable {
                 logger.println("<exception><![CDATA[" + e.getMessage()
                         + "]]></exception>");
             }
-            TestEntry parentTest = getParentTest();
-            if (verdict == CONTINUE) {
-                if ("Optional".equals(testType)) {
-                    verdict = parentTest.getResult();
-                } else {
-                    verdict = INHERITED_FAILURE;
-                    parentTest.setResult(verdict);
-                }
-            } else {
-                verdict = FAIL; // all other exceptions
-                if (null != parentTest) {
-                    parentTest.setResult(verdict);
-                }
-            }
-            if(!testStack.isEmpty()){
-            testStack.pop();
+            this.verdict = FAIL;
+            if (!testStack.isEmpty()) {
+                testStack.pop();
             }
         }
-
+        // Check if verdict was already set by a failing subtest
+        if (test.getResult() != INHERITED_FAILURE) {
+            test.setResult(verdict);
+        }
         if (logger != null) {
-            logger.println("<endtest result=\"" + Integer.toString(verdict)
-                    + "\"/>");
+            logger.println("<endtest result=\"" + test.getResult() + "\"/>");
             logger.println("</log>");
             logger.close();
         }
@@ -695,10 +697,11 @@ public class TECore implements Runnable {
         indent = oldIndent;
         out.println(indent + "Test " + test.getName() + " "
                 + getResultDescription(verdict));
-        test.setResult(verdict);
         if (LOGR.isLoggable(Level.FINE)) {
-            String msg = String.format("Executed test %s - Verdict: %s",
-                    test.getLocalName(), getResultDescription(verdict));
+            String msg = String
+                    .format("Executed test %s - Verdict: %s",
+                            test.getLocalName(),
+                            getResultDescription(test.getResult()));
             LOGR.log(Level.FINE, msg);
         }
         return verdict;
@@ -726,7 +729,6 @@ public class TECore implements Runnable {
             throws Exception {
         String key = "{" + namespaceURI + "}" + localName;
         TestEntry test = index.getTest(key);
-
         if (logger != null) {
             logger.println("<testcall path=\"" + testPath + "/" + callId
                     + "\"/>");
@@ -754,10 +756,9 @@ public class TECore implements Runnable {
 
         String oldTestPath = testPath;
         testPath += "/" + callId;
-        executeTest(test, S9APIUtils.makeNode(params), context);
+        this.verdict = executeTest(test, S9APIUtils.makeNode(params), context);
         testPath = oldTestPath;
-        // called test result has been set; now setting parent result
-        if (verdict == CONTINUE) {
+        if (this.verdict == CONTINUE) {
             throw new IllegalStateException(
                     "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
         }
@@ -768,7 +769,7 @@ public class TECore implements Runnable {
     /**
      * Modifies the result of the parent test according to the result of the
      * current test. The parent test will be 'tainted' with an inherited failure
-     * if (a) a subtest failed, or (b) a non-optional subtest was skipped.
+     * if (a) a subtest failed, or (b) a required subtest was skipped.
      * 
      * @param currTest
      *            The TestEntry for the current test.
@@ -781,15 +782,16 @@ public class TECore implements Runnable {
             LOGR.log(
                     Level.FINE,
                     "Entered setParentTestResult with TestEntry {0} (result={1})",
-                    new Object[] { currTest.getQName(), this.verdict });
+                    new Object[] { currTest.getQName(), currTest.getResult() });
             LOGR.log(
                     Level.FINE,
                     "Parent TestEntry is {0} (result={1})",
                     new Object[] { parentTest.getQName(),
                             parentTest.getResult() });
         }
-        switch (this.verdict) {
+        switch (currTest.getResult()) {
         case FAIL:
+            // fall through
         case INHERITED_FAILURE:
             parentTest.setResult(INHERITED_FAILURE);
             break;
@@ -1003,7 +1005,7 @@ public class TECore implements Runnable {
     }
 
     public void _continue() {
-        verdict = CONTINUE;
+        this.verdict = CONTINUE;
     }
 
     public void bestPractice() {
@@ -1046,9 +1048,7 @@ public class TECore implements Runnable {
     }
 
     public void fail() {
-        if (verdict < FAIL) {
-            verdict = FAIL;
-        }
+        this.verdict = FAIL;
     }
 
     public String getResult() {
@@ -1220,8 +1220,6 @@ public class TECore implements Runnable {
         }
     }
 
-    // Create and send a soap request over HTTP then return an HttpResponse
-    // (HttpResponse)
     /**
      * Create SOAP request, sends it and return an URL Connection ready to be
      * parsed.
@@ -1990,16 +1988,16 @@ public class TECore implements Runnable {
 
         XsltTransformer formTransformer = engine.getFormExecutable().load();
         formTransformer.setSource(new DOMSource(ctlForm));
-        formTransformer.setParameter(new QName("title"), new XdmAtomicValue(name));
-        formTransformer.setParameter(new QName("web"),
-                new XdmAtomicValue(web ? "yes" : "no"));
-        formTransformer.setParameter(new QName("files"), new XdmAtomicValue(hasFiles ? "yes"
-                : "no"));
-        formTransformer.setParameter(
-                new QName("thread"),
-                new XdmAtomicValue(Long
-                        .toString(Thread.currentThread().getId())));
-        formTransformer.setParameter(new QName("method"), new XdmAtomicValue(method));
+        formTransformer.setParameter(new QName("title"), new XdmAtomicValue(
+                name));
+        formTransformer.setParameter(new QName("web"), new XdmAtomicValue(
+                web ? "yes" : "no"));
+        formTransformer.setParameter(new QName("files"), new XdmAtomicValue(
+                hasFiles ? "yes" : "no"));
+        formTransformer.setParameter(new QName("thread"), new XdmAtomicValue(
+                Long.toString(Thread.currentThread().getId())));
+        formTransformer.setParameter(new QName("method"), new XdmAtomicValue(
+                method));
         formTransformer.setParameter(new QName("base"),
                 new XdmAtomicValue(opts.getBaseURI()));
         formTransformer.setParameter(new QName("action"), new XdmAtomicValue(
