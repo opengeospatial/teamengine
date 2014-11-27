@@ -5,8 +5,8 @@
     <title>User's Guide</title>
   </head>
   <body>
-    <p>This document provides some guidance about how to use TEAM Engine to 
-    execute a test run and view the results. There are three ways to interact 
+    <p>This document provides some general guidance about how to use TEAM Engine 
+    to execute a test run and view the results. There are three ways to interact 
     with the test harness: a command shell, the web application, or a REST-like 
     API.</p>
 
@@ -83,32 +83,28 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     WEB-INF/lib directory.</p>
 
     <p>As a convenience, the <code>ets-resources</code> project may be <a target="_blank" 
-    href="https://github.com/opengeospatial/ets-resources">cloned from GitHub</a>. Run 
-    'mvn package' to generate an archive containing all supporting libraries for the 
-    latest OGC test suites. The contents of the archive are described below.</p>
+    href="https://github.com/opengeospatial/ets-resources">cloned from GitHub</a> and 
+    built (run 'mvn package') to generate an archive containing all supporting libraries 
+    for the latest OGC test suites. The contents of the archive are described below.</p>
 
     <dl>
       <dt><code>config.xml</code></dt>
-      <dd>TEAM-engine instance configuration file (TE_BASE/config.xml)</dd>
+      <dd>TEAM-engine instance configuration file (TE_BASE/config.xml).</dd>
       <dt><code>config-approved.xml</code></dt>
       <dd>TEAMengine configuration file that includes only test suite releases that 
       have been formally approved for compliance certification by the OGC Technical 
-      Committee</dd>
+      Committee.</dd>
       <dt><code>ctl-scripts-release.csv</code></dt>
       <dd>A CSV file that contains a list of test suite releases. Each line has two 
-      fields as shown below (Git repository URL, tag name). </dd>
+      fields: Git repository URL, tag name.</dd>
       <dt><code>lib/*.jar</code></dt>
-      <dd>A directory containing the required Java libraries; these must be available 
-      on the class path (WEB-INF/lib for the web application, TE_BASE/resources/lib 
-      for command-line execution)</dd>
+      <dd>A directory containing the required Java libraries that must be available 
+      on the class path; that is, WEB-INF/lib for the web application or TE_BASE/resources/lib 
+      for command-line execution.</dd>
       <dt><code>bin/</code></dt>
       <dd>A directory containing shell scripts for Windows- and UNIX-based (Linux/Mac) 
-      hosts:
-        <ul>
-          <li>setup-tebase: Sets up a TEAM-engine instance (TE_BASE) with the test 
-          suites listed in a CSV file.</li>
-        </ul>
-      </dd>
+      hosts. The `setup-tebase` script will set up a TEAM-engine instance (TE_BASE) 
+      with the test suites identified in a referenced CSV file.</dd>
     </dl>
 
     <h2>REST API</h2>
@@ -116,7 +112,7 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     A simple REST-like API (based on <a href="http://jcp.org/en/jsr/detail?id=311" target="_blank">
     JAX-RS 1.1</a>) enables programmatic execution of some test suites; currently only
     TestNG-based suites can be run in this manner. It exposes the endpoints listed in Table 2. 
-    In the request URIs the <code>{etsCode}</code> and <code>{etsVersion}</code> variables 
+    In the request URIs the <code>{etsCode}</code> and <code>{etsVersion}</code> parameters 
     denote the test suite code and version, respectively, for a particular test suite.
     </p>
 
@@ -163,21 +159,21 @@ Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
 
     <p>If a test suite is being deployed manually, several steps are required to set 
     up an executable test suite (ETS) implemented using the TestNG framework. Note that 
-    the first two steps are <strong>not</strong> required to use the REST API.</p>
+    the first two steps are <strong>not</strong> required in order to use the REST API.</p>
     <ol>
-      <li>Unpack the *-ctl.zip archive into the TE_BASE/scripts directory; it 
-      includes test suite documentation and a simple CTL script that invokes the main 
-      controller.</li>
-      <li>Update the TE_BASE/config.xml file: Add or revise the &lt;standard&gt; element 
+      <li>Unpack the *-ctl.zip archive into the TE_BASE/scripts directory; it includes 
+      test suite documentation and a simple CTL script that invokes the main controller.</li>
+      <li>Update the TE_BASE/config.xml file by adding or editing the &lt;standard&gt; element 
       for the test suite.</li>
       <li>Put the ETS component (a binary JAR file) and any dependencies into 
         the <code>WEB-INF/lib</code> directory of the web application.</li>
     </ol>
 
-    <p>The <code>*-deps</code> archive assembles the ETS and its dependencies into a single 
-    bundle that is unpacked into the lib directory in step 2 above. In some cases it may be 
-    necessary to add other (transitive) dependencies. The Tomcat instance does not need to 
-    be restarted to enable the test suite.</p>
+    <p>The <code>*-deps</code> archive assembles the ETS and its dependencies into a 
+    single bundle that is unpacked into the lib directory in the last step. In some 
+    cases it may be necessary to add other (transitive) dependencies. The Tomcat 
+    instance does not need to be restarted to enable the test suite--it should be 
+    available immediately.</p>
 
   </body>
 </html>

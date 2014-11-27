@@ -5,7 +5,7 @@
     <title>Tester's Guide</title>
   </head>
   <body>
-    <p>This document provides basic guidance about how to develop a test suite 
+    <p>This document provides some basic guidance about how to develop a test suite 
     that can be executed using TEAM Engine. The test harness is capable of running 
     tests implemented using the OGC CTL (Compliance Test Language) scripting language 
     and the TestNG framework.</p>
@@ -22,9 +22,8 @@
     The teamengine-core-${project.version}-base.zip archive contains a sample test 
     suite defined in <code>scripts/note.ctl</code>. The OGC compliance testing program 
     also maintains a set of test suites that are publicly available from GitHub at 
-    this location:</p> 
-
-    <p><code>https://github.com/opengeospatial</code></p>
+    this location: <a href="https://github.com/opengeospatial" target="_blank">
+    https://github.com/opengeospatial</a>.</p>
 
     <h2>TestNG framework</h2>
 
@@ -36,12 +35,12 @@
     perform testing at multiple levels, from unit to system testing. </p>
 
     <p>A Maven <a href="http://maven.apache.org/archetype/maven-archetype-plugin/" 
-    target="_blank">archetype</a> is available that provides a template for creating new 
-    test suites; it quickly generates a rudimentary implementation of an executable test 
-    suite (ETS) that can be run immediately. The <a href="https://github.com/opengeospatial/ets-archetype-testng" 
-    target="_blank">source code</a> is hosted at GitHub. Project releases are available in 
-    the central Maven repository with these coordinates (using the latest version is always 
-    recommended):</p>
+    target="_blank">archetype</a> is available that provides a template for seeding a 
+    new test suite; it quickly generates a rudimentary implementation of an executable 
+    test suite (ETS) that can be run immediately. The <a target="_blank" 
+    href="https://github.com/opengeospatial/ets-archetype-testng">source code</a> 
+    is hosted at GitHub. Project releases are available in the central Maven repository 
+    with these coordinates (using the latest version is always recommended):</p>
 
     <pre>
     groupId: org.opengis.cite
@@ -145,8 +144,8 @@
     NetBeans, IntelliJ), so test developers may use their IDE of choice. Some tips for using 
     Eclipse are provided below.</p>
 
-    <p>The Eclipse plug-ins listed below are strongly recommended; install them from the indicated 
-    update sites.</p>
+    <p>The following Eclipse plug-ins are strongly recommended; install them from the 
+    indicated update sites.</p>
     <ul>
       <li>TestNG: Update from [http://beust.com/eclipse]</li>
       <li>Subclipse (Subversion 1.7 client): Update from [http://subclipse.tigris.org/update_1.8.x]</li>
@@ -155,8 +154,8 @@
       <li>EGit (Git SCM client): Available from the main update site.</li>
     </ul>
 
-    <p><strong>Note:</strong> Some Eclipse packages (such as Eclipse 4.3 for Java EE Developers) 
-    may already include some of these plug-ins by default.</p>
+    <p><strong>Note:</strong> Some Eclipse distributions (such as Eclipse 4.4 for Java EE 
+    Developers) may already include some of these plug-ins by default.</p>
 
     <p>The main class is <code>TestNGController</code>, located in the root package. The test run 
     arguments are supplied as an XML representation of a Java properties file. Specify the location 
@@ -196,8 +195,8 @@
     <p>Each test suite should contain unit tests to verify that all test methods (and supporting 
     utility methods) behave as expected. The <a href="http://junit.org/" target="_blank">JUnit</a> 
     and <a href="http://code.google.com/p/mockito/" target="_blank">Mockito</a> frameworks are 
-    used for this purpose. A new test suite generated from the Maven archetype includes several 
-    sample unit tests.</p>
+    commonly used for this purpose. A new test suite generated from the Maven archetype includes 
+    several sample unit tests.</p>
     
     <p>A test run requires one or more arguments that supply information about the test subject 
     and how thoroughly it will be tested. The arguments are typically processed by a <code>SuiteFixtureListener</code> 
