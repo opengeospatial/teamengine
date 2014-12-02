@@ -34,7 +34,11 @@
 		<%@ include file="header.jsp" %>
 		<h2>Welcome</h2>
 		<%@ include file="welcome.jsp" %>
-		<a href="viewSessions.jsp">Login</a>
+    <a href="viewSessions.jsp" style="text-decoration: none">
+    <span class="box">Sign in</span></a> 
+    or 
+    <a href="register.jsp" style="text-decoration: none">
+    <span class="box">Create an account</span></a>
 		<%@ include file="footer.jsp" %>
 	</body>
 </html>

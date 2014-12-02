@@ -28,3 +28,11 @@ td, th { padding: 0.25em;}
 pre { background: AliceBlue; }
 a:link img, a:visited img { border-style: none }
 hr { border: 1px solid #000099; }
+span.box {
+  font-family: Verdana, sans-serif;
+  font-size: 0.8em;
+  margin: 0.2em;
+  padding: 0.4em;
+  color: White;
+  background-color: SteelBlue;
+}
