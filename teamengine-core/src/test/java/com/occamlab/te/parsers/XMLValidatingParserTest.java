@@ -1,5 +1,12 @@
 package com.occamlab.te.parsers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,12 +17,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.hamcrest.core.StringContains;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.matchers.JUnitMatchers;
 import org.w3c.dom.Document;
-
-import static org.junit.Assert.*;
 
 public class XMLValidatingParserTest {
 
@@ -99,7 +104,7 @@ public class XMLValidatingParserTest {
                 strWriter.toString().isEmpty());
         assertThat("Expected error message containing: no grammar found",
                 strWriter.toString(),
-                StringContains.containsString("no grammar found"));
+                JUnitMatchers.containsString("no grammar found"));
     }
 
 }
