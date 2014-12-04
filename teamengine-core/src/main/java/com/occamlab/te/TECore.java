@@ -154,6 +154,15 @@ public class TECore implements Runnable {
     public static final int INHERITED_FAILURE = 5;
     public static final int FAIL = 6;
 
+    public static final String MSG_CONTINUE = "Inconclusive! Continue Test";
+    public static final String MSG_BEST_PRACTICE = "Passed as Best Practice";
+    public static final String MSG_PASS = "Passed";
+    public static final String MSG_NOT_TESTED = "Not Tested";
+    public static final String MSG_SKIPPED = "Skipped - Prerequisites not satisfied";
+    public static final String MSG_WARNING = "Warning";
+    public static final String MSG_INHERITED_FAILURE = "Failed - Inherited";
+    public static final String MSG_FAIL = "Failed";
+    
     public static final int MANDATORY = 0;
     public static final int MANDATORY_IF_IMPLEMENTED = 1;
     public static final int OPTIONAL = 2;
@@ -390,11 +399,11 @@ public class TECore implements Runnable {
         out.print("Suite " + suite.getPrefix() + ":" + suite.getLocalName()
                 + " ");
         if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
-            out.println("Failed");
+            out.println(MSG_FAIL);
         } else if (result == TECore.BEST_PRACTICE) {
-            out.println("Passed as Best Practice");
+            out.println(MSG_BEST_PRACTICE);
         } else {
-            out.println("Passed");
+            out.println(MSG_PASS);
         }
     }
 
@@ -449,13 +458,13 @@ public class TECore implements Runnable {
                         .getAttribute("result"));
                 if (baseResult == TECore.FAIL
                         || baseResult == TECore.INHERITED_FAILURE) {
-                    summary = "Failed";
+                    summary = MSG_FAIL;
                 } else if (verdict == TECore.BEST_PRACTICE) {
-                    summary = "Passed as Best Practice";
+                    summary = MSG_BEST_PRACTICE;
                 } else if (verdict == TECore.SKIPPED) {
-                    summary = "Skipped";
+                    summary = MSG_SKIPPED;
                 } else {
-                    summary = "Passed";
+                    summary = MSG_PASS;
                 }
             }
             out.println(summary);
@@ -470,13 +479,13 @@ public class TECore implements Runnable {
             out.print("Profile " + profile.getPrefix() + ":"
                     + profile.getLocalName() + " ");
             if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
-                summary = "Failed";
+                summary = MSG_FAIL;
             } else if (result == TECore.BEST_PRACTICE) {
-                summary = "Passed as Best Practice";
+                summary = MSG_BEST_PRACTICE;
             } else if (verdict == TECore.SKIPPED) {
-                summary = "Skipped";
+                summary = MSG_SKIPPED;
             } else {
-                summary = "Passed";
+                summary = MSG_PASS;
             }
             out.println(summary);
         } else {
@@ -577,21 +586,21 @@ public class TECore implements Runnable {
 
     static String getResultDescription(int result) {
         if (result == CONTINUE) {
-            return "Inconclusive! Continue Test";
+            return MSG_CONTINUE;
         } else if (result == BEST_PRACTICE) {
-            return "Passed as Best Practice";
+            return MSG_BEST_PRACTICE;
         } else if (result == PASS) {
-            return "Passed";
+            return MSG_PASS;
         } else if (result == NOT_TESTED) {
-            return "Not Tested";
+            return MSG_NOT_TESTED;
         } else if (result == SKIPPED) {
-            return "Skipped - Prerequisites not satisfied";
+            return MSG_SKIPPED;
         } else if (result == WARNING) {
-            return ("Warning");
+            return MSG_WARNING;
         } else if (result == INHERITED_FAILURE) {
-            return "Failed - Inherited)";
+            return MSG_INHERITED_FAILURE;
         } else {
-            return "Failed";
+            return MSG_FAIL;
         }
     }
 
@@ -625,7 +634,7 @@ public class TECore implements Runnable {
             prevLog = null;
         }
         String assertion = getAssertionValue(test.getAssertion(), params);
-        out.print("Testing ");
+        out.print(indent + "Testing ");
         out.print(test.getName() + " type " + test.getType());
         out.print(" in " + getMode() + " with defaultResult "
                 + defaultResultName + " ");
@@ -668,6 +677,7 @@ public class TECore implements Runnable {
             logger.flush();
         }
 
+        int oldVerdict = this.verdict;
         this.verdict = defaultResult;
         try {
             executeTemplate(test, params, context);
@@ -704,7 +714,13 @@ public class TECore implements Runnable {
                             getResultDescription(test.getResult()));
             LOGR.log(Level.FINE, msg);
         }
-        return verdict;
+
+        //restore previous verdict if the result isn't worse
+        if (this.verdict <= oldVerdict) {
+            this.verdict = oldVerdict;
+        }
+        
+        return test.getResult();
     }
 
     /**
