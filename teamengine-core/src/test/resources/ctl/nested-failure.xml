@@ -11,6 +11,7 @@
 
   <ctl:test name="test:main">
     <ctl:assertion>main test is valid</ctl:assertion>
+    <!-- NOTE: Expect inherited failure -->
     <ctl:code>
       <ctl:call-test name="test:testA" />
       <ctl:call-test name="test:testB" />
@@ -19,6 +20,7 @@
 
   <ctl:test name="test:testA">
     <ctl:assertion>testA is valid</ctl:assertion>
+    <!-- NOTE: Expect inherited failure -->
     <ctl:code>
       <ctl:call-test name="test:testA1" />
       <ctl:call-test name="test:testA2" />

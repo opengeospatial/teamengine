@@ -75,24 +75,24 @@ public class TECoreTest {
         assertNotNull(teCore);        
         teCore.execute();
 
-        // FIXME this should be TECore.MSG_INHERITED_FAILURE, but the verdict instance variable
-        // in TECore is getting overwritten 
-        assertEquals(TECore.MSG_FAIL, teCore.getResult());
+        // Check result of starting test directly since the value of the 
+        // verdict instance variable probably corresponds to some subtest.
+        TestEntry startingTest = teCore.testStack.getFirst();
+        assertEquals(TECore.MSG_INHERITED_FAILURE,  
+            TECore.getResultDescription(startingTest.getResult()));
 
         SuiteEntry testSuite = teCore.getIndex().getSuite("test:suite");
         assertNotNull(testSuite);
 
         TestEntry mainTest = teCore.getIndex().getTest(testSuite.getStartingTest());
         assertNotNull(mainTest);
-        assertEquals(TECore.FAIL, mainTest.getResult());
-
-        assertTestResult(teCore.getIndex(), "testA", TECore.FAIL);
+        // Starting test verdict is set by failing subtest(s)
+        assertEquals(TECore.INHERITED_FAILURE, mainTest.getResult());
+        assertTestResult(teCore.getIndex(), "testA", TECore.INHERITED_FAILURE);
         assertTestResult(teCore.getIndex(), "testB", TECore.PASS);
-
         assertTestResult(teCore.getIndex(), "testA1", TECore.PASS);
         assertTestResult(teCore.getIndex(), "testA2", TECore.FAIL);
         assertTestResult(teCore.getIndex(), "testA3", TECore.PASS);
-
         assertTestResult(teCore.getIndex(), "testB1", TECore.PASS);
         assertTestResult(teCore.getIndex(), "testB2", TECore.PASS);
         assertTestResult(teCore.getIndex(), "testB3", TECore.PASS);
