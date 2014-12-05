@@ -38,7 +38,7 @@
       <item href="users.html" name="User's Guide" />
       <item href="testers.html" name="Tester's Guide" />
     </menu>
-    
+    <menu ref="reports" />
     <menu name="About">
       <item href="changelog.html" name="Release Notes" />
     </menu>

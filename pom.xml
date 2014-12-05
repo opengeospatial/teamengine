@@ -67,6 +67,11 @@
       <name>Sumit Sen</name>
       <email>sumits1 {AT} yahoo {DOT} com</email>
     </developer>
+    <developer>
+      <name>Tanvi Shah</name>
+      <url>https://github.com/tanvi-shah</url>
+      <timezone>Asia/Kolkata</timezone>
+    </developer>
   </developers>
 
   <prerequisites>
@@ -92,7 +97,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>[4.10,)</version>
+        <version>4.10</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -123,8 +128,7 @@
             <version>1.6</version>
           </dependency>
         </dependencies>
-        <configuration>  
-          <generateReports>false</generateReports>
+        <configuration>
           <relativizeDecorationLinks>false</relativizeDecorationLinks>
         </configuration> 
       </plugin>
@@ -267,6 +271,23 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.7</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>license</report>
+              <report>issue-tracking</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <profiles>
     <profile>
