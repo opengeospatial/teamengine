@@ -44,6 +44,7 @@ The current license is Mozilla Public License 1.1 (MPL 1.1).
 Download Pre-requisite Software:
 ==============
 In order to build Team Engine and the OGC tests you will need the following software:
+
 - Java 1.7.0_67
 - Maven 3.2.2
 - Git 1.8
