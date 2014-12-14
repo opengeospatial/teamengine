@@ -706,7 +706,7 @@ public class TECore implements Runnable {
         prevLog = oldPrevLog;
         indent = oldIndent;
         out.println(indent + "Test " + test.getName() + " "
-                + getResultDescription(verdict));
+                + getResultDescription(test.getResult()));
         if (LOGR.isLoggable(Level.FINE)) {
             String msg = String
                     .format("Executed test %s - Verdict: %s",

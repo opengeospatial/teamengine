@@ -2,7 +2,9 @@ package com.occamlab.te;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -70,10 +72,22 @@ public class TECoreTest {
 
     @Test
     public void testNestedFailure() throws Throwable {
+        ByteArrayOutputStream outCapture = new ByteArrayOutputStream();
+        PrintStream origPrintStream = System.out;
+        System.setOut(new PrintStream(outCapture));
+
         Index testIndex = getTestIndex(new File("src/test/resources/ctl/nested-failure.xml"));
         TECore teCore = new TECore(engine, testIndex, runOpts);
-        assertNotNull(teCore);        
-        teCore.execute();
+        assertNotNull(teCore);
+
+        try {
+            teCore.execute();
+        } finally {
+            System.setOut(origPrintStream);
+        }
+
+        String output = outCapture.toString();
+        System.out.print(output); 
 
         // Check result of starting test directly since the value of the 
         // verdict instance variable probably corresponds to some subtest.
@@ -96,5 +110,23 @@ public class TECoreTest {
         assertTestResult(teCore.getIndex(), "testB1", TECore.PASS);
         assertTestResult(teCore.getIndex(), "testB2", TECore.PASS);
         assertTestResult(teCore.getIndex(), "testB3", TECore.PASS);
+
+        //also verify the output messages
+        verifyOutputContainsResult(output, "suite", TECore.FAIL);
+        verifyOutputContainsResult(output, "test:main", TECore.INHERITED_FAILURE);
+        verifyOutputContainsResult(output, "test:testA", TECore.INHERITED_FAILURE);
+        verifyOutputContainsResult(output, "test:testB", TECore.PASS);
+        verifyOutputContainsResult(output, "test:testA1", TECore.PASS);
+        verifyOutputContainsResult(output, "test:testA2", TECore.FAIL);
+        verifyOutputContainsResult(output, "test:testA3", TECore.PASS);
+        verifyOutputContainsResult(output, "test:testB1", TECore.PASS);
+        verifyOutputContainsResult(output, "test:testB2", TECore.PASS);
+        verifyOutputContainsResult(output, "test:testB3", TECore.PASS);
+    }
+
+    private void verifyOutputContainsResult(String output, String target, int result) {
+        String expectedResult = TECore.getResultDescription(result);
+        assertTrue(target + " didn't have result " + expectedResult,
+                output.contains(target + " " + TECore.getResultDescription(result)));        
     }
 }
