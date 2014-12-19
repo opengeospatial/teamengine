@@ -70,10 +70,8 @@ public class ReportLog {
                 if(no_of_failedTest!=0 || no_of_passedTest !=0)
                 {
                     if (no_of_failedTest == 0 && no_of_passedTest !=0 ) {
-                    result = "Pass";
                     failReportConformance2 = failReportConformance2+", "+input + " conform to the clause A." + count + " of ISO 19139";
                 } else {
-                        result = "Fail";
                         failReportConformance2 = failReportConformance2+", "+input + " does not conform to the clause A." + count + " of ISO 19139";
                     
                 }
@@ -87,6 +85,11 @@ public class ReportLog {
         failedTest+=finalFailedTest;
         skippedTest+=finalSkippedTest;
         passedTest+=finalPassedTest;
+        if(failedTest>0){
+          result="Fail";
+        }else{
+          result="Pass";
+        }
         Reporter.log("**RESULT: " + result);
         Reporter.log("**INPUT: " + input);
         Reporter.log("**TEST NAME AND VERSION    :" + suiteName);

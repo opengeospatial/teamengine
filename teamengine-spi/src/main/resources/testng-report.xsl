@@ -757,42 +757,43 @@
     
     <xsl:template name="breakIntoWords">
         <xsl:param name="string" />
-        <xsl:choose>
-            <xsl:when test="string-length($string) &lt; 2">
-                <xsl:value-of select="$string" />
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="breakIntoWordsHelper">
-                    <xsl:with-param name="string" select="$string" />
-                    <xsl:with-param name="token" select="substring($string, 1, 1)" />
-                </xsl:call-template>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
-    <xsl:template name="breakIntoWordsHelper">
-        <xsl:param name="string" select="''" />
-        <xsl:param name="token" select="''" />
-        <xsl:choose>
-            <xsl:when test="string-length($string) = 0" />
-            <xsl:when test="string-length($token) = 0" />
-            <xsl:when test="string-length($string) = string-length($token)">
-                <xsl:value-of select="$token" />
-            </xsl:when>
-            <xsl:when test="contains('ABCDEFGHIJKLMNOPQRSTUVWXYZ',substring($string, string-length($token) + 1, 1))">
-                <xsl:value-of select="concat($token, ' ')" />
-                <xsl:call-template name="breakIntoWordsHelper">
-                    <xsl:with-param name="string" select="substring-after($string, $token)" />
-                    <xsl:with-param name="token" select="substring($string, string-length($token), 1)" />
-                </xsl:call-template>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="breakIntoWordsHelper">
-                    <xsl:with-param name="string" select="$string" />
-                    <xsl:with-param name="token" select="substring($string, 1, string-length($token) + 1)" />
-                </xsl:call-template>
-            </xsl:otherwise>
-        </xsl:choose>
+        <script type="text/javascript">
+        function getName() {
+	    var testName = '<xsl:value-of select="$string"/>';
+	    return testName;
+	}
+        </script>
+        <script type="text/javascript">
+          <xsl:comment><![CDATA[ 
+          var testName=getName();
+          var testDummyName="";
+          var mangledName = {"Mangled": [
+        {"ID": "_1_", "Name": "XML"},
+        {"ID": "_2_", "Name": "XSD"},
+        {"ID": "_3_", "Name": "GML"},
+        {"ID": "_4_", "Name": "CRS"}
+    ]
+};
+          
+          for (var index = 0; index < mangledName.Mangled.length; index++) {
+          if(testName.indexOf(mangledName.Mangled[index].Name)>-1){
+            testName=testName.replace(mangledName.Mangled[index].Name, " "+mangledName.Mangled[index].ID);
+          }
+          }
+         var temp=testName.split(/(?=[A-Z])/); 
+         
+          for(var index=0;index < temp.length; index++){
+              testDummyName=testDummyName+temp[index]+" ";
+          }
+          for(var index = 0; index < mangledName.Mangled.length; index++){
+          if(testDummyName.indexOf(mangledName.Mangled[index].ID)>-1){
+            testDummyName=testDummyName.replace(mangledName.Mangled[index].ID, mangledName.Mangled[index].Name);
+          }
+          }
+            document.write(testDummyName);
+            ]]> </xsl:comment>
+        </script>
+        
     </xsl:template>
 
     <xsl:template name="suiteContentFile">
@@ -1045,10 +1046,10 @@
                 <td nowrap="true" width="400px" style="vertical-align:top">
                     <xsl:if test="./exception">
                         <a onclick="toggleDetailsVisibility('{$exceptionDetailsId}')">
-                            <xsl:call-template name="split">
-                                <xsl:with-param name="str" select=
+                          <xsl:call-template name="split">
+                                    <xsl:with-param name="str" select=
      "substring-before(exception/message,'expected [')"/>
-                            </xsl:call-template>
+                           </xsl:call-template>
                         </a>
                     </xsl:if>
                     &#160;
