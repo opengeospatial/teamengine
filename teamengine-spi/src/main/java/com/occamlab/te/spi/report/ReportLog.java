@@ -37,7 +37,7 @@ public class ReportLog {
         //Getting the results for the said suite
         Map suiteResults = suite.getResults();
         String input = null;
-        String result = null;
+        String result;
         String failReport = null;
         String failReportConformance2=",";
         int passedTest = 0;
@@ -55,7 +55,6 @@ public class ReportLog {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Calendar cal = Calendar.getInstance();
             if (count == 1) {
-                result = tc.getAttribute("Result").toString();
                 date = dateFormat.format(cal.getTime());
                 input = tc.getAttribute("Input").toString();
                 failReport = tc.getAttribute("FailReport").toString();
