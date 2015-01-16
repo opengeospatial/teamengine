@@ -57,7 +57,7 @@ public class ReportLog {
             if (count == 1) {
                 date = dateFormat.format(cal.getTime());
                 input = tc.getAttribute("Input").toString();
-                failReport = tc.getAttribute("FailReport").toString();
+                failReport = tc.getAttribute("TestResultReport").toString();
                 passedTest = tc.getPassedTests().getAllResults().size();
                 skippedTest = tc.getSkippedTests().getAllResults().size();
                 failedTest = tc.getFailedTests().getAllResults().size();

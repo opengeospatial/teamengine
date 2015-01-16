@@ -774,8 +774,9 @@
         {"ID": "_4_", "Name": "CRS"},
         {"ID": "_5_", "Name": "(GET)"},
         {"ID": "_6_", "Name": "(POST)"},
-            {"ID": "_7_", "Name": "BBOX"},
-            {"ID": "_8_", "Name": "URI"}
+        {"ID": "_7_", "Name": "BBOX"},
+        {"ID": "_8_", "Name": "URI"},
+        {"ID":"_9_","Name":"WFS"}
     ]
 };
           
