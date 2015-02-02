@@ -88,7 +88,7 @@
 		for(int i=0;i<organizationList.size();i++){
 		%>
 			if(document.standardsForm.Organization.value == '<%=organizationList.get(i)%>'){			
-			<%	
+                        <%	
 				List<String> standardList = standardMap.get(organizationList.get(i)); 
 				for(int j=0;j<standardList.size();j++){
 			%>

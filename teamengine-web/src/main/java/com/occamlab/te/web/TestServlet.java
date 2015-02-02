@@ -74,6 +74,8 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
+import com.oracle.webservices.api.message.PropertySet;
+import java.util.Properties;
 
 /**
  * Main request handler.

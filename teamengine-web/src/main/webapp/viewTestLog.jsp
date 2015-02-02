@@ -51,11 +51,12 @@ public void jspInit() {
 <%
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String test = request.getParameter("test");
+      String testName=null;
       int i = test.indexOf("/");
       sessionId = (i > 0) ? test.substring(0, i) : test;
       ArrayList tests = new ArrayList();
       tests.add(test);
-      boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);
+      boolean complete = ViewLog.view_log(testName,userlog, sessionId, tests, ViewLogTemplates, out);
       out.println("<br/>");
       if (!complete) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");

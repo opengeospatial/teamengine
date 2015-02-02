@@ -62,6 +62,8 @@ public class LogUtils {
             throws Exception {
         if (logDir != null) {
             File dir = new File(logDir, callpath);
+            String path=logDir.toString() + "/" + callpath.split("/")[0];
+            System.setProperty("PATH", path);
             dir.mkdir();
             File f = new File(dir, "log.xml");
             f.delete();

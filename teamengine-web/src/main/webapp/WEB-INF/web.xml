@@ -39,7 +39,7 @@
   <servlet>
     <servlet-name>downloadLog</servlet-name>
     <servlet-class>com.occamlab.te.web.DownloadLogServlet</servlet-class>
-  </servlet>
+  </servlet>	
   <servlet>
     <servlet-name>prettyPrintLogs</servlet-name>
     <servlet-class>com.occamlab.te.web.PrettyPrintLogsServlet</servlet-class>
@@ -67,8 +67,23 @@
       <param-name>mail.to</param-name>
       <param-value>approver@example.com</param-value>
     </init-param>
-  </servlet>
+  </servlet>	
   <servlet>
+    <servlet-name>StoreRunResources</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>TestGetMapResources</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>TestFinalResult</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+  </servlet>
+  
+<servlet>
     <servlet-name>TestSuiteController</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
@@ -90,6 +105,18 @@
   <servlet-mapping>
     <servlet-name>TestSuiteController</servlet-name>
     <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+<servlet-mapping>
+    <servlet-name>StoreRunResources</servlet-name>
+    <url-pattern>/restTest/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TestGetMapResources</servlet-name>
+    <url-pattern>/restMap/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TestFinalResult</servlet-name>
+    <url-pattern>/restResult/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>test</servlet-name>

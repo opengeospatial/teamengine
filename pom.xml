@@ -165,6 +165,7 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.18</version>
           <configuration>
+            <skipTests>true</skipTests>
             <!-- Disable TestNG runner (enabled due to compile dependency) -->
             <testNGArtifactName>null:null</testNGArtifactName>
             <junitArtifactName>junit:junit</junitArtifactName>

@@ -12,6 +12,8 @@
 		</div>
 		<%
 		    String user = request.getRemoteUser();
+                    Cookie userName=new Cookie("User", user);
+                    response.addCookie(userName);
 		    if (user != null && user.length() > 0) {
 		        out.println("\t\t<div style=\"position: absolute; right:20px; top:25px; background-color: white; padding: 3px; border-style: inset\">");
 		        out.println("\t\t\tUser: " + user + "<br/>");

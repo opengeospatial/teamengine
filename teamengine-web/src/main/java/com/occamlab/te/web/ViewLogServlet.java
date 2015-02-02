@@ -73,7 +73,8 @@ public class ViewLogServlet extends HttpServlet {
             if (test != null) {
                 tests.add(test);
             }
-            ViewLog.view_log(userlog, session, tests, viewLogTemplates,
+            String suiteName=null;
+            ViewLog.view_log(suiteName,userlog, session, tests, viewLogTemplates,
                     new OutputStreamWriter(response.getOutputStream()));
         } catch (Exception e) {
             throw new ServletException(e);
