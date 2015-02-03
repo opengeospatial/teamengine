@@ -680,11 +680,13 @@ public class TECore implements Runnable {
 
     //Check test is contain client test main layer or not
     
-        if (test.getName().contains(Constants.GetCapability)||test.getName().contains(Constants.GetMap)||test.getName().contains(Constants.GetFeatureInfo)) {
+    if(rootTestName!=null&&rootTestName.size()>0){
+      for (int i = 0; i < rootTestName.size(); i++) {
+        if((test.getName()).contains(rootTestName.get(i))){
           methodCount++;
-        }
-    
+        }}}
 
+    
     out.print(" in " + getMode() + " with defaultResult "
             + defaultResultName + " ");
     String testName = test.getName() + " type " + test.getType();
