@@ -95,6 +95,7 @@ public class SetupOptions {
    * @throws java.io.IOException
    */
   public static boolean recordingInfo(String testName) throws ParserConfigurationException, SAXException, IOException {
+    TECore.rootTestName.clear();
     String path = getBaseConfigDirectory() + "/config.xml";
     DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     Document doc = db.parse(path);

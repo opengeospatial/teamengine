@@ -2,9 +2,6 @@ package com.occamlab.te.util;
 
 public class Constants {
   public static final String YYYY_M_MDD_H_HMMSS = "yyyy/MM/dd-HH:mm:ss";
-  public static final String GetCapability="GetCapabilities";
-  public static final String GetMap="GetMap";
-  public static final String GetFeatureInfo="GetFeatureInfo";
   public static final String TEST_RESULTTXT = "/test_result.txt";
   public static final String result_logxml = "/result_log.xml";
   public static final String result_clausexml = "/result_clause.xml";

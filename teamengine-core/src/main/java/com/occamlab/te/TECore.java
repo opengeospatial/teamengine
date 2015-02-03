@@ -683,9 +683,11 @@ public class TECore implements Runnable {
     if(rootTestName!=null&&rootTestName.size()>0){
       for (int i = 0; i < rootTestName.size(); i++) {
         if((test.getName()).contains(rootTestName.get(i))){
-          methodCount++;
-        }}}
-
+           methodCount=methodCount+1;
+        }
+    }
+    }
+    
     
     out.print(" in " + getMode() + " with defaultResult "
             + defaultResultName + " ");
@@ -2032,16 +2034,17 @@ public class TECore implements Runnable {
     String messageTrim = message.trim().replaceAll("\n", "\n" + indent);
     if (!(messageTrim.contains("Clause") || messageTrim.contains("Purpose") || messageTrim.contains("TestName"))) {
       out.println(formatted_message);
+      messageTest = message;
     } else {
       if (messageTrim.contains("TestName")) {
         TESTNAME = messageTrim.replace("TestName : ", "");
-        if (messageTrim.contains(Constants.GetCapability)) {
-              rootNo = 1;
-            }else if(messageTrim.contains(Constants.GetMap)){
-              rootNo=2;
-            }else{
-              rootNo=3;
+        if(rootTestName!=null&&rootTestName.size()>0){
+        for (int i = 0; i < rootTestName.size(); i++) {
+          if(messageTrim.contains(rootTestName.get(i))){
+           rootNo=i+1;
             }
+          }
+        }
       } else if (messageTrim.contains("Clause")) {
         Clause = messageTrim.replace("Clause : ", "");;
       } else {
@@ -2055,7 +2058,6 @@ public class TECore implements Runnable {
         rootNo = 0;
       }
     }
-    messageTest = message;
     if (logger != null) {
       logger.println("<message id=\"" + id + "\"><![CDATA[" + message
               + "]]></message>");

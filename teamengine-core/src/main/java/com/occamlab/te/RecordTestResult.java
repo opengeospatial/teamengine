@@ -44,7 +44,7 @@ public class RecordTestResult {
   private static final String LOGXML = "/log.xml";
   private static final String TESTNG = "/testng";
   private static final String PATH = "PATH";
-  
+
   /**
    * This method helps to display output and error stack details.
    */
@@ -218,12 +218,18 @@ public class RecordTestResult {
     Element testRequest = TECore.docClause.createElement(Constants.Request);
     testRequest.setAttribute(NO, String.valueOf(TECore.rootNo));
     // append child into testRequest
-    testRequest.appendChild(getMethodElements(TECore.docClause, testRequest, Constants.TESTNAME, TECore.TESTNAME));
-    testRequest.appendChild(getMethodElements(TECore.docClause, testRequest, Constants.Clause, TECore.Clause));
-    testRequest.appendChild(getMethodElements(TECore.docClause, testRequest, Constants.Purpose, TECore.Purpose));
+    testRequest.appendChild(getClauseElements(TECore.docClause, testRequest, Constants.TESTNAME, TECore.TESTNAME));
+    testRequest.appendChild(getClauseElements(TECore.docClause, testRequest, Constants.Clause, TECore.Clause));
+    testRequest.appendChild(getClauseElements(TECore.docClause, testRequest, Constants.Purpose, TECore.Purpose));
     return testRequest;
   }
 
+  
+  public static Node getClauseElements(Document doc, Element element, String name, String value) {
+    Element node = doc.createElement(name);
+    node.appendChild(doc.createTextNode(value));
+    return node;
+  }
   /**
    * Convert the data in form of key-value pair and return in form of Node.
    * @param doc
