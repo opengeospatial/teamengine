@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
  */
 @Path("suiteMap")
 @Produces("application/json")
-public class TestGetMapResources {
+public class TestMapResources {
 
   private static final String TE_BASE = "TE_BASE";
 

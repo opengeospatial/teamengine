@@ -74,7 +74,7 @@
   </servlet>
   
   <servlet>
-    <servlet-name>TestGetMapResources</servlet-name>
+    <servlet-name>TestMapResources</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
   </servlet>
   
@@ -111,7 +111,7 @@
     <url-pattern>/restTest/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>TestGetMapResources</servlet-name>
+    <servlet-name>TestMapResources</servlet-name>
     <url-pattern>/restMap/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
