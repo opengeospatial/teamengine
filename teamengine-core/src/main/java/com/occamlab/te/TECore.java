@@ -694,13 +694,15 @@ public class TECore implements Runnable {
     String testName = test.getName() + " type " + test.getType();
     System.setProperty("TestName", testName);
     out.println("(" + testPath + ")...");
-    String logDir = opts.getLogDir() + "/" + testPath.split("/")[0];
-    //create log directory
-    if ("True".equals(System.getProperty("Record"))) {
-      dirPath = new File(logDir + "/test_data");
-      if (!dirPath.exists()) {
-        if (!dirPath.mkdir()) {
-          System.out.println("Failed to create Error Log!");
+    if(opts.getLogDir()!=null){
+      String logDir = opts.getLogDir() + "/" + testPath.split("/")[0];
+      //create log directory
+      if ("True".equals(System.getProperty("Record"))) {
+        dirPath = new File(logDir + "/test_data");
+        if (!dirPath.exists()) {
+          if (!dirPath.mkdir()) {
+            System.out.println("Failed to create Error Log!");
+          }
         }
       }
     }
