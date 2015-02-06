@@ -1,5 +1,9 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
+import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
+import com.occamlab.te.spi.jaxrs.TestSuiteController;
+import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
+import com.sun.jersey.multipart.FormDataParam;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -26,9 +29,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
-import com.occamlab.te.spi.jaxrs.TestSuiteController;
-import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
+import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -87,30 +88,79 @@ public class TestRunResource {
      *            A String that identifies the test suite to be run.
      * @param etsVersion
      *            A String specifying the desired test suite version.
-     * @param entityBody
+   * @param entityBody
      *            A File containing the request entity body.
      * @return An XML representation of the test results.
      */
-    @POST
+  @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
     public Source handlePost(@PathParam("etsCode") String etsCode,
-            @PathParam("etsVersion") String etsVersion, File entityBody) {
-        if (!entityBody.exists() || entityBody.length() == 0) {
+            @PathParam("etsVersion") String etsVersion, File entityBody) throws TransformerException {
+if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
-        }
+		}
         if (LOGR.isLoggable(Level.FINE)) {
             StringBuilder msg = new StringBuilder("Test run arguments - ");
             msg.append(etsCode).append("/").append(etsVersion).append("\n");
             msg.append("Entity media type: " + this.headers.getMediaType());
             msg.append("File location: " + entityBody.getAbsolutePath());
             LOGR.fine(msg.toString());
-        }
-        Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
+		  }
+ Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
         Source results = executeTestRun(etsCode, etsVersion, args);
         return results;
     }
-
+    
+    /**
+     * Processes a request submitted using the POST method. The request entity
+     * represents the test subject or provides metadata about it. The entity
+     * body is written to a local file, the location of which is set as the
+     * value of the {@code iut } and schBody is written to a local file, the location of which is set as the
+     * value of the {@code sch} parameter.
+     * @param etsCode
+     * @param etsVersion
+     * @param entityBody
+     * @param schBody
+     * @return
+     * @throws TransformerException 
+     */
+    @POST
+    @Consumes({ MediaType.MULTIPART_FORM_DATA})
+    public Source handlePost(@PathParam("etsCode") String etsCode,
+            @PathParam("etsVersion") String etsVersion,  @FormDataParam("iut") File entityBody,@FormDataParam("sch") File schBody) throws TransformerException {
+      Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
+      if (!entityBody.exists() || entityBody.length() == 0) {
+            throw new WebApplicationException(400);
+		}
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder("Test run arguments - ");
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append("Entity media type: " + this.headers.getMediaType());
+            msg.append("File location: " + entityBody.getAbsolutePath());
+            LOGR.fine(msg.toString());
+		  }
+        
+        if(null != schBody){
+        if (!schBody.exists() || schBody.length() == 0) {
+            throw new WebApplicationException(400);
+		}
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder("Test run arguments - ");
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append("Entity media type: " + this.headers.getMediaType());
+            msg.append("File location: " + schBody.getAbsolutePath());
+            LOGR.fine(msg.toString());
+		  }
+        args.put("sch", Arrays.asList(schBody.toURI().toString()));
+        }
+        
+        args.put("iut", Arrays.asList(entityBody.toURI().toString()));
+        
+        Source results = executeTestRun(etsCode, etsVersion, args);
+        return results;
+    }
+    
     /**
      * Executes a test run using the supplied arguments.
      * 
