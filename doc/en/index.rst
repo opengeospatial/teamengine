@@ -738,38 +738,47 @@ Run tests as follows::
 The test suite may be run in any of the following environments:
 
 Integrated development environment (IDE): The main Java class is TestNGController.
+
 RESTful API: Submit a request that includes the necessary arguments to the test run controller
+
 TEAM-Engine: Run the CTL script located in the /src/main/ctl/ directory.
 
 
 The test run arguments are summarized in Table 2 - Test run arguments. 
 The Obligation column can have the following values:  M (mandatory), O (optional), or C (conditional). 
 
-Table - Test run arguments 
-Name	Value 	       Obligation	
-iut	URI/ File	         M	
-ics	CSV or Int 	 O	
-sch	URI/ File	         M	
+Table - Test run arguments
 
-iut: A URI that refers to the implementation under test or metadata about it. Ampersand ('&') characters must be percent-encoded as '%26'.
-ics: An implementation conformance statement that indicates which conformance classes or options are supported.
-sch: A URI that refers to the schematron. Ampersand ('&') characters must be percent-encoded as '%26' and when select ics=3 at that time it is mandatory.
+          (Name, Value,Obligation)
 
-In GET Request : 
-iut and sch are URI's
+          (iut,URI/ File, M)	
 
-In POST Request : 
-iut and sch are keys of the files attached in the POST Body
+          (ics,CSV or Int,O)	
 
-To test GET API :
-curl -sS 'http://teamengineProjectURI/rest/suites/testName/1.0/run?iut=Metadata.xml&sch=Schematron.sch.sch&ics=3'
+          (sch,URI/ File,M)	
 
-To test POST API :
-Whenever a user wants to test a Metadata file against a given Schematron (both given as a input by the user) with the help of the Teamengine's REST POST API:
 
-curl -X POST --header "Content-Type:multipart/form-data" -F "iut=@path/to/XML" -F "sch=@path/to/Schematorn" http://teamengineProjectURI/rest/suites/testName/1.0/run
+* iut: A URI that refers to the implementation under test or metadata about it. Ampersand ('&') characters must be percent-encoded as '%26'.
 
-path/to/XML is the path to the Metadata file  and path/to/Schematorn is the path to the Schematron file.
+* ics: An implementation conformance statement that indicates which conformance classes or options are supported.
+
+* sch: A URI that refers to the schematron. Ampersand ('&') characters must be percent-encoded as '%26' and when select ics=3 at that time it is mandatory.
+
+          In GET Request : 
+          iut and sch are URI's
+
+          In POST Request : 
+          iut and sch are keys of the files attached in the POST Body
+
+          To test GET API :
+          curl -sS 'http://teamengineProjectURI/rest/suites/testName/1.0/run?iut=Metadata.xml&sch=Schematron.sch.sch&ics=3'
+
+          To test POST API :
+          Whenever a user wants to test a Metadata file against a given Schematron (both given as a input by the user) with the help of the Teamengine's REST POST API:
+          
+          curl -X POST --header "Content-Type:multipart/form-data" -F "iut=@path/to/XML" -F "sch=@path/to/Schematorn" http://teamengineProjectURI/rest/suites/testName/1.0/run
+          
+          path/to/XML is the path to the Metadata file  and path/to/Schematorn is the path to the Schematron file.
 
 
 Build TEAM Engine as Web application
