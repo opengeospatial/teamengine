@@ -767,7 +767,7 @@ curl -sS 'http://teamengineProjectURI/rest/suites/testName/1.0/run?iut=Metadata.
 To test POST API :
 Whenever a user wants to test a Metadata file against a given Schematron (both given as a input by the user) with the help of the Teamengine's REST POST API:
 
-curl -X POST --header "Content-Type:multipart/form-data" -F "iut=@path/to/XML" -F "sch=@path/to/Schematorn" url
+curl -X POST --header "Content-Type:multipart/form-data" -F "iut=@path/to/XML" -F "sch=@path/to/Schematorn" http://teamengineProjectURI/rest/suites/testName/1.0/run
 
 path/to/XML is the path to the Metadata file  and path/to/Schematorn is the path to the Schematron file.
 
