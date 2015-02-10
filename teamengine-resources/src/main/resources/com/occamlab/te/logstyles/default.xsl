@@ -29,6 +29,8 @@
   <xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
 
   <xsl:param name="logdir"/>
+  <xsl:param name="sessionDir"/>
+  <xsl:param name="TESTNAME"/>
   <xsl:param name="index"/>
 
   <xsl:template name="build-param-string">

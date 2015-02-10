@@ -107,7 +107,7 @@ public void jspInit() {
       }
       out.println("<h3>Test Suite: " + suiteName + "</h3>");
       ArrayList tests = new ArrayList();
-      boolean complete = ViewLog.view_log(userlog, sessionId, tests, ViewLogTemplates, out);     
+      boolean complete = ViewLog.view_log(suiteName,userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
       if (!complete) {
           out.println("<input type=\"button\" value=\"Resume executing these tests\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
@@ -120,7 +120,7 @@ public void jspInit() {
 	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
 	          if (ts.getProfiles().contains(profile.getId())) {
 	        	  String path = sessionId + "/" + profile.getLocalName();
-              complete = ViewLog.view_log(userlog, path, tests, ViewLogTemplates, out, (i+2));
+              complete = ViewLog.view_log(suiteName,userlog, path, tests, ViewLogTemplates, out, (i+2));
 				      out.println("<br/>");
               profileParams += "&amp;" + "profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile.getId(), "UTF-8");
               i++;

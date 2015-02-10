@@ -286,7 +286,8 @@ public class Test {
                     .newTemplates(new StreamSource(stylesheet));
             File userlog = logDir;
             StringWriter sw = new StringWriter();
-            ViewLog.view_log(userlog, session, new ArrayList<String>(),
+            String testName=null;
+            ViewLog.view_log(testName,userlog, session, new ArrayList<String>(),
                     ViewLogTemplates, sw);
             boolean hasCache = ViewLog.hasCache();
             if (!hasCache) {
