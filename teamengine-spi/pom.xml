@@ -62,11 +62,6 @@
       <version>3.0.1</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-	<groupId>com.sun.jersey.contribs</groupId>
-	<artifactId>jersey-multipart</artifactId>
-	<version>1.18.1</version>
-</dependency>
   </dependencies>
   <build>
     <plugins>
