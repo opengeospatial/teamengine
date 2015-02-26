@@ -426,8 +426,10 @@ public class TECore implements Runnable {
     out.println("Testing suite " + name + " in " + getMode()
             + " with defaultResult of " + defaultResultName + " ...");
     RecordTestResult recordTestResult = new RecordTestResult();
-    recordTestResult.recordingStartCheck(suite);
-    recordTestResult.recordingStartClause(suite);
+    if(opts.getLogDir()!=null){
+      recordTestResult.recordingStartCheck(suite);
+      recordTestResult.recordingStartClause(suite);
+    }
     setIndentLevel(1);
     int result = execute_test(suite.getStartingTest().toString(), kvps,
             null);
@@ -442,8 +444,10 @@ public class TECore implements Runnable {
     } else {
             out.println(MSG_PASS);
     }
-    recordTestResult.saveRecordingClause(suite, dirPath);
-    recordTestResult.saveRecordingData(suite, dirPath);
+    if(opts.getLogDir()!=null){  
+      recordTestResult.saveRecordingClause(suite, dirPath);
+      recordTestResult.saveRecordingData(suite, dirPath);
+    }
   }
 
   public void execute_profile(String profileName, List<String> params,
