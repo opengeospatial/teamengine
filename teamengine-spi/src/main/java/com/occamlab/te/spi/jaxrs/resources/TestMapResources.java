@@ -1,5 +1,6 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
+import com.occamlab.te.SetupOptions;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,10 +58,7 @@ public class TestMapResources {
           @QueryParam("userID") String userId,
           @QueryParam("sessionID") String sessionID) throws IOException, JSONException, ParserConfigurationException, SAXException {
 
-    String basePath = System.getProperty(TE_BASE);
-    if (null == basePath) {
-      basePath = System.getenv(TE_BASE);
-    }
+    File basePath=SetupOptions.getBaseConfigDirectory();
     String pathAddress = basePath + "/users/" + userId + "/" + sessionID + "/test_data";
 
     DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -110,11 +108,7 @@ public class TestMapResources {
   @Consumes({MediaType.TEXT_PLAIN})
   public void handlepost(@QueryParam("userID") String userId,
           @QueryParam("sessionID") String sessionID, String data) throws ParserConfigurationException, TransformerException, TransformerConfigurationException, FileNotFoundException, IOException {
-    String basePath = System.getProperty(TE_BASE);
-    if (null == basePath) {
-      basePath = System.getenv(TE_BASE);
-    }
-    
+    File basePath=SetupOptions.getBaseConfigDirectory();
 // Save data into file which comes through Rest end point.
     String pathAddress = basePath + "/users/" + userId + "/" + sessionID + "/test_data";
     File fulePath = new File(pathAddress, "/finalResult.txt");

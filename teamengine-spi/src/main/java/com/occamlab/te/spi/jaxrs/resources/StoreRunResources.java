@@ -1,5 +1,6 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
+import com.occamlab.te.SetupOptions;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,10 +66,7 @@ public class StoreRunResources {
     JSONObject jsonObjTestDetail = new JSONObject();
     JSONArray jsonArrTestDetail = new JSONArray();
     // Get TE_Base Directory path.
-    String basePath = System.getProperty(TE_BASE);
-    if (null == basePath) {
-      basePath = System.getenv(TE_BASE);
-    }
+    File basePath=SetupOptions.getBaseConfigDirectory();
     String pathAddress = basePath + "/users/" + userId + "/" + sessionID + "/test_data";
     int testCount = 1;
     int runTestId = 1;

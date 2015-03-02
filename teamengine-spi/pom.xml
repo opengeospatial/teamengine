@@ -32,9 +32,9 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.8.8</version>
+      <version>6.8.21</version>
       <exclusions>
-        <!-- alternative YAML syntax for specifying test suite -->
+        <!-- alternative YAML syntax for specifying a test suite -->
         <exclusion>
           <groupId>org.yaml</groupId>
           <artifactId>snakeyaml</artifactId>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-servlet</artifactId>
-      <version>1.18.1</version>
+      <version>1.19</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
-      <version>1.1</version>
+      <version>1.1.1</version>
       <type>jar</type>
     </dependency>
     <dependency>
@@ -87,6 +87,11 @@
       <artifactId>gson</artifactId>
       <version>2.2.2</version>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>teamengine-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
