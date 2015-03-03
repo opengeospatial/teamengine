@@ -158,13 +158,14 @@ public class XmlErrorHandler implements ErrorHandler {
     }
 
     /**
-     * Returns validation errors in a NodeList (needed for CTL processing). Each
-     * item in the list is an {@code <error>} element containing an error
-     * message as text content.
+     * Returns validation errors in a root container node.
+     * The root container ({@code <errors>}) contains a list
+     * of {@code <error>} elements containing error
+     * messages as text content.
      * 
-     * @return a list of errors in a NodeList.
+     * @return Root element containing list of errors
      */
-    public NodeList toNodeList() {
+    public Element toRootElement() {
         Document doc = null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -184,7 +185,18 @@ public class XmlErrorHandler implements ErrorHandler {
             elem.setTextContent(err.getMessage());
             root.appendChild(elem);
         }
-        return doc.getElementsByTagName("error");
+        return root;
+    }
+
+    /**
+     * Returns validation errors in a NodeList (needed for CTL processing). Each
+     * item in the list is an {@code <error>} element containing an error
+     * message as text content.
+     * 
+     * @return a list of errors in a NodeList.
+     */
+    public NodeList toNodeList() {
+        return toRootElement().getElementsByTagName("error");
     }
 
     /**

@@ -315,7 +315,7 @@ public class XMLValidatingParser {
         return (parsedDoc != null);
     }
 
-    public NodeList validate(Document doc, Document instruction)
+    private XmlErrorHandler processValidation(Document doc, Document instruction)
             throws Exception {
         if (doc == null || doc.getDocumentElement() == null) {
             throw new NullPointerException("Input document is null.");
@@ -326,12 +326,20 @@ public class XMLValidatingParser {
         dtds.addAll(dtdList);
         loadSchemaLists(instruction, schemas, dtds);
 
-        NodeList errorStrings = null;
         XmlErrorHandler err = new XmlErrorHandler();
         validateAgainstXMLSchemaList(doc, schemas, err);
         validateAgainstDTDList(doc, dtds, err);
-        errorStrings = err.toNodeList();
-        return errorStrings;
+        return err;
+    }
+    
+    public NodeList validate(Document doc, Document instruction)
+            throws Exception {
+        return processValidation(doc, instruction).toNodeList();
+    }
+
+    public Element validateSingleResult(Document doc, Document instruction)
+            throws Exception {
+        return processValidation(doc, instruction).toRootElement();
     }
 
     /**
