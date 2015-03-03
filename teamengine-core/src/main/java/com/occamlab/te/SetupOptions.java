@@ -97,27 +97,29 @@ public class SetupOptions {
   public static boolean recordingInfo(String testName) throws ParserConfigurationException, SAXException, IOException {
     TECore.rootTestName.clear();
     String path = getBaseConfigDirectory() + "/config.xml";
-    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-    Document doc = db.parse(path);
-    NodeList nodeListForStandardTag = doc.getElementsByTagName("standard");
-    if (null!=nodeListForStandardTag && nodeListForStandardTag.getLength() > 0) {
-      for (int i = 0; i < nodeListForStandardTag.getLength(); i++) {
-        Element elementStandard = (Element) nodeListForStandardTag.item(i);
-        if (testName.equals(elementStandard.getElementsByTagName("local-name").item(0).getTextContent())) {
-          if (null!=elementStandard.getElementsByTagName("record").item(0)) {
-            System.setProperty("Record", "True");
-            NodeList rootTestNameArray=elementStandard.getElementsByTagName("test-name");
-            if (null!=rootTestNameArray && rootTestNameArray.getLength() > 0) {
-              for (int counter = 0; counter < rootTestNameArray.getLength(); counter++) {
-                Element rootTestName = (Element) rootTestNameArray.item(counter);
-                TECore.rootTestName.add(rootTestName.getTextContent());
+    if (new File(path).exists()) {
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = db.parse(path);
+        NodeList nodeListForStandardTag = doc.getElementsByTagName("standard");
+        if (null!=nodeListForStandardTag && nodeListForStandardTag.getLength() > 0) {
+          for (int i = 0; i < nodeListForStandardTag.getLength(); i++) {
+            Element elementStandard = (Element) nodeListForStandardTag.item(i);
+            if (testName.equals(elementStandard.getElementsByTagName("local-name").item(0).getTextContent())) {
+              if (null!=elementStandard.getElementsByTagName("record").item(0)) {
+                System.setProperty("Record", "True");
+                NodeList rootTestNameArray=elementStandard.getElementsByTagName("test-name");
+                if (null!=rootTestNameArray && rootTestNameArray.getLength() > 0) {
+                  for (int counter = 0; counter < rootTestNameArray.getLength(); counter++) {
+                    Element rootTestName = (Element) rootTestNameArray.item(counter);
+                    TECore.rootTestName.add(rootTestName.getTextContent());
+                  }
+                }
+                return true;
               }
             }
-            return true;
+    
           }
         }
-
-      }
     }
     System.setProperty("Record", "False");
     return false;
