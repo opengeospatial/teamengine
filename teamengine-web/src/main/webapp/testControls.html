@@ -22,6 +22,16 @@
  <html>
 	<head>
 		<title>Test Controls</title>
+                <script type="text/javascript">
+                  function test(){
+                    if(null!==parent.window.frames["te_test_panel"].document.getElementById("stopTest")){
+                    var stopTestButton= parent.window.frames["te_test_panel"].document.getElementById("stopTest");
+                    stopTestButton.click();
+                  }else{
+                    parent.stop();
+                  }
+                  }
+                </script>
 	</head>
 	<body bgcolor="#000000" onload="if (window.innerHeight) document.images['banner'].height = window.innerHeight">
 		<img name="banner" style="position: absolute; top: 0px; left: 0px" src="images/banner.jpg" alt="TEAM Engine Banner"/>
@@ -33,7 +43,8 @@
 		</div>
 		<div style="position: absolute; right:20px; top:25px; background-color: white; padding: 3px; border-style: inset">
 			Test run in progress...<br/>
-			<a href="javascript:parent.stop()">Stop</a>
+			<!--<a href="javascript:parent.stop()">Stop</a>-->
+                        <input type="submit" value="Stop" onclick="test()"/>
 		</div>
 	</body>
 </html>
