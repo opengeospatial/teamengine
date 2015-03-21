@@ -236,10 +236,10 @@ public class XMLValidatingParser {
 			throw new NullPointerException("Failed to read input.");
 		}
 		errHandler.setRole("Validation");
-		if (null != resultDoc.getDoctype()) {
-			validateAgainstDTDList(resultDoc, dtds, errHandler);
-		} else {
+		if (null == resultDoc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(resultDoc, schemas, errHandler);
+		} else {
+			validateAgainstDTDList(resultDoc, dtds, errHandler);
 		}
 		int error_count = errHandler.getErrorCount();
 		int warning_count = errHandler.getWarningCount();
@@ -325,10 +325,10 @@ public class XMLValidatingParser {
 		dtds.addAll(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);
 		XmlErrorHandler err = new XmlErrorHandler();
-		if (null != doc.getDoctype()) {
-			validateAgainstDTDList(doc, dtds, err);
-		} else {
+		if (null == doc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(doc, schemas, err);
+		} else {
+			validateAgainstDTDList(doc, dtds, err);
 		}
 		return err.toNodeList();
 	}
