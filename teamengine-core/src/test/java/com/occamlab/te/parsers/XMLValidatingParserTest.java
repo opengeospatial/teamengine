@@ -17,6 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XMLValidatingParserTest {
@@ -133,8 +134,8 @@ public class XMLValidatingParserTest {
 				.toString().isEmpty());
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void validateWithNullDTDList() throws Exception {
+	@Test
+	public void validateWithNullDTDList_valid() throws Exception {
 		URL url = getClass().getResource("/testng.xml");
 		Document doc = docBuilder.parse(url.toString());
 		doc.setDocumentURI(url.toString());
@@ -144,6 +145,30 @@ public class XMLValidatingParserTest {
 		List<String> errList = errHandler.toList();
 		assertEquals("Unexpected number of validation errors reported.", 0,
 				errList.size());
+	}
+
+	@Test
+	public void validateWithNullDTDList_invalid() throws Exception {
+		URL url = getClass().getResource("/testng-invalid.xml");
+		Document doc = docBuilder.parse(url.toString());
+		doc.setDocumentURI(url.toString());
+		XmlErrorHandler errHandler = new XmlErrorHandler();
+		XMLValidatingParser iut = new XMLValidatingParser();
+		iut.validateAgainstDTDList(doc, null, errHandler);
+		List<String> errList = errHandler.toList();
+		assertEquals("Unexpected number of validation errors reported.", 2,
+				errList.size());
+	}
+
+	@Test
+	public void validateDocumentWithDoctype_invalid() throws Exception {
+		URL url = getClass().getResource("/testng-invalid.xml");
+		Document doc = docBuilder.parse(url.toString());
+		doc.setDocumentURI(url.toString());
+		XMLValidatingParser iut = new XMLValidatingParser();
+		NodeList errList = iut.validate(doc, null);
+		assertEquals("Unexpected number of validation errors reported.", 2,
+				errList.getLength());
 	}
 
 }
