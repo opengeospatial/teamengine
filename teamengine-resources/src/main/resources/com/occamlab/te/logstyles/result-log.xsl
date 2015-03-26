@@ -38,10 +38,10 @@
 		    var divid = $(divID).attr("id");
 		    var value = divid.split("__");
 		    var path = $(divID).attr("src");
-		    var result_url = url.split("teamengine");
+		    var result_url = url.split("viewSessionLog");
 		    var expend = "images/plus.png";
 		    var merge = "images/minus.png";
-		    var other = result_url[0] + "teamengine/images/abc.png";
+		    var other = result_url[0] + "images/abc.png";
 		    if (path.indexOf('minus') > -1) {
 			$("#" + divid).attr("src", expend);
 		    } else if (path.indexOf('plus') > -1) {
@@ -70,14 +70,14 @@
       <xsl:comment><![CDATA[ 
             $(document).ready(function() {
                 var url = location.href;
-                var result_url = url.split("teamengine");
+                var result_url = url.split("viewSessionLog");
                 var c_name_value = getUser();
                 var c_sessionID_value = getSession();
                 var urlpath = "";
                 var success = "images/pass.png";
                 var error = "images/fail.png";
                 var warning = "images/warning.png";
-                urlpath = result_url[0] + "teamengine/restResult/suiteResult?userID=" + c_name_value + "&sessionID=" + c_sessionID_value;
+                urlpath = result_url[0] + "restResult/suiteResult?userID=" + c_name_value + "&sessionID=" + c_sessionID_value;
                 $.ajax({
                     type: "GET",
                     url: urlpath,
