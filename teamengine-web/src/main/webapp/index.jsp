@@ -63,8 +63,7 @@
             files.add(input);
           }
         }%>
-
-      <%        String path = getServletContext().getInitParameter("teConfigFile");
+      <% String path = getServletContext().getInitParameter("teConfigFile");
         String directory = path.split("config")[0] + "scripts";
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
@@ -73,23 +72,24 @@
         tournaments.appendChild(rootconfig);
         Element rootscripts = tournaments.createElement("scripts");
         rootconfig.appendChild(rootscripts);
-        Element rootorganization = tournaments.createElement("organization");
-        rootscripts.appendChild(rootorganization);
-        Element rootname = tournaments.createElement("name");
-        rootname.appendChild(tournaments.createTextNode("OGC"));
-        rootorganization.appendChild(rootname);
         ArrayList<File> files = new ArrayList<File>();
         addfiles(new File(directory), files);
-        for (File file : files) {
-          if (file.getName().contains("config.xml")) {
-            Document tournament = builder.parse(file);
-            NodeList ndlst = tournament.getElementsByTagName("standard");
-            Node tournamentElement = ndlst.item(0);
-            Node firstDocImportedNode = tournaments.adoptNode(tournamentElement);
-            rootorganization.appendChild(firstDocImportedNode);
+        Element rootorganization = tournaments.createElement("organization");
+          rootscripts.appendChild(rootorganization);
+        if (files.size() > 1) {
+          Element rootname = tournaments.createElement("name");
+          rootname.appendChild(tournaments.createTextNode("OGC"));
+          rootorganization.appendChild(rootname);
+          for (File file : files) {
+            if ((file.getName().contains("config.xml")) && !(file.getName().contains("config.xml~"))) {
+              Document tournament = builder.parse(file);
+              NodeList ndlst = tournament.getElementsByTagName("standard");
+              Node tournamentElement = ndlst.item(0);
+              Node firstDocImportedNode = tournaments.adoptNode(tournamentElement);
+              rootorganization.appendChild(firstDocImportedNode);
+            }
           }
         }
-
         PrintWriter writer = new PrintWriter(new File(path));
         writer.print("");
         writer.close();
@@ -98,15 +98,11 @@
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.transform(new DOMSource(tournaments), new StreamResult(new FileOutputStream(path)));
       %>
-
       <%@ include file="header.jsp" %>
       <h2>Welcome</h2>
       <%@ include file="welcome.jsp" %>
-      <a href="viewSessions.jsp" style="text-decoration: none">
-        <span class="box">Sign in</span></a> 
-      or 
-      <a href="register.jsp" style="text-decoration: none">
-        <span class="box">Create an account</span></a>
-        <%@ include file="footer.jsp" %>
+      <a href="viewSessions.jsp">Login</a>
+      <%@ include file="footer.jsp" %>
     </body>
   </html>
+
