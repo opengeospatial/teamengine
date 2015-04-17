@@ -1,3 +1,4 @@
+<%@page import="javax.xml.xpath.XPathConstants"%>
 <%@page import="org.w3c.dom.NodeList"%>
 <%@page import="javax.xml.transform.dom.DOMSource"%>
 <%@page import="javax.xml.transform.stream.StreamResult"%>
@@ -65,38 +66,35 @@
         }%>
       <% String path = getServletContext().getInitParameter("teConfigFile");
         String directory = path.split("config")[0] + "scripts";
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-        Document tournaments = builder.newDocument();
-        Element rootconfig = tournaments.createElement("config");
-        tournaments.appendChild(rootconfig);
-        Element rootscripts = tournaments.createElement("scripts");
-        rootconfig.appendChild(rootscripts);
-        ArrayList<File> files = new ArrayList<File>();
-        addfiles(new File(directory), files);
-        Element rootorganization = tournaments.createElement("organization");
-          rootscripts.appendChild(rootorganization);
-        if (files.size() > 1) {
-          Element rootname = tournaments.createElement("name");
-          rootname.appendChild(tournaments.createTextNode("OGC"));
-          rootorganization.appendChild(rootname);
-          for (File file : files) {
-            if ((file.getName().contains("config.xml")) && !(file.getName().contains("config.xml~"))) {
-              Document tournament = builder.parse(file);
-              NodeList ndlst = tournament.getElementsByTagName("standard");
-              Node tournamentElement = ndlst.item(0);
-              Node firstDocImportedNode = tournaments.adoptNode(tournamentElement);
-              rootorganization.appendChild(firstDocImportedNode);
-            }
-          }
-        }
-        PrintWriter writer = new PrintWriter(new File(path));
-        writer.print("");
-        writer.close();
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.transform(new DOMSource(tournaments), new StreamResult(new FileOutputStream(path)));
+          DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+          DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+    Document tournaments = builder.parse(new File(path));
+    NodeList ndlScripts=tournaments.getElementsByTagName("scripts");
+    Element rootscripts = (Element)ndlScripts.item(0);
+    if(null!=tournaments.getElementsByTagName("organization").item(1)){
+      Node organization=tournaments.getElementsByTagName("organization").item(1);
+      organization.getParentNode().removeChild(organization);
+     }
+    Element rootorganization = tournaments.createElement("organization");
+    rootscripts.appendChild(rootorganization);
+    Element rootname = tournaments.createElement("name");
+    rootname.appendChild(tournaments.createTextNode("OGC"));
+    rootorganization.appendChild(rootname);
+    ArrayList<File> files = new ArrayList<File>();
+    addfiles(new File(directory), files);
+    for (File file : files) {
+      if ((file.getName().contains("config.xml")) && !(file.getName().contains("config.xml~"))) {
+        Document tournament = builder.parse(file);
+        NodeList ndlst = tournament.getElementsByTagName("standard");
+        Node tournamentElement = ndlst.item(0);
+        Node firstDocImportedNode = tournaments.adoptNode(tournamentElement);
+        rootorganization.appendChild(firstDocImportedNode);
+      }
+    }
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    transformer.transform(new DOMSource(tournaments), new StreamResult(new FileOutputStream(path)));
       %>
       <%@ include file="header.jsp" %>
       <h2>Welcome</h2>
