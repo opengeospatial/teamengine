@@ -68,42 +68,21 @@
           }
         }%>
       <% String path = getServletContext().getInitParameter("teConfigFile");
-        String directory = path.split("config")[0] + "scripts";
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-        Document tournaments = builder.parse(new File(path));
-        NodeList ndlScripts = tournaments.getElementsByTagName("scripts");
-        Element rootscripts = (Element) ndlScripts.item(0);
-        if (null != tournaments.getElementsByTagName("organization").item(1)) {
-          Node organization = tournaments.getElementsByTagName("organization").item(1);
-          organization.getParentNode().removeChild(organization);
-        }
-        Element rootorganization = tournaments.createElement("organization");
-        rootscripts.appendChild(rootorganization);
-        Element rootname = tournaments.createElement("name");
-        rootname.appendChild(tournaments.createTextNode("OGC"));
-        rootorganization.appendChild(rootname);
-        ArrayList<File> files = new ArrayList<File>();
-        addfiles(new File(directory), files);
-        for (File file : files) {
-          if ((file.getName().contains("config.xml")) && !(file.getName().contains("config.xml~"))) {
-            Document tournament = builder.parse(file);
-            NodeList ndlst = tournament.getElementsByTagName("standard");
-            Node tournamentElement = ndlst.item(0);
-            Node firstDocImportedNode = tournaments.adoptNode(tournamentElement);
-            rootorganization.appendChild(firstDocImportedNode);
-          }
-        }
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.transform(new DOMSource(tournaments), new StreamResult(new FileOutputStream(path)));
         File source = new File(path.split("config")[0] + "resources/site");
         String rootPath = FileSystems.getDefault().getPath("site").toUri().toString();
         String urlPath = request.getRequestURL().toString();
-        String destination=rootPath.split("bin")[0]+"webapps/"+urlPath.split("/")[3]+"/site";
-        File trgDir=new File(destination.split("file://")[1]);
-        System.out.println(destination);
+        String destination = rootPath.split("bin")[0] + "webapps/" + urlPath.split("/")[3] + "/site";
+        File trgDir = new File(destination.split("file://")[1]);
+        if (trgDir.exists()) {
+          File[] contents = trgDir.listFiles();
+          if (contents != null) {
+            for (File f : contents) {
+              f.delete();
+            }
+          }
+          trgDir.delete();
+        }
+        trgDir.mkdir();
         FileUtils.copyDirectory(source, trgDir);
       %>
       <%@ include file="header.jsp" %>
