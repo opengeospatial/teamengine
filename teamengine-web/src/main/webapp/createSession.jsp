@@ -304,7 +304,7 @@ Enter Session Description (Optional):<br/>
 <input type="text" name="description" id="description" size="50"/>
 <br/>
 <br/>
-<input type="button" value="Start a new test session" onclick="submitform()" />
+<input type="submit" value="Start a new test session" onclick="submitform()" />
 <br/>
 <input type="hidden" name="mode" value="test" />
 <input type="hidden" id="sources" name="sources" />
