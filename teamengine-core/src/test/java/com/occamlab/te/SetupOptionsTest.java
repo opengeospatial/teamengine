@@ -1,12 +1,18 @@
 package com.occamlab.te;
 
+import static org.junit.Assert.assertFalse;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class SetupOptionsTest {
 
@@ -66,4 +72,10 @@ public class SetupOptionsTest {
         Assert.assertEquals("Unexpected size", 0, sources.size());
     }
 
+    @Test
+    public void testRecordingInfoWithoutConfig() throws ParserConfigurationException, SAXException, IOException {
+        assertFalse(new File(SetupOptions.getBaseConfigDirectory(), "config.xml").exists());
+        //checking recording info should work even if config.xml doesn't exist
+        SetupOptions.recordingInfo("foo");
+    }
 }
