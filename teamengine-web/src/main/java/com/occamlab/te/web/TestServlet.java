@@ -61,6 +61,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import com.occamlab.te.Engine;
 import com.occamlab.te.Generator;
 import com.occamlab.te.RuntimeOptions;
@@ -74,8 +75,6 @@ import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.StringUtils;
-import com.oracle.webservices.api.message.PropertySet;
-import java.util.Properties;
 
 /**
  * Main request handler.
@@ -101,6 +100,9 @@ public class TestServlet extends HttpServlet {
      */
     public void init() throws ServletException {
         try {
+            LOGR.info("Creating a new config.xml files from the files in the TE_BASE/scripts");
+            ConfigFileCreator.create(getServletContext()); 
+          
             conf = new Config();
             this.setupOpts = new SetupOptions();
 
@@ -188,7 +190,9 @@ public class TestServlet extends HttpServlet {
             throw new ServletException(e);
         }
     }
-
+    
+   
+    
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         process(request, response);
