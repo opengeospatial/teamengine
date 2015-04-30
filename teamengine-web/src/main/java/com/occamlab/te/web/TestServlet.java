@@ -59,6 +59,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -101,7 +102,14 @@ public class TestServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             LOGR.info("Creating a new config.xml files from the files in the TE_BASE/scripts");
+            
+            //create main config file when TE restarts
             ConfigFileCreator.create(getServletContext()); 
+           
+            //delete workdir when TE restarts
+            String path = getServletContext().getInitParameter("teConfigFile");
+            String workDir = path.split("config")[0] + "work";
+            FileUtils.deleteDirectory(new File(workDir));
           
             conf = new Config();
             this.setupOpts = new SetupOptions();
