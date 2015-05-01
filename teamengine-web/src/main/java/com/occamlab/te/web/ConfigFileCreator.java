@@ -2,6 +2,8 @@ package com.occamlab.te.web;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -13,6 +15,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,6 +52,7 @@ public class ConfigFileCreator {
 	public void create(String tebase) {
 
 		try {
+			
 			process(tebase);
 		} catch (Exception e) {
 
@@ -62,6 +68,16 @@ public class ConfigFileCreator {
 			e.printStackTrace();
 		}
 	}
+	
+	public void deleteConfigFile(String tebase){
+		File f=  new File(tebase + "config.xml");
+		if (f.exists()){
+			f.delete();
+			LOGR.info("old onfig file removed");
+		}else{
+			LOGR.info("config file not removed, since there was no file");
+		}
+	}
 
 	/**
 	 * Process the the tests under the scripts folder, and creates an integrated
@@ -71,22 +87,24 @@ public class ConfigFileCreator {
 	 * @throws Exception
 	 */
 	private void process(String tebase) throws Exception {
-		String mainconfig = tebase + "config.xml";
-		LOGR.info("Creating the config.xml at " + mainconfig);
+		deleteConfigFile(tebase);
+		
 
 		Document docMain = builder.newDocument();
 		Element config = docMain.createElement("config");
 		docMain.appendChild(config);
 		Element scripts = docMain.createElement("scripts");
 		config.appendChild(scripts);
+		String scriptsDir = tebase + "scripts";
 
-		File[] testScriptsDir = new File(tebase + File.separator + "scripts")
+		File[] testScriptsDir = new File(scriptsDir)
 				.listFiles();
 
 		for (File dir : testScriptsDir) {
 			if (dir.isDirectory() && !dir.getName().startsWith(".")) {
 				LOGR.info("processing dir " + dir);
 				File configFile = getFirstConfigFileFound(dir);
+			
 
 				Document docTest = getDocument(configFile);
 				Node orgInTest = XMLUtils.getFirstNode(docTest,
@@ -143,6 +161,8 @@ public class ConfigFileCreator {
 		Transformer transformer = transformerFactory.newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		DOMSource source = new DOMSource(docMain);
+		String mainconfig = tebase + "config.xml";
+		LOGR.info("Creating the config.xml at " + mainconfig);
 		StreamResult result = new StreamResult(new FileOutputStream(mainconfig));
 		transformer.transform(source, result);
 
@@ -167,23 +187,19 @@ public class ConfigFileCreator {
 	 * @return the file found or null if not found
 	 */
 	private File getFirstConfigFileFound(File dir) {
-		File fileFound = null;
-		if (dir.isDirectory()) {
-			File[] fList = dir.listFiles();
-			// return first config file from direct children
-			for (File file : fList) {
-				if (file.getName().equals("config.xml")) {
-					return file;
-				}
+		String[] extensions = {"xml"};
+		
+		Collection<File> files = FileUtils.listFiles(dir,extensions, true);
+		for (Iterator iterator = files.iterator(); iterator.hasNext();) {
+			File file = (File) iterator.next();
+			if (file.getName().equals("config.xml")) {
+				return file;
 			}
-			// if not look inside children of children
-			for (File file : fList) {
-				return getFirstConfigFileFound(file);
-			}
-
+			
 		}
-		return fileFound;
-
+	
+		return null;
+	
 	}
 
 }

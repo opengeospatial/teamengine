@@ -106,5 +106,29 @@ public class ConfigFileCreatorTest {
 		}
 
 	}
+	
+	@Test
+	public void testSingleTestUnderTEBASEwithHiddenFiles() {
+
+		try {
+			File tebase = new File(classp, "tebase-hidden-files");
+			ConfigFileCreator configFileCreator = new ConfigFileCreator();
+			configFileCreator.create(tebase);
+			File configFile = new File(tebase + File.separator + "config.xml");
+
+			Document config = builder.parse(configFile);
+
+			NodeList orgs = XMLUtils.getAllNodes(config,
+					"/config/scripts/organization");
+			assertEquals(2, orgs.getLength());
+
+			configFile.delete();
+
+		} catch (Exception e) {
+			fail();
+			e.printStackTrace();
+		}
+
+	}
 
 }
