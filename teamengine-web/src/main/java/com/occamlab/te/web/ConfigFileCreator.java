@@ -2,107 +2,188 @@ package com.occamlab.te.web;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.logging.Logger;
 
-import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-/* creates the main Config File reading the TE_BASE/scripts config files */
-public  class ConfigFileCreator {
-	
-	public static void create(ServletContext servletContext){
-		
+/**
+ * Creates the main Config File reading the tests under TE_BASE/scripts config
+ * files It Aggregates by organization and by standard. The name of the
+ * organization and standards needs to match to be able to aggregate the tests.
+ * Fir example to test using Organization/name =OGC, will appear both under the
+ * OGC organization
+ * 
+ * @author lbermudez
+ */
+public class ConfigFileCreator {
+
+	private static Logger LOGR = Logger
+			.getLogger("com.occamlab.te.web.ConfigFileCreator");
+
+	private DocumentBuilder builder;
+
+	public ConfigFileCreator() {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
 		try {
-			process(servletContext);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			builder = documentBuilderFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+
 			e.printStackTrace();
 		}
-		
 	}
 
-	 private static void addfiles(File input, ArrayList<File> files) {
-         if (input.isDirectory()) {
-           ArrayList<File> path = new ArrayList<File>(Arrays.asList(input.listFiles()));
-           for (int i = 0; i < path.size(); ++i) {
-             if (path.get(i).isDirectory()) {
-               addfiles(path.get(i), files);
-             }
-             if (path.get(i).isFile()) {
-               files.add(path.get(i));
-             }
-           }
-         }
-         if (input.isFile()) {
-           files.add(input);
-         }
-       }
-	 
-	private static void process(ServletContext servletContext) throws Exception{ 
-	 
-	 Element rootorganization = null;
-       String path = servletContext.getInitParameter("teConfigFile");
-       String directory = path.split("config")[0] + "scripts";
-       DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-       DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-       Document tournaments = builder.parse(new File(path));
-       NodeList ndlScripts = tournaments.getElementsByTagName("scripts");
-       Element rootscripts = (Element) ndlScripts.item(0);
-       if (null != tournaments.getElementsByTagName("organization").item(1)) {
-         Node organization = tournaments.getElementsByTagName("organization").item(1);
-         organization.getParentNode().removeChild(organization);
-       }
-       ArrayList<File> files = new ArrayList<File>();
-       addfiles(new File(directory), files);
-       int counter = 0;
-       for (File file1 : files) {
-         if ((file1.getName().contains("config.xml")) && !(file1.getName().contains("config.xml~"))) {
-           if (counter == 0) {
-             rootorganization = tournaments.createElement("organization");
-             rootscripts.appendChild(rootorganization);
-             Element rootname = tournaments.createElement("name");
-             Document tournament = builder.parse(file1);
-             NodeList ndname = tournament.getElementsByTagName("name");
-             Node tournamentElement = ndname.item(0);
-             rootname.appendChild(tournaments.createTextNode(tournamentElement.getFirstChild().getNodeValue()));
-             rootorganization.appendChild(rootname);
-             counter = counter + 1;
-           }
-         }
-       }
-       for (File file : files) {
-         if ((file.getName().contains("config.xml")) && !(file.getName().contains("config.xml~"))) {
-           Document tournament = builder.parse(file);
-           NodeList ndlst = tournament.getElementsByTagName("standard");
-           Node tournamentElement = ndlst.item(0);
-           Node firstDocImportedNode = tournaments.adoptNode(tournamentElement);
-           rootorganization.appendChild(firstDocImportedNode);
-         }
-       }
-       TransformerFactory transformerFactory = TransformerFactory.newInstance();
-       Transformer transformer = transformerFactory.newTransformer();
-       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-       transformer.transform(new DOMSource(tournaments), new StreamResult(new FileOutputStream(path)));
+	public void create(String tebase) {
 
-       File siteFolder = new File(path.split("config")[0] + "resources/site");
-       if (siteFolder.exists()){
-         String teLocalPath = servletContext.getRealPath(File.separator);
-         File siteFolderInTE = new File (teLocalPath+ "site");
-         FileUtils.copyDirectory(siteFolder, siteFolderInTE);
-       }
+		try {
+			process(tebase);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
+
+	public void create(File tebase) {
+		try {
+			process(tebase.toString() + File.separator);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Process the the tests under the scripts folder, and creates an integrated
+	 * config.xml
+	 * 
+	 * @param tebase
+	 * @throws Exception
+	 */
+	private void process(String tebase) throws Exception {
+		String mainconfig = tebase + "config.xml";
+		LOGR.info("Creating the config.xml at " + mainconfig);
+
+		Document docMain = builder.newDocument();
+		Element config = docMain.createElement("config");
+		docMain.appendChild(config);
+		Element scripts = docMain.createElement("scripts");
+		config.appendChild(scripts);
+
+		File[] testScriptsDir = new File(tebase + File.separator + "scripts")
+				.listFiles();
+
+		for (File dir : testScriptsDir) {
+			if (dir.isDirectory() && !dir.getName().startsWith(".")) {
+				LOGR.info("processing dir " + dir);
+				File configFile = getFirstConfigFileFound(dir);
+
+				Document docTest = getDocument(configFile);
+				Node orgInTest = XMLUtils.getFirstNode(docTest,
+						"/organization/name[1]");
+				String org = orgInTest.getTextContent();
+
+				String xpath = "/config/scripts/organization/name[text()='"
+						+ org + "']";
+				Node orgInMainConfig = XMLUtils.getFirstNode(docMain, xpath);
+
+				// org doesn't exist
+				if (orgInMainConfig == null) {
+					// append to scripts
+					Node orgInTestImported = docMain.importNode(
+							orgInTest.getParentNode(), true);
+
+					scripts.appendChild(orgInTestImported);
+
+				} else {
+					Node standardInTest = XMLUtils.getFirstNode(docTest,
+							"/organization/standard[1]");
+					String standardInTestName = XMLUtils.getFirstNode(docTest,
+							"/organization/standard[1]/name").getTextContent();
+
+					// check if a standard with this name already exists in main
+					// config
+					xpath = "/config/scripts/organization/standard/name[text()='"
+							+ standardInTestName + "']";
+
+					Node standardInMain = XMLUtils.getFirstNode(docMain, xpath);
+					if (standardInMain == null) {
+						// append to an existing organization
+						Node orgInMain = orgInMainConfig.getParentNode();
+						orgInMain.appendChild(docMain.importNode(
+								standardInTest, true));
+
+					} else {
+						// standard already exists in main config, so append to
+						// a
+						// standard element
+						Node versionInTest = XMLUtils.getFirstNode(docTest,
+								"/organization/standard/version[1]");
+
+						standardInMain.getParentNode().appendChild(
+								docMain.importNode(versionInTest, true));
+
+					}
+				}
+			}
+		}
+
+		TransformerFactory transformerFactory = TransformerFactory
+				.newInstance();
+		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		DOMSource source = new DOMSource(docMain);
+		StreamResult result = new StreamResult(new FileOutputStream(mainconfig));
+		transformer.transform(source, result);
+
+	}
+
+	public Document getDocument(File xml) {
+		try {
+
+			Document doc = builder.parse(xml);
+			return doc;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	/**
+	 * Returns the first config file founc in each test
+	 * 
+	 * @param dir
+	 * @return the file found or null if not found
+	 */
+	private File getFirstConfigFileFound(File dir) {
+		File fileFound = null;
+		if (dir.isDirectory()) {
+			File[] fList = dir.listFiles();
+			// return first config file from direct children
+			for (File file : fList) {
+				if (file.getName().equals("config.xml")) {
+					return file;
+				}
+			}
+			// if not look inside children of children
+			for (File file : fList) {
+				return getFirstConfigFileFound(file);
+			}
+
+		}
+		return fileFound;
+
 	}
 
 }

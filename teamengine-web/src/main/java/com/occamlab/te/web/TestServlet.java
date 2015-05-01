@@ -101,15 +101,24 @@ public class TestServlet extends HttpServlet {
      */
     public void init() throws ServletException {
         try {
-            LOGR.info("Creating a new config.xml files from the files in the TE_BASE/scripts");
+           
             
-            //create main config file when TE restarts
-            ConfigFileCreator.create(getServletContext()); 
+            
+            String path = getServletContext().getInitParameter("teConfigFile");
+           
+           
+          //create main config file when TE restarts
+            String tebase = path.split("config")[0];
+            LOGR.info("TE_BASE is located at:"+tebase);
+          
+            ConfigFileCreator creator = new ConfigFileCreator();
+            creator.create(tebase); 
            
             //delete workdir when TE restarts
-            String path = getServletContext().getInitParameter("teConfigFile");
+            
             String workDir = path.split("config")[0] + "work";
             FileUtils.deleteDirectory(new File(workDir));
+            LOGR.info("Deleting  the work dir at:"+workDir);
           
             conf = new Config();
             this.setupOpts = new SetupOptions();
