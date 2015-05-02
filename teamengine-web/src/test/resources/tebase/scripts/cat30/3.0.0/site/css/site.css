@@ -1,0 +1,7 @@
+/* custom site styles */
+h1, h2, h3 {font-family: Verdana, sans-serif; color: #000099; text-align: left;}
+h1 {font-size: 1.4em; margin-top: 2em;}
+h2 {font-size: 1.2em;}
+h3 {font-size: 1em; margin-bottom: 0.5em;}
+pre { margin-top: 1em; margin-bottom: 1em; }
+.figure {margin-top: 2em; margin-bottom: 2em; text-align:center;}

@@ -1,0 +1,1154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ctl:package 
+	xmlns:sosFunctions="https://cite.opengeospatial.org/sos-1.0.0/src/ctl/functions.xml"
+	xmlns:getCapabilities="https://cite.opengeospatial.org/sos-1.0.0/src/ctl/GetCapabilities.xml"
+	xmlns:describeSensor="https://cite.opengeospatial.org/sos-1.0.0/src/ctl/DescribeSensor.xml"
+	xmlns:getObservation="https://cite.opengeospatial.org/sos-1.0.0/src/ctl/GetObservation.xml"
+	xmlns:owsTests="https://www.cite.opengeospatial.org/ows-1.0/tests"
+	xmlns:ctl="http://www.occamlab.com/ctl" 
+	xmlns:html="http://www.w3.org/1999/xhtml" 	
+	xmlns:saxon="http://saxon.sf.net/" 
+	xmlns:tep="http://teamengine.sourceforge.net/parsers" 
+	xmlns:xi="http://www.w3.org/2001/XInclude" 
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:parsers="http://www.occamlab.com/te/parsers"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+	xmlns:ows="http://www.opengis.net/ows/1.1" 
+	xmlns:gml="http://www.opengis.net/gml" 
+	xmlns:sos="http://www.opengis.net/sos/1.0"	
+	xmlns:xml="http://www.w3.org/XML/1998/namespace"
+	xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:om="http://www.opengis.net/om/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <ctl:suite name="sos:suite">		<!--NOTE: Don't forget to update the TARGET_NAMESPACE_URI and docs/sos/1.0/SOS 1.0 ATS.html placeholder values-->
+    <ctl:title>SOS 1.0 Compliance Test Suite</ctl:title>
+    <ctl:description>Verifies that an SOS 1.0 implementation complies with a given conformance class.</ctl:description>
+    <ctl:link>docs/sos/1.0.0/</ctl:link>		
+    <ctl:starting-test>sos:Main</ctl:starting-test>
+  </ctl:suite>
+
+  <ctl:test name="sos:Main">
+    <ctl:assertion>The IUT satisfies all applicable assertions.</ctl:assertion>
+    <ctl:code>
+
+      <xsl:variable name="form-values"> <!-- Modified style, added options 2010-12-30 PwD -->
+        <ctl:form height="1000" width="1200">
+          <body>
+            <h2 align="center">Compliance test suite for Sensor Observation Service (SOS) 1.0</h2>
+            <h3 align="center">Service metadata and test options</h3>
+            <p>Please provide a URL from which a capabilities document can be retrieved. </p>
+            <p>Modify the URL template below to specify the location of an OGC SOS implementation under test.</p>	
+            <p>Example reference implementations can be found at http://cite.opengeospatial.org/reference</p>
+            <blockquote>
+              <table border="1" padding="4" bgcolor="#00ffff" align="center">
+                <tr>
+                  <td align="left">Service URL:</td>                        
+                  <td align="center">
+                    <input name="service-url" size="128" 
+										type="text" 
+										value=""/>
+                  </td>
+                </tr>				
+              </table>
+            </blockquote>
+            <p>Please select whether to run all tests or just selected tests.</p>
+            <blockquote>
+              <table border="1" padding="4" bgcolor="#00ffff" align="center">
+                <tr>
+                  <td><input type="radio" name="which-tests" checked="true" value="all">Run all tests</input></td>
+                  <td><input type="radio" name="which-tests" value="selected">Run selected tests</input></td>
+                </tr>				
+              </table>						
+            </blockquote>
+            <p>If you want to run selected tests, please select the checkboxes for the tests you want to run.</p>
+            <blockquote>
+              <table border="1" padding="4" bgcolor="#00ffff" align="center">
+                <tr><th colspan="4" align="left">Main</th></tr>
+                <tr><td><input type="checkbox" name="ows-main">OWS Main</input></td>		
+                  <td><input type="checkbox" name="sos-general-main">SOS General Main</input></td>
+                  <td/><td/></tr>				
+                <tr><th colspan="4" align="left">SOS Core: Get Capabilities</th></tr>
+                <tr><td><input type="checkbox" name="sos-gc-kvp-rph">KVPRequestParameterHandling</input></td>
+                  <td><input type="checkbox" name="sos-gc-kvp-rsph">KVPRequestServiceParameterHandling</input></td>		
+                  <td><input type="checkbox" name="sos-gc-kvp-rrph">KVPRequestRequestParameterHandling</input></td>
+                  <td><input type="checkbox" name="sos-gc-ommo">OperationsMetadataMandatoryOperations</input></td></tr>			
+                <tr><td><input type="checkbox" name="sos-gc-omoo">OperationsMetadaOptionalOperations</input></td>
+                  <td><input type="checkbox" name="sos-gc-rcvt">ResponseContentsValidTime</input></td>		
+                  <td><input type="checkbox" name="sos-gc-rcvp">ResponseContentsValidProcedure</input></td>
+                  <td><input type="checkbox" name="sos-gc-rcvop">ResponseContentsValidObservedProperty</input></td></tr>			
+                <tr><td><input type="checkbox" name="sos-gc-rcvrf">ResponseContentsValidResponseFormat</input></td>
+                  <td><input type="checkbox" name="sos-gc-rcvrm">ResponseContentsValidResultModel</input></td>		
+                  <td><input type="checkbox" name="sos-gc-rcvrm2">ResponseContentsValidResponseMode</input></td>
+                  <td/></tr>
+                <tr><th colspan="4" align="left">SOS Core: Describe Sensor</th></tr>
+                <tr><td><input type="checkbox" name="sos-ds-rimt">RequestInvalidMIMEType</input></td>
+                  <td><input type="checkbox" name="sos-ds-rip">RequestInvalidProcedure</input></td>			
+                  <td><input type="checkbox" name="sos-ds-rmrf">ResponseMatchingResponseFormat</input></td>
+                  <td><input type="checkbox" name="sos-ds-rmp">ResponseMatchingProcedure</input></td></tr>		
+                <tr><th colspan="4" align="left">SOS Core: Get Observation</th></tr>
+                <tr><td><input type="checkbox" name="sos-go-risn">RequestInvalidSRSName</input></td>
+                  <td><input type="checkbox" name="sos-go-rio">RequestInvalidOffering</input></td>			
+                  <td><input type="checkbox" name="sos-go-riet">RequestInvalidEventTime</input></td>
+                  <td><input type="checkbox" name="sos-go-rip">RequestInvalidProcedure</input></td></tr>			
+                <tr><td><input type="checkbox" name="sos-go-rifoi">RequestInvalidFeatureOfInterest</input></td>
+                  <td><input type="checkbox" name="sos-go-riop">RequestInvalidObservedProperty</input></td>			
+                  <td><input type="checkbox" name="sos-go-rir">RequestInvalidResult</input></td>
+                  <td><input type="checkbox" name="sos-go-rirf">RequestInvalidResponseFormat</input></td></tr>			
+                <tr><td><input type="checkbox" name="sos-go-rirm">RequestInvalidResultModel</input></td>
+                  <td><input type="checkbox" name="sos-go-rirm2">RequestInvalidResponseMode</input></td>	
+                  <td><input type="checkbox" name="sos-go-rmsd">ResponseMatchingSRSData</input></td>
+                  <td><input type="checkbox" name="sos-go-rmpd">ResponseMatchingProcedureData</input></td></tr>			
+                <tr><td><input type="checkbox" name="sos-go-rmopd">ResponseMatchingObservedPropertyData</input></td>
+                  <td><input type="checkbox" name="sos-go-raetd">ResponseAdvertisedEventTimeData</input></td>	
+                  <td><input type="checkbox" name="sos-go-rmetd">ResponseMatchingEventTimeData</input></td>
+                  <td><input type="checkbox" name="sos-go-rmfoid">ResponseMatchingFeatureOfInterestData</input></td></tr>			
+                <tr><td><input type="checkbox" name="sos-go-rmrd">ResponseMatchingResultData</input></td>
+                  <td><input type="checkbox" name="sos-go-rmrfd">ResponseMatchingResponseFormatData</input></td>
+                  <td/><td/></tr>			
+              </table>						
+            </blockquote>
+
+            <p>Please press the "Start" button to start testing.</p>
+            <div align="center">
+              <input type="submit" value="Start"/>						
+            </div>
+          </body>
+        </ctl:form>
+      </xsl:variable>
+
+      <!-- Get user input, message user options -->	
+      <xsl:variable name="sos.service.url" select="$form-values/values/value[@key='service-url']"/>
+      <!-- New messages and user option variables added 2010-12-30 PwD -->
+      <ctl:message select="concat('sos.service.url ',$sos.service.url)"/>
+      <xsl:variable name="which-tests" select="$form-values/values/value[@key='which-tests']"/>
+      <ctl:message select="concat('which tests: ',$which-tests)"/>
+
+      <xsl:variable name="ows-main" select="$form-values/values/value[@key='ows-main']"/>
+      <xsl:variable name="run-ows-main" select="($which-tests eq 'all' or $ows-main eq 'on' )"/>
+      <ctl:message select="concat('run ows-main: ',$run-ows-main)"/>
+
+      <xsl:variable name="sos-general-main" select="$form-values/values/value[@key='sos-general-main']"/>
+      <xsl:variable name="run-sos-general-main" select="($which-tests eq 'all' or $sos-general-main eq 'on')"/>
+      <ctl:message select="concat('run sos-general-main: ',$run-sos-general-main)"/>
+
+      <xsl:variable name="sos-gc-kvp-rph" select="$form-values/values/value[@key='sos-gc-kvp-rph']"/>
+      <xsl:variable name="run-sos-gc-kvp-rph" select="($which-tests eq 'all' or $sos-gc-kvp-rph eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-kvp-rph: ',$run-sos-gc-kvp-rph)"/>
+
+      <xsl:variable name="sos-gc-kvp-rsph" select="$form-values/values/value[@key='sos-gc-kvp-rsph']"/>
+      <xsl:variable name="run-sos-gc-kvp-rsph" select="($which-tests eq 'all' or $sos-gc-kvp-rsph eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-kvp-rsph: ',$run-sos-gc-kvp-rsph)"/>
+
+      <xsl:variable name="sos-gc-kvp-rrph" select="$form-values/values/value[@key='sos-gc-kvp-rrph']"/>
+      <xsl:variable name="run-sos-gc-kvp-rrph" select="($which-tests eq 'all' or $sos-gc-kvp-rrph eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-kvp-rrph: ',$run-sos-gc-kvp-rrph)"/>
+
+      <xsl:variable name="sos-gc-ommo" select="$form-values/values/value[@key='sos-gc-ommo']"/>
+      <xsl:variable name="run-sos-gc-ommo" select="($which-tests eq 'all' or $sos-gc-ommo eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-ommo: ',$run-sos-gc-ommo)"/>
+
+      <xsl:variable name="sos-gc-omoo" select="$form-values/values/value[@key='sos-gc-omoo']"/>
+      <xsl:variable name="run-sos-gc-omoo" select="($which-tests eq 'all' or $sos-gc-omoo eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-omoo: ',$run-sos-gc-omoo)"/>
+
+      <xsl:variable name="sos-gc-rcvt" select="$form-values/values/value[@key='sos-gc-rcvt']"/>
+      <xsl:variable name="run-sos-gc-rcvt" select="($which-tests eq 'all' or $sos-gc-rcvt eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-rcvt: ',$run-sos-gc-rcvt)"/>
+
+      <xsl:variable name="sos-gc-rcvp" select="$form-values/values/value[@key='sos-gc-rcvp']"/>
+      <xsl:variable name="run-sos-gc-rcvp" select="($which-tests eq 'all' or $sos-gc-rcvp eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-rcvp: ',$run-sos-gc-rcvp)"/>
+
+      <xsl:variable name="sos-gc-rcvop" select="$form-values/values/value[@key='sos-gc-rcvop']"/>
+      <xsl:variable name="run-sos-gc-rcvop" select="($which-tests eq 'all' or $sos-gc-rcvop eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-rcvop: ',$run-sos-gc-rcvop)"/>
+
+      <xsl:variable name="sos-gc-rcvrf" select="$form-values/values/value[@key='sos-gc-rcvrf']"/>
+      <xsl:variable name="run-sos-gc-rcvrf" select="($which-tests eq 'all' or $sos-gc-rcvrf eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-rcvrf: ',$run-sos-gc-rcvrf)"/>
+
+      <xsl:variable name="sos-gc-rcvrm" select="$form-values/values/value[@key='sos-gc-rcvrm']"/>
+      <xsl:variable name="run-sos-gc-rcvrm" select="($which-tests eq 'all' or $sos-gc-rcvrm eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-rcvrm: ',$run-sos-gc-rcvrm)"/>
+
+      <xsl:variable name="sos-gc-rcvrm2" select="$form-values/values/value[@key='sos-gc-rcvrm2']"/> 
+      <xsl:variable name="run-sos-gc-rcvrm2" select="($which-tests eq 'all' or $sos-gc-rcvrm2 eq 'on')"/>
+      <ctl:message select="concat('run sos-gc-rcvrm2: ',$run-sos-gc-rcvrm2)"/>
+
+      <xsl:variable name="sos-ds-rimt" select="$form-values/values/value[@key='sos-ds-rimt']"/>
+      <xsl:variable name="run-sos-ds-rimt" select="($which-tests eq 'all' or $sos-ds-rimt eq 'on')"/>
+      <ctl:message select="concat('run sos-ds-rimt: ',$run-sos-ds-rimt)"/>
+
+      <xsl:variable name="sos-ds-rip" select="$form-values/values/value[@key='sos-ds-rip']"/>
+      <xsl:variable name="run-sos-ds-rip" select="($which-tests eq 'all' or $sos-ds-rip eq 'on')"/>
+      <ctl:message select="concat('run sos-ds-rip: ',$run-sos-ds-rip)"/>
+
+      <xsl:variable name="sos-ds-rmrf" select="$form-values/values/value[@key='sos-ds-rmrf']"/>
+      <xsl:variable name="run-sos-ds-rmrf" select="($which-tests eq 'all' or $sos-ds-rmrf eq 'on')"/>
+      <ctl:message select="concat('run sos-ds-rmrf: ',$run-sos-ds-rmrf)"/>
+
+      <xsl:variable name="sos-ds-rmp" select="$form-values/values/value[@key='sos-ds-rmp']"/>
+      <xsl:variable name="run-sos-ds-rmp" select="($which-tests eq 'all' or $sos-ds-rmp eq 'on')"/>
+      <ctl:message select="concat('run sos-ds-rmp ',$run-sos-ds-rmp)"/>
+
+      <xsl:variable name="sos-go-risn" select="$form-values/values/value[@key='sos-go-risn']"/>
+      <xsl:variable name="run-sos-go-risn" select="($which-tests eq 'all' or $sos-go-risn eq 'on')"/>
+      <ctl:message select="concat('run sos-go-risn: ',$run-sos-go-risn)"/>
+
+      <xsl:variable name="sos-go-rio" select="$form-values/values/value[@key='sos-go-rio']"/>
+      <xsl:variable name="run-sos-go-rio" select="($which-tests eq 'all' or $sos-go-rio eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rio: ',$run-sos-go-rio)"/>
+
+      <xsl:variable name="sos-go-riet" select="$form-values/values/value[@key='sos-go-riet']"/>
+      <xsl:variable name="run-sos-go-riet" select="($which-tests eq 'all' or $sos-go-riet eq 'on')"/>
+      <ctl:message select="concat('run sos-go-riet ',$run-sos-go-riet)"/>
+
+      <xsl:variable name="sos-go-rip" select="$form-values/values/value[@key='sos-go-rip']"/>
+      <xsl:variable name="run-sos-go-rip" select="($which-tests eq 'all' or $sos-go-rip eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rip: ',$run-sos-go-rip)"/>
+
+      <xsl:variable name="sos-go-rifoi" select="$form-values/values/value[@key='sos-go-rifoi']"/>
+      <xsl:variable name="run-sos-go-rifoi" select="($which-tests eq 'all' or $sos-go-rifoi eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rifoi: ',$run-sos-go-rifoi)"/>
+
+      <xsl:variable name="sos-go-riop" select="$form-values/values/value[@key='sos-go-riop']"/>
+      <xsl:variable name="run-sos-go-riop" select="($which-tests eq 'all' or $sos-go-riop eq 'on')"/>
+      <ctl:message select="concat('run sos-go-riop: ',$run-sos-go-riop)"/>
+
+      <xsl:variable name="sos-go-rir" select="$form-values/values/value[@key='sos-go-rir']"/>
+      <xsl:variable name="run-sos-go-rir" select="($which-tests eq 'all' or $sos-go-rir eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rir ',$run-sos-go-rir)"/>
+
+      <xsl:variable name="sos-go-rirf" select="$form-values/values/value[@key='sos-go-rirf']"/>
+      <xsl:variable name="run-sos-go-rirf" select="($which-tests eq 'all' or $sos-go-rirf eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rirf: ',$run-sos-go-rirf)"/>
+
+      <xsl:variable name="sos-go-rirm" select="$form-values/values/value[@key='sos-go-rirm']"/>
+      <xsl:variable name="run-sos-go-rirm" select="($which-tests eq 'all' or $sos-go-rirm eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rirm: ',$run-sos-go-rirm)"/>
+
+      <xsl:variable name="sos-go-rirm2" select="$form-values/values/value[@key='sos-go-rirm2']"/>
+      <xsl:variable name="run-sos-go-rirm2" select="($which-tests eq 'all' or $sos-go-rirm2 eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rirm2: ',$run-sos-go-rirm2)"/>
+
+      <xsl:variable name="sos-go-rmsd" select="$form-values/values/value[@key='sos-go-rmsd']"/>
+      <xsl:variable name="run-sos-go-rmsd" select="($which-tests eq 'all' or $sos-go-rmsd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmsd: ',$run-sos-go-rmsd)"/>
+
+      <xsl:variable name="sos-go-rmpd" select="$form-values/values/value[@key='sos-go-rmpd']"/>
+      <xsl:variable name="run-sos-go-rmpd" select="($which-tests eq 'all' or $sos-go-rmpd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmpd: ',$run-sos-go-rmpd)"/>
+
+      <xsl:variable name="sos-go-rmopd" select="$form-values/values/value[@key='sos-go-rmopd']"/>
+      <xsl:variable name="run-sos-go-rmopd" select="($which-tests eq 'all' or $sos-go-rmopd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmopd: ',$run-sos-go-rmopd)"/>
+
+      <xsl:variable name="sos-go-raetd" select="$form-values/values/value[@key='sos-go-raetd']"/>
+      <xsl:variable name="run-sos-go-raetd" select="($which-tests eq 'all' or $sos-go-raetd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-raetd: ',$run-sos-go-raetd)"/>
+
+      <xsl:variable name="sos-go-rmetd" select="$form-values/values/value[@key='sos-go-rmetd']"/>
+      <xsl:variable name="run-sos-go-rmetd" select="($which-tests eq 'all' or $sos-go-rmetd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmetd: ',$run-sos-go-rmetd)"/>
+
+      <xsl:variable name="sos-go-rmfoid" select="$form-values/values/value[@key='sos-go-rmfoid']"/>
+      <xsl:variable name="run-sos-go-rmfoid" select="($which-tests eq 'all' or $sos-go-rmfoid eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmfoid: ',$run-sos-go-rmfoid)"/>
+
+      <xsl:variable name="sos-go-rmrd" select="$form-values/values/value[@key='sos-go-rmrd']"/>
+      <xsl:variable name="run-sos-go-rmrd" select="($which-tests eq 'all' or $sos-go-rmrd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmrd: ',$run-sos-go-rmrd)"/>
+
+      <xsl:variable name="sos-go-rmrfd" select="$form-values/values/value[@key='sos-go-rmrfd']"/>
+      <xsl:variable name="run-sos-go-rmrfd" select="($which-tests eq 'all' or $sos-go-rmrfd eq 'on')"/>
+      <ctl:message select="concat('run sos-go-rmrfd: ',$run-sos-go-rmrfd)"/>
+
+      <xsl:variable name="run-sos-core" select="$run-sos-gc-kvp-rph or $run-sos-gc-kvp-rsph or $run-sos-gc-kvp-rrph or $run-sos-gc-ommo or $run-sos-gc-omoo or $run-sos-gc-rcvt or $run-sos-gc-rcvp or $run-sos-gc-rcvop or $run-sos-gc-rcvrf or $run-sos-gc-rcvrm or $run-sos-gc-rcvrm2 or $run-sos-ds-rimt or $run-sos-ds-rip or $run-sos-ds-rmrf or $run-sos-ds-rmp or $run-sos-go-risn or $run-sos-go-riet or $run-sos-go-rip or $run-sos-go-rifoi or $run-sos-go-riop or $run-sos-go-rir or $run-sos-go-rirf or $run-sos-go-rirm or $run-sos-go-rirm2 or $run-sos-go-rmsd or $run-sos-go-rmpd or $run-sos-go-rmopd or $run-sos-go-raetd or $run-sos-go-rmetd or $run-sos-go-rmfoid or $run-sos-go-rmrd or $run-sos-go-rmrfd"/>
+      <ctl:message select="concat('run sos-core: ',$run-sos-core)"/>
+
+      <!-- set other "global" variables -->			
+      <xsl:variable name="ogc.schema.root" select="'xsd/ogc/'"/>
+      <xsl:variable name="sos.schema.root" select="$ogc.schema.root"/>
+
+      <xsl:variable name="sos.version" select="'1.0.0'"/>		
+      <xsl:variable name="ows.version" select="'1.1.0'"/>
+      <xsl:variable name="exceptionReportSchema" select="sosFunctions:exceptionReportSchemaPath($ogc.schema.root, $ows.version)"/>
+      <ctl:message select="concat('SOS service URL: ',$sos.service.url)"/>		
+
+      <xsl:if test="$run-ows-main">
+        <ctl:call-test name="sos:ows-main"> <!-- 2010-12-30 PwD -->
+          <ctl:with-param name="serviceURL" select="$sos.service.url" />
+          <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema" />
+          <ctl:with-param name="sosSchemaRoot" select="$sos.schema.root" />
+          <ctl:with-param name="sosVersion" select="$sos.version" />
+        </ctl:call-test>
+      </xsl:if>
+
+      <xsl:if test="$run-sos-general-main"> <!-- 2010-12-30 PwD -->
+        <ctl:call-test name="sos:general-main">
+          <ctl:with-param name="serviceURL" select="$sos.service.url" />
+          <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema" />
+		  <ctl:with-param name="sosSchemaRoot" select="$sos.schema.root" />
+		  <ctl:with-param name="sosVersion" select="$sos.version" />
+        </ctl:call-test>			
+      </xsl:if>
+
+      <xsl:if test="$run-sos-core"> <!-- 2010-12-30 PwD -->
+        <ctl:call-test name="sos:core-main">
+          <ctl:with-param name="serviceURL" select="$sos.service.url" />
+          <ctl:with-param name="ogcSchemaRoot" select="$ogc.schema.root" />
+          <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema" />
+          <ctl:with-param name="sosSchemaRoot" select="$sos.schema.root" />			
+          <ctl:with-param name="sosVersion" select="$sos.version"/>	
+          <!-- Following parameters added 2010-12-30 PwD -->	
+          <ctl:with-param name="run-sos-gc-kvp-rph" select="$run-sos-gc-kvp-rph"/>
+          <ctl:with-param name="run-sos-gc-kvp-rsph" select="$run-sos-gc-kvp-rsph"/>
+          <ctl:with-param name="run-sos-gc-kvp-rrph" select="$run-sos-gc-kvp-rrph"/>
+          <ctl:with-param name="run-sos-gc-ommo" select="$run-sos-gc-ommo"/>
+          <ctl:with-param name="run-sos-gc-omoo" select="$run-sos-gc-omoo"/>
+          <ctl:with-param name="run-sos-gc-rcvt" select="$run-sos-gc-rcvt"/>
+          <ctl:with-param name="run-sos-gc-rcvp" select="$run-sos-gc-rcvp"/>
+          <ctl:with-param name="run-sos-gc-rcvop" select="$run-sos-gc-rcvop"/>
+          <ctl:with-param name="run-sos-gc-rcvrf" select="$run-sos-gc-rcvrf"/>
+          <ctl:with-param name="run-sos-gc-rcvrm" select="$run-sos-gc-rcvrm"/>
+          <ctl:with-param name="run-sos-gc-rcvrm2" select="$run-sos-gc-rcvrm2"/>
+          <ctl:with-param name="run-sos-ds-rimt" select="$run-sos-ds-rimt"/>
+          <ctl:with-param name="run-sos-ds-rip" select="$run-sos-ds-rip"/>
+          <ctl:with-param name="run-sos-ds-rmrf" select="$run-sos-ds-rmrf"/>
+          <ctl:with-param name="run-sos-ds-rmp" select="$run-sos-ds-rmp"/>
+          <ctl:with-param name="run-sos-go-risn" select="$run-sos-go-risn"/>
+          <ctl:with-param name="run-sos-go-rio" select="$run-sos-go-rio"/>					
+          <ctl:with-param name="run-sos-go-riet" select="$run-sos-go-riet"/>
+          <ctl:with-param name="run-sos-go-rip" select="$run-sos-go-rip"/>
+          <ctl:with-param name="run-sos-go-rifoi" select="$run-sos-go-rifoi"/>
+          <ctl:with-param name="run-sos-go-riop" select="$run-sos-go-riop"/>
+          <ctl:with-param name="run-sos-go-rir" select="$run-sos-go-rir"/>
+          <ctl:with-param name="run-sos-go-rirf" select="$run-sos-go-rirf"/>
+          <ctl:with-param name="run-sos-go-rirm" select="$run-sos-go-rirm"/>
+          <ctl:with-param name="run-sos-go-rirm2" select="$run-sos-go-rirm2"/>
+          <ctl:with-param name="run-sos-go-rmsd" select="$run-sos-go-rmsd"/>
+          <ctl:with-param name="run-sos-go-rmpd" select="$run-sos-go-rmpd"/>
+          <ctl:with-param name="run-sos-go-rmopd" select="$run-sos-go-rmopd"/>
+          <ctl:with-param name="run-sos-go-raetd" select="$run-sos-go-raetd"/>
+          <ctl:with-param name="run-sos-go-rmetd" select="$run-sos-go-rmetd"/>
+          <ctl:with-param name="run-sos-go-rmfoid" select="$run-sos-go-rmfoid"/>
+          <ctl:with-param name="run-sos-go-rmrd" select="$run-sos-go-rmrd"/>
+          <ctl:with-param name="run-sos-go-rmrfd" select="$run-sos-go-rmrfd"/>			
+        </ctl:call-test>
+      </xsl:if>
+
+    </ctl:code>
+  </ctl:test>
+
+  <ctl:test name="sos:ows-main">
+    <ctl:param name="serviceURL" />
+    <ctl:param name="exceptionReportSchema" />
+    <ctl:param name="sosSchemaRoot"/>
+    <ctl:param name="sosVersion"/>
+    <ctl:assertion>All assertions for "ows" conformance are satisfied.</ctl:assertion>
+    <ctl:comment>Test driver for the ows module.</ctl:comment>
+    <ctl:link title="1. OWS">docs/sos/1.0/SOS 1.0 ATS.html#ows</ctl:link>
+    <ctl:code>
+      <ctl:message>***************************</ctl:message>
+      <ctl:message>Running OWS Common Tests...</ctl:message>
+      <ctl:message>***************************</ctl:message>
+      <ctl:call-test name="owsTests:ows-main">
+        <ctl:with-param name="serviceURL" select="$serviceURL"/>
+        <ctl:with-param name="serviceType" select="string('SOS')"/>
+        <ctl:with-param name="serviceVersion" select="$sosVersion" />
+        <ctl:with-param name="capabilitiesRootElementName" select="string('Capabilities')" />
+        <ctl:with-param name="capabilitiesResponseSchemaLocation" select="sosFunctions:schemaPath($sosSchemaRoot, $sosVersion,'sos', 'sosGetCapabilities.xsd')"/>
+        <ctl:with-param name="capabilitiesResponseSchemaType" select="string('resource')" />
+        <ctl:with-param name="capabilitiesResponseContentType" select="string('text/xml')" />
+        <ctl:with-param name="exceptionReportSchemaLocation" select="$exceptionReportSchema"/>
+        <ctl:with-param name="exceptionReportSchemaType" select="string('resource')" />
+      </ctl:call-test>
+    </ctl:code>
+  </ctl:test>
+
+  <ctl:test name="sos:general-main">
+    <ctl:param name="serviceURL" />
+    <ctl:param name="exceptionReportSchema" />
+	<ctl:param name="sosSchemaRoot" />
+	<ctl:param name="sosVersion" />
+    <ctl:assertion>All assertions for "general" conformance are satisfied.</ctl:assertion>
+    <ctl:comment>Test driver for the general module.</ctl:comment>
+    <ctl:link title="2. General">docs/sos/1.0/SOS 1.0 ATS.html#general</ctl:link>
+    <ctl:code>
+      <ctl:message></ctl:message>
+      <ctl:message>****************************</ctl:message>
+      <ctl:message>Running General SOS Tests...</ctl:message>
+      <ctl:message>****************************</ctl:message>
+      <ctl:call-test name="sos:general-SOS.General-InvalidRequest.1">
+        <ctl:with-param name="serviceURL" select="$serviceURL" />
+        <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema" />
+		<ctl:with-param name="sosSchemaRoot" select="$sosSchemaRoot" />
+		<ctl:with-param name="sosVersion" select="$sosVersion" />
+      </ctl:call-test>
+      <ctl:message>**********************************************************************</ctl:message>
+      <ctl:call-test name="sos:general-SOS.General-ValidResponse.1">
+        <ctl:with-param name="responseDocument" select="$serviceURL" />
+      </ctl:call-test>
+    </ctl:code>
+  </ctl:test>
+  <ctl:test name="sos:general-SOS.General-InvalidRequest.1">
+    <ctl:param name="serviceURL" />
+    <ctl:param name="exceptionReportSchema" />
+	<ctl:param name="sosSchemaRoot" />
+	<ctl:param name="sosVersion" />
+    <!-- orig modified 2010-07-12 PwD
+        <ctl:assertion>Sending a request that is non-conformant to a schema associated with an SOS operation 
+        causes the server to return a valid error report message with an exceptionCode value of InvalidRequest.</ctl:assertion>
+         <ctl:comment>Send several test documents that are invalid according to the schemas associated with some of the SOS operations
+          (i.e. the mandatory operations). Pass if the service returns a valid exception message with an exceptionCode value of InvalidRequest; fail otherwise.</ctl:comment> 
+      -->
+    <ctl:assertion>Sending a request that is non-conformant to a schema associated with an SOS operation causes the server to return a valid error report message with an exceptionCode value of MissingParameterValue.</ctl:assertion>
+    <ctl:comment>Send several test documents that are invalid according to the schemas associated with some of the SOS operations (i.e. the mandatory operations). Pass if the service returns a valid exception message with an exceptionCode value of InvalidParamterValue; fail otherwise.</ctl:comment>
+    <ctl:link title="Verify that an invalid request produces an appropriate response from the server.">docs/sos/1.0/SOS 1.0 ATS.html#SOS.General-InvalidRequest</ctl:link>
+    <ctl:code>
+		<xsl:variable name="getCapabilitiesRequest">
+			<ctl:request>
+			  <ctl:url>
+				<xsl:value-of select="$serviceURL"/>								
+			  </ctl:url>
+			  <ctl:method>get</ctl:method>	
+			  <ctl:param name="request">GetCapabilities</ctl:param>
+			  <ctl:param name="service">SOS</ctl:param> 
+			  <ctl:param name="AcceptVersions">1.0.0</ctl:param><!-- OWS 1.1.0 p19 Although optional, client software should always include this parameter, to simplify version negotiation. -->
+			  <ctl:call-function name="sosFunctions:xmlValidatingParser">					
+				<ctl:with-param name="schemaFile" select="sosFunctions:schemaPath($sosSchemaRoot, $sosVersion,'sos', 'sosGetCapabilities.xsd')"/>
+			  </ctl:call-function>
+
+			</ctl:request>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="not($getCapabilitiesRequest/*) or $getCapabilitiesRequest//*[local-name() = 'ExceptionReport']">
+				<ctl:message>GetCapabilites response document failed schema validation.</ctl:message>
+				<ctl:message><xsl:value-of select="concat('Schema: ', sosFunctions:schemaPath($sosSchemaRoot, $sosVersion,'sos', 'sosGetCapabilities.xsd'))"/></ctl:message>
+				<ctl:fail/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:choose>
+					<xsl:when test="count($getCapabilitiesRequest//ows:Operation[@name='GetCapabilities']//ows:Post) = 0">
+						<ctl:message>Post request is not support by service , pass this test.</ctl:message>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:variable name="GetCapabilitiesPostURL" select="sosFunctions:operationPostURL($getCapabilitiesRequest, 'GetCapabilities')"/>
+						<!--
+								1.)  Issue several invalid request documents to the service.
+								2.)  Validate the response against the ExceptionReport schema.
+								3.)  If the response validates, then check that the exceptionCode value is "MissingParameterValue", not "InvalidRequest" (which is not specified as a valid exception code by the SOS spec)
+							-->
+						<ctl:message>Issuing an invalid request to:  <xsl:value-of select="$GetCapabilitiesPostURL" /></ctl:message>		     
+						<ctl:message select="'The body of the request will be &quot;test&quot;'"/>
+						<xsl:variable name="invalidRequestResponse">
+							<ctl:request>
+								<ctl:url>
+								<xsl:value-of select="$GetCapabilitiesPostURL" />
+								</ctl:url>
+								<ctl:method>post</ctl:method>
+								<ctl:body>test</ctl:body>
+								<ctl:call-function name="sosFunctions:xmlValidatingParser">	
+								<ctl:with-param name="schemaFile" select="$exceptionReportSchema"/>
+								</ctl:call-function>
+							</ctl:request>
+						</xsl:variable>        
+						<xsl:choose>
+							<xsl:when test="not($invalidRequestResponse/*)">
+								<ctl:message>FAILURE:  The server did not return a response to an invalid request or the response from the server was not a valid exception report.  The response from the server was:  "<xsl:copy-of select="$invalidRequestResponse/*" />"</ctl:message>
+								<ctl:message select="concat('Schema file: ', $exceptionReportSchema)"/>
+								<ctl:fail />
+							</xsl:when>
+							<xsl:otherwise>
+								<ctl:message>The response was <xsl:value-of select="sosFunctions:getExceptionInfo($invalidRequestResponse)" /></ctl:message>
+								<ctl:message>Checking the validity of the response to an invalid request.</ctl:message>
+								<xsl:variable name="isCorrect">
+									<ctl:call-function name="sosFunctions:checkExceptionReport">
+										<ctl:with-param name="exceptionReport" select="$invalidRequestResponse" />
+										<!--  orig modified 2010-07-12 PwD            
+										<ctl:with-param name="exceptionCodeToCheck" select="string('InvalidRequest')" />
+										-->
+										<ctl:with-param name="exceptionCodeToCheck" select="string('MissingParameterValue')" />
+										<ctl:with-param name="locatorToCheck" select="string('*')" />
+									</ctl:call-function>
+								</xsl:variable>
+								<ctl:message>The validity check returned:  <xsl:value-of select="$isCorrect" /></ctl:message>
+								<xsl:if test="not(xsd:boolean($isCorrect))">
+									<!--  orig modified 2010-07-12 PwD                 
+									<ctl:message>FAILURE:  The response to an invalid request was expected to be an exception report with an exceptionCode of "InvalidRequest" and a locator value containing the validation issue.  The returned exception report was:  "<xsl:value-of select="$invalidRequestResponse/*" />"</ctl:message>
+									<ctl:message select="concat('Returned exception code was: &quot;', sosFunctions:exceptionCode($invalidRequestResponse), '&quot;')"/>
+									<ctl:message select="'Expected exception code was: &quot;InvalidRequest&quot;'"/>
+									-->					
+										<ctl:message>FAILURE:  The response to an invalid request was expected to be an exception report with an exceptionCode of "MissingParameterValue" and a locator value containing the validation issue.  The returned exception report was:  "<xsl:value-of select="$invalidRequestResponse/*" />"</ctl:message>
+										<ctl:message select="concat('Returned exception code was: &quot;', sosFunctions:exceptionCode($invalidRequestResponse), '&quot;')"/>
+										<ctl:message select="'Expected exception code was: &quot;MissingParameterValue&quot;'"/>
+									<ctl:fail />
+								</xsl:if>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:otherwise>
+		</xsl:choose>
+    </ctl:code>
+  </ctl:test>
+  <ctl:test name="sos:general-SOS.General-ValidResponse.1">
+    <ctl:param name="responseDocument" />
+    <ctl:assertion>A response is a valid response for the SOS.  This general assertion should be tested by all other tests.</ctl:assertion>
+    <ctl:comment>Tested through other tests.</ctl:comment>
+    <ctl:link title="Verify that a response entity is schema-valid">docs/sos/1.0/SOS 1.0 ATS.html#SOS.General-ValidResponse</ctl:link>
+    <ctl:code>
+      <ctl:message>This general assertion is tested by all other tests, so there is nothing specific to test now.</ctl:message>
+    </ctl:code>
+  </ctl:test>
+
+  <ctl:test name="sos:core-main">
+    <ctl:param name="serviceURL"/>
+    <ctl:param name="ogcSchemaRoot"/>
+    <ctl:param name="exceptionReportSchema"/>
+    <ctl:param name="sosSchemaRoot"/>
+    <ctl:param name="sosVersion"/>
+    <!-- Following parameters added 2010-12-30 PwD -->	
+    <ctl:param name="run-sos-gc-kvp-rph"/>
+    <ctl:param name="run-sos-gc-kvp-rsph"/>
+    <ctl:param name="run-sos-gc-kvp-rrph"/>
+    <ctl:param name="run-sos-gc-ommo"/>
+    <ctl:param name="run-sos-gc-omoo"/>
+    <ctl:param name="run-sos-gc-rcvt"/>
+    <ctl:param name="run-sos-gc-rcvp"/>
+    <ctl:param name="run-sos-gc-rcvop"/>
+    <ctl:param name="run-sos-gc-rcvrf"/>
+    <ctl:param name="run-sos-gc-rcvrm"/>
+    <ctl:param name="run-sos-gc-rcvrm2"/>
+    <ctl:param name="run-sos-ds-rimt"/>
+    <ctl:param name="run-sos-ds-rip"/>
+    <ctl:param name="run-sos-ds-rmrf"/>
+    <ctl:param name="run-sos-ds-rmp"/>
+    <ctl:param name="run-sos-go-risn"/>
+    <ctl:param name="run-sos-go-rio"/>
+    <ctl:param name="run-sos-go-riet"/>
+    <ctl:param name="run-sos-go-rip"/>
+    <ctl:param name="run-sos-go-rifoi"/>
+    <ctl:param name="run-sos-go-riop"/>
+    <ctl:param name="run-sos-go-rir"/>
+    <ctl:param name="run-sos-go-rirf"/>
+    <ctl:param name="run-sos-go-rirm"/>
+    <ctl:param name="run-sos-go-rirm2"/>
+    <ctl:param name="run-sos-go-rmsd"/>
+    <ctl:param name="run-sos-go-rmpd"/>
+    <ctl:param name="run-sos-go-rmopd"/>
+    <ctl:param name="run-sos-go-raetd"/>
+    <ctl:param name="run-sos-go-rmetd"/>
+    <ctl:param name="run-sos-go-rmfoid"/>
+    <ctl:param name="run-sos-go-rmrd"/>
+    <ctl:param name="run-sos-go-rmrfd"/>
+
+
+    <ctl:assertion>All assertions for "core" conformance are satisfied.</ctl:assertion>
+    <ctl:comment>Test driver for the core module.</ctl:comment>
+    <ctl:link title="3. Core">docs/sos/1.0/SOS 1.0 ATS.html#core</ctl:link>
+    <ctl:code>	
+      <!-- Following variables and messages added 2010-12-30 PwD -->	
+      <xsl:variable name="run-gc-tests" select="$run-sos-gc-kvp-rph eq 'true' or 
+															$run-sos-gc-kvp-rsph eq 'true' or 
+															$run-sos-gc-kvp-rrph eq 'true' or 
+															$run-sos-gc-ommo eq 'true' or 
+															$run-sos-gc-omoo eq 'true' or 
+															$run-sos-gc-rcvt eq 'true' or 
+															$run-sos-gc-rcvp eq 'true' or 
+															$run-sos-gc-rcvop eq 'true' or 
+															$run-sos-gc-rcvrf eq 'true' or 
+															$run-sos-gc-rcvrm eq 'true' or 
+															$run-sos-gc-rcvrm2 eq 'true'"/>
+      <xsl:variable name="run-ds-tests" select="$run-sos-ds-rimt eq 'true' or 
+															$run-sos-ds-rip eq 'true' or 
+															$run-sos-ds-rmrf eq 'true' or 
+															$run-sos-ds-rmp eq 'true'"/>
+      <xsl:variable name="run-go-tests" select="$run-sos-go-risn eq 'true' or 
+															$run-sos-go-riet eq 'true' or 
+															$run-sos-go-rip eq 'true' or 
+															$run-sos-go-rifoi eq 'true' or 
+															$run-sos-go-riop eq 'true' or 
+															$run-sos-go-rir eq 'true' or 
+															$run-sos-go-rirf eq 'true' or 
+															$run-sos-go-rirm eq 'true' or 
+															$run-sos-go-rirm2 eq 'true' or 
+															$run-sos-go-rmsd eq 'true' or 
+															$run-sos-go-rmpd eq 'true' or 
+															$run-sos-go-rmopd eq 'true' or 
+															$run-sos-go-raetd eq 'true' or 
+															$run-sos-go-rmetd eq 'true' or 
+															$run-sos-go-rmfoid eq 'true' or 
+															$run-sos-go-rmrd eq 'true' or 
+															$run-sos-go-rmrfd eq 'true'"/>
+      <ctl:message select="'********************************************************'"/>
+      <ctl:message select="''"/>
+      <ctl:message>In sos:core-main</ctl:message>
+      <ctl:message select="concat('run-gc-tests: ',$run-gc-tests)"/>	
+      <xsl:if test="$run-gc-tests">
+        <ctl:message select="concat('run sos-gc-kvp-rph: ',$run-sos-gc-kvp-rph)"/>
+        <ctl:message select="concat('run sos-gc-kvp-rsph: ',$run-sos-gc-kvp-rsph)"/>
+        <ctl:message select="concat('run sos-gc-kvp-rrph: ',$run-sos-gc-kvp-rrph)"/>
+        <ctl:message select="concat('run sos-gc-ommo: ',$run-sos-gc-ommo)"/>
+        <ctl:message select="concat('run sos-gc-omoo: ',$run-sos-gc-omoo)"/>
+        <ctl:message select="concat('run sos-gc-rcvt: ',$run-sos-gc-rcvt)"/>
+        <ctl:message select="concat('run sos-gc-rcvp: ',$run-sos-gc-rcvp)"/>
+        <ctl:message select="concat('run sos-gc-rcvop: ',$run-sos-gc-rcvop)"/>
+        <ctl:message select="concat('run sos-gc-rcvrf: ',$run-sos-gc-rcvrf)"/>
+        <ctl:message select="concat('run sos-gc-rcvrm: ',$run-sos-gc-rcvrm)"/>
+        <ctl:message select="concat('run sos-gc-rcvrm2: ',$run-sos-gc-rcvrm2)"/>		
+      </xsl:if>			
+      <ctl:message select="concat('run-ds-tests: ',$run-ds-tests)"/>
+      <xsl:if test="$run-ds-tests">
+        <ctl:message select="concat('run sos-ds-rimt: ',$run-sos-ds-rimt)"/>
+        <ctl:message select="concat('run sos-ds-rip: ',$run-sos-ds-rip)"/>
+        <ctl:message select="concat('run sos-ds-rmrf: ',$run-sos-ds-rmrf)"/>
+        <ctl:message select="concat('run sos-ds-rmp ',$run-sos-ds-rmp)"/>
+      </xsl:if>
+      <ctl:message select="concat('run-go-tests: ',$run-go-tests)"/>	
+      <xsl:if test="$run-go-tests">
+        <ctl:message select="concat('run sos-go-risn: ',$run-sos-go-risn)"/>
+        <ctl:message select="concat('run sos-go-rio: ',$run-sos-go-rio)"/>
+        <ctl:message select="concat('run sos-go-riet ',$run-sos-go-riet)"/>
+        <ctl:message select="concat('run sos-go-rip: ',$run-sos-go-rip)"/>
+        <ctl:message select="concat('run sos-go-rifoi: ',$run-sos-go-rifoi)"/>
+        <ctl:message select="concat('run sos-go-riop: ',$run-sos-go-riop)"/>
+        <ctl:message select="concat('run sos-go-rir ',$run-sos-go-rir)"/>
+        <ctl:message select="concat('run sos-go-rirf: ',$run-sos-go-rirf)"/>
+        <ctl:message select="concat('run sos-go-rirm: ',$run-sos-go-rirm)"/>
+        <ctl:message select="concat('run sos-go-rirm2: ',$run-sos-go-rirm2)"/>
+        <ctl:message select="concat('run sos-go-rmsd: ',$run-sos-go-rmsd)"/>
+        <ctl:message select="concat('run sos-go-rmpd: ',$run-sos-go-rmpd)"/>
+        <ctl:message select="concat('run sos-go-rmopd: ',$run-sos-go-rmopd)"/>
+        <ctl:message select="concat('run sos-go-raetd: ',$run-sos-go-raetd)"/>
+        <ctl:message select="concat('run sos-go-rmetd: ',$run-sos-go-rmetd)"/>
+        <ctl:message select="concat('run sos-go-rmfoid: ',$run-sos-go-rmfoid)"/>
+        <ctl:message select="concat('run sos-go-rmrd: ',$run-sos-go-rmrd)"/>
+        <ctl:message select="concat('run sos-go-rmrfd: ',$run-sos-go-rmrfd)"/>				
+      </xsl:if>			
+      <ctl:message></ctl:message>
+
+      <ctl:message select="'********************************************************'"/>
+      <ctl:message select="''"/>				
+      <ctl:message select="'A request for a valid capabilities document will now be made.'"/>
+      <ctl:message select="'The optional &quot;version&quot; parameter will be omitted.'"/>
+      <ctl:message select="'If this response passes schema validation, further tests will be performed on the GetCapabilities response.'"/>
+      <ctl:message select="'If it fails schema validation, testing will stop.'"/>
+      <ctl:message select="'Validating...'"/>
+      <xsl:variable name="getCapabilitiesRequest">
+        <ctl:request>
+          <ctl:url>
+            <xsl:value-of select="$serviceURL"/>								
+          </ctl:url>
+          <ctl:method>get</ctl:method>	
+          <ctl:param name="request">GetCapabilities</ctl:param>
+          <ctl:param name="service">SOS</ctl:param> 
+		  <ctl:param name="AcceptVersions">1.0.0</ctl:param><!-- OWS 1.1.0 p19 Although optional, client software should always include this parameter, to simplify version negotiation. -->
+          <ctl:call-function name="sosFunctions:xmlValidatingParser">					
+            <ctl:with-param name="schemaFile" select="sosFunctions:schemaPath($sosSchemaRoot, $sosVersion,'sos', 'sosGetCapabilities.xsd')"/>
+          </ctl:call-function>
+
+        </ctl:request>
+      </xsl:variable>
+
+      <xsl:choose>
+
+        <!-- was <xsl:when test="not($getCapabilitiesRequest/*)">  2010-12-18 PwD -->
+        <xsl:when test="not($getCapabilitiesRequest/*) or $getCapabilitiesRequest//*[local-name() = 'ExceptionReport']">
+          <ctl:message>GetCapabilites response document failed schema validation.</ctl:message>
+          <ctl:message><xsl:value-of select="concat('Schema: ', sosFunctions:schemaPath($sosSchemaRoot, $sosVersion,'sos', 'sosGetCapabilities.xsd'))"/></ctl:message>
+          <ctl:fail/>
+        </xsl:when>
+        <!--  				<xsl:when test="not(string(node-name($getCapabilitiesRequest/*))='sos:Capabilities')">
+						<ctl:message>Root element name was not "sos:Capabilities".</ctl:message>
+						<ctl:message select="concat('Root element name was: &quot;', string(node-name($getCapabilitiesRequest/*)), '&quot;')"/>
+						<ctl:fail/>
+					</xsl:when>		-->	
+        <xsl:otherwise>
+          <ctl:message select="'********************************************************'"/>
+          <ctl:message select="''"/>					
+          <ctl:message>Capabilities response is valid, continuing...</ctl:message>
+          <ctl:message select="''"/>	
+
+          <xsl:if test="$run-sos-gc-kvp-rph eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message></ctl:message>
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>						
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-KVPRequestParameterHandling.1">
+              <ctl:with-param name="serviceURL" select="$serviceURL"/>
+              <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-kvp-rsph eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message></ctl:message>
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-KVPRequestServiceParameterHandling.1">
+              <ctl:with-param name="serviceURL" select="$serviceURL"/>
+              <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-kvp-rrph eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>		
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-KVPRequestRequestParameterHandling.1">
+              <ctl:with-param name="serviceURL" select="$serviceURL"/>
+              <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-ommo eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>						
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-OperationsMetadataMandatoryOperations.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-omoo eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>												
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-OperationsMetadaOptionalOperations.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-rcvt eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>						
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-ResponseContentsValidTime.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-rcvp eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>							
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-ResponseContentsValidProcedure.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-rcvop eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>												
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-ResponseContentsValidObservedProperty.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-rcvrf eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>												
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-ResponseContentsValidResponseFormat.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-rcvrm eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>												
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-ResponseContentsValidResultModel.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-sos-gc-rcvrm2 eq 'true'"> <!-- 2010-12-30 PwD -->
+            <ctl:message select="'********************************************************'"/>
+            <ctl:message select="''"/>												
+            <ctl:call-test name="getCapabilities:core-SOS.GetCapabilities-ResponseContentsValidResponseMode.1">
+              <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+            </ctl:call-test>
+          </xsl:if>
+
+          <xsl:if test="$run-ds-tests"> <!-- 2010-12-30 PwD -->
+            <!--********************   Create variables for DescribeSensor **********************************-->		
+            <xsl:variable name="describeSensorPostURL" select="sosFunctions:operationPostURL($getCapabilitiesRequest, 'DescribeSensor')"/>
+
+            <xsl:variable name="describeSensorVersion" select="sosFunctions:operationVersion($getCapabilitiesRequest, 'DescribeSensor')"/>
+            <xsl:variable name="describeSensorProcedure" select="sosFunctions:describeSensorFirstProcedure($getCapabilitiesRequest)"/>
+            <xsl:variable name="describeSensorOutputFormat" select="sosFunctions:describeSensorOutputFormat($getCapabilitiesRequest)"/>						
+            <xsl:variable name="describeSensorSchemaFile" select="sosFunctions:schemaPathFromMimeType($ogcSchemaRoot, $describeSensorOutputFormat)"/>
+
+            <ctl:message></ctl:message>
+            <ctl:message select="'*********************************'"/>	
+            <ctl:message select="'*     Describe Sensor Tests 	  *'"/>
+            <ctl:message select="'*********************************'"/>
+            <ctl:message select="concat('All DescribeSensor tests will use the &quot;Post&quot; method at the following url: ', $describeSensorPostURL)"/>
+            <ctl:message select="'This url was obtained from the GetCapabilities response'"/>
+            <ctl:message select="''"/>												
+
+            <xsl:choose>															
+              <xsl:when test="not($describeSensorPostURL)">
+                <ctl:message>Failure</ctl:message>
+                <ctl:message select="'This service does not implement the &quot;POST&quot; for the DescribeSensor operation.'"/>
+                <ctl:message select="'The POST method must be implemented.'"/>
+                <ctl:fail/>
+              </xsl:when>
+              <!-- don't do anymore describeSensor tests if advertised describe sensor outputFormat is not valid -->
+              <xsl:when test="sosFunctions:isValidMIMETypeFormat($describeSensorOutputFormat) = 'false'">								
+                <ctl:message>Failure</ctl:message>
+                <ctl:message select="concat('The outputFormat advertised for the DescribeSensor operation is invalid: ', $describeSensorOutputFormat)"/>
+                <ctl:message select="'The encoding, subtype and version must all be specified.'"/>
+                <ctl:message select="'No further describe sensor tests will be run until this is rectified'"/>
+                <ctl:fail/>
+              </xsl:when>
+
+              <xsl:otherwise>
+
+                <xsl:if test="$run-sos-ds-rimt eq 'true'"> <!-- 2010-12-30 PwD -->
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>												
+                  <ctl:call-test name="describeSensor:core-SOS.DescribeSensor-RequestInvalidMIMEType.1">							
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$describeSensorPostURL"/>
+                    <ctl:with-param name="describeSensorVersion" select="$describeSensorVersion"/>
+                    <ctl:with-param name="procedure" select="$describeSensorProcedure"/>						
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-ds-rip eq 'true'"> <!-- 2010-12-30 PwD -->		
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="describeSensor:core-SOS.DescribeSensor-RequestInvalidProcedure.1">									
+                    <ctl:with-param name="postURL" select="$describeSensorPostURL"/>
+                    <ctl:with-param name="describeSensorVersion" select="$describeSensorVersion"/>
+                    <ctl:with-param name="outputFormat" select="$describeSensorOutputFormat"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>									
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-ds-rmrf eq 'true'"> <!-- 2010-12-30 PwD -->		
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>															
+                  <ctl:call-test name="describeSensor:core-SOS.DescribeSensor-ResponseMatchingResponseFormat.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="postURL" select="$describeSensorPostURL"/>
+                    <ctl:with-param name="describeSensorVersion" select="$describeSensorVersion"/>
+                    <ctl:with-param name="outputFormat" select="$describeSensorOutputFormat"/>
+                    <ctl:with-param name="schemaFile" select="$describeSensorSchemaFile"/>																	
+                  </ctl:call-test>
+                </xsl:if>		
+                <xsl:if test="$run-sos-ds-rmp eq 'true'"> <!-- 2010-12-30 PwD -->		
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>									
+                  <ctl:call-test name="describeSensor:core-SOS.DescribeSensor-ResponseMatchingProcedure.1">								
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="postURL" select="$describeSensorPostURL"/>
+                    <ctl:with-param name="describeSensorVersion" select="$describeSensorVersion"/>
+                    <ctl:with-param name="outputFormat" select="$describeSensorOutputFormat"/>
+                    <ctl:with-param name="schemaFile" select="$describeSensorSchemaFile"/>	
+                  </ctl:call-test>
+                </xsl:if>									
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:if>
+          <ctl:msg select="concat('test to run run-go-tests: ',$run-go-tests)"/>
+          <xsl:if test="$run-go-tests or string($run-go-tests) eq 'true' "> <!-- 2010-12-30 PwD -->						
+            <!--********************   Create variables for GetObservation **********************************-->	
+            <xsl:variable name="getObservationPostURL" select="sosFunctions:operationPostURL($getCapabilitiesRequest, 'GetObservation')"/>
+            <xsl:variable name="getObservationVersion" select="sosFunctions:operationVersion($getCapabilitiesRequest, 'GetObservation')"/>
+            <xsl:variable name="offeringId"	select="sosFunctions:capabilitiesFirstOfferingId($getCapabilitiesRequest)"/>
+            <xsl:variable name="offeringName" select="sosFunctions:capabilitiesOfferingName($getCapabilitiesRequest, $offeringId)"/> <!-- need gml:name URN to get observation PwD 2010-12-21 -->			
+            <xsl:variable name="observationOfferingResponseFormat" select="sosFunctions:observationOfferingResponseFormat($getCapabilitiesRequest, $offeringId)"/>
+            <!-- <xsl:variable name="observationOfferingObservedProperty" select="sosFunctions:observationOfferingObservedProperty($getCapabilitiesRequest, $offeringId)"/>	 PwD  2010-12-27 -->				
+            <xsl:variable name="observationOfferingObservedProperty" select="sosFunctions:observationOfferingObservedPropertyAsTextXML($getCapabilitiesRequest,
+																																		$offeringId,
+																																		$offeringName,
+																																		$getObservationVersion,
+																																		$observationOfferingResponseFormat)"/> <!--  PwD  2010-12-27 -->
+            <xsl:variable name="compareOperatorElement" select="sosFunctions:resultComparisonOperatorElement($getCapabilitiesRequest)"/>
+            <ctl:message></ctl:message>
+            <ctl:message select="'*********************************'"/>	
+            <ctl:message select="'*     GetObservation Tests 	  *'"/>
+            <ctl:message select="'*********************************'"/>
+            <ctl:message select="concat('All GetObservation tests will use the &quot;Post&quot; method at the following url: ', $getObservationPostURL)"/>
+            <ctl:message select="'This url was obtained from the GetCapabilities response'"/>
+            <ctl:message select="''"/>
+
+            <xsl:choose>
+
+              <xsl:when test="not($getObservationPostURL)">
+                <ctl:message>Failure</ctl:message>
+                <ctl:message select="'This service does not implement the &quot;POST&quot; for the GetObservation operation.'"/>
+                <ctl:message select="'The POST method must be implemented.'"/>
+                <ctl:fail/>
+              </xsl:when>
+
+              <xsl:when test="count($getCapabilitiesRequest//sos:ObservationOffering//sos:responseFormat[starts-with(.,'text/xml') and sosFunctions:isValidMIMETypeFormat(.) = 'false'])>0">
+                <ctl:message select="'Failure'"/>
+                <ctl:message select="'One or more text/xml responseFormats for one or more offerings is invalid.'"/>
+                <ctl:message select="'The encoding, subtype and version must all be specified.'"/>
+                <ctl:message select="'No GetObservation tests will be run until this is rectified'"/>
+                <ctl:message select="'See reults of test &quot;GetCapabilities-ResponseContentsValidResponseFormat&quot; for details'"/>
+                <ctl:fail/>
+              </xsl:when>
+
+              <xsl:when test="not($offeringId)">
+                <ctl:message>Failure</ctl:message>
+                <ctl:message select="'There are no offerings with valid begin and end times.'"/>
+                <ctl:message select="'At least one offering must have observations.'"/>
+                <ctl:message select="'The SOS must have observations in order to be tested.'"/>
+                <ctl:fail/>
+              </xsl:when>
+
+              <xsl:otherwise>											
+                <xsl:if test="$run-sos-go-risn eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>									
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidSRSName.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rio eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>															
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidOffering.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-riet eq 'true'"> <!-- 2010-12-30 PwD -->											
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>																					
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidEventTime.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>
+                    <ctl:with-param name="offeringName" select="$offeringName"/> <!-- need gml:name URN to get observation PwD 2010-12-21 -->
+                  </ctl:call-test>	
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rip eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>																					
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidProcedure.1">						
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rifoi eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>																					
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidFeatureOfInterest.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-riop eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>																					
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidObservedProperty.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>	
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rir eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>							
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidResult.1">
+                    <ctl:with-param name="compareOperatorElement" select="$compareOperatorElement"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rirf eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidResponseFormat.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>	
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rirm eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidResultModel.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>					
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rirm2 eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-RequestInvalidResponseMode.1">
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmsd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingSRSData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmpd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingProcedureData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmopd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingObservedPropertyData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>											
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-raetd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseAdvertisedEventTimeData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>						
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmetd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingEventTimeData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>						
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmfoid eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingFeatureOfInterestData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>						
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmrd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingResultData.1">						
+                    <ctl:with-param name="compareOperatorElement" select="$compareOperatorElement"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="exceptionReportSchema" select="$exceptionReportSchema"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                    <ctl:with-param name="responseFormat" select="$observationOfferingResponseFormat"/>					
+                    <ctl:with-param name="observedProperty" select="$observationOfferingObservedProperty"/>	
+                    <ctl:with-param name="offeringId" select="$offeringId"/>	<!-- Rocky change 2011-09-05,need gml:name URN to get observation PwD 2010-12-21 -->
+                    <ctl:with-param name="offeringName" select="$offeringName"/>
+                  </ctl:call-test>
+                </xsl:if>
+                <xsl:if test="$run-sos-go-rmrfd eq 'true'"> <!-- 2010-12-30 PwD -->			
+                  <ctl:message select="'********************************************************'"/>
+                  <ctl:message select="''"/>						
+                  <ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingResponseFormatData.1">
+                    <ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+                    <ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+                    <ctl:with-param name="postURL" select="$getObservationPostURL"/>
+                    <ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+                  </ctl:call-test>
+                </xsl:if>		
+
+              </xsl:otherwise>					
+            </xsl:choose>		
+
+            <!--					omitting this test					
+							<ctl:message select="'********************************************************'"/>
+							<ctl:message select="''"/>						
+							<ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingResultModel.1">
+								<ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+								<ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+								<ctl:with-param name="postURL" select="$getObservationPostURL"/>
+								<ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+							</ctl:call-test>
+		-->
+
+            <!--					omitting this test
+							<ctl:message select="'********************************************************'"/>
+							<ctl:message select="''"/>						
+							<ctl:call-test name="getObservation:core-SOS.GetObservation-ResponseMatchingResponseMode.1">
+								<ctl:with-param name="capabilitiesDocument" select="$getCapabilitiesRequest"/>
+								<ctl:with-param name="ogcSchemaRoot" select="$ogcSchemaRoot"/>
+								<ctl:with-param name="postURL" select="$getObservationPostURL"/>
+								<ctl:with-param name="getObservationVersion" select="$getObservationVersion"/>
+							</ctl:call-test>									
+		-->		
+          </xsl:if>
+        </xsl:otherwise>					
+      </xsl:choose>		
+    </ctl:code>
+  </ctl:test>
+</ctl:package>
