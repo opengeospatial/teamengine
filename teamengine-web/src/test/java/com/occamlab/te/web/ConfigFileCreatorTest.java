@@ -84,10 +84,10 @@ public class ConfigFileCreatorTest {
 	}
 
 	@Test
-	public void testSingleTestUnderTEBASE() {
+	public void testParsingMultipleOranizations() {
 
 		try {
-			File tebase = new File(classp, "tebase-onlyone");
+			File tebase = new File(classp, "tebase-multiple-organizations");
 			ConfigFileCreator configFileCreator = new ConfigFileCreator();
 			configFileCreator.create(tebase);
 			File configFile = new File(tebase + File.separator + "config.xml");
@@ -108,7 +108,7 @@ public class ConfigFileCreatorTest {
 	}
 	
 	@Test
-	public void testSingleTestUnderTEBASEwithHiddenFiles() {
+	public void testParsingFoldersWithHiddenFiles() {
 
 		try {
 			File tebase = new File(classp, "tebase-hidden-files");
@@ -130,5 +130,71 @@ public class ConfigFileCreatorTest {
 		}
 
 	}
+	
+	@Test
+	public void testSingleTestTEBASEwithNoConfigFileInATest() {
+
+		try {
+			File tebase = new File(classp, "tebase-no-config-in-test");
+			ConfigFileCreator configFileCreator = new ConfigFileCreator();
+			configFileCreator.create(tebase);
+			File configFile = new File(tebase + File.separator + "config.xml");
+
+			Document config = builder.parse(configFile);
+
+			NodeList orgs = XMLUtils.getAllNodes(config,
+					"/config/scripts/organization");
+			assertEquals(0, orgs.getLength());
+
+			configFile.delete();
+
+		} catch (Exception e) {
+			fail();
+			e.printStackTrace();
+		}
+
+	}
+	
+	@Test
+	public void testSingleTestTEBASEwithScriptsEmpty() {
+
+		try {
+			File tebase = new File(classp, "tebase-empty");
+			ConfigFileCreator configFileCreator = new ConfigFileCreator();
+			configFileCreator.create(tebase);
+			File configFile = new File(tebase + File.separator + "config.xml");
+
+			Document config = builder.parse(configFile);
+
+			NodeList orgs = XMLUtils.getAllNodes(config,
+					"/config/scripts/organization");
+			assertEquals(0, orgs.getLength());
+
+			configFile.delete();
+
+		} catch (Exception e) {
+			fail();
+			e.printStackTrace();
+		}
+
+	}
+	
+	@Test
+	public void testTEBASEnotfound() {
+
+
+			File tebase = new File(classp, "xyzzxsyss");
+			ConfigFileCreator configFileCreator = new ConfigFileCreator();
+			try{
+				configFileCreator.create(tebase);
+			}catch (TEException e){
+				assertEquals("com.occamlab.te.web.TEBaseNotFoundException", e.getClass().getName());
+				return;
+				
+			}
+			fail("it should throw aTEBaseNotFoundException Exception");
+	
+	}
+
 
 }
