@@ -177,11 +177,34 @@ public class XMLValidatingParser {
 		}
 	}
 
+	/**
+	 * Attempts to parse a resource read using the given connection to a URL.
+	 * 
+	 * @param uc
+	 *            A connection for reading from some URL.
+	 * @param instruction
+	 *            An Element node (ctlp:XMLValidatingParser) containing
+	 *            instructions, usually schema references.
+	 * @param logger
+	 *            A log writer.
+	 * @return A Document, or null if the resource could not be parsed.
+	 */
 	public Document parse(URLConnection uc, Element instruction,
-			PrintWriter logger) throws Exception {
-		jlogger.finer("Received URLConnection object for " + uc.getURL());
-		InputStream inStream = URLConnectionUtils.getInputStream(uc);
-		return parse(inStream, instruction, logger);
+			PrintWriter logger) {
+		if (null == uc) {
+			throw new NullPointerException(
+					"Unable to parse resource: URLConnection is null.");
+		}
+		jlogger.fine("Received URLConnection object for " + uc.getURL());
+		Document doc = null;
+		try (InputStream inStream = URLConnectionUtils.getInputStream(uc)) {
+			doc = parse(inStream, instruction, logger);
+		} catch (Exception e) {
+			throw new RuntimeException(String.format(
+					"Failed to parse resource from %s \n %s", uc.getURL(),
+					e.getMessage()));
+		}
+		return doc;
 	}
 
 	/**
@@ -218,13 +241,10 @@ public class XMLValidatingParser {
 			DocumentBuilderFactory dbf = nonValidatingDBF;
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setErrorHandler(errHandler);
-			InputStream xmlInput = (InputStream) input;
-			try {
+			try (InputStream xmlInput = (InputStream) input) {
 				resultDoc = db.parse(xmlInput);
 			} catch (Exception e) {
-				jlogger.log(Level.SEVERE, "error parsing", e);
-			} finally {
-				xmlInput.close();
+				jlogger.log(Level.INFO, "Error parsing InputStream", e);
 			}
 		} else if (input instanceof Document) {
 			resultDoc = (Document) input;
@@ -233,7 +253,8 @@ public class XMLValidatingParser {
 					"XML input must be an InputStream or a Document object.");
 		}
 		if (null == resultDoc) {
-			throw new NullPointerException("Failed to read input.");
+			throw new RuntimeException("Failed to parse input: "
+					+ input.getClass().getName());
 		}
 		errHandler.setRole("Validation");
 		if (null == resultDoc.getDoctype() && dtds.isEmpty()) {

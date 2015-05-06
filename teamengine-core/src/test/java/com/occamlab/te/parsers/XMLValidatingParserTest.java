@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,13 +16,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XMLValidatingParserTest {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	private static DocumentBuilder docBuilder;
 
 	@BeforeClass
@@ -169,6 +174,18 @@ public class XMLValidatingParserTest {
 		NodeList errList = iut.validate(doc, null);
 		assertEquals("Unexpected number of validation errors reported.", 2,
 				errList.getLength());
+	}
+
+	@Test
+	public void parseNonXMLResource() throws IOException {
+		thrown.expect(RuntimeException.class);
+		thrown.expectMessage("Failed to parse resource");
+		URL url = getClass().getResource("/jabberwocky.txt");
+		StringWriter strWriter = new StringWriter();
+		PrintWriter logger = new PrintWriter(strWriter);
+		XMLValidatingParser iut = new XMLValidatingParser();
+		Document result = iut.parse(url.openConnection(), null, logger);
+		assertNull(result);
 	}
 
 }
