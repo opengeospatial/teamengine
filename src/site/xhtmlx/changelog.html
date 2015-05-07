@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>Release Notes</title>
+  </head>
+  <body>
+    <h1>Release Notes</h1>
+
+    <h2>Version 4.1.0 (2015-04-24)</h2>
+    <p>This minor update provides the following enhancements and fixes:</p>
+    <ul>
+      <li style="list-style:square">[core] Fix issue <a target="_blank" 
+      href="https://github.com/opengeospatial/teamengine/issues/88">#88</a>: XMLValidatingParser for DTD.</li>
+      <li style="list-style:square">[core, spi, web] <a target="_blank" 
+      href="https://github.com/opengeospatial/teamengine/pull/75">PR #75</a>:
+      Various enhancements to facilitate client testing.</li>
+      <li style="list-style:square">[spi] <a target="_blank" 
+      href="https://github.com/opengeospatial/teamengine/issues/74">Issue #74</a>:
+      Return status code 400 if missing or invalid test run argument.</li>
+    </ul>
+
+    <h2>Version 4.0.6 (2014-12-09)</h2>
+    <p>This maintenance release includes the following changes:</p>
+    <ul>
+      <li style="list-style:square">[web] <a target="_blank" 
+      href="https://github.com/opengeospatial/teamengine/issues/69">Issue #69</a>: 
+      Move register link to welcome page.</li>
+      <li style="list-style:square">[core] <a target="_blank" 
+      href="https://github.com/opengeospatial/teamengine/issues/68">Issue #68</a>: 
+      Update test result only if a failing subtest has not already done so.</li>
+      <li style="list-style:square">[core] <a target="_blank" 
+      href="https://github.com/opengeospatial/teamengine/issues/64">Issue #64</a>:
+      XMLValidatingParser will use schema location hints if no schema references 
+      are supplied.</li>
+      <li>[console] Remove export-ctl shell scripts; see <a target="_blank"
+      href="https://github.com/opengeospatial/ets-resources">ets-resources</a> for
+      information about how to set up test suites.</li>
+      <li>Update the <em>Getting Started Guide</em></li>
+      <li>Fix (Javadoc) errors when building with JDK 8.</li>
+      <li>Modify POMs for GitHub</li>
+    </ul>
+
+    <h2>Version 4.0.5 (2014-03-11)</h2>
+    <p>This maintenance release includes the following changes:</p>
+    <ul>
+      <li>[web] Fix CITE-937: Service proxy is bypassed.</li>
+      <li>[web] Reintroduce default site content (/site).</li>
+      <li>Update <em>Getting Started Guide</em></li>
+    </ul>
+
+    <h2>Version 4.0.4 (2014-03-07)</h2>
+    <p>This update includes the following fix:</p>
+    <ul>
+      <li>[web] Fixed CITE-924: EPSG database is not created in web app environment.</li>
+    </ul>
+
+    <h2>Version 4.0.3 (2013-11-14)</h2>
+    <p>This maintenance release includes the following changes:</p>
+    <ul>
+      <li>[web] Fixed CITE-895 (Remove site-specific HTML resources from WAR file)</li>
+    </ul>
+
+    <h2>Version 4.0.2 (2013-11-01)</h2>
+    <p>This maintenance release includes the following changes:</p>
+    <ul>
+      <li>[web] Fixed base URL for web resources.</li>
+      <li>[spi] Don't split class and package names in TestNG reports.</li>
+      <li>[web] Added 'ogc.cite' profile to POM.</li>
+      <li>Updated dependencies to latest release versions: Xerces 2.11.0, TestNG 6.8.7, 
+      Maven plugins, etc.</li>
+    </ul>
+
+    <h2>Version 4.0.1 (2013-08-23)</h2>
+    <p>This is a maintenance release. It includes the following updates:</p>
+    <ul>
+      <li>[spi] Show TestNG verdicts for each test group in text summary.</li>
+      <li>[web] Display sessions sorted in order with name of test suite.</li>
+      <li>Updated documentation.</li>
+    </ul>
+
+    <h2>Version 4.0 (2013-07-04)</h2>
+    <p>This is the final release of TEAM-Engine 4.0. The following issues were resolved:</p>
+    <ul>
+      <li>[core] Fixed CITE-822 (SoapParser does not support HTTP code 400 "Bad request").</li>
+      <li>[core] Fixed CITE-821 (HTTPParser attempts to parse non-XML entity).</li>
+      <li>[core] Fixed CITE-810 (eliminate spurious inherited failures).</li>
+    </ul>
+
+    <h2>Version 4.0-rc</h2>
+    <ul>
+      <li>Release candidate.</li>
+      <li>[core] Warning verdict in subtest no longer 'taints' result of parent test.</li>
+      <li>[web] Uploaded file is placed in test session directory (fix for CITE-808).</li>
+      <li>[web] Removed config/home property in TE_BASE/config.xml.</li>
+      <li>[web] GetStatus polling interval increased to 4s from 1s.</li>
+    </ul>
+
+    <h2>Version 4.0-beta3</h2>
+    <ul>
+      <li>TestNG reporter (BasicXMLReporter) adds test result attributes to report.</li>
+      <li>Added teamengine-console module (assembles binary CLI distribution instead of core module).</li>
+      <li>TECore.build_request() no longer automatically percent-encodes request parameters.</li>
+      <li>CTL test report generator now recognizes all test verdicts.</li>
+      <li>Updated teamengine-core dependencies (joda-time-2.2).</li>
+      <li>Updated site documentation.</li>
+    </ul>
+
+    <h2>Version 4.0-beta2</h2>
+    <ul>
+      <li>Allow customization of content on welcome page (teamengine-web module)</li>
+      <li>Added test suite revision/status element ("Alpha","Beta","Final","Deprecated").</li>
+      <li>Eliminated separate contexts for static web resources.</li>
+      <li>Added TE_BASE/config.xml as a watched resource (update triggers reload).</li>
+      <li>REST API presents Javadoc overview document at /rest/suites/{etsCode}/{etsVersion}/.</li>
+      <li>Added support for ctl-msg processing instruction on ctl:test tags to enable output 
+      of structured messages (via saxon:serialize() function).</li>
+      <li>Various updates of the site documentation.</li>
+    </ul>
+  </body>
+</html>

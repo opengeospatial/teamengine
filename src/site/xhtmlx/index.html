@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>Overview</title>
+  </head>
+  <body>
+    <h1>Overview</h1>
+    <p>
+    The Test, Evaluation, And Measurement (TEAM) Engine is a test harness that executes 
+    test suites written using the OGC Compliance Test Language (CTL) or the <a href="http://testng.org/" 
+    target="_blank">TestNG framework</a>. It is typically used to verify specification 
+    compliance and is the official test harness of the <a href="http://cite.opengeospatial.org/" 
+    target="_blank">OGC Compliance Testing Program</a> (CITE), where it is used to certify 
+    implementations of OGC and ISO geomatics standards in the 19100 series.
+    </p>
+    <p>
+    TEAM Engine is a Java application that provides command-line and web interfaces to 
+    execute test suites. A REST API is also available to run TestNG-based suites. A Java 
+    runtime environment is necessary (JDK 7 is recommended), and <a href="http://tomcat.apache.org/" 
+    target="_blank">Apache Tomcat 7</a> is required to host the web application.
+    </p>
+    <p>
+    When a CTL test suite is executed, the source scripts are transformed into a collection 
+    of XSLT (v2.0) templates, one for each test (see Figure 1). See OGC document <a target="_blank" 
+    href="http://portal.opengeospatial.org/files/?artifact_id=33085">06-126</a> for descriptions 
+    of CTL elements. A form may be presented to the user to collect test input parameters. 
+    The starting test is then called and the suite is executed using the Saxon XSLT processor. 
+    Test outputs are written to log files as the test run proceeds.
+    </p>
+    <div class="figure">
+      <p><strong>Figure 1 - CTL test execution</strong></p>
+      <figure>
+        <img src="./images/ctl-execution.png" alt="Fig. 1 - CTL test execution" />
+      </figure>
+    </div>
+    <p>
+    A light-weight plugin mechanism is provided by the <em>teamengine-spi</em> module; it 
+    enables support for alternative test controllers that can be invoked using a REST-like 
+    API. The UML diagram in Figure 2 summarizes the essential design. A test controller 
+    must implement the <code>TestSuiteController</code> and <code>TestRunExecutor</code> 
+    interfaces.
+    </p>
+    <div class="figure">
+      <p><strong>Figure 2 - Extensibility framework for alternative test runners</strong></p>
+      <figure>
+        <img src="./images/teamengine-spi.png" alt="Fig. 2 - Extensibility framework" />
+      </figure>
+    </div>
+
+    <p>
+    Executable test suites are automatically discovered using the Java <a target="_blank"
+    href="http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html">ServiceLoader 
+    facility</a>. A service provider is identified by placing the appropriate configuration file 
+    in the resource directory META-INF/services. The file contains the fully-qualified name of 
+    a class that implements the TestSuiteController interface.
+    </p>
+  </body>
+</html>
