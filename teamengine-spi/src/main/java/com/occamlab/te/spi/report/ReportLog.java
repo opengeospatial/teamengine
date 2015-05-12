@@ -37,7 +37,7 @@ public class ReportLog {
         //Getting the results for the said suite
         Map suiteResults = suite.getResults();
         String input = null;
-        String result = null;
+        String result;
         String failReport = null;
         String failReportConformance2=",";
         int passedTest = 0;
@@ -55,10 +55,9 @@ public class ReportLog {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Calendar cal = Calendar.getInstance();
             if (count == 1) {
-                result = tc.getAttribute("Result").toString();
                 date = dateFormat.format(cal.getTime());
                 input = tc.getAttribute("Input").toString();
-                failReport = tc.getAttribute("FailReport").toString();
+                failReport = tc.getAttribute("TestResultReport").toString();
                 passedTest = tc.getPassedTests().getAllResults().size();
                 skippedTest = tc.getSkippedTests().getAllResults().size();
                 failedTest = tc.getFailedTests().getAllResults().size();
@@ -70,10 +69,8 @@ public class ReportLog {
                 if(no_of_failedTest!=0 || no_of_passedTest !=0)
                 {
                     if (no_of_failedTest == 0 && no_of_passedTest !=0 ) {
-                    result = "Pass";
                     failReportConformance2 = failReportConformance2+", "+input + " conform to the clause A." + count + " of ISO 19139";
                 } else {
-                        result = "Fail";
                         failReportConformance2 = failReportConformance2+", "+input + " does not conform to the clause A." + count + " of ISO 19139";
                     
                 }
@@ -87,6 +84,11 @@ public class ReportLog {
         failedTest+=finalFailedTest;
         skippedTest+=finalSkippedTest;
         passedTest+=finalPassedTest;
+        if(failedTest>0){
+          result="Fail";
+        }else{
+          result="Pass";
+        }
         Reporter.log("**RESULT: " + result);
         Reporter.log("**INPUT: " + input);
         Reporter.log("**TEST NAME AND VERSION    :" + suiteName);
