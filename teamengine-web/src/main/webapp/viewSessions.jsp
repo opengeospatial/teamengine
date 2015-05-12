@@ -65,6 +65,8 @@
                   out.println("<tr style='height:22px;'>");
                   out.println("<td>" + "<b>Session</b>" + "</td>");
                   out.println("<td>" + "<b>Test suite name</b>" + "</td>");
+                  out.println("<td>" + "<b>Version</b>" + "</td>");
+                  out.println("<td>" + "<b>Date</b>" + "</td>");
                   out.println("<td>" + "<b>Description</b>" + "</td>");
                   out.println("</tr>");
 
@@ -74,7 +76,9 @@
                       s.load(userdir, dirs[i]);
                       out.println("<tr style='height:23px;'>");
                       out.println("<td><a href=\"viewSessionLog.jsp?session=" + s.getSessionId() + "\">" + s.getSessionId() + "</a></td>");
-                      out.println("<td>" + s.getSourcesName() + "</td>");
+                      out.println("<td>" + s.getSourcesName().split("_")[1] + "</td>");
+                      out.println("<td>" + s.getSourcesName().split("_")[2] + "</td>");
+                      out.println("<td>" + s.getCurrentDate() + "</td>");
                       out.println("<td>" + s.getDescription() + "</td>");
                       out.println("</tr>");
                     }
