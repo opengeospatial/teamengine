@@ -193,8 +193,39 @@ public class ConfigFileCreatorTest {
 				
 			}
 			fail("it should throw aTEBaseNotFoundException Exception");
-	
 	}
+	
+	/**
+	 * Tests to properly parsed when multiple versions of a test exist. for example SFS 1.2,1.2,1.3 etc, 
+	 * and they are all under SFS directory.
+	 */
+	@Test
+	public void testMultipleVersionsOfATest(){
+		try {
+		
+		File tebase = new File(classp, "tebase-multiple-versions-of-a-test");
+		ConfigFileCreator configFileCreator = new ConfigFileCreator();
+		configFileCreator.create(tebase);
+		File configFile = new File(tebase + File.separator + "config.xml");
+		Document config = builder.parse(configFile);
+		NodeList numberOfTests = XMLUtils.getAllNodes(config,
+				"/config/scripts/organization/standard/version");
+		assertEquals(3, numberOfTests.getLength());
+		
+			
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+	}
+	
 
 
 }
