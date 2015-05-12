@@ -55,7 +55,7 @@ public class TestSession {
     public void save(File logdir) throws Exception {
         File sessionDir = new File(logdir, sessionId);
         sessionDir.mkdir();
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy  HH:mm:ss");
         Date date = new Date();
         currentDate=dateFormat.format(date);
         PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));

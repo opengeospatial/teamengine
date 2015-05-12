@@ -66,7 +66,7 @@
                   out.println("<td>" + "<b>Session</b>" + "</td>");
                   out.println("<td>" + "<b>Test suite name</b>" + "</td>");
                   out.println("<td>" + "<b>Version</b>" + "</td>");
-                  out.println("<td>" + "<b>Date</b>" + "</td>");
+                  out.println("<td>" + "<b>Test Suite run time</b>" + "</td>");
                   out.println("<td>" + "<b>Description</b>" + "</td>");
                   out.println("</tr>");
 
