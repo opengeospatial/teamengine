@@ -1,8 +1,15 @@
 Release Notes
 =============
 
-Version 4.1.0 (2015-04-24)
---------------------------
+Version 4.1-beta2 (2015-05-15)
+---------------------------------
+- [web] Fix [#56] (https://github.com/opengeospatial/teamengine/issues/56): Configuration file updates automatically based on the tests inside scripts folder. Improved unit tests on this regard.
+- [web] Work folder is cleaned every time TE starts
+- [core] Log out better messages in the XML parsers, when null resources are being parsed.
+ 
+
+Version 4.1-beta2 (2015-04-24)
+-------------------------------
 
 This minor update provides the following enhancements and fixes:
 
