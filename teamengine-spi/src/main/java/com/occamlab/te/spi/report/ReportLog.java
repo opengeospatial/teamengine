@@ -69,9 +69,9 @@ public class ReportLog {
                 if(no_of_failedTest!=0 || no_of_passedTest !=0)
                 {
                     if (no_of_failedTest == 0 && no_of_passedTest !=0 ) {
-                    failReportConformance2 = failReportConformance2+", "+input + " conform to the clause A." + count + " of ISO 19139";
+                    failReportConformance2 = failReportConformance2+", "+input + " conform to the clause A." + count + " of "+suiteName;
                 } else {
-                        failReportConformance2 = failReportConformance2+", "+input + " does not conform to the clause A." + count + " of ISO 19139";
+                        failReportConformance2 = failReportConformance2+", "+input + " does not conform to the clause A." + count + " of "+suiteName;
                     
                 }
                 finalPassedTest = finalPassedTest + no_of_passedTest;
