@@ -24,9 +24,9 @@ collect test input parameters. The starting test is then called and the
 suite is executed using the Saxon XSLT processor. Test outputs are
 written to log files as the test run proceeds.
 
-**Figure 1 - CTL test execution**
+**CTL Test Execution**
 
-![Fig. 1 - CTL test execution](./images/ctl-execution.png)
+![CTL test execution](./images/ctl-execution.png)
 
 A light-weight plugin mechanism is provided by the *teamengine-spi*
 module; it enables support for alternative test controllers that can be
@@ -34,9 +34,9 @@ invoked using a REST-like API. The UML diagram in Figure 2 summarizes
 the essential design. A test controller must implement the
 `TestSuiteController` and `TestRunExecutor` interfaces.
 
-**Figure 2 - Extensibility framework for alternative test runners**
+**Extensibility framework for alternative test runners**
 
-![Fig. 2 - Extensibility framework](./images/teamengine-spi.png)
+![Extensibility framework](./images/teamengine-spi.png)
 
 Executable test suites are automatically discovered using the Java
 [ServiceLoader

@@ -40,7 +40,7 @@
     </menu>
     <menu ref="reports" />
     <menu name="About">
-      <item href="changelog.html" name="Release Notes" />
+      <item href="relnotes.html" name="Release Notes" />
     </menu>
   </body>
 </project>

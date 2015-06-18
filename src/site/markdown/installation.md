@@ -12,15 +12,15 @@ The source code is available from [GitHub](https://github.com/opengeospatial/tea
 [Apache Maven 3.0](http://maven.apache.org/) is required to build the
 teamengine code base, which consists of the following modules:
 
--   teamengine-core: Main CTL script processor
--   teamengine-resources: Includes shared resources such as stylesheets
+-   **teamengine-core**: Main CTL script processor
+-   **teamengine-resources**: Includes shared resources such as stylesheets
     and schemas
--   teamengine-spi: Provides an extensibility framework and a REST-like
+-   **teamengine-spi**: Provides an extensibility framework and a REST-like
     API for test execution
--   teamengine-realm: A custom Tomcat user realm
--   teamengine-web: A web application for executing test suites and
+-   **teamengine-realm**: A custom Tomcat user realm
+-   **teamengine-web**: A web application for executing test suites and
     browsing test results
--   teamengine-console: A console application that provides a
+-   **teamengine-console**: A console application that provides a
     command-line interface for executing test suites in Unix and Windows
     environments.
 
@@ -180,10 +180,10 @@ hence the context path) has been changed from the default value
 Several elements of the welcome page may be changed if desired: the logo
 in the header, the main text, and the content in the footer. The files
 located in the TE_BASE/resources/site directory can be modified to
-provide site-specific content (see Table 1).
+provide site-specific content:
 
 
-- **site/logo.png**:The logo that appears in the header (at top left). The size of the default image is 127x58 px.
+- **site/logo.png**: The logo that appears in the header (at top left). The size of the default image is 127x58 px.
 - **site/welcome.txt**: The main text.
 - **site/footer.txt**: Footer content.
 

@@ -23,7 +23,7 @@ the particulars of the operating system in use. Once this is done,
 change to the appropriate script directory (TE\_HOME/bin/{unix,windows})
 or add it to the system path.
 
-![](./images/warn-16px.png) **Warning:** If a test suite requires any
+![warning](./images/warn-16px.png) **Warning:** If a test suite requires any
 supporting libraries that are not included with the core distribution,
 these must be added to the TE\_BASE/resources/lib directory.
 
@@ -79,24 +79,12 @@ GitHub](https://github.com/opengeospatial/ets-resources) and built (run
 libraries for the latest OGC test suites. The contents of the archive
 are described below.
 
-`config.xml`
-:   TEAM-engine instance configuration file (TE\_BASE/config.xml).
-`config-approved.xml`
-:   TEAMengine configuration file that includes only test suite releases
-    that have been formally approved for compliance certification by the
-    OGC Technical Committee.
-`ctl-scripts-release.csv`
-:   A CSV file that contains a list of test suite releases. Each line
-    has two fields: Git repository URL, tag name.
-`lib/*.jar`
-:   A directory containing the required Java libraries that must be
-    available on the class path; that is, WEB-INF/lib for the web
-    application or TE\_BASE/resources/lib for command-line execution.
-`bin/`
-:   A directory containing shell scripts for Windows- and UNIX-based
-    (Linux/Mac) hosts. The \`setup-tebase\` script will set up a
-    TEAM-engine instance (TE\_BASE) with the test suites identified in a
-    referenced CSV file.
+name | description
+--- | --- 
+config.xml | TEAM-engine instance configuration file (TE\_BASE/config.xml).
+ctl-scripts-release.csv | A CSV file that contains a list of test suite releases. Each line has two fields: Git repository URL, tag name.
+lib/*.jar | A directory containing the required Java libraries that must be available on the class path; that is, WEB-INF/lib for the web application or TE\_BASE/resources/lib for command-line execution.
+bin/ | A directory containing shell scripts for Windows- and UNIX-based (Linux/Mac) hosts. The \`setup-tebase\` script will set up a TEAM-engine instance (TE\_BASE) with the test suites identified in a referenced CSV file.
 
 REST API
 --------
@@ -104,19 +92,20 @@ REST API
 A simple REST-like API (based on [JAX-RS
 1.1](http://jcp.org/en/jsr/detail?id=311)) enables programmatic
 execution of some test suites; currently only TestNG-based suites can be
-run in this manner. It exposes the endpoints listed in Table 2. In the
-request URIs the `{etsCode}` and `{etsVersion}` parameters denote the
+run in this manner. It exposes the end points as follows:
+
+URI (relative to base) | Resource | Representation
+--- | --- | ---
+/rest/suites | Test suite collection |  application/xhtml+xml
+/rest/suites/{etsCode}/{etsVersion} | Test suite documentation | text/html
+/rest/suites/{etsCode}/{etsVersion}/run | Test run controller | application/xml
+
+
+In the request URIs the `{etsCode}` and `{etsVersion}` parameters denote the
 test suite code and version, respectively, for a particular test suite.
 
-  URI (relative to base)                    Resource                   Representation
-  ----------------------------------------- -------------------------- -----------------------
-  /rest/suites                              Test suite collection      application/xhtml+xml
-  /rest/suites/{etsCode}/{etsVersion}       Test suite documentation   text/html
-  /rest/suites/{etsCode}/{etsVersion}/run   Test run controller        application/xml
 
-  : Table 2 - REST endpoints
-
-![](./images/warn-16px.png) **Warning:** When using the REST API, if any
+![warning](./images/warn-16px.png) **Warning:** When using the REST API, if any
 test run argument includes a URI value that contains an ampersand ('&')
 character in a query component, it must be percent-encoded as %26 since
 it is a "data octet" in this context (see [RFC 3986, sec.
@@ -138,9 +127,7 @@ to use the REST API.
 1.  Unpack the \*-ctl.zip archive into the TE\_BASE/scripts directory;
     it includes test suite documentation and a simple CTL script that
     invokes the main controller.
-2.  Update the TE\_BASE/config.xml file by adding or editing the
-    \<standard\> element for the test suite.
-3.  Put the ETS component (a binary JAR file) and any dependencies into
+2.  Put the ETS component (a binary JAR file) and any dependencies into
     the `WEB-INF/lib` directory of the web application.
 
 The `*-deps` archive assembles the ETS and its dependencies into a
