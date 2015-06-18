@@ -8,7 +8,7 @@ Version 4.1-beta2 (2015-05-15)
 - [core] Log out better messages in the XML parsers, when null resources are being parsed.
  
 
-Version 4.1-beta2 (2015-04-24)
+Version 4.1-beta1 (2015-04-24)
 -------------------------------
 
 This minor update provides the following enhancements and fixes:
