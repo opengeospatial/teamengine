@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+Version 4.1 (2015-06-18)
+---------------------------
+- [site] All documentation is now written in markdown [#104] (https://github.com/opengeospatial/teamengine/issues/104).
+
 Version 4.1-beta2 (2015-05-15)
 ---------------------------------
 - [web] Fix [#56] (https://github.com/opengeospatial/teamengine/issues/56): Configuration file updates automatically based on the tests inside scripts folder. Improved unit tests on this regard.
