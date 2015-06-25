@@ -306,6 +306,7 @@ public class RecordTestResult {
         try (BufferedWriter fbw = new BufferedWriter(writer)) {
           fbw.write(obj.toString());
           fbw.newLine();
+          fbw.close();
         }
       } else {
         // update test no

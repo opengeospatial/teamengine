@@ -117,6 +117,7 @@ public class TestMapResources {
     try (BufferedWriter fbwBefore = new BufferedWriter(writerBefore)) {
       fbwBefore.write(data);
       fbwBefore.newLine();
+      fbwBefore.close();
     }
 
   }
