@@ -460,7 +460,6 @@ The result should be a successful pass::
 			Test csw:capability-tests Passed
 		Test csw:Main Passed
 	Suite csw:csw-2.0.2-compliance-suite Passed
-	
 
 Example of TestNG Tests
 =========================
@@ -517,6 +516,65 @@ The result should be pass::
       
          See detailed test report in the TE_BASE/users/demo/s0005/html/ directory.
       Test tns:Main Passed
+      
+Running the tests in headless mode
+==================================
+
+It is possible to run the tests in a headless, unattended manner, by providing form files with
+responses to all the forms the test normally inquires the user to fill.
+
+Form files are specified via the ``-form`` parameter, more than one form can be provided using
+multiple ``-form`` parameters. For example, the WMS tests can be run with the following 
+command:: 
+    
+     $ ~/te-install/bin/unix/test.sh -source=wms/1.1.1/ctl/functions.xml -source=wms/1.1.1/ctl/wms.xml
+                                     -form=$forms/wms-1.1.1.xml -form=forms/yes.xml
+
+Where ``forms/wms-1.1.1.xml`` is::
+
+     <?xml version="1.0" encoding="UTF-8"?>
+     <values>
+       <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+       <value key="updatesequence">auto_updatesequence</value>
+       <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
+       <value key="VAR_LOW_UPDATESEQUENCE">0</value>
+       <value key="CERT_PROFILE">queryable_profile</value>
+       <value key="recommended">recommended</value>
+       <value key="testgml">testgml</value>
+       <value key="free">free</value>
+       <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+     </values>
+
+and ``forms/yes.xml`` is::
+ 
+     <?xml version="1.0" encoding="UTF-8"?>
+     <values>
+       <value key="submit">yes</value>
+       <value key="answer">yes</value>
+     </values>
+
+The form files are used in turn, in the same order as provided on the command line. 
+In case the test requires filling more forms than provided on the command line, the last provided form is
+going to be used multiple times: for example, in the WMS case, the test will ask the user to visually
+confirm visual relationships between two maps, the ``yes.xml`` form will be used for all those
+requests.
+
+In order to retrieve a suitable content for the form files, use once the command line tests 
+in interactive mode, the console output will contain the equivalent form contents, e.g.::
+
+      jul 12, 2015 9:07:06 AM com.occamlab.te.TECore setFormResults
+      INFO: Setting form results:
+       <?xml version="1.0" encoding="UTF-8"?>
+      <values>
+         <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+         <value key="updatesequence">auto_updatesequence</value>
+         <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
+         <value key="VAR_LOW_UPDATESEQUENCE"></value>
+         <value key="CERT_PROFILE">queryable_profile</value>
+         <value key="testgml">testgml</value>
+         <value key="free">free</value>
+         <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+      </values>
 
 Run a Test via REST 
 ---------------------
@@ -571,7 +629,6 @@ Table - Test run arguments
           	-F "sch=@path/to/Schematorn" http://teamengineProjectURI/rest/suites/testName/1.0/run
           
           path/to/XML is the path to the Metadata file  and path/to/Schematorn is the path to the Schematron file.
-
 
 Build TEAM Engine as Web application
 --------------------------------------

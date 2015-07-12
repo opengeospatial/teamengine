@@ -22,7 +22,6 @@
 package com.occamlab.te;
 
 
-import com.occamlab.te.util.Constants;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,6 +43,8 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -55,12 +56,40 @@ import java.util.zip.CRC32;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+
+import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.index.Index;
+import com.occamlab.te.index.ParserEntry;
+import com.occamlab.te.index.ProfileEntry;
+import com.occamlab.te.index.SuiteEntry;
+import com.occamlab.te.index.TemplateEntry;
+import com.occamlab.te.index.TestEntry;
+import com.occamlab.te.saxon.ObjValue;
+import com.occamlab.te.util.Constants;
+import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.IOUtils;
+import com.occamlab.te.util.LogUtils;
+import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.SoapUtils;
+import com.occamlab.te.util.StringUtils;
+import com.occamlab.te.util.URLConnectionUtils;
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
@@ -81,34 +110,6 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 import net.sf.saxon.trans.XPathException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-
-import com.occamlab.te.index.FunctionEntry;
-import com.occamlab.te.index.Index;
-import com.occamlab.te.index.ParserEntry;
-import com.occamlab.te.index.ProfileEntry;
-import com.occamlab.te.index.SuiteEntry;
-import com.occamlab.te.index.TemplateEntry;
-import com.occamlab.te.index.TestEntry;
-import com.occamlab.te.saxon.ObjValue;
-import com.occamlab.te.util.DomUtils;
-import com.occamlab.te.util.IOUtils;
-import com.occamlab.te.util.LogUtils;
-import com.occamlab.te.util.Misc;
-import com.occamlab.te.util.StringUtils;
-import com.occamlab.te.util.SoapUtils;
-import com.occamlab.te.util.URLConnectionUtils;
-import java.util.Calendar;
-
-import java.util.Date;
-import org.w3c.dom.Comment;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -133,6 +134,8 @@ public class TECore implements Runnable {
   String testServletURL = null;
   volatile PrintStream out; // Console destination
   boolean web = false; // True when running as a servlet
+
+  RecordedForms recordedForms;
   String testPath; // Uniquely identifies a test instance
   String fnPath = ""; // Uniquely identifies an XSL function instance within a
   // test instance
@@ -218,6 +221,7 @@ public class TECore implements Runnable {
     this.engine = engine;
     this.index = index;
     this.opts = opts;
+    this.recordedForms = new RecordedForms(opts.getRecordedForms());
     testPath = opts.getSessionId();
     out = System.out;
   }
@@ -1224,6 +1228,16 @@ public class TECore implements Runnable {
   }
 
   public void setFormResults(Document doc) {
+    try {
+      StringWriter sw = new StringWriter();
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+      transformer.transform(new DOMSource(doc), new StreamResult(sw));
+      LOGR.info("Setting form results:\n " + sw.toString());
+    } catch(Exception e) {
+      LOGR.log(Level.SEVERE, "Failed to log the form results", e);
+    }
     this.formResults = doc;
   }
 
@@ -1406,7 +1420,7 @@ public class TECore implements Runnable {
     // Read in the test information (from CTL)
     NodeList nl = xml.getChildNodes();
     for (int i = 0; i < nl.getLength(); i++) {
-      Node n = (Node) nl.item(i);
+      Node n = nl.item(i);
       if (n.getNodeType() == Node.ELEMENT_NODE) {
         if (n.getLocalName().equals("url")) {
           sUrl = n.getTextContent();
@@ -1596,7 +1610,7 @@ public class TECore implements Runnable {
     // Read in the test information (from CTL)
     NodeList nl = xml.getChildNodes();
     for (int i = 0; i < nl.getLength(); i++) {
-      Node n = (Node) nl.item(i);
+      Node n = nl.item(i);
       if (n.getNodeType() == Node.ELEMENT_NODE) {
         if (n.getLocalName().equals("url")) {
           sUrl = n.getTextContent();
@@ -1619,7 +1633,7 @@ public class TECore implements Runnable {
           String val = null;
           NodeList dpnl = n.getChildNodes();
           for (int j = 0; j < dpnl.getLength(); j++) {
-            Node dpn = (Node) dpnl.item(j);
+            Node dpn = dpnl.item(j);
             if (dpn.getNodeType() == Node.ELEMENT_NODE) {
               if (dpn.getLocalName().equals("name")) {
                 name = dpn.getTextContent();
@@ -1810,7 +1824,7 @@ public class TECore implements Runnable {
 
       // Enter the custom headers (overwrites the defaults if present)
       for (int i = 0; i < headers.size(); i++) {
-        String[] header = (String[]) headers.get(i);
+        String[] header = headers.get(i);
         if (multipart && header[0].toLowerCase().equals("content-type")) {
         } else {
           uc.setRequestProperty(header[0], header[1]);
@@ -1873,11 +1887,11 @@ public class TECore implements Runnable {
           NodeList children2 = e.getChildNodes();
           for (int j = 0; j < children2.getLength(); j++) {
             if (children2.item(j).getNodeType() == Node.ELEMENT_NODE) {
-              content = (Element) children2.item(j);
+              content = children2.item(j);
             }
           }
           if (content == null) {
-            content = (Node) children2.item(0);
+            content = children2.item(0);
           }
         } else {
           parser_instruction = db.newDocument();
@@ -1895,7 +1909,7 @@ public class TECore implements Runnable {
       raf.writeBytes(((Text) content).getTextContent());
       raf.close();
     } else {
-      t.transform(new DOMSource((Node) content), new StreamResult(temp));
+      t.transform(new DOMSource(content), new StreamResult(temp));
     }
     URLConnection uc = temp.toURI().toURL().openConnection();
     Element result = parse(uc, parser_instruction);
@@ -2187,7 +2201,9 @@ public class TECore implements Runnable {
         if (LOGR.isLoggable(Level.FINE))
       LOGR.fine(this.formHtml);
 
-    if (!web) {
+    if (!recordedForms.isEmpty()) {
+      RecordedForm.create(recordedForms.next(), this);
+    } else if (!web) {
       int width = 700;
       int height = 500;
       attr = (Attr) attrs.getNamedItem("width");
@@ -2353,4 +2369,5 @@ public class TECore implements Runnable {
     }
     return doc;
   }
+
 }

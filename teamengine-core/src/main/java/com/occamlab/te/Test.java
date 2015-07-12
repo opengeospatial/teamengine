@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,10 +109,11 @@ public class Test {
 
         // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-cmd=")) {
-                cmd = args[i].substring(5);
-            } else if (args[i].startsWith("-source=")) {
-                String sourcePath = args[i].substring(8);
+            String arg = args[i];
+            if (arg.startsWith("-cmd=")) {
+                cmd = arg.substring(5);
+            } else if (arg.startsWith("-source=")) {
+                String sourcePath = arg.substring(8);
                 sourceFile = new File(sourcePath);
                 if (!sourceFile.isAbsolute()) {
                     File scriptsDir = new File(
@@ -125,47 +127,49 @@ public class Test {
                             + sourceFile.getAbsolutePath());
                     return;
                 }
-            } else if (args[i].startsWith("-session=")) {
-                session = args[i].substring(9);
-            } else if (args[i].startsWith("-base=")) {
-                runOpts.setBaseURI(args[i].substring(6));
-            } else if (args[i].startsWith("-test=")) {
-                runOpts.setTestName(args[i].substring(6));
-            } else if (args[i].startsWith("-suite=")) {
-                runOpts.setSuiteName(args[i].substring(7));
-            } else if (args[i].startsWith("-profile=")) {
-                runOpts.addProfile(args[i].substring(9));
-            } else if (args[i].startsWith("@")) {
-                runOpts.addParam(args[i].substring(1));
-            } else if (args[i].equals("-mode=test")) {
+            } else if (arg.startsWith("-session=")) {
+                session = arg.substring(9);
+            } else if (arg.startsWith("-base=")) {
+                runOpts.setBaseURI(arg.substring(6));
+            } else if (arg.startsWith("-test=")) {
+                runOpts.setTestName(arg.substring(6));
+            } else if (arg.startsWith("-suite=")) {
+                runOpts.setSuiteName(arg.substring(7));
+            } else if (arg.startsWith("-profile=")) {
+                runOpts.addProfile(arg.substring(9));
+            } else if (arg.startsWith("@")) {
+                runOpts.addParam(arg.substring(1));
+            } else if (arg.equals("-mode=test")) {
                 mode = TEST_MODE;
-            } else if (args[i].equals("-mode=retest")) {
+            } else if (arg.equals("-mode=retest")) {
                 mode = RETEST_MODE;
-            } else if (args[i].equals("-mode=resume")) {
+            } else if (arg.equals("-mode=resume")) {
                 mode = RESUME_MODE;
-            } else if (args[i].equals("-mode=doc")) {
+            } else if (arg.equals("-mode=doc")) {
                 mode = DOC_MODE;
-            } else if (args[i].equals("-mode=check")) {
+            } else if (arg.equals("-mode=check")) {
                 mode = CHECK_MODE;
-            } else if (args[i].equals("-mode=pplogs")) {
+            } else if (arg.equals("-mode=pplogs")) {
                 mode = PRETTYLOG_MODE;
-            } else if (args[i].equals("-mode=cache")) {
+            } else if (arg.equals("-mode=cache")) {
                 mode = REDO_FROM_CACHE_MODE;
-            } else if (args[i].startsWith("-mode=")) {
+            } else if (arg.startsWith("-mode=")) {
                 System.out.println("Error: Invalid mode.");
                 return;
-            } else if (args[i].equals("-validate=no")) {
+            } else if (arg.equals("-validate=no")) {
                 setupOpts.setValidate(false);
-            } else if (!args[i].startsWith("-")) {
+            } else if ((arg.startsWith("-form="))) {
+              runOpts.addRecordedForm(arg.substring(6));
+            } else if (!arg.startsWith("-")) {
                 if (mode == RETEST_MODE) {
-                    runOpts.addTestPath(args[i]);
+                    runOpts.addTestPath(arg);
                 } else {
-                    System.out.println("Unrecognized parameter \"" + args[i]
+                    System.out.println("Unrecognized parameter \"" + arg
                             + "\"");
                 }
             } else {
                 System.out
-                        .println("Unrecognized parameter \"" + args[i] + "\"");
+                        .println("Unrecognized parameter \"" + arg + "\"");
             }
         }
 
