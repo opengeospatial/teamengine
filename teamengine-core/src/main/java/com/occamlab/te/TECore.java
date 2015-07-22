@@ -772,6 +772,7 @@ public class TECore implements Runnable {
         }
 
         int oldVerdict = this.verdict;
+        test.setResult(PASS);
     RecordTestResult recordTestResult = new RecordTestResult();
     recordTestResult.storeStartTestDetail(test, dirPath);
     this.verdict = defaultResult;
