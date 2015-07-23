@@ -21,17 +21,17 @@
  ****************************************************************************/
 package com.occamlab.te.web;
 
+import com.occamlab.te.util.DomUtils;
 import java.io.File;
 import java.io.PrintStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
+import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.occamlab.te.util.DomUtils;
 
 /**
  * Encapsulates all information pertaining to a test session.
@@ -41,6 +41,7 @@ public class TestSession {
     String sourcesName;
     String description;
     String suiteName;
+    String currentDate;
     ArrayList<String> profiles;
 
     /**
@@ -54,9 +55,12 @@ public class TestSession {
     public void save(File logdir) throws Exception {
         File sessionDir = new File(logdir, sessionId);
         sessionDir.mkdir();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy  HH:mm:ss");
+        Date date = new Date();
+        currentDate=dateFormat.format(date);
         PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
         out.println("<session id=\"" + sessionId + "\" sourcesId=\""
-                + sourcesName + "\">");
+                + sourcesName +"\" date=\""+currentDate+"\"  >");
         out.println("<suite>" + suiteName + "</suite>");
         for (String profile : profiles) {
             out.println("<profile>" + profile + "</profile>");
@@ -78,6 +82,11 @@ public class TestSession {
         Element session = (Element) (doc.getElementsByTagName("session")
                 .item(0));
         setSourcesName(session.getAttribute("sourcesId"));
+        if(null!=session.getAttribute("date")){
+        setCurrentDate(session.getAttribute("date"));
+        }else{
+          setCurrentDate("");
+        }
         Element suite = DomUtils.getElementByTagName(session, "suite");
         setSuiteName(suite.getTextContent());
         for (Element profile : DomUtils
@@ -119,6 +128,14 @@ public class TestSession {
 
     public void setSourcesName(String sourcesName) {
         this.sourcesName = sourcesName;
+    }
+    
+    public String getCurrentDate() {
+        return currentDate;
+    }
+
+    public void setCurrentDate(String currentDate) {
+        this.currentDate = currentDate;
     }
 
     public String getSuiteName() {
