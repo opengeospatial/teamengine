@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-4.2 (2015-07-24)
+4.2 (2015-07-29)
 -------------------
 - [web] Fix [#96](https://github.com/opengeospatial/teamengine/issues/96) and [#112](https://github.com/opengeospatial/teamengine/issues/112): Sporadic incorrect inherit failures. 
   Also related to [#77](https://github.com/opengeospatial/teamengine/issues/77)  and [#70](https://github.com/opengeospatial/teamengine/issues/70) 
@@ -10,6 +10,7 @@ Release Notes
 - [core] Fix [#110](https://github.com/opengeospatial/teamengine/issues/110) Run TE via console in headless manner
 - [core] Pull [#114](https://github.com/opengeospatial/teamengine/pull/114) Added headless form support, removed unnecessary casts, centralized access to args[i] into a single local variable
 - [web] Fix [#95](https://github.com/opengeospatial/teamengine/issues/95) Improve how the sessions are displayed
+- [web] Fix [#37](https://github.com/opengeospatial/teamengine/issues/37) Improve message when TE_BASE is not setup properly
 
 
 4.1 (2015-06-18)
