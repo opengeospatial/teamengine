@@ -16,6 +16,11 @@
   This module provides a web-based application for executing test suites and 
   managing test reports.
   </description>
+  
+  <properties>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+    <buildDate>${maven.build.timestamp}</buildDate>
+   </properties>
 
   <dependencies>
     <dependency>
@@ -121,6 +126,13 @@
           <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
           <!-- Shared resources are already present in WEB-INF/classes/ -->
           <!-- Common libraries (e.g. JAX-RS) are bundled separately -->
+          <webResources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/webapp</directory>
+            </resource>
+         </webResources>
+         
           <packagingExcludes>
             WEB-INF/lib/teamengine-resources*.jar,
             WEB-INF/lib/teamengine-realm*.jar,
