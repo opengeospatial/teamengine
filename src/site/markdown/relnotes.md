@@ -11,6 +11,7 @@ Release Notes
 - [core] Pull [#114](https://github.com/opengeospatial/teamengine/pull/114) Added headless form support, removed unnecessary casts, centralized access to args[i] into a single local variable
 - [web] Fix [#95](https://github.com/opengeospatial/teamengine/issues/95) Improve how the sessions are displayed
 - [web] Fix [#37](https://github.com/opengeospatial/teamengine/issues/37) Improve message when TE_BASE is not setup properly
+- [web] Fix [#119](https://github.com/opengeospatial/teamengine/issues/119) Create a page that allows to get information about the build 
 
 
 4.1 (2015-06-18)
