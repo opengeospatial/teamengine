@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>teamengine</artifactId>
-  <version>4.2-SNAPSHOT</version>
+  <version>4.2</version>
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
@@ -79,7 +79,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <saxon.version>9.0.0.8</saxon.version>
-    <project.version>4.2-SNAPSHOT</project.version>
+    <project.version>4.2</project.version>
   </properties>
 
   <modules>
