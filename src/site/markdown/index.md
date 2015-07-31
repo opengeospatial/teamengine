@@ -1,47 +1,23 @@
 Overview
 ========
 
-The Test, Evaluation, And Measurement (TEAM) Engine is a test harness
-that executes test suites written using the OGC Compliance Test Language
-(CTL) or the [TestNG framework](http://testng.org/). It is typically
-used to verify specification compliance and is the official test harness
-of the [OGC Compliance Testing Program](http://cite.opengeospatial.org/)
-(CITE), where it is used to certify implementations of OGC and ISO
-geomatics standards in the 19100 series.
+The Test, Evaluation, And Measurement (TEAM) Engine is a tool use to test
+web services and data. It is the official validation tool used by the Open Geospatial Consortium 
+([OGC](http://www.opengeospatial.org/compliance)). An example deployment can be found [here](http://cite.opengeospatial.org/teamengine/).
 
-TEAM Engine is a Java application that provides command-line and web
-interfaces to execute test suites. A REST API is also available to run
-TestNG-based suites. A Java runtime environment is necessary (JDK 7 is
-recommended), and [Apache Tomcat 7](http://tomcat.apache.org/) is
-required to host the web application.
+It can test for example:
 
-When a CTL test suite is executed, the source scripts are transformed
-into a collection of XSLT (v2.0) templates, one for each test (see
-Figure 1). See OGC document
-[06-126](http://portal.opengeospatial.org/files/?artifact_id=33085) for
-descriptions of CTL elements. A form may be presented to the user to
-collect test input parameters. The starting test is then called and the
-suite is executed using the Saxon XSLT processor. Test outputs are
-written to log files as the test run proceeds.
+- A WMS Server
+- A WFS Server
+- A WMS 1.3 Client
+- A GML 3.2.1 Schema
+- A GML 3.2.1 instance, based on a community profile (declared via schematron rules)
+- KML 2.2 
 
-**CTL Test Execution**
 
-![CTL test execution](./images/ctl-execution.png)
+The code is available in [GitHub](https://github.com/opengeospatial/teamengine) and the license is [Apache 2.0](https://github.com/opengeospatial/teamengine/blob/master/LICENSE.txt)
 
-A light-weight plugin mechanism is provided by the *teamengine-spi*
-module; it enables support for alternative test controllers that can be
-invoked using a REST-like API. The UML diagram in Figure 2 summarizes
-the essential design. A test controller must implement the
-`TestSuiteController` and `TestRunExecutor` interfaces.
+For questions or help use the [CITE forum](http://cite.opengeospatial.org/forum).
+ 
 
-**Extensibility framework for alternative test runners**
 
-![Extensibility framework](./images/teamengine-spi.png)
-
-Executable test suites are automatically discovered using the Java
-[ServiceLoader
-facility](http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html).
-A service provider is identified by placing the appropriate
-configuration file in the resource directory META-INF/services. The file
-contains the fully-qualified name of a class that implements the
-TestSuiteController interface.

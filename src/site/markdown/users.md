@@ -1,10 +1,20 @@
+# User Guide
+
+
 This document provides some general guidance about how to use TEAM
 Engine to execute a test run and view the results. There are three ways
 to interact with the test harness: a command shell, the web application,
 or a REST-like API.
 
-Command shell
--------------
+## Command shell
+
+When a test is executed a java applet will popup and display a form for the user to fill 
+with the details of the implementation to be tested. The user can fill the form and in some cases
+will require to perform visual inspection and respond to other forms.  There are two ways to run a test: with the the user interaction or without the user interaction by providing the form responses in a file.
+
+### Running with User Interaction
+
+
 
 The console application (teamengine-console-\${project.version}-bin.zip)
 includes shell scripts for running test suites in Windows and Unix-like
@@ -48,9 +58,92 @@ TE\_BASE/scripts. The test results will be written to a subdirectory
     Testing suite note:note-test in Test Mode with defaultResult of Pass ...
     Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
     ...
+    
+### Running with no User Interaction
 
-Web application
----------------
+
+It is possible to run the tests in a headless, unattended manner, by providing form files with
+responses to all the forms the test normally inquires the user to fill.
+
+Form files are specified via the ``-form`` parameter, more than one form can be provided using
+multiple ``-form`` parameters. For example, the WMS 1.1.1 tests can be run with the following 
+command:: 
+    
+     $ ~/te-install/bin/unix/test.sh -source=wms/1.1.1/ctl/functions.xml -source=wms/1.1.1/ctl/wms.xml
+                                     -form=$forms/wms-1.1.1.xml -form=forms/yes.xml
+
+
+Where ``forms/wms-1.1.1.xml`` is::
+
+     <?xml version="1.0" encoding="UTF-8"?>
+     <values>
+       <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+       <value key="updatesequence">auto_updatesequence</value>
+       <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
+       <value key="VAR_LOW_UPDATESEQUENCE">0</value>
+       <value key="CERT_PROFILE">queryable_profile</value>
+       <value key="recommended">recommended</value>
+       <value key="testgml">testgml</value>
+       <value key="free">free</value>
+       <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+     </values>
+
+and ``forms/yes.xml`` is::
+ 
+     <?xml version="1.0" encoding="UTF-8"?>
+     <values>
+       <value key="submit">yes</value>
+       <value key="answer">yes</value>
+     </values>
+
+The form files are used by TEAM Engine in the same order as provided on the command line. 
+In case that the test requires filling more forms than provided on the command line, the last provided form is
+going to be used multiple times: for example, in the WMS 1.1.1 case, the test will ask the user to visually
+confirm visual relationships between two maps, the ``yes.xml`` form will be used for all those
+requests.
+
+After the test is invoked via command line, the console output will retrieve the information of the forms before providing the result of the test.
+ 
+For example::
+
+      jul 12, 2015 2:44:16 PM com.occamlab.te.TECore setFormResults
+      INFO: Setting form results:
+       <?xml version="1.0" encoding="UTF-8"?>
+      <values>
+         <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+         <value key="updatesequence">auto_updatesequence</value>
+         <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
+         <value key="VAR_LOW_UPDATESEQUENCE"></value>
+         <value key="CERT_PROFILE">queryable_profile</value>
+         <value key="testgml">testgml</value>
+         <value key="free">free</value>
+         <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+      </values>
+      
+      Testing suite wms:main_wms in Test Mode with defaultResult of Pass ...
+      ...
+      Testing wms:wmsops-getmap-params-bbox-2 type Mandatory in Test Mode with defaultResult Pass (s0004/d275e678_1)...
+         Assertion: When a GetMap request uses decimal values for the BBOX parameter, then the response is valid.
+         
+      Jul 12, 2015 2:44:20 PM com.occamlab.te.TECore setFormResults
+      INFO: Setting form results:
+       <?xml version="1.0" encoding="UTF-8"?>
+      <values>
+        <value key="submit">yes</value>
+        <value key="answer">yes</value>
+      </values>
+            Test wms:wmsops-getmap-params-bbox-2 Passed
+      
+      
+
+
+
+## Web application
+
+
+### Running via a Web User Interface
+
+
 
 The web application (teamengine.war) provides a user interface for
 selecting test suites, browsing test documentation, and launching test
@@ -86,8 +179,8 @@ ctl-scripts-release.csv | A CSV file that contains a list of test suite releases
 lib/*.jar | A directory containing the required Java libraries that must be available on the class path; that is, WEB-INF/lib for the web application or TE\_BASE/resources/lib for command-line execution.
 bin/ | A directory containing shell scripts for Windows- and UNIX-based (Linux/Mac) hosts. The \`setup-tebase\` script will set up a TEAM-engine instance (TE\_BASE) with the test suites identified in a referenced CSV file.
 
-REST API
---------
+### Running via a REST API
+
 
 A simple REST-like API (based on [JAX-RS
 1.1](http://jcp.org/en/jsr/detail?id=311)) enables programmatic

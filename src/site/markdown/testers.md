@@ -1,10 +1,13 @@
+# Tester Guide
+
+
 This document provides some basic guidance about how to develop a test
 suite that can be executed using TEAM Engine. The test harness is
 capable of running tests implemented using the OGC CTL (Compliance Test
 Language) scripting language and the TestNG framework.
 
-CTL scripts
------------
+## CTL scripts
+
 
 The OGC CTL grammar can be regarded as a kind of XML-based
 domain-specific language for defining test suites. A test suite is
@@ -19,8 +22,8 @@ testing program also maintains a set of test suites that are publicly
 available from GitHub at this location:
 [https://github.com/opengeospatial](https://github.com/opengeospatial).
 
-TestNG framework
-----------------
+## TestNG framework
+
 
 ### Creating a new test suite
 

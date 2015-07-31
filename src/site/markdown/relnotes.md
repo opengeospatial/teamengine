@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-4.2 (2015-07-29)
+4.2 (2015-07-31)
 -------------------
 - [web] Fix [#96](https://github.com/opengeospatial/teamengine/issues/96) and [#112](https://github.com/opengeospatial/teamengine/issues/112): Sporadic incorrect inherit failures. 
   Also related to [#77](https://github.com/opengeospatial/teamengine/issues/77)  and [#70](https://github.com/opengeospatial/teamengine/issues/70) 
