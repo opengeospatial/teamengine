@@ -72,6 +72,17 @@
       <url>https://github.com/tanvi-shah</url>
       <timezone>Asia/Kolkata</timezone>
     </developer>
+    
+       <developer>
+      <name>Upendra Sachan</name>
+      <url>https://github.com/upendra-sachan</url>
+      <timezone>Asia/Kolkata</timezone>
+    </developer>  
+     <developer>
+      <name>Andrea Aime</name>
+      <url>https://github.com/aaime</url>
+      <timezone>Europe/Italy</timezone>
+    </developer>
   </developers>
 
 
