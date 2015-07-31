@@ -2,8 +2,8 @@ TEAM Engine Tutorial
 ####################
 
 :author: Luis Bermudez <lbermudez@opengeospatial.org>, Richard Martell, Chris Coppock
-:version: 4.1
-:date: March 24, 2015
+:version: 4.2
+:date: July 31, 2015
 :questions: http://cite.opengeospatial.org/forum
 
 .. contents::
@@ -57,7 +57,7 @@ Download Required Software
 In order to build Team Engine and the OGC tests you will need the following software:
 
 - **Java 1.7.0_67**: Download Java JDK version 7u67 (Java Development Kit) from `here <http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880267.html>`_.
-- **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
+- Maven: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
 - **Git 1.8**: Download Git-SCM version 1.9.4 from `here <http://git-scm.com/download/win>`_.
 - **Apache Tomcat 7.0.52**: Download Apache Tomcat version 7.0.52 from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
 
