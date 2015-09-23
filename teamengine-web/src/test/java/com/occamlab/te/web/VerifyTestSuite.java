@@ -82,7 +82,7 @@ public class VerifyTestSuite {
     urlDir = new File(urlDir.toString().split("target")[0] + "src" + System.getProperty("file.separator")
             + "main" + System.getProperty("file.separator") + "scripts" + System.getProperty("file.separator")
             + "server" + System.getProperty("file.separator") + "csw.xml");
-    kvp = "capabilities.url=file://" + urlDir.toString();
+    kvp = "capabilities.url=file:" + System.getProperty("file.separator") + urlDir.toString();
   }
 
   @AfterClass
