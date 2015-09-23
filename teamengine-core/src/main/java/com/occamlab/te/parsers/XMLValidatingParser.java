@@ -314,7 +314,6 @@ public class XMLValidatingParser {
 
 		if (doc == null || doc.getDocumentElement() == null)
 			return false;
-
 		Element e = instruction.getDocumentElement();
 		PrintWriter logger = new PrintWriter(System.out);
 		Document parsedDoc = parse(doc, e, logger);
@@ -322,7 +321,7 @@ public class XMLValidatingParser {
 	}
 
 	/**
-	 * Validates the given document against the schemas references supplied in
+	 * Validates the given document against the schema references supplied in
 	 * the accompanying instruction document.
 	 * 
 	 * @param doc
@@ -337,22 +336,32 @@ public class XMLValidatingParser {
 	 */
 	public NodeList validate(Document doc, Document instruction)
 			throws Exception {
-		if (doc == null || doc.getDocumentElement() == null) {
-			throw new NullPointerException("Input document is null.");
-		}
-		ArrayList<Object> schemas = new ArrayList<Object>();
-		ArrayList<Object> dtds = new ArrayList<Object>();
-		schemas.addAll(schemaList);
-		dtds.addAll(dtdList);
-		loadSchemaLists(instruction, schemas, dtds);
-		XmlErrorHandler err = new XmlErrorHandler();
-		if (null == doc.getDoctype() && dtds.isEmpty()) {
-			validateAgainstXMLSchemaList(doc, schemas, err);
-		} else {
-			validateAgainstDTDList(doc, dtds, err);
-		}
-		return err.toNodeList();
+        return performValidation(doc, instruction).toNodeList();
 	}
+
+    public Element validateSingleResult(Document doc, Document instruction)
+            throws Exception {
+        return performValidation(doc, instruction).toRootElement();
+    }
+
+    XmlErrorHandler performValidation(Document doc, Document instruction)
+            throws Exception {
+        if (doc == null || doc.getDocumentElement() == null) {
+            throw new NullPointerException("Input document is null.");
+        }
+        ArrayList<Object> schemas = new ArrayList<Object>();
+        ArrayList<Object> dtds = new ArrayList<Object>();
+        schemas.addAll(schemaList);
+        dtds.addAll(dtdList);
+        loadSchemaLists(instruction, schemas, dtds);
+        XmlErrorHandler errHandler = new XmlErrorHandler();
+        if (null == doc.getDoctype() && dtds.isEmpty()) {
+			validateAgainstXMLSchemaList(doc, schemas, errHandler);
+		} else {
+			validateAgainstDTDList(doc, dtds, errHandler);
+		}
+        return errHandler;
+    }
 
 	/**
 	 * Validates an XML resource against a list of XML Schemas. Validation
