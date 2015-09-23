@@ -314,7 +314,6 @@ public class XMLValidatingParser {
 
 		if (doc == null || doc.getDocumentElement() == null)
 			return false;
-
 		Element e = instruction.getDocumentElement();
 		PrintWriter logger = new PrintWriter(System.out);
 		Document parsedDoc = parse(doc, e, logger);
@@ -322,7 +321,7 @@ public class XMLValidatingParser {
 	}
 
 	/**
-	 * Validates the given document against the schemas references supplied in
+	 * Validates the given document against the schema references supplied in
 	 * the accompanying instruction document.
 	 * 
 	 * @param doc
@@ -337,6 +336,16 @@ public class XMLValidatingParser {
 	 */
 	public NodeList validate(Document doc, Document instruction)
 			throws Exception {
+		return schemaValidation(doc, instruction).toNodeList();
+	}
+
+	public Element validateSingleResult(Document doc, Document instruction)
+			throws Exception {
+		return schemaValidation(doc, instruction).toRootElement();
+	}
+
+	XmlErrorHandler schemaValidation(Document doc, Document instruction)
+			throws Exception {
 		if (doc == null || doc.getDocumentElement() == null) {
 			throw new NullPointerException("Input document is null.");
 		}
@@ -345,13 +354,13 @@ public class XMLValidatingParser {
 		schemas.addAll(schemaList);
 		dtds.addAll(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);
-		XmlErrorHandler err = new XmlErrorHandler();
+		XmlErrorHandler errHandler = new XmlErrorHandler();
 		if (null == doc.getDoctype() && dtds.isEmpty()) {
-			validateAgainstXMLSchemaList(doc, schemas, err);
+			validateAgainstXMLSchemaList(doc, schemas, errHandler);
 		} else {
-			validateAgainstDTDList(doc, dtds, err);
+			validateAgainstDTDList(doc, dtds, errHandler);
 		}
-		return err.toNodeList();
+		return errHandler;
 	}
 
 	/**
