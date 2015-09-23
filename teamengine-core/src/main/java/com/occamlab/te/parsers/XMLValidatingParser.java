@@ -336,32 +336,32 @@ public class XMLValidatingParser {
 	 */
 	public NodeList validate(Document doc, Document instruction)
 			throws Exception {
-        return performValidation(doc, instruction).toNodeList();
+		return schemaValidation(doc, instruction).toNodeList();
 	}
 
-    public Element validateSingleResult(Document doc, Document instruction)
-            throws Exception {
-        return performValidation(doc, instruction).toRootElement();
-    }
+	public Element validateSingleResult(Document doc, Document instruction)
+			throws Exception {
+		return schemaValidation(doc, instruction).toRootElement();
+	}
 
-    XmlErrorHandler performValidation(Document doc, Document instruction)
-            throws Exception {
-        if (doc == null || doc.getDocumentElement() == null) {
-            throw new NullPointerException("Input document is null.");
-        }
-        ArrayList<Object> schemas = new ArrayList<Object>();
-        ArrayList<Object> dtds = new ArrayList<Object>();
-        schemas.addAll(schemaList);
-        dtds.addAll(dtdList);
-        loadSchemaLists(instruction, schemas, dtds);
-        XmlErrorHandler errHandler = new XmlErrorHandler();
-        if (null == doc.getDoctype() && dtds.isEmpty()) {
+	XmlErrorHandler schemaValidation(Document doc, Document instruction)
+			throws Exception {
+		if (doc == null || doc.getDocumentElement() == null) {
+			throw new NullPointerException("Input document is null.");
+		}
+		ArrayList<Object> schemas = new ArrayList<Object>();
+		ArrayList<Object> dtds = new ArrayList<Object>();
+		schemas.addAll(schemaList);
+		dtds.addAll(dtdList);
+		loadSchemaLists(instruction, schemas, dtds);
+		XmlErrorHandler errHandler = new XmlErrorHandler();
+		if (null == doc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(doc, schemas, errHandler);
 		} else {
 			validateAgainstDTDList(doc, dtds, errHandler);
 		}
-        return errHandler;
-    }
+		return errHandler;
+	}
 
 	/**
 	 * Validates an XML resource against a list of XML Schemas. Validation
