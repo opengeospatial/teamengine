@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-web</artifactId>
@@ -16,6 +16,11 @@
   This module provides a web-based application for executing test suites and 
   managing test reports.
   </description>
+  
+  <properties>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+    <buildDate>${maven.build.timestamp}</buildDate>
+   </properties>
 
   <dependencies>
     <dependency>
@@ -84,6 +89,11 @@
       <artifactId>webservices-rt</artifactId>
       <version>2.3</version>
     </dependency>
+    <dependency>
+    	<groupId>${project.groupId}</groupId>
+    	<artifactId>teamengine-resources</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -121,6 +131,13 @@
           <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
           <!-- Shared resources are already present in WEB-INF/classes/ -->
           <!-- Common libraries (e.g. JAX-RS) are bundled separately -->
+          <webResources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/webapp</directory>
+            </resource>
+         </webResources>
+         
           <packagingExcludes>
             WEB-INF/lib/teamengine-resources*.jar,
             WEB-INF/lib/teamengine-realm*.jar,

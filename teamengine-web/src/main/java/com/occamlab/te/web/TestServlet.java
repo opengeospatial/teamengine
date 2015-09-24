@@ -109,17 +109,27 @@ public class TestServlet extends HttpServlet {
            
           //create main config file when TE restarts
             String tebase = path.split("config")[0];
-            LOGR.info("TE_BASE is located at:"+tebase);
-          
+            File teBasePath=new File(tebase);
+            File resorcePath=null;
+            if(teBasePath.exists()){
+              resorcePath=new File((new File(teBasePath,"resources")),"docs");
+              if(resorcePath.exists()){
+                LOGR.info("TE_BASE is located at:"+tebase);
+              }else{
+                LOGR.warning("TE_BASE exists but '${TE_BASE}/resources/docs' doesn't");
+              }
+            }else{
+            LOGR.warning("The variable TE_BASE has not been setup");
+            }
             ConfigFileCreator creator = new ConfigFileCreator();
+            if(null!=resorcePath && resorcePath.exists()){
             creator.create(tebase); 
-           
             //delete workdir when TE restarts
             
             String workDir = path.split("config")[0] + "work";
             FileUtils.deleteDirectory(new File(workDir));
             LOGR.info("Deleting  the work dir at:"+workDir);
-          
+            }
             conf = new Config();
             this.setupOpts = new SetupOptions();
 

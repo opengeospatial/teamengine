@@ -136,7 +136,11 @@ public class CoverageMonitor {
         Map<String, String> qryParams = new HashMap<String, String>();
         for (String param : query.split("&")) {
             String[] nvp = param.split("=");
-            qryParams.put(nvp[0].toLowerCase(), nvp[1]);
+            if(nvp.length > 1){
+              qryParams.put(nvp[0].toLowerCase(), nvp[1]);
+            }else{
+              qryParams.put(nvp[0].toLowerCase(), "");
+            }    
         }
         String reqType = qryParams.get("request");
         XPath xpath = XPathFactory.newInstance().newXPath();

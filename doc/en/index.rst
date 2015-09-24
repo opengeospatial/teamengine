@@ -2,8 +2,8 @@ TEAM Engine Tutorial
 ####################
 
 :author: Luis Bermudez <lbermudez@opengeospatial.org>, Richard Martell, Chris Coppock
-:version: 4.1
-:date: March 24, 2015
+:version: 4.2
+:date: July 31, 2015
 :questions: http://cite.opengeospatial.org/forum
 
 .. contents::
@@ -22,7 +22,7 @@ TEAM Engine Tutorial
    
 
 Introduction
---------------
+------------
 
 
 The Test, Evaluation, And Measurement (TEAM) Engine (TE) is a test harness that executes test suites written using the Open Geospatial Consortium (OGC) Compliance Test Language (CTL) test grammar or the TestNG framework.
@@ -42,32 +42,32 @@ This is the long tutorial. A short tutorial is available `here <http://opengeosp
 
 
 License
---------------
+-------
 
 The license for TEAM Engine is `Apache 2.0 <https://github.com/opengeospatial/teamengine/blob/master/LICENSE.txt>`_.    
 
 
 Download and Configure Prerequisite Software (Mostly for Windows Users)
----------------------------------------------------------------------------
+-----------------------------------------------------------------------
 Skip this section if you already have Java, Maven, Git and Apache installed.
 
 Download Required Software
-=============================
+==========================
 
 In order to build Team Engine and the OGC tests you will need the following software:
 
 - **Java 1.7.0_67**: Download Java JDK version 7u67 (Java Development Kit) from `here <http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880267.html>`_.
-- **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
+- Maven: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
 - **Git 1.8**: Download Git-SCM version 1.9.4 from `here <http://git-scm.com/download/win>`_.
 - **Apache Tomcat 7.0.52**: Download Apache Tomcat version 7.0.52 from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
 
 
 Configuring Prerequisite Software
-====================================
+=================================
 The following sections provide information about how to configure Java, Maven, Git, Tomcat and setup environmental variables
 
 Configure Java
-*****************
+**************
 
 	1. Browse to the downloaded file location and locate the installation file
 	2. Execute installation file from download location on the local workstation
@@ -76,7 +76,7 @@ Configure Java
 	5. Click 'Finish' to complete the installation and close the installer.
 
 Configure Maven
-*****************
+***************
 
 	1. Browse to the downloaded file location and locate the Maven zip archive file
 	2. Open the zip archived 'apache-maven-3.2.2' file folder by double-clicking zip file
@@ -86,7 +86,7 @@ Configure Maven
 	6. Finish the file transfer process and close the zip folder and second windows explorer folder window.
 
 Configure Git
-*****************
+*************
 
 	1. Browse to the download location and locate the installation executable file.
 	2. Execute installation file from the download location.
@@ -102,7 +102,7 @@ Configure Git
 
 
 Configure Tomcat
-*****************
+****************
 
 	1. Browse to the download location and locate the Apache Tomcat Zip archive file.
 	2. Extract file folder by double-clicking on the zip file and right click  on the folder that is presented in Windows Explorer, and selecting the 'copy' option in the dropdown menu.
@@ -110,7 +110,7 @@ Configure Tomcat
 	4. Finish the file transfer and close the zip folder.
 
 Set Environment Variables in Windows
-***************************************
+************************************
 
 	1. Click on the Windows 'Start' button,, right-click on 'Computer' and select the 'Properties' option. Select the 'Advanced System Settings' option in the left-side panel of the presented window.
 	2. Within the 'System Properties' window, select the 'Advanced' tab and click on the 'Environment Variables' button.
@@ -139,8 +139,8 @@ Set Environment Variables in Windows
 		- ;C:\Program Files\apache-maven-3.2.2\bin;
 		- ;C:\Program Files (x86)\Git\cmd;
 
-Completing the Installation of Prerequisite Software	
-======================================================
+Completing the Installation of Prerequisite Software
+====================================================
 
 	1. Select the 'Ok' button within the 'Environment Variables' window.
 	2. Select the 'Ok' button within the 'System Properties' window.
@@ -165,7 +165,7 @@ Completing the Installation of Prerequisite Software
 
 
 Download TE Source
---------------------
+------------------
 
 Change Directory (cd) or browse to a local directory where TE will be downloaded. For example a directory called **repo**::
 
@@ -223,7 +223,7 @@ Switch to a specific tag by typing::
 	$ git checkout 4.1
 
 Build TE Source
-------------------
+---------------
 
 Ensure you are in the working directory of teamengine::
 
@@ -271,7 +271,7 @@ The folder **teamengine-console** contains the directory::
 
 	
 Prepare TE BASE
----------------------
+---------------
 
 Unzip teamengine-console-4.1-base.zip in the TE_BASE directory (Note: If previous content exists, click yes to prompts to replace Folders and Files)
 
@@ -319,7 +319,7 @@ Unzip teamengine-console-4.1-base.zip in the TE_BASE directory::
 	
 
 Run TE in console
--------------------
+-----------------
 
 When running **MAVEN install** the file ``teamengine-console-4.1-bin.zip`` was created under the 
 **teamengine-console/target**. 
@@ -365,10 +365,10 @@ A window should appear asking for input. Click start to run the test and the tes
 
 
 Running an OGC Test
---------------------
+-------------------
 
 Locating OGC Tests
-====================
+==================
 
 OGC Tests can be written either in CTL (Compliance Test Language) or TestNG. Tests are located at the public OGC GitHub Repository:
 
@@ -381,13 +381,13 @@ For example the GitHub page for CSW 2.0.2 is:
 
 
 Installing Test in TE
------------------------
+---------------------
 
 The `ets-resources <https://github.com/opengeospatial/ets-resources>`_ project provides convenient scripts for windows and unix to create the config.xml and install the test suites under the **TE_BASE/scripts** directory.
 
 
 Clone and build ets-resources project
-=======================================
+=====================================
 
 Clone the repository in a folder (e.g. ~/repo.)::
 
@@ -402,7 +402,7 @@ Go the project folder and run mvn package::
 A target folder is created that contains the required libs and scripts.	
 
 Copy libs and test suites in TE_BASE
--------------------------------------
+------------------------------------
 
 Scripts are located under ets-resources\14.04.16\target\bin 
 Several environment variables must be set first (this can be done in the setenv script if desired):
@@ -425,15 +425,15 @@ OGC keeps csv files with the information about the test suites and the version i
 https://github.com/opengeospatial/te-releases
 
 Verify config.xml
-------------------
+-----------------
 Open the confg.xml under TE_BASE and verify the tests and versions that you want to make available. This applies if a web application will be built.
 
 Executing a test via command line
-------------------------------------------
+---------------------------------
 Is the same procedure to run both CTL and TestNG tests via command line
 
 Example of a CTL test
-=======================
+=====================
 
 To run the CSW 2.0.2 test do the following::
 
@@ -460,10 +460,9 @@ The result should be a successful pass::
 			Test csw:capability-tests Passed
 		Test csw:Main Passed
 	Suite csw:csw-2.0.2-compliance-suite Passed
-	
 
 Example of TestNG Tests
-=========================
+=======================
 
 For KML 2.2:
 	
@@ -517,9 +516,86 @@ The result should be pass::
       
          See detailed test report in the TE_BASE/users/demo/s0005/html/ directory.
       Test tns:Main Passed
+      
+Running the tests in headless mode
+==================================
 
-Run a Test via REST 
----------------------
+It is possible to run the tests in a headless, unattended manner, by providing form files with
+responses to all the forms the test normally inquires the user to fill.
+
+Form files are specified via the ``-form`` parameter, more than one form can be provided using
+multiple ``-form`` parameters. For example, the WMS 1.1.1 tests can be run with the following 
+command:: 
+    
+     $ ~/te-install/bin/unix/test.sh -source=wms/1.1.1/ctl/functions.xml -source=wms/1.1.1/ctl/wms.xml
+                                     -form=$forms/wms-1.1.1.xml -form=forms/yes.xml
+
+
+Where ``forms/wms-1.1.1.xml`` is::
+
+     <?xml version="1.0" encoding="UTF-8"?>
+     <values>
+       <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+       <value key="updatesequence">auto_updatesequence</value>
+       <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
+       <value key="VAR_LOW_UPDATESEQUENCE">0</value>
+       <value key="CERT_PROFILE">queryable_profile</value>
+       <value key="recommended">recommended</value>
+       <value key="testgml">testgml</value>
+       <value key="free">free</value>
+       <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+     </values>
+
+and ``forms/yes.xml`` is::
+ 
+     <?xml version="1.0" encoding="UTF-8"?>
+     <values>
+       <value key="submit">yes</value>
+       <value key="answer">yes</value>
+     </values>
+
+The form files are used by TEAM Engine in the same order as provided on the command line. 
+In case that the test requires filling more forms than provided on the command line, the last provided form is
+going to be used multiple times: for example, in the WMS 1.1.1 case, the test will ask the user to visually
+confirm visual relationships between two maps, the ``yes.xml`` form will be used for all those
+requests.
+
+After the test is invoked via command line, the console output will retrieve the information of the forms before providing the result of the test.
+ 
+For example::
+
+      jul 12, 2015 2:44:16 PM com.occamlab.te.TECore setFormResults
+      INFO: Setting form results:
+       <?xml version="1.0" encoding="UTF-8"?>
+      <values>
+         <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+         <value key="updatesequence">auto_updatesequence</value>
+         <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
+         <value key="VAR_LOW_UPDATESEQUENCE"></value>
+         <value key="CERT_PROFILE">queryable_profile</value>
+         <value key="testgml">testgml</value>
+         <value key="free">free</value>
+         <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
+      </values>
+      
+      Testing suite wms:main_wms in Test Mode with defaultResult of Pass ...
+      ...
+      Testing wms:wmsops-getmap-params-bbox-2 type Mandatory in Test Mode with defaultResult Pass (s0004/d275e678_1)...
+         Assertion: When a GetMap request uses decimal values for the BBOX parameter, then the response is valid.
+         
+      Jul 12, 2015 2:44:20 PM com.occamlab.te.TECore setFormResults
+      INFO: Setting form results:
+       <?xml version="1.0" encoding="UTF-8"?>
+      <values>
+        <value key="submit">yes</value>
+        <value key="answer">yes</value>
+      </values>
+            Test wms:wmsops-getmap-params-bbox-2 Passed
+      
+      
+
+Run a Test via REST
+-------------------
 
 Only TestNG tests can run via a REST endpoint.
 
@@ -572,12 +648,11 @@ Table - Test run arguments
           
           path/to/XML is the path to the Metadata file  and path/to/Schematorn is the path to the Schematron file.
 
-
 Build TEAM Engine as Web application
---------------------------------------
+------------------------------------
 
 Create a dedicated Tomcat instance
-======================================
+==================================
 
 The example here shows the process for a GNU/Linux environment. 
 
@@ -683,7 +758,7 @@ CATALINA_BASE directory should like the following::
 	|--  work
 
 Build a WAR file
----------------------
+----------------
 A war file with all the libraries can be build by running a modified maven profile. 
 
 Copy or edit the maven settings in '\apache-maven-3.2.1\conf\settings.xml' and input the correct ets-resources version. For example 04.04.16::
@@ -801,8 +876,8 @@ To stop TEAM Engine type::
 		c:\> catalina.bat stop
 
 
-Getting Help 
-----------------
+Getting Help
+------------
 
 The CITE forum is the best place to get help: http://cite.opengeospatial.org/forum
 

@@ -1,10 +1,13 @@
+# Tester Guide
+
+
 This document provides some basic guidance about how to develop a test
 suite that can be executed using TEAM Engine. The test harness is
 capable of running tests implemented using the OGC CTL (Compliance Test
 Language) scripting language and the TestNG framework.
 
-CTL scripts
------------
+## CTL scripts
+
 
 The OGC CTL grammar can be regarded as a kind of XML-based
 domain-specific language for defining test suites. A test suite is
@@ -19,8 +22,8 @@ testing program also maintains a set of test suites that are publicly
 available from GitHub at this location:
 [https://github.com/opengeospatial](https://github.com/opengeospatial).
 
-TestNG framework
-----------------
+## TestNG framework
+
 
 ### Creating a new test suite
 
@@ -79,9 +82,9 @@ standard(s); there may be a child test suite defined for each applicable
 base standard. The essential structure of a test suite is illustrated in
 the following figure.
 
-**Figure 3 - Structure of a TestNG test suite**
+**Structure of a TestNG test suite**
 
-![Figure 3 - Structure of a TestNG test
+![Structure of a TestNG test
 suite](./images/testng-suite.png)
 
 Each \<test\> element occurring within a top-level \<suite\> element
@@ -172,7 +175,7 @@ the listing below (see also src/main/config/test-run-props.xml).
       <entry key="ics">level-2</entry>
     </properties>
 
-![](./images/info-16px.png) **Note:** The value of the 'iut' argument in
+![info](./images/info-16px.png) **Note:** The value of the 'iut' argument in
 the listing above must be an absolute URI that conforms to the `http` or
 `file` schemes.
 
@@ -226,13 +229,12 @@ utility libraries available that facilitate schema validation and
 geospatial data processing; these are available at GitHub, and releases
 are published in the [Maven Central
 repository](http://search.maven.org/#search|ga|1|g%3A%22org.opengis.cite%22)
-(see Table 3).
 
-  groupId            artifactId                                                             Description
-  ------------------ ---------------------------------------------------------------------- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  org.opengis.cite   [schema-utils](https://github.com/opengeospatial/schema-utils)         Provides support for validating XML representations using the following schema languages: W3C XML Schema 1.0, Schematron (ISO/IEC 19757-3:2006), and RELAX NG (ISO/IEC 19757-2:2008).
-  org.opengis.cite   [geomatics-geotk](https://github.com/opengeospatial/geomatics-geotk)   Provides support for processing spatial data and associated metadata using various Geotk modules (see http://www.geotoolkit.org/).
 
-  : Table 3 - Utility libraries
+groupId | artifactId | description
+--- | --- | ---
+org.opengis.cite | [schema-utils](https://github.com/opengeospatial/schema-utils) | Provides support for validating XML representations using the following schema languages: W3C XML Schema 1.0, Schematron (ISO/IEC 19757-3:2006), and RELAX NG (ISO/IEC 19757-2:2008).
+org.opengis.cite | [geomatics-geotk](https://github.com/opengeospatial/geomatics-geotk) | Provides support for processing spatial data and associated metadata using various Geotk modules (see http://www.geotoolkit.org/).
+
 
 

@@ -22,6 +22,7 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +43,7 @@ public class RuntimeOptions {
     ArrayList<String> profiles = new ArrayList<String>();
     ArrayList<String> testPaths = new ArrayList<String>();
     ArrayList<String> params = new ArrayList<String>();
+    List<File> recordedForms = new ArrayList<>();
 
     /**
      * Default constructor sets the location of the test log directory to
@@ -155,6 +157,10 @@ public class RuntimeOptions {
     public void setTestName(String testName) {
         this.testName = testName;
     }
+    
+    public void addRecordedForm(String recordedForm) {
+      recordedForms.add(new File(recordedForm));
+    }
 
     @Override
     public String toString() {
@@ -169,8 +175,16 @@ public class RuntimeOptions {
         sb.append("baseURI=").append(baseURI).append(",\n");
         sb.append("profiles=").append(profiles).append(",\n");
         sb.append("testPaths=").append(testPaths).append(",\n");
+        sb.append("recordedFroms=").append(recordedForms).append(",\n");
         sb.append("params=").append(params).append("\n}");
         return sb.toString();
+    }
+
+    /**
+     * @return the recordedForms
+     */
+    public List<File> getRecordedForms() {
+      return recordedForms;
     }
 
 }

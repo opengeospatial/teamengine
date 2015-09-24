@@ -37,10 +37,11 @@
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
       <item href="testers.html" name="Tester's Guide" />
+      <item href="architecture.html" name="Architecture" />
     </menu>
     <menu ref="reports" />
     <menu name="About">
-      <item href="changelog.html" name="Release Notes" />
+      <item href="relnotes.html" name="Release Notes" />
     </menu>
   </body>
 </project>
