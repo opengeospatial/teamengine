@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+## 4.3 (2015-MM-DD)
+- [core] Merge [PR #86](https://github.com/opengeospatial/teamengine/pull/86): Add 
+  XmlValidatingParser.validateSingleResult
+- [web] Merge [PR #126](https://github.com/opengeospatial/teamengine/pull/126) to fix 
+  [#124](https://github.com/opengeospatial/teamengine/issues/124): Unit test 
+  `VerifyTestSuite.executeStartingTest` fails in Windows environment
+
+
 4.2 (2015-07-31)
 -------------------
 - [web] Fix [#96](https://github.com/opengeospatial/teamengine/issues/96) and [#112](https://github.com/opengeospatial/teamengine/issues/112): Sporadic incorrect inherit failures. 
