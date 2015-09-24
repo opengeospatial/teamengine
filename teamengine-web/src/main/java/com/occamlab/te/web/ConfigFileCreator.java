@@ -34,19 +34,14 @@ import org.w3c.dom.Node;
  * 
  * If a previous config file exists, it will get deleted.
  * 
- * @author lbermudez
  */
 public class ConfigFileCreator {
 
 	private static Logger LOGR = Logger
 			.getLogger("com.occamlab.te.web.ConfigFileCreator");
-
 	private DocumentBuilder builder;
-
 	private Document docMain;
-
 	private Element config;
-
 	private Element scripts;
 
 	public ConfigFileCreator() {
@@ -67,21 +62,16 @@ public class ConfigFileCreator {
 	 * @param tebase
 	 */
 	public void create(String tebase) throws TEException {
-
 		File f = new File(tebase);
 		if (f.exists()) {
-
 			try {
-
 				process(tebase);
 			} catch (Exception e) {
-
 				e.printStackTrace();
 			}
 		} else {
 			throw new TEBaseNotFoundException(tebase);
 		}
-
 	}
 
 	/**
@@ -118,7 +108,6 @@ public class ConfigFileCreator {
 	 */
 	private void process(String tebase) {
 		deleteConfigFile(tebase);
-
 		docMain = builder.newDocument();
 		config = docMain.createElement("config");
 		docMain.appendChild(config);
@@ -134,24 +123,21 @@ public class ConfigFileCreator {
 			for (File dir : testScriptsDir) {
 				processDir(dir);
 			}
-
 		}
 		String mainconfig = tebase + "config.xml";
 		saveConfigFile(docMain, mainconfig);
-
 	}
 
 	public void processDir(File dir) {
 
 		if (dir.isDirectory() && !dir.getName().startsWith(".")) {
 			List<File> configFiles = getConfigFiles(dir);
-		for (Iterator iterator = configFiles.iterator(); iterator.hasNext();) {
-			File file = (File) iterator.next();
-			processTestConfigFile(file);
-			
+			for (Iterator iterator = configFiles.iterator(); iterator.hasNext();) {
+				File file = (File) iterator.next();
+				processTestConfigFile(file);
+			}
 		}
-		}
-			
+
 	}
 
 	private void processTestConfigFile(File configFile) {
@@ -160,8 +146,8 @@ public class ConfigFileCreator {
 			Node orgInTest = XMLUtils.getFirstNode(docTest,
 					"/organization/name[1]");
 			String org = orgInTest.getTextContent();
-			String xpath = "/config/scripts/organization/name[text()='"
-					+ org + "']";
+			String xpath = "/config/scripts/organization/name[text()='" + org
+					+ "']";
 			Node orgInMainConfig = XMLUtils.getFirstNode(docMain, xpath);
 			// org doesn't exist
 			if (orgInMainConfig == null) {
@@ -182,8 +168,8 @@ public class ConfigFileCreator {
 				if (standardInMain == null) {
 					// append to an existing organization
 					Node orgInMain = orgInMainConfig.getParentNode();
-					orgInMain.appendChild(docMain.importNode(
-							standardInTest, true));
+					orgInMain.appendChild(docMain.importNode(standardInTest,
+							true));
 
 				} else {
 					// standard already exists in main config, so append to
@@ -194,21 +180,19 @@ public class ConfigFileCreator {
 
 					standardInMain.getParentNode().appendChild(
 							docMain.importNode(versionInTest, true));
-
 				}
 			}
-			LOGR.config("Added " + configFile.getAbsolutePath() + " to config file");
+			LOGR.config("Added " + configFile.getAbsolutePath()
+					+ " to config file");
 		} else {
-			LOGR.config("No config file was found in dir " + configFile.getAbsolutePath()
+			LOGR.config("No config file was found in dir "
+					+ configFile.getAbsolutePath()
 					+ ". It was not registered in the main config file.");
 		}
-		
-		
 	}
-		
+
 	public void saveConfigFile(Document docMain, String mainconfig) {
 		try {
-
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
@@ -235,7 +219,6 @@ public class ConfigFileCreator {
 			e.printStackTrace();
 		}
 		return null;
-
 	}
 
 	/**
@@ -246,8 +229,8 @@ public class ConfigFileCreator {
 	 */
 	private List<File> getConfigFiles(File dir) {
 		String[] extensions = { "xml" };
-		List <File> configFiles = new ArrayList<File>();
-		
+		List<File> configFiles = new ArrayList<File>();
+
 		Collection<File> files = FileUtils.listFiles(dir, extensions, true);
 		for (Iterator<File> iterator = files.iterator(); iterator.hasNext();) {
 			File file = (File) iterator.next();
@@ -256,9 +239,7 @@ public class ConfigFileCreator {
 			}
 
 		}
-
 		return configFiles;
-
 	}
 
 }
