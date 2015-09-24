@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.UUID;
@@ -44,15 +43,15 @@ public class VerifyTestSuite {
     static final int VERDICT_PASS = 1;
     static final int VERDICT_SKIP = 3;
     static final int VERDICT_FAIL = 6;
-    static final int VERDICT_INHERITfAILURE = 5;
+    static final int VERDICT_INHERIT_FAILURE = 5;
     private static Properties testProps;
     private static String previousTEBase;
     private static DocumentBuilder docBuilder;
-    private static final String CSW202_NS = "http://www.opengis.net/cat/csw/2.0.2";
+    private static final String EX_NS = "http://example.org/";
     private RuntimeOptions runOpts;
     private SetupOptions setupOpts;
     private File sessionDir;
-    private String kvpParam;
+    private String kvpTestParam;
 
     @BeforeClass
     public static void initFixture() throws IOException, ParserConfigurationException {
@@ -81,13 +80,6 @@ public class VerifyTestSuite {
     }
 
     @Before
-    public void initTestSuiteParams() throws IOException, URISyntaxException {
-        this.kvpParam = new String();
-        URL capabilitiesUrl = getClass().getResource("/pycsw-capabilities.xml");
-        this.kvpParam = "capabilities.url=" + capabilitiesUrl.toURI();
-    }
-
-    @Before
     public void initTestSession() {
         this.setupOpts = new SetupOptions();
         this.setupOpts.setValidate(false);
@@ -108,22 +100,18 @@ public class VerifyTestSuite {
     }
 
     @Test
-    public void executeStartingTest() throws Exception {
-
-        System.out.println("*******Test CSW Test*******");
-        File scriptsDir = new File(VerifyTestSuite.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        scriptsDir = new File(scriptsDir.toString().split("target")[0] + "src" + System.getProperty("file.separator")
-                + "main" + System.getProperty("file.separator") + "scripts");
-        File ctlFile = new File(scriptsDir, "ctl" + System.getProperty("file.separator") + "main.xml");
+    public void runNumParityTestSuite() throws Exception {
+        this.kvpTestParam = "input=4";
+        URL ctlScript = getClass().getResource("/tebase/scripts/num-parity.ctl");
+        File ctlFile = new File(ctlScript.toURI());
         this.setupOpts.addSource(ctlFile);
-        // run starting test directly to bypass input form
-        QName startingTest = new QName(CSW202_NS, "Main", "csw");
+        QName startingTest = new QName(EX_NS, "num-parity-main", "ex");
         this.runOpts.setTestName(startingTest.toString());
-        this.runOpts.addParam(this.kvpParam);
+        this.runOpts.addParam(this.kvpTestParam);
         File indexFile = new File(this.sessionDir, "index.xml");
         Index mainIndex = Generator.generateXsl(this.setupOpts);
         mainIndex.persist(indexFile);
-        File resourcesDir = new File(scriptsDir.getParentFile(), "resources");
+        File resourcesDir = new File(getClass().getResource("/").toURI());
         TEClassLoader teLoader = new TEClassLoader(resourcesDir);
         Engine engine = new Engine(mainIndex, this.setupOpts.getSourcesName(), teLoader);
         TECore core = new TECore(engine, mainIndex, this.runOpts);
@@ -131,6 +119,6 @@ public class VerifyTestSuite {
         Document testLog = docBuilder.parse(new File(this.sessionDir, "log.xml"));
         XPath xpath = XPathFactory.newInstance().newXPath();
         String result = xpath.evaluate("/log/endtest/@result", testLog);
-        assertEquals("Unexpected result.", VERDICT_INHERITfAILURE, Integer.parseInt(result));
+        assertEquals("Unexpected verdict.", VERDICT_PASS, Integer.parseInt(result));
     }
 }
