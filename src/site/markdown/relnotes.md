@@ -9,6 +9,7 @@ Release Notes
   `VerifyTestSuite.executeStartingTest` fails in Windows environment
 - [core] Merge [PR #86](https://github.com/opengeospatial/teamengine/pull/86): Add 
   XmlValidatingParser.validateSingleResult
+- [core] Fix [#113](https://github.com/opengeospatial/teamengine/issues/113): 'Execute this test again' button - not working
 
 
 4.2 (2015-07-31)
