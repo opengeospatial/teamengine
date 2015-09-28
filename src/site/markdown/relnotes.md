@@ -2,6 +2,9 @@ Release Notes
 =============
 
 ## 4.3 (2015-MM-DD)
+- [core] Merge [PR #123](https://github.com/opengeospatial/teamengine/pull/123) to fix 
+  [#113](https://github.com/opengeospatial/teamengine/issues/113): 'Execute this session again' 
+  button  not working
 - [web, spi] Merge [PR #97](https://github.com/opengeospatial/teamengine/pull/97): Updated 
   ReportLog and ConfigFileCreator
 - [web] Merge [PR #126](https://github.com/opengeospatial/teamengine/pull/126) to fix 
