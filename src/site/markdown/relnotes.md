@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-## 4.3 (2015-MM-DD)
+## 4.3 (2015-09-29)
 - [core] Merge [PR #123](https://github.com/opengeospatial/teamengine/pull/123) to fix 
   [#113](https://github.com/opengeospatial/teamengine/issues/113): 'Execute this session again' 
   button  not working
