@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-## 4.3 (2015-MM-DD)
+## 4.3 (2015-09-29)
 - [web, spi] Merge [PR #97](https://github.com/opengeospatial/teamengine/pull/97): Updated 
   ReportLog and ConfigFileCreator
 - [web] Merge [PR #126](https://github.com/opengeospatial/teamengine/pull/126) to fix 
