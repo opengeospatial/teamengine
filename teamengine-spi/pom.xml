@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.8.21</version>
+      <version>6.9.6</version>
       <exclusions>
         <!-- alternative YAML syntax for specifying a test suite -->
         <exclusion>
@@ -43,6 +43,16 @@
         <exclusion>
           <groupId>org.beanshell</groupId>
           <artifactId>bsh</artifactId>
+        </exclusion>
+        <!-- run Ant task -->
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <!-- dependency injection -->
+        <exclusion>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+## 4.4-SNAPSHOT (2015-MM-DD)
+- [spi] Update dependency: testng-6.9.6
+
+
 ## 4.3 (2015-09-29)
 - [core] Merge [PR #123](https://github.com/opengeospatial/teamengine/pull/123) to fix 
   [#113](https://github.com/opengeospatial/teamengine/issues/113): 'Execute this session again' 
