@@ -26,44 +26,44 @@
 
   <xsl:variable name="testDetailsFilter" select="if ($testNgXslt.testDetailsFilter) then $testNgXslt.testDetailsFilter else 'FAIL,PASS,SKIP'"/>
 
-  <xsl:variable name="chartWidth" select="round(600 * testng:getVariableSafe($testNgXslt.chartScaleFactor, 1))"/>
-  <xsl:variable name="chartHeight" select="round(200 * testng:getVariableSafe($testNgXslt.chartScaleFactor, 1))"/>
+  <xsl:variable name="chartWidth" select="round(500 * testng:getVariableSafe($testNgXslt.chartScaleFactor, 1))"/>
+  <xsl:variable name="chartHeight" select="round(160 * testng:getVariableSafe($testNgXslt.chartScaleFactor, 1))"/>
 
   <xsl:template name="writeCssFile">
     <xsl:result-document href="{testng:absolutePath('style.css')}" format="text">
       <xsl:choose>
         <xsl:when test="testng:isFilterSelected('CONF') = 'true'">
-                    .testMethodStatusCONF { }
+          .testMethodStatusCONF { }
         </xsl:when>
         <xsl:otherwise>
-                    .testMethodStatusCONF { display: none; }
+          .testMethodStatusCONF { display: none; }
         </xsl:otherwise>
       </xsl:choose>
 
       <xsl:choose>
         <xsl:when test="testng:isFilterSelected('FAIL') = 'true'">
-                    .testMethodStatusFAIL { background-color: #FFBBBB; }
+          .testMethodStatusFAIL { background-color: #FFBBBB; }
         </xsl:when>
         <xsl:otherwise>
-                    .testMethodStatusFAIL { background-color: #FFBBBB; display: none; }
+          .testMethodStatusFAIL { background-color: #FFBBBB; display: none; }
         </xsl:otherwise>
       </xsl:choose>
 
       <xsl:choose>
         <xsl:when test="testng:isFilterSelected('PASS') = 'true'">
-                    .testMethodStatusPASS { background-color: lightgreen; }
+          .testMethodStatusPASS { background-color: lightgreen; }
         </xsl:when>
         <xsl:otherwise>
-                    .testMethodStatusPASS { background-color: lightgreen; display: none; }
+          .testMethodStatusPASS { background-color: lightgreen; display: none; }
         </xsl:otherwise>
       </xsl:choose>
 
       <xsl:choose>
         <xsl:when test="testng:isFilterSelected('SKIP') = 'true'">
-                    .testMethodStatusSKIP { background-color: #FFFFBB; }
+          .testMethodStatusSKIP { background-color: #FFFFBB; }
         </xsl:when>
         <xsl:otherwise>
-                    .testMethodStatusSKIP { background-color: #FFFFBB; display: none; }
+          .testMethodStatusSKIP { background-color: #FFFFBB; display: none; }
         </xsl:otherwise>
       </xsl:choose>
 
@@ -243,6 +243,7 @@
                     chart.type = 'image/svg+xml';
                     chart.width = chartWidth;
                     chart.height = chartHeight;
+                    chart.style="margin-top: -28px;"
                     
                     chartContainer.appendChild(chart);
                 } else {
@@ -262,7 +263,7 @@
   <xsl:template name="htmlHead">
     <head>
       <title>
-        <xsl:value-of select="testng:getVariableSafe($testNgXslt.reportTitle, 'TestNG Results')"/>
+        <xsl:value-of select="testng:getVariableSafe($testNgXslt.reportTitle, 'Results')"/>
       </title>
       <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
       <meta http-equiv="pragma" content="no-cache"/>
@@ -312,7 +313,7 @@
   <xsl:function name="testng:testCaseContentFileName">
     <xsl:param name="testCaseElement"/>
     <xsl:value-of
-                select="testng:safeFileName(concat($testCaseElement/../@name, '_', $testCaseElement/@name, '.html'))"/>
+      select="testng:safeFileName(concat($testCaseElement/../@name, '_', $testCaseElement/@name, '.html'))"/>
   </xsl:function>
 
   <xsl:function name="testng:concatParams">
@@ -334,14 +335,14 @@
     <xsl:param name="testCasesElements"/>
     <xsl:param name="state"/>
     <xsl:value-of
-                select="if ($state = '*') then count($testCasesElements/class/test-method[not(@is-config)]) else count($testCasesElements/class/test-method[(@status=$state) and (not(@is-config))])"/>
+      select="if ($state = '*') then count($testCasesElements/class/test-method[not(@is-config)]) else count($testCasesElements/class/test-method[(@status=$state) and (not(@is-config))])"/>
   </xsl:function>
 
   <xsl:function name="testng:testCaseMethodsCount">
     <xsl:param name="testCaseElement"/>
     <xsl:param name="state"/>
     <xsl:value-of
-                select="if ($state = '*') then count($testCaseElement/class/test-method[not(@is-config)]) else count($testCaseElement/class/test-method[(@status=$state) and (not(@is-config))])"/>
+      select="if ($state = '*') then count($testCaseElement/class/test-method[not(@is-config)]) else count($testCaseElement/class/test-method[(@status=$state) and (not(@is-config))])"/>
   </xsl:function>
 
   <xsl:function name="testng:suiteStateClass">
@@ -393,6 +394,18 @@
       </div>
     </xsl:if>
   </xsl:template>
+  <xsl:template match="text()" name="split">
+    <xsl:param name="str" select="."/>
+    <xsl:if test="string-length($str)">
+      <xsl:value-of select="substring-before(concat($str,','),',')"/>
+      <xsl:if test="not($str=.)">
+        <br />
+      </xsl:if>
+      <xsl:call-template name="split">
+        <xsl:with-param name="str" select="substring-after($str, ',')"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
 
   <xsl:template name="formFieldList">
     <xsl:param name="label"/>
@@ -419,7 +432,7 @@
     <xsl:result-document href="{testng:absolutePath('index.html')}" format="xhtml">
       <html>
         <xsl:call-template name="htmlHead"/>
-        <frameset cols="250px, 100%" frameborder="1">
+        <frameset cols="150px, 100%" frameborder="1">
           <frame name="navigation" src="navigation.html"/>
           <frame name="content" src="overview.html"/>
         </frameset>
@@ -525,12 +538,56 @@
       <html xmlns="http://www.w3.org/1999/xhtml">
         <xsl:call-template name="htmlHead"/>
         <body>
-          <h2>Test suites overview</h2>
+          <h2>Test overview</h2>
           <table width="100%">
             <tr>
-              <td align="center" id="chart-container">
+              <td  align="Left" style="vertical-align: top; padding-right: 30px;" width="60%">
+                <xsl:for-each select="reporter-output/line">
+                                    
+                  <xsl:if test="(contains(.,'TEST NAME AND VERSION'))">
+                    <div>
+                      <code>
+                        <b>
+                          <xsl:value-of select="concat(substring-before(substring-after(., '**'),':'),':')"/>
+                        </b>
+                        <xsl:value-of select="substring-after(., ':')"/>
+                      </code>
+                    </div>
+                  </xsl:if>
+                </xsl:for-each>
+                <div>
+                  <code>
+                    <b>SESSION ID: </b>
+                    <xsl:value-of select="substring-before(substring-after(substring-after($testNgXslt.outputDir,'/users/'),'/'),'/')"/>
+                  </code>
+                </div>
+                <xsl:for-each select="reporter-output/line">
+                                    
+                  <xsl:if test="(contains(.,'**'))">
+                    <xsl:if test=" (not(contains(.,'TEST NAME AND VERSION')))">
+                      <div>
+                        <code>
+                          <b>
+                            <xsl:value-of select="concat(substring-before(substring-after(., '**'),':'),':')"/>
+                          </b>
+                          <xsl:value-of select="substring-after(., ':')"/>
+                        </code>
+                      </div>
+                    </xsl:if>
+                  </xsl:if>
+                  <xsl:if test="(contains(.,'Test run directory'))">
+                    <div>
+                      <code>
+                        <xsl:value-of select="."/>
+                      </code>
+                    </div>
+                  </xsl:if>
+                </xsl:for-each> 
+              </td>
+              <td align="Right" id="chart-container"  style="
+                                    vertical-align: top;" width="40%">
                 <script type="text/javascript">
-                                    renderSvgEmbedTag(<xsl:value-of select="$chartWidth"/>, <xsl:value-of select="$chartHeight"/>);
+                  renderSvgEmbedTag(<xsl:value-of select="$chartWidth"/>, <xsl:value-of select="$chartHeight"/>);
                 </script>
               </td>
             </tr>
@@ -540,7 +597,7 @@
                                       select="if (test/@url) then document(test/@url)/test else test"/>
             <table width="100%" cellpadding="5" cellspacing="1">
               <tr style="background-color: #eaf0f7;">
-                <td width="100%">
+                <td width="100%" style="vertical-align:top">
                   <div class="{testng:suiteStateClass($testCaseElements)}"/>
                   <xsl:value-of select="@name"/>
                 </td>
@@ -559,27 +616,27 @@
               </tr>
               <xsl:for-each select="$testCaseElements">
                 <tr style="background-color: #f5f5f5; font-size: 12px;">
-                  <td>
+                  <td style="vertical-align:top">
                     <xsl:value-of select="@name"/>
                   </td>
-                  <td align="center">
+                  <td align="center" style="vertical-align:top">
                     <xsl:value-of select="testng:testCaseMethodsCount(., 'FAIL')"/>
                   </td>
-                  <td align="center">
+                  <td align="center" style="vertical-align:top">
                     <xsl:value-of select="testng:testCaseMethodsCount(., 'PASS')"/>
                   </td>
-                  <td align="center">
+                  <td align="center" style="vertical-align:top">
                     <xsl:value-of select="testng:testCaseMethodsCount(., 'SKIP')"/>
                   </td>
-                  <td align="center">
+                  <td align="center" style="vertical-align:top">
                     <xsl:value-of select="testng:testCaseMethodsCount(., '*')"/>
                   </td>
-                  <td align="center" style="font-weight: bold;">
+                  <td align="center" style="font-weight: bold; vertical-align:top;">
                     <xsl:value-of
-                                                select="if (testng:testCaseMethodsCount(., '*') > 0) then format-number(testng:testCaseMethodsCount(., 'PASS') div testng:testCaseMethodsCount(., '*'), '###%') else '100%'"/>
+                      select="if (testng:testCaseMethodsCount(., '*') > 0) then format-number(testng:testCaseMethodsCount(., 'PASS') div testng:testCaseMethodsCount(., '*'), '###%') else '100%'"/>
                   </td>
                   <xsl:if test="compare($testNgXslt.showRuntimeTotals, 'true') = 0">
-                    <td align="center" nowrap="true">
+                    <td align="center" nowrap="true" style="vertical-align:top">
                       <xsl:value-of select="testng:formatDuration(./@duration-ms)"/>
                     </td>
                   </xsl:if>
@@ -600,12 +657,16 @@
         <body>
           <h2>Reporter output</h2>
           <xsl:for-each select="reporter-output/line">
-            <div>
-              <code>
-                <xsl:value-of select="."/>
-              </code>
-            </div>
-          </xsl:for-each>
+            <xsl:if test="not(contains(.,'**'))">
+              <div>
+                <code>
+                  <xsl:call-template name="split">
+                    <xsl:with-param name="str" select="."/>
+                  </xsl:call-template>
+                </code>
+              </div>
+            </xsl:if>
+          </xsl:for-each> 
           <xsl:call-template name="powered-by"/>
         </body>
       </html>
@@ -620,7 +681,7 @@
         <xsl:call-template name="htmlHead"/>
         <body>
           <h2 style="margin-bottom: 5px;">
-            <xsl:value-of select="testng:getVariableSafe($testNgXslt.reportTitle, 'TestNG Results')"/>
+            <xsl:value-of select="testng:getVariableSafe($testNgXslt.reportTitle, 'Results')"/>
           </h2>
           <div>
             <a href="overview.html" target="content"
@@ -638,7 +699,7 @@
                                           select="if (test/@url) then document(test/@url)/test else test"/>
               <table class="suiteMenuHeader" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td nowrap="true">
+                  <td nowrap="true" style="vertical-align:top">
                     <b>
                       <a href="{testng:suiteContentFileName(.)}" target="content"
                                                onclick="javscript:clearAllSelections();">
@@ -649,28 +710,28 @@
                       <a href="{testng:suiteGroupsFileName(.)}" target="content"
                                                onclick="javscript:clearAllSelections();">
                         <xsl:value-of select="count(./groups/group)"/>
-                                                Groups
+                        Groups
                       </a>
                     </div>
                     <span style="color: red;">
                       <xsl:value-of select="testng:suiteMethodsCount($testCaseElements, 'FAIL')"/>
                     </span>
-                                        /
+                    /
                     <span style="color: green;">
                       <xsl:value-of select="testng:suiteMethodsCount($testCaseElements, 'PASS')"/>
                     </span>
-                                        /
+                    /
                     <span style="color: yellow;">
                       <xsl:value-of select="testng:suiteMethodsCount($testCaseElements, 'SKIP')"/>
                     </span>
-                                        /
+                    /
                     <span>
                       <xsl:value-of select="testng:suiteMethodsCount($testCaseElements, '*')"/>
                     </span>
                   </td>
-                  <td style="font-weight: bold;">
+                  <td style="font-weight: bold; vertical-align:top;">
                     <xsl:value-of
-                                                select="format-number(testng:suiteMethodsCount($testCaseElements, 'PASS') div testng:suiteMethodsCount($testCaseElements, '*'), '###%')"/>
+                      select="format-number(testng:suiteMethodsCount($testCaseElements, 'PASS') div testng:suiteMethodsCount($testCaseElements, '*'), '###%')"/>
                   </td>
                 </tr>
               </table>
@@ -693,6 +754,53 @@
     </xsl:result-document>
   </xsl:template>
 
+    
+  <xsl:template name="breakIntoWords">
+    <xsl:param name="string" />
+    <script type="text/javascript">
+      function getName() {
+      var testName = '<xsl:value-of select="$string"/>';
+      return testName;
+      }
+    </script>
+    <script type="text/javascript">
+      <xsl:comment><![CDATA[ 
+          var testName=getName();
+          var testDummyName="";
+          var mangledName = {"Mangled": [
+        {"ID": "_1_", "Name": "XML"},
+        {"ID": "_2_", "Name": "XSD"},
+        {"ID": "_3_", "Name": "GML"},
+        {"ID": "_4_", "Name": "CRS"},
+        {"ID": "_5_", "Name": "(GET)"},
+        {"ID": "_6_", "Name": "(POST)"},
+        {"ID": "_7_", "Name": "BBOX"},
+        {"ID": "_8_", "Name": "URI"},
+        {"ID":"_9_","Name":"WFS"}
+    ]
+};
+          
+          for (var index = 0; index < mangledName.Mangled.length; index++) {
+          if(testName.indexOf(mangledName.Mangled[index].Name)>-1){
+            testName=testName.replace(mangledName.Mangled[index].Name, " "+mangledName.Mangled[index].ID);
+          }
+          }
+         var temp=testName.split(/(?=[A-Z])/); 
+         
+          for(var index=0;index < temp.length; index++){
+              testDummyName=testDummyName+temp[index]+" ";
+          }
+          for(var index = 0; index < mangledName.Mangled.length; index++){
+          if(testDummyName.indexOf(mangledName.Mangled[index].ID)>-1){
+            testDummyName=testDummyName.replace(mangledName.Mangled[index].ID, mangledName.Mangled[index].Name);
+          }
+          }
+            document.write(testDummyName);
+            ]]> </xsl:comment>
+    </script>
+        
+  </xsl:template>
+
   <xsl:template name="suiteContentFile">
     <xsl:param name="suiteElement"/>
     <xsl:variable name="testCaseElements" select="if (test/@url) then document(test/@url)/test else test"/>
@@ -702,8 +810,8 @@
         <body>
           <table width="100%" style="font-size: 16px; margin-bottom: 10px;" cellspacing="1">
             <tr>
-              <td width="100%">
-                                All methods in suite
+              <td width="100%" style="vertical-align:top">
+                All tests in Test-Suite 
                 <b>
                   <xsl:value-of select="./@name"/>
                 </b>
@@ -741,7 +849,7 @@
         <xsl:call-template name="htmlHead"/>
         <body>
           <h2>
-                        Groups for suite:
+            Groups for suite:
             <b>
               <xsl:value-of select="$suiteElement/@name"/>
             </b>
@@ -751,7 +859,7 @@
             <table style="margin-bottom: 20px; font-size: 12px; width:100%;" cellpadding="3"
                                cellspacing="1">
               <tr>
-                <td style="background-color: #f5f5f5;">
+                <td style="background-color: #f5f5f5; vertical-align:top;">
                   <div style="font-size: 18px;">
                     <xsl:value-of select="./@name"/>
                   </div>
@@ -759,7 +867,7 @@
               </tr>
               <xsl:for-each select="method">
                 <tr>
-                  <td style="background-color: #eaf0f7;">
+                  <td style="background-color: #eaf0f7; vertical-align:top;">
                     <xsl:value-of select="@signature"/>
                   </td>
                 </tr>
@@ -786,7 +894,7 @@
             <xsl:attribute name="checked" select="true"/>
           </xsl:if>
         </input>
-                Group by class
+        Group by class
       </label>
       <br/>
       <label for="methodsFilter_ALL" style="font-weight: bold; margin: 0;">
@@ -795,7 +903,7 @@
             <xsl:attribute name="checked" select="true"/>
           </xsl:if>
         </input>
-                All
+        All
       </label>
     </div>
     <label for="methodsFilter_FAIL" style="margin-left: 20px;">
@@ -804,7 +912,7 @@
           <xsl:attribute name="checked" select="true"/>
         </xsl:if>
       </input>
-            Failed
+      Failed
     </label>
     <label for="methodsFilter_PASS">
       <input id="methodsFilter_PASS" type="checkbox" onclick="testMethodsFilterChanged(this, 'PASS')">
@@ -812,7 +920,7 @@
           <xsl:attribute name="checked" select="true"/>
         </xsl:if>
       </input>
-            Passed
+      Passed
     </label>
     <label for="methodsFilter_SKIP">
       <input id="methodsFilter_SKIP" type="checkbox" onclick="testMethodsFilterChanged(this, 'SKIP')">
@@ -820,7 +928,7 @@
           <xsl:attribute name="checked" select="true"/>
         </xsl:if>
       </input>
-            Skipped
+      Skipped
     </label>
     <label for="methodsFilter_CONF">
       <input id="methodsFilter_CONF" type="checkbox" onclick="testMethodsFilterChanged(this, 'CONF')">
@@ -828,7 +936,7 @@
           <xsl:attribute name="checked" select="true"/>
         </xsl:if>
       </input>
-            Config
+      Config
     </label>
     <br/>
 
@@ -837,12 +945,13 @@
       <xsl:if test="testng:isFilterSelected('BY_CLASS') = 'true'">
         <xsl:attribute name="style" select="'display: none;'"/>
       </xsl:if>
-      <table class="testMethodsTable" cellpadding="0" cellspacing="0">
+      <table width="100%" class="testMethodsTable" cellpadding="0" cellspacing="0">
         <tr class="methodsTableHeader">
-          <td width="100%">Name</td>
-          <td nowrap="true">Started</td>
-          <td nowrap="true">Duration</td>
-          <td>Exception</td>
+          <td width="250px" style="vertical-align:top">Name</td>
+          <td width="650px" style="vertical-align:top">Description</td>
+          <td nowrap="true" style="vertical-align:top">Started</td>
+          <td nowrap="true" style="vertical-align:top">Duration</td>
+          <td width="400px" style="vertical-align:top">Reason For Test Fail</td>
         </tr>
         <xsl:call-template name="testMethodsList">
           <xsl:with-param name="methodList" select="$failedMethods"/>
@@ -866,19 +975,20 @@
       </xsl:if>
       <xsl:for-each select="$classes">
         <xsl:sort order="ascending" select="@name"/>
-        <table class="testMethodsTable" cellpadding="0" cellspacing="0">
+        <table width="100%" class="testMethodsTable" cellpadding="0" cellspacing="0">
           <tr>
-            <td colspan="4">
+            <td colspan="4" style="vertical-align:top">
               <h3 style="display: inline;">
                 <xsl:value-of select="./@name"/>
               </h3>
             </td>
           </tr>
           <tr class="methodsTableHeader">
-            <td width="100%">Name</td>
-            <td nowrap="true">Started</td>
-            <td nowrap="true">Duration</td>
-            <td>Exception</td>
+            <td width="250px" style="vertical-align:top">Name</td>
+            <td width="650px" style="vertical-align:top">Description</td>
+            <td nowrap="true" style="vertical-align:top">Started</td>
+            <td nowrap="true" style="vertical-align:top">Duration</td>
+            <td width="400px" style="vertical-align:top">Reason For Test Fail</td>
           </tr>
           <xsl:call-template name="testMethodsList">
             <!--<xsl:with-param name="methodList" select="./test-method[not(@is-config)]"/>-->
@@ -905,28 +1015,53 @@
         <xsl:if test="testng:isFilterSelected(@status) != 'true'">
           <!--<xsl:attribute name="style" select="'display: none;'"/>-->
         </xsl:if>
-        <td width="100%" class="firstMethodCell">
-          <a onclick="toggleDetailsVisibility('{$detailsId}')">
-            <xsl:value-of select="concat(@name, '(', testng:trim(testng:concatParams(./params/param)), ')')"/>
+        <td width="250px" class="firstMethodCell" style="vertical-align:top">
+          <a style="text-transform:capitalize" onclick="toggleDetailsVisibility('{$detailsId}')">
+            <xsl:if test="(not(contains(@description,'TableA1')))">
+              <xsl:call-template name="breakIntoWords">        
+                <xsl:with-param name="string" select="@name"/>
+              </xsl:call-template>
+            </xsl:if>
+            <xsl:if test="contains(@description,'TableA1')">
+              <xsl:value-of select="substring-before(@description, '=')"/>
+            </xsl:if>                        
           </a>
         </td>
-        <td nowrap="true">
+        <td width="650px" style="vertical-align:top">
+          <xsl:if test="@description">
+            <xsl:if test="(not(contains(@description,'TableA1')))">
+              <xsl:value-of select="@description"/>
+            </xsl:if>
+            <xsl:if test="contains(@description,'TableA1')">
+              <xsl:call-template name="split">
+                <xsl:with-param name="str" select=
+     "substring-after(@description,'=')"/>
+              </xsl:call-template>
+            </xsl:if> 
+                            
+          </xsl:if>
+                    
+        </td>
+        <td nowrap="true" style="vertical-align:top">
           <xsl:value-of select="substring(@started-at, 12, 8)"/>
         </td>
-        <td nowrap="true" align="right">
+        <td nowrap="true" align="right" style="vertical-align:top">
           <xsl:value-of select="testng:formatDuration(@duration-ms)"/>
         </td>
-        <td nowrap="true">
+        <td nowrap="true" width="400px" style="vertical-align:top">
           <xsl:if test="./exception">
             <a onclick="toggleDetailsVisibility('{$exceptionDetailsId}')">
-              <xsl:value-of select="concat(exception/@class, ': ', exception/message)"/>
+              <xsl:call-template name="split">
+                <xsl:with-param name="str" select=
+     "substring-before(exception/message,'expected [')"/>
+              </xsl:call-template>
             </a>
           </xsl:if>
                     &#160;
         </td>
       </tr>
       <tr>
-        <td colspan="4" class="detailsBox">
+        <td colspan="4" class="detailsBox" style="vertical-align:top">
           <div id="{$detailsId}" class="testMethodDetails">
             <xsl:call-template name="formField">
               <xsl:with-param name="label" select="'Name'"/>
@@ -986,27 +1121,27 @@
         </td>
       </tr>
       <tr>
-        <xsl:if test="exception">
-          <td colspan="4" class="detailsBox">
-            <div id="{$exceptionDetailsId}" class="testMethodDetails">
-              <xsl:choose>
-                <xsl:when test="exception/full-stacktrace">
-                  <pre style="padding: 5px; margin: 0;">
-                    <xsl:value-of select="testng:trim(exception/full-stacktrace)"/>
-                  </pre>
-                </xsl:when>
-                <xsl:when test="exception/short-stacktrace and not (exception/full-stacktrace)">
-                  <pre style="padding: 5px; margin: 0;">
-                    <xsl:value-of select="testng:trim(exception/short-stacktrace)"/>
-                  </pre>
-                </xsl:when>
-                <xsl:otherwise>
-                  <pre style="padding: 5px; margin: 0;">&lt;No stacktrace information&gt;</pre>
-                </xsl:otherwise>
-              </xsl:choose>
-            </div>
-          </td>
-        </xsl:if>
+          <xsl:if test="exception">
+              <td colspan="4" class="detailsBox">
+                  <div id="{$exceptionDetailsId}" class="testMethodDetails">
+                      <xsl:choose>
+                          <xsl:when test="exception/full-stacktrace">
+                              <pre style="padding: 5px; margin: 0;">
+                                  <xsl:value-of select="testng:trim(exception/full-stacktrace)"/>
+                              </pre>
+                          </xsl:when>
+                          <xsl:when test="exception/short-stacktrace and not (exception/full-stacktrace)">
+                              <pre style="padding: 5px; margin: 0;">
+                                  <xsl:value-of select="testng:trim(exception/short-stacktrace)"/>
+                              </pre>
+                          </xsl:when>
+                          <xsl:otherwise>
+                              <pre style="padding: 5px; margin: 0;">&lt;No stacktrace information&gt;</pre>
+                          </xsl:otherwise>
+                      </xsl:choose>
+                  </div>
+              </td>
+          </xsl:if>
       </tr>
     </xsl:for-each>
   </xsl:template>
@@ -1037,8 +1172,8 @@
           <body>
             <table width="100%" style="font-size: 16px; margin-bottom: 10px;" cellspacing="1">
               <tr>
-                <td width="100%">
-                                    Test case
+                <td width="100%" style="vertical-align:top">
+                  All test for 
                   <b>
                     <xsl:value-of select="./@name"/>
                   </b>
@@ -1073,34 +1208,34 @@
     <xsl:param name="skippedCount"/>
     <xsl:param name="totalCount"/>
     <xsl:param name="totalDuration"/>
-    <td style="background-color: #FFBBBB; padding: 3px 3px 3px 0;" align="center">
+    <td style="background-color: #FFBBBB; padding: 3px 3px 3px 0; vertical-align:top;" align="center">
       <div style="width: 50px;">
         <xsl:value-of select="$failedCount"/>
       </div>
     </td>
-    <td style="background-color: lightgreen; padding: 3px 3px 3px 0;" align="center">
+    <td style="background-color: lightgreen; padding: 3px 3px 3px 0; vertical-align:top;" align="center">
       <div style="width: 50px;">
         <xsl:value-of select="$passedCount"/>
       </div>
     </td>
-    <td style="background-color: #FFFFBB; padding: 3px 3px 3px 0;" align="center">
+    <td style="background-color: #FFFFBB; padding: 3px 3px 3px 0; vertical-align:top;" align="center">
       <div style="width: 50px;">
         <xsl:value-of select="$skippedCount"/>
       </div>
     </td>
-    <td align="center" style="background-color: #eaf0f7; padding: 3px 3px 3px 0;">
+    <td align="center" style="background-color: #eaf0f7; padding: 3px 3px 3px 0; vertical-align:top;">
       <div style="width: 50px;">
         <xsl:value-of select="$totalCount"/>
       </div>
     </td>
-    <td align="center" style="font-weight: bold; background-color: #eaf0f7; padding: 3px 3px 3px 0;">
+    <td align="center" style="font-weight: bold; background-color: #eaf0f7; vertical-align:top; padding: 3px 3px 3px 0;">
       <div style="width: 50px;">
         <xsl:value-of
-                        select="if ($totalCount > 0) then format-number($passedCount div $totalCount, '###%') else '100%'"/>
+          select="if ($totalCount > 0) then format-number($passedCount div $totalCount, '###%') else '100%'"/>
       </div>
     </td>
     <xsl:if test="compare($testNgXslt.showRuntimeTotals, 'true') = 0">
-      <td style="background-color: #eaf0f7; padding: 3px 3px 3px 0;" align="center" nowrap="true">
+      <td style="background-color: #eaf0f7; padding: 3px 3px 3px 0; vertical-align:top;" align="center" nowrap="true">
         <xsl:value-of select="$totalDuration"/>
       </td>
     </xsl:if>
@@ -1108,9 +1243,9 @@
 
   <xsl:template name="powered-by">
     <div style="margin-top: 15px; color: gray; text-align: center; font-size: 9px;">
-            Generated with
+      Generated with
       <a href="http://code.google.com/p/testng-xslt/" style="color: #8888aa;" target="_blank">
-                TestNG XSLT
+        TestNG XSLT
       </a>
     </div>
   </xsl:template>
@@ -1120,12 +1255,19 @@
     <xsl:param name="attribs"/>
     <xsl:if test="count($attribs) > 0">
       <div>
-        <b><xsl:value-of select="$label"/>:</b>
+        <b>
+          <xsl:value-of select="$label"/>:</b>
         <dl>
-        <xsl:for-each select="$attribs">
-          <dt><xsl:value-of select="./@name"/></dt>
-          <dd><pre><xsl:value-of select="normalize-space(string(.))"/></pre></dd>
-        </xsl:for-each>
+          <xsl:for-each select="$attribs">
+            <dt>
+              <xsl:value-of select="./@name"/>
+            </dt>
+            <dd>
+              <pre>
+                <xsl:value-of select="normalize-space(string(.))"/>
+              </pre>
+            </dd>
+          </xsl:for-each>
         </dl>
       </div>
     </xsl:if>
