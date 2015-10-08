@@ -6,9 +6,7 @@
 		<img style="position: absolute" src="images/banner.jpg" alt="TEAM Engine Banner" />
 		<div style="position: absolute;">
       <div style="margin-bottom: 0.75em;"><img src="site/logo.png"/></div>
-			<span style="font-size: 1.25em;">
-        <strong><%@include file="site/title.html" %></strong>
-      </span>
+      <%@include file="site/title.html" %>
 		</div>
 		<%
 		    String user = request.getRemoteUser();
