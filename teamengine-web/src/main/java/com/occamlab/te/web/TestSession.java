@@ -22,6 +22,7 @@
 package com.occamlab.te.web;
 
 import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.StringUtils;
 import java.io.File;
 import java.io.PrintStream;
 import java.text.DateFormat;
@@ -65,7 +66,11 @@ public class TestSession {
         for (String profile : profiles) {
             out.println("<profile>" + profile + "</profile>");
         }
-        out.println("<description>" + description + "</description>");
+        
+        String description_data;
+        description_data = StringUtils.escapeXML(description);
+        
+        out.println("<description>" + description_data + "</description>");
         out.println("</session>");
     }
 
