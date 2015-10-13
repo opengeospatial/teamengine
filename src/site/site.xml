@@ -7,7 +7,7 @@
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.3.1</version>
+    <version>1.4</version>
   </skin>
   <custom>
     <fluidoSkin>
@@ -37,7 +37,6 @@
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
       <item href="testers.html" name="Tester's Guide" />
-      <item href="architecture.html" name="Architecture" />
     </menu>
     <menu ref="reports" />
     <menu name="About">
