@@ -66,7 +66,7 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
 } else {
     params += "&sources=" + request.getParameter("sources");
     params += "&suite=" + request.getParameter("suite");
-    params += "&description=" + request.getParameter("description");
+    params += "&description=" + URLEncoder.encode(request.getParameter("description"), "UTF-8");
 }
 if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
   for (String key: new java.util.TreeSet<String>(paramMap.keySet())) {
