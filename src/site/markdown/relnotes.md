@@ -1,7 +1,12 @@
 Release Notes
 =============
 
-## 4.4-SNAPSHOT (2015-MM-DD)
+## 4.4 (2015-MM-DD)
+- [spi] Merge [PR #133](https://github.com/opengeospatial/teamengine/pull/133): Revise 
+  HTML representation of TestNG report.
+- [web] Merge [PR #132](https://github.com/opengeospatial/teamengine/pull/132) to fix 
+  [#98](https://github.com/opengeospatial/teamengine/issues/98): Invalid UTF-8 bytes 
+  in test description
 - [spi] Update dependency: testng-6.9.6
 
 
