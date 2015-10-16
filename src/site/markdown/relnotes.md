@@ -2,6 +2,9 @@ Release Notes
 =============
 
 ## 4.4 (2015-MM-DD)
+- [spi] Merge [PR #134](https://github.com/opengeospatial/teamengine/pull/134) to fix 
+  [#131](https://github.com/opengeospatial/teamengine/issues/131): Add REST API method 
+  to handle multipart request
 - [spi] Merge [PR #133](https://github.com/opengeospatial/teamengine/pull/133): Revise 
   HTML representation of TestNG report.
 - [web] Merge [PR #132](https://github.com/opengeospatial/teamengine/pull/132) to fix 
