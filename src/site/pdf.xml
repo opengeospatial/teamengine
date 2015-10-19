@@ -10,11 +10,12 @@
   </meta>
 
   <toc name="Table of Contents" depth="2">
-    <item name="Release Notes" ref="changelog.xhtml"/>
-    <item name="Overview" ref="index.xhtml"/>
-    <item name="Installation" ref="installation.xhtml.vm"/>
-    <item name="User's Guide" ref="users.xhtml.vm"/>
-    <item name="Tester's Guide" ref="testers.xhtml.vm"/>
+    <item name="Release Notes" ref="relnotes.md"/>
+    <item name="Overview" ref="index.md"/>
+    <item name="Installation" ref="installation.md"/>
+    <item name="User's Guide" ref="users.md"/>
+    <item name="Conformance Testing using TestNG" ref="testng.md"/>
+    <item name="Conformance Testing using CTL" ref="ctl.md"/>
   </toc>
 
   <cover>

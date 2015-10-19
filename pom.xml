@@ -70,13 +70,12 @@
       <url>https://github.com/tanvi-shah</url>
       <timezone>Asia/Kolkata</timezone>
     </developer>
-    
-       <developer>
+    <developer>
       <name>Upendra Sachan</name>
       <url>https://github.com/upendra-sachan</url>
       <timezone>Asia/Kolkata</timezone>
     </developer>  
-     <developer>
+    <developer>
       <name>Andrea Aime</name>
       <url>https://github.com/aaime</url>
       <timezone>Europe/Italy</timezone>
@@ -120,31 +119,56 @@
           <target>1.7</target>
         </configuration>
       </plugin>
-     <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-site-plugin</artifactId>
-		  <version>3.4</version>
-		  <executions>
-		    <execution>
-		      <id>site-package</id>
-		      <phase>prepare-package</phase>
-		      <goals>
-		        <goal>jar</goal>
-		      </goals>
-		    </execution>
-		  </executions>
-		  <dependencies>
-		    <dependency>
-		      <groupId>org.apache.maven.doxia</groupId>
-		      <artifactId>doxia-module-markdown</artifactId>
-		      <version>1.6</version>
-		    </dependency>
-		  </dependencies>
-		  <configuration>
-		    <relativizeDecorationLinks>false</relativizeDecorationLinks>
-		    <generateReports>false</generateReports>
-		  </configuration>
-		</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.4</version>
+        <executions>
+          <execution>
+            <id>site-package</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-module-markdown</artifactId>
+            <version>1.6</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <relativizeDecorationLinks>false</relativizeDecorationLinks>
+          <generateReports>false</generateReports>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pdf-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <id>pdf</id>
+            <phase>site</phase>
+            <goals>
+              <goal>pdf</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/pdf</outputDirectory>
+              <includeReports>false</includeReports>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-module-markdown</artifactId>
+            <version>1.6</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.5.1</version>
@@ -154,6 +178,7 @@
         </configuration>
       </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -187,7 +212,7 @@
             </archive>
           </configuration>
         </plugin>
-      
+
         <plugin>
           <!-- Dummy plugin to configure Eclipse m2e plug-in only -->
           <groupId>org.eclipse.m2e</groupId>

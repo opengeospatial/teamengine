@@ -36,7 +36,7 @@
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
     </menu>
-    <menu name="Test Development">
+    <menu name="Test Suite Development">
       <item href="testng.html" name="TestNG Framework" />
       <item href="ctl.html" name="OGC CTL Scripts" />
     </menu>

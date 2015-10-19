@@ -141,9 +141,9 @@ a collection of tests that corresponds to a conformance class or level. Each col
 contains one or more test classes that focus on a functional area. In a test report 
 the results are typically summarized by conformance class as shown in Figure 1.
 
-**Figure 1: Test results summary**
+**Figure 1: TestNG results summary**
 
-[[images/results-overview.png]]
+![TestNG results summary](images/results-overview.png)
 
 A test class contains test methods that implement the actual test cases. In Listing 4 
 the test classes are identified implicitly by package name. It is strongly recommended 
