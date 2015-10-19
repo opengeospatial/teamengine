@@ -31,12 +31,14 @@
       <item name="Wiki" href="https://github.com/opengeospatial/teamengine/wiki"/>
       <item name="Issues" href="https://github.com/opengeospatial/teamengine/issues"/>
     </links>
-
     <menu name="Getting Started">
       <item href="index.html" name="Overview" />
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
-      <item href="testers.html" name="Tester's Guide" />
+    </menu>
+    <menu name="Test Development">
+      <item href="testng.html" name="TestNG Framework" />
+      <item href="ctl.html" name="OGC CTL Scripts" />
     </menu>
     <menu ref="reports" />
     <menu name="About">
