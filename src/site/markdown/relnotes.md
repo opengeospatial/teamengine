@@ -10,7 +10,7 @@ Release Notes
 - [web] Merge [PR #132](https://github.com/opengeospatial/teamengine/pull/132) to fix 
   [#98](https://github.com/opengeospatial/teamengine/issues/98): Invalid UTF-8 bytes 
   in test description
-- [spi] Update dependency: testng-6.9.6
+- [spi] Update dependency: testng-6.9.8
 
 
 ## 4.3 (2015-09-29)

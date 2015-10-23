@@ -38,7 +38,7 @@
     </menu>
     <menu name="Test Suite Development">
       <item href="testng.html" name="TestNG Framework" />
-      <item href="ctl.html" name="OGC CTL Scripts" />
+      <item href="ctl.html" name="CTL Scripts" />
     </menu>
     <menu ref="reports" />
     <menu name="About">
