@@ -1,0 +1,23 @@
+<organization>
+  <name>Example.net</name>
+  <standard>
+    <name>XML Note</name>
+    <version>
+      <name>1.0</name>
+      <suite>
+        <namespace-uri>http://example.net/note-test</namespace-uri>
+        <prefix>note</prefix>
+        <local-name>note-test</local-name>
+        <title>Sample test suite</title>
+        <description>Checks the content of a note.</description>
+      </suite>
+      <revision>
+        <name>1.0</name>
+        <status>Beta</status>
+        <sources>
+          <source>note/1.0/ctl/note.ctl</source>
+        </sources>
+      </revision>
+    </version>
+  </standard>
+</organization>
