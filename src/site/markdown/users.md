@@ -21,10 +21,10 @@ includes shell scripts for running test suites in Windows and Unix-like
 (TE_HOME); the contents are as shown below.
 
     TE_HOME
-      |-- bin/              # shell scripts (windows, unix)
-      |-- lib/              # supporting libraries
-      |-- resources/        # classpath resources (stylesheets, schemas, etc.)
-        
+      |-- bin/        # shell scripts (windows, unix)
+      |-- lib/        # supporting libraries
+      |-- resources/  # classpath resources (schemas, etc.)
+
 
 If desired, set the value of the `TE_BASE` environment variable in the
 `setenv` script; otherwise set it for the user environment according to
@@ -65,14 +65,17 @@ files containing the form responses. Form files are specified via the ``-form``
 parameter, more than one form can be provided using multiple ``-form`` parameters. 
 For example, the WMS 1.1.1 tests can be run with the following command:
     
-     $ ~/te-install/bin/unix/test.sh -source=wms/1.1.1/ctl/functions.xml -source=wms/1.1.1/ctl/wms.xml
-                                     -form=$forms/wms-1.1.1.xml -form=forms/yes.xml
+     $ test.sh -source=wms/1.1.1/ctl/ \
+       -form=$forms/wms-1.1.1.xml \
+       -form=forms/yes.xml
 
 Where ``forms/wms-1.1.1.xml`` is:
 
      <?xml version="1.0" encoding="UTF-8"?>
      <values>
-       <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+       <value key="VAR_WMS_CAPABILITIES_URL">
+       http://host1/wms?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities
+       </value>
        <value key="updatesequence">auto_updatesequence</value>
        <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
        <value key="VAR_LOW_UPDATESEQUENCE">0</value>
@@ -99,13 +102,15 @@ requests.
 
 After the test is invoked via command line, the console output will retrieve the information 
 from the forms before providing the test results.
- 
+
 For example:
 
       INFO: Setting form results:
        <?xml version="1.0" encoding="UTF-8"?>
       <values>
-         <value key="VAR_WMS_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wms&amp;version=1.1.1&amp;request=GetCapabilities</value>
+         <value key="VAR_WMS_CAPABILITIES_URL">
+         http://host1/wms?service=WMS&amp;version=1.1.1&amp;request=GetCapabilities
+         </value>
          <value key="updatesequence">auto_updatesequence</value>
          <value key="VAR_HIGH_UPDATESEQUENCE">100</value>
          <value key="VAR_LOW_UPDATESEQUENCE"></value>
@@ -117,9 +122,11 @@ For example:
       
       Testing suite wms:main_wms in Test Mode with defaultResult of Pass ...
       ...
-      Testing wms:wmsops-getmap-params-bbox-2 type Mandatory in Test Mode with defaultResult Pass (s0004/d275e678_1)...
-         Assertion: When a GetMap request uses decimal values for the BBOX parameter, then the response is valid.
-         
+      Testing wms:wmsops-getmap-params-bbox-2 type Mandatory in Test 
+      Mode with defaultResult Pass (s0004/d275e678_1)...
+         Assertion: When a GetMap request uses decimal values for the 
+         BBOX parameter, then the response is valid.
+
       Jul 12, 2015 2:44:20 PM com.occamlab.te.TECore setFormResults
       INFO: Setting form results:
        <?xml version="1.0" encoding="UTF-8"?>

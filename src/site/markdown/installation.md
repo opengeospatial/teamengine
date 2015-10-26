@@ -62,7 +62,7 @@ below).
       <profiles>
         <profile>
           <id>ogc.cite</id>
-          <!-- Activate profile by default or only when desired using the -P option
+          <!-- Activate profile by default or using the -P option
           <activation>
             <activeByDefault>true</activeByDefault>
           </activation>
@@ -95,13 +95,13 @@ make sure that users (including the Tomcat user) have write access. The
 structure of the TE\_BASE directory is shown below.
 
     TE_BASE
-      |-- config.xml        # main configuration file
-      |-- resources/        # shared test suite resources
-          |-- site          # for customed html pages (welcome, footer, header)
-      |-- scripts/          # CTL test scripts
-      |-- work/             # teamengine work directory
+      |-- config.xml    # main configuration file
+      |-- resources/    # shared test suite resources
+          |-- site      # site-specific HTML (welcome, title, etc.)
+      |-- scripts/      # CTL test scripts
+      |-- work/         # teamengine work directory
       +-- users/
-         |-- {user1}/       # user account details and test run results
+         |-- {user1}/   # user account details and test run results
          |-- {user2}/
          +-- ...
 

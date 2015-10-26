@@ -86,7 +86,6 @@ An example is shown in Listing 3 (see also src/main/config/test-run-props.xml).
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties version="1.0">
   <comment>Test run arguments</comment>
   <entry key="iut">http://www.w3schools.com/xml/note.xml</entry>
@@ -114,7 +113,8 @@ the Maven archetype (it's a resource file located at `src/main/resources/org/ope
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="${ets-code}-${version}" verbose="0" configfailurepolicy="continue">
+<suite name="${ets-code}-${version}" verbose="0" 
+  configfailurepolicy="continue">
   <parameter name="iut"  value=""/>
 
   <listeners>
@@ -279,18 +279,18 @@ against the RELAX NG grammar for [Atom feeds](https://tools.ietf.org/html/rfc428
 
 ```java
 /**
- * Verify that the entity is a valid Atom feed in accord with RFC 4287.
+ * Verify that the entity is a valid Atom feed (RFC 4287).
  */
 @Test(description = "ATC 1-3")
 public void validAtomFeed() throws SAXException, IOException {
-    URL schemaRef = getClass().getResource(
-            "/org/opengis/cite/alpha10/rnc/atom.rnc");
-    RelaxNGValidator rngValidator = new RelaxNGValidator(schemaRef);
-    rngValidator.validate(new DOMSource(testSubject));
-    ValidationErrorHandler err = rngValidator.getErrorHandler();
-    Assert.assertFalse(err.errorsDetected(),
-            ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
-            err.getErrorCount(), err.toString()));
+  URL schemaRef = getClass().getResource(
+        "/org/opengis/cite/alpha10/rnc/atom.rnc");
+  RelaxNGValidator rngValidator = new RelaxNGValidator(schemaRef);
+  rngValidator.validate(new DOMSource(testSubject));
+  ValidationErrorHandler err = rngValidator.getErrorHandler();
+  Assert.assertFalse(err.errorsDetected(),
+        ErrorMessage.format(ErrorMessageKeys.NOT_SCHEMA_VALID,
+        err.getErrorCount(), err.toString()));
 }
 ```
 
