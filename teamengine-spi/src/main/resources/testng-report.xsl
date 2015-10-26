@@ -951,7 +951,7 @@
           <td width="650px" style="vertical-align:top">Description</td>
           <td nowrap="true" style="vertical-align:top">Started</td>
           <td nowrap="true" style="vertical-align:top">Duration</td>
-          <td width="400px" style="vertical-align:top">Reason For Test Fail</td>
+          <td width="400px" style="vertical-align:top">Reason For Test Failure</td>
         </tr>
         <xsl:call-template name="testMethodsList">
           <xsl:with-param name="methodList" select="$failedMethods"/>
@@ -988,7 +988,7 @@
             <td width="650px" style="vertical-align:top">Description</td>
             <td nowrap="true" style="vertical-align:top">Started</td>
             <td nowrap="true" style="vertical-align:top">Duration</td>
-            <td width="400px" style="vertical-align:top">Reason For Test Fail</td>
+            <td width="400px" style="vertical-align:top">Reason For Test Failure</td>
           </tr>
           <xsl:call-template name="testMethodsList">
             <!--<xsl:with-param name="methodList" select="./test-method[not(@is-config)]"/>-->
