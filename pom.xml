@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>teamengine</artifactId>
-  <version>4.4-SNAPSHOT</version>
+  <version>4.4-rc1</version>
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
@@ -29,7 +29,7 @@
     <connection>scm:git:https://github.com/opengeospatial/teamengine.git</connection>
     <developerConnection>scm:git:git@github.com:opengeospatial/teamengine.git</developerConnection>
     <url>https://github.com/opengeospatial/teamengine</url>
-    <tag>HEAD</tag>
+    <tag>4.4-rc1</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issue Tracker</system>
