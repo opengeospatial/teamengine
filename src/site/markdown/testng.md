@@ -246,6 +246,13 @@ in the root package; they are summarized in Table 1.
       test run.</td>
     </tr>
     <tr>
+      <td>PrimarySuiteListener (ISuiteListener)</td>
+      <td>A listener provided by the <code>teamengine-spi</code> module, it adds the 
+      test run arguments to the collection of <a href="http://testng.org/javadocs/org/testng/xml/XmlSuite.html#getParameters%28%29" 
+      target="_blank">suite-level parameters</a>. Since this listener will be called 
+      first, the parameters it sets will be available to all subsequent listeners.</td>
+    </tr>
+    <tr>
       <td>SuiteFixtureListener (ISuiteListener)</td>
       <td>A listener that performs various initialization and clean-up tasks, such as: 
       processing input arguments, compiling application schemas, and deleting any temporary 

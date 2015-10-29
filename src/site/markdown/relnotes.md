@@ -11,6 +11,7 @@ Release Notes
   [#98](https://github.com/opengeospatial/teamengine/issues/98): Invalid UTF-8 bytes 
   in test description
 - [spi] Update dependency: testng-6.9.8
+- Update site documentation
 
 
 ## 4.3 (2015-09-29)
