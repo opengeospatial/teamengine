@@ -25,8 +25,7 @@ import org.xml.sax.SAXException;
  */
 public class TestNGExecutor implements TestRunExecutor {
 
-    private static final Logger LOGR = Logger.getLogger(TestNGExecutor.class
-            .getPackage().getName());
+    private static final Logger LOGR = Logger.getLogger(TestNGExecutor.class.getPackage().getName());
     private boolean useDefaultListeners;
     private File outputDir;
     private URI testngConfig;
@@ -57,8 +56,7 @@ public class TestNGExecutor implements TestRunExecutor {
      *            A boolean value indicating whether or not to use the default
      *            set of listeners.
      */
-    public TestNGExecutor(String testngSuite, String outputDirPath,
-            boolean useDefaultListeners) {
+    public TestNGExecutor(String testngSuite, String outputDirPath, boolean useDefaultListeners) {
         this.useDefaultListeners = useDefaultListeners;
         this.outputDir = new File(outputDirPath, "testng");
         if (!outputDir.exists() && !outputDir.mkdirs()) {
@@ -98,8 +96,7 @@ public class TestNGExecutor implements TestRunExecutor {
     @Override
     public Source execute(Document testRunArgs) {
         if (null == testRunArgs) {
-            throw new IllegalArgumentException(
-                    "No test run arguments were supplied.");
+            throw new IllegalArgumentException("No test run arguments were supplied.");
         }
         TestNG driver = new TestNG();
         setTestSuites(driver, testngConfig);
@@ -117,13 +114,12 @@ public class TestNGExecutor implements TestRunExecutor {
         try {
             resultsDoc = parseResultsDoc(driver.getOutputDirectory());
         } catch (Exception ex) {
-            LOGR.log(Level.SEVERE, "Failed to parse test results.", ex);
+            LOGR.log(Level.SEVERE, "Failed to parse test results in " + driver.getOutputDirectory(), ex);
         }
         return new DOMSource(resultsDoc, resultsDoc.getDocumentURI());
     }
 
-    Document parseResultsDoc(String outputDirectory)
-            throws ParserConfigurationException, SAXException, IOException {
+    Document parseResultsDoc(String outputDirectory) throws ParserConfigurationException, SAXException, IOException {
         File results = new File(outputDirectory, "testng-results.xml");
         Document resultsDoc;
         if (results.isFile()) {
@@ -163,12 +159,10 @@ public class TestNGExecutor implements TestRunExecutor {
             List<String> testSuites = new ArrayList<String>();
             File tngFile = new File(ets);
             if (tngFile.exists()) {
-                LOGR.log(Level.CONFIG, "Using TestNG config file {0}",
-                        tngFile.getAbsolutePath());
+                LOGR.log(Level.CONFIG, "Using TestNG config file {0}", tngFile.getAbsolutePath());
                 testSuites.add(tngFile.getAbsolutePath());
             } else {
-                throw new IllegalArgumentException(
-                        "A valid TestNG config file reference is required.");
+                throw new IllegalArgumentException("A valid TestNG config file reference is required.");
             }
             driver.setTestSuites(testSuites);
         }

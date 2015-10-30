@@ -34,7 +34,8 @@ class PrimarySuiteListener implements ISuiteListener {
     PrimarySuiteListener(Document testRunArgs) {
         LOGR.log(Level.FINE, "Initializing PrimarySuiteListener...");
         if (null == testRunArgs) {
-            throw new NullPointerException("Test run input is null");
+            LOGR.log(Level.WARNING, "Test run input document is null");
+            throw new NullPointerException("Test run input document is null");
         }
         NodeList entries = testRunArgs.getElementsByTagName("entry");
         if (entries.getLength() == 0) {
@@ -46,6 +47,7 @@ class PrimarySuiteListener implements ISuiteListener {
 
     @Override
     public void onStart(ISuite suite) {
+        LOGR.log(Level.FINE, "Entering PrimarySuiteListener::onStart...");
         Map<String, String> params = suite.getXmlSuite().getParameters();
         NodeList entries = testRunArgs.getElementsByTagName("entry");
         for (int i = 0; i < entries.getLength(); i++) {
