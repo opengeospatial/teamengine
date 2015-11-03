@@ -1051,10 +1051,19 @@
         <td nowrap="true" width="400px" style="vertical-align:top">
           <xsl:if test="./exception">
             <a onclick="toggleDetailsVisibility('{$exceptionDetailsId}')">
-              <xsl:call-template name="split">
-                <xsl:with-param name="str" select=
-     "substring-before(exception/message,'expected [')"/>
-              </xsl:call-template>
+              <xsl:variable name="exception_message">
+                      <xsl:choose>
+                        <xsl:when test="substring-before(exception/message,'expected [')">
+                            <xsl:value-of select="substring-before(exception/message,'expected [')"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                             <xsl:value-of select="exception/message"/>
+                        </xsl:otherwise>
+                      </xsl:choose>
+                </xsl:variable>
+        <xsl:call-template name="split">
+            <xsl:with-param name="str" select="$exception_message"/>
+        </xsl:call-template>
             </a>
           </xsl:if>
                     &#160;
