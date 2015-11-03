@@ -227,8 +227,9 @@ a test suite is executed; the latter declares several callback methods pertainin
 the life cycles of test classes and test methods.
 
 A test suite generated using the Maven archetype contains several predefined listeners 
-referenced in the definition file (see Listing 4). These listeners are all contained 
-in the root package; they are summarized in Table 1.
+referenced in the definition file (see Listing 4); these listeners are summarized in Table 
+1. They are all defined in the root package, except for `PrimarySuiteListener` which is 
+provided by the [teamengine-spi module](https://github.com/opengeospatial/teamengine/tree/master/teamengine-spi).
 
 <table>
   <caption>Table 1: Predefined listeners</caption>

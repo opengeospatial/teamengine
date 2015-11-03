@@ -1,7 +1,10 @@
 Release Notes
 =============
 
-## 4.4 (2015-MM-DD)
+## 4.4 (2015-11-03)
+- [spi] Merge [PR #137](https://github.com/opengeospatial/teamengine/pull/137) to fix 
+  [#136](https://github.com/opengeospatial/teamengine/issues/136): Exception error message 
+  not displayed in HTML report
 - [spi] Merge [PR #134](https://github.com/opengeospatial/teamengine/pull/134) to fix 
   [#131](https://github.com/opengeospatial/teamengine/issues/131): Add REST API method 
   to handle multipart request
@@ -10,8 +13,7 @@ Release Notes
 - [web] Merge [PR #132](https://github.com/opengeospatial/teamengine/pull/132) to fix 
   [#98](https://github.com/opengeospatial/teamengine/issues/98): Invalid UTF-8 bytes 
   in test description
-- [spi] Update dependency: testng-6.9.8
-- Update site documentation
+- Update site documentation (TestNG guidance)
 
 
 ## 4.3 (2015-09-29)
