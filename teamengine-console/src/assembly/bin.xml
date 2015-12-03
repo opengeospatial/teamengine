@@ -11,10 +11,12 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
     <dependencySet>
+      <scope>runtime</scope>
       <outputDirectory>lib</outputDirectory>
       <excludes>
         <exclude>${project.groupId}:teamengine-resources</exclude>
       </excludes>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
@@ -51,7 +53,6 @@
   <files>
     <file>
       <source>${project.basedir}/src/assembly/README.txt</source>
-      <outputDirectory>/</outputDirectory>
     </file>
   </files>
 </assembly>
