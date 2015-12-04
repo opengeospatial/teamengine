@@ -14,8 +14,9 @@
     <item name="Overview" ref="index.md"/>
     <item name="Installation" ref="installation.md"/>
     <item name="User's Guide" ref="users.md"/>
-    <item name="Conformance Testing using TestNG" ref="testng.md"/>
-    <item name="Conformance Testing using CTL" ref="ctl.md"/>
+    <item name="Conformance Testing Using TestNG: Essentials" ref="testng-essentials.md"/>
+    <item name="Conformance Testing Using TestNG: Cookbook" ref="testng-cookbook.md"/>
+    <item name="Conformance Testing Using CTL Scripts" ref="ctl.md"/>
   </toc>
 
   <cover>

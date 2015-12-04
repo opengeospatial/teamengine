@@ -1,4 +1,4 @@
-# Conformance Testing with TestNG
+# Conformance Testing with TestNG Essentials
 
 ## Contents
 
@@ -39,7 +39,7 @@ is always recommended):
 
     groupId: org.opengis.cite
     artifactId: ets-archetype-testng
-    version: 2.4
+    version: 2.5
 
 In order to use the archetype and build the resulting test suite a [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/) 
 (JDK) and [Apache Maven](https://maven.apache.org/) must be installed:
@@ -51,14 +51,14 @@ To create a new test suite open a command shell (terminal window) and invoke the
 __archetype:generate__ goal. It is necessary to specify the `ets-code` property at this point, 
 the value of which must be a legal Java package name. For OGC test suites the convention is 
 to identify the principal specification by major and minor version: wfs20, cat30, and the 
-like. See Listing 1 for a sample invocation where the ets-code value is "alpha10"; note 
+like. See Listing 1 for a sample invocation where the ets-code value is "abc10"; note 
 that a '\' (backslash) character indicates that a line is continued.
 
 **Listing 1: Using the archetype interactively**
 
     mvn archetype:generate \
         -Dfilter=org.opengis.cite:ets-archetype-testng \
-        -Dets-code=alpha10
+        -Dets-code=abc10
 
 Several prompts will ask for various property values in order to generate the test suite 
 project. The suggested default values may be modified if desired. It is also possible to 
@@ -70,10 +70,10 @@ Listing 2.
     mvn archetype:generate -B \
         -DarchetypeGroupId=org.opengis.cite \
         -DarchetypeArtifactId=ets-archetype-testng \
-        -DarchetypeVersion=2.4 \
-        -Dets-code=alpha10 \
-        -DartifactId=ets-alpha10 \
-        -Dpackage=org.opengis.cite.alpha10
+        -DarchetypeVersion=2.5 \
+        -Dets-code=abc10 \
+        -DartifactId=ets-abc10 \
+        -Dpackage=org.opengis.cite.abc10
 
 The main class, `TestNGController`, resides in the root package; it implements the 
 `TestSuiteController` interface declared in the [teamengine-spi](https://github.com/opengeospatial/teamengine/tree/master/teamengine-spi) 
@@ -118,19 +118,19 @@ the Maven archetype (it's a resource file located at `src/main/resources/org/ope
   <parameter name="iut"  value=""/>
 
   <listeners>
-    <listener class-name="org.opengis.cite.alpha10.TestRunListener" />
-    <listener class-name="org.opengis.cite.alpha10.SuiteFixtureListener" />
-    <listener class-name="org.opengis.cite.alpha10.TestFailureListener" />
+    <listener class-name="org.opengis.cite.abc10.TestRunListener" />
+    <listener class-name="org.opengis.cite.abc10.SuiteFixtureListener" />
+    <listener class-name="org.opengis.cite.abc10.TestFailureListener" />
   </listeners>
 
   <test name="Conformance Level 1">
     <packages>
-      <package name="org.opengis.cite.alpha10.level1" />
+      <package name="org.opengis.cite.abc10.level1" />
     </packages>
   </test>
   <test name="Conformance Level 2">
     <packages>
-      <package name="org.opengis.cite.alpha10.level2" />
+      <package name="org.opengis.cite.abc10.level2" />
     </packages>
   </test>
 </suite>
@@ -150,8 +150,6 @@ the test classes are identified implicitly by package name. It is strongly recom
 that each conformance class have a corresponding package that contains its constituent 
 test classes. Keep in mind that the test sets (&lt;test&gt; elements) comprising 
 a suite are executed in document order as they occur in the XML suite definition.
-
-
 
 It is possible to incorporate tests implemented in other test suites. This is 
 accomplished by simply referring to the external packages or classes in the test 
@@ -292,7 +290,7 @@ against the RELAX NG grammar for [Atom feeds](https://tools.ietf.org/html/rfc428
 @Test(description = "ATC 1-3")
 public void validAtomFeed() throws SAXException, IOException {
   URL schemaRef = getClass().getResource(
-        "/org/opengis/cite/alpha10/rnc/atom.rnc");
+        "/org/opengis/cite/abc10/rnc/atom.rnc");
   RelaxNGValidator rngValidator = new RelaxNGValidator(schemaRef);
   rngValidator.validate(new DOMSource(testSubject));
   ValidationErrorHandler err = rngValidator.getErrorHandler();
