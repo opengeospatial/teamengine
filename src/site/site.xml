@@ -12,8 +12,8 @@
   <custom>
     <fluidoSkin>
       <sideBarEnabled>true</sideBarEnabled>
-      <leftColumnClass>span2</leftColumnClass>
-      <bodyColumnClass>span10</bodyColumnClass>
+      <leftColumnClass>span3</leftColumnClass>
+      <bodyColumnClass>span9</bodyColumnClass>
     </fluidoSkin>
   </custom>
 
@@ -39,8 +39,8 @@
       <item href="users.html" name="User's Guide" />
     </menu>
     <menu name="Test Suite Development">
-      <item href="testng-essentials.html" name="Using TestNG: Essentials" />
-      <item href="testng-cookbook.html" name="Using TestNG: Cookbook" />
+      <item href="testng-essentials.html" name="Using TestNG, Part 1: Essentials" />
+      <item href="testng-cookbook.html" name="Using TestNG, Part 2: Cookbook" />
       <item href="ctl.html" name="Using CTL Scripts" />
     </menu>
     <menu ref="reports" />

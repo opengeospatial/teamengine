@@ -28,11 +28,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * A controller resource that provides the results of a test run. An XML
- * representation of the results is obtained using HTTP/1.1 methods in accord
- * with the JAX-RS 1.1 specification (JSR 311).
- *
- * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
+ * What is this for?
  */
 @Path("suiteMap")
 @Produces("application/json")

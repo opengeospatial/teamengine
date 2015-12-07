@@ -1,4 +1,4 @@
-# Conformance Testing with TestNG Essentials
+# Conformance Testing with TestNG, Part 1: Essentials
 
 ## Contents
 

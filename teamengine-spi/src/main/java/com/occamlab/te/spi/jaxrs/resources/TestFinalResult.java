@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.occamlab.te.spi.jaxrs.resources;
 
 import com.occamlab.te.SetupOptions;
@@ -19,11 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 /**
- * A controller resource that provides the results of a test run. An XML
- * representation of the results is obtained using HTTP/1.1 methods in accord
- * with the JAX-RS 1.1 specification (JSR 311).
- *
- * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
+ * What is this for?
  */
 @Path("suiteResult")
 @Produces("application/json")

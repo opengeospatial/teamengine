@@ -1,4 +1,4 @@
-# Conformance Testing with TestNG Cookbook
+# Conformance Testing with TestNG, Part 2: Cookbook
 
 ## Recipes
 
@@ -12,14 +12,15 @@
 08. [Provide informative error messages](#s8)
 09. [Update TestNG configuration file](#s9)
 10. [Verify a test method](#s10)
+11. [Publish test suite documentation](#s11)
 
 -----
 
 ## <a name="s1">1</a> Introduction
 
-This guide assumes you have read _Conformance Testing with TestNG Essentials_ and have 
-generated a new test suite using the Maven archetype as described in that document. This 
-document presents some recipes for modifying a pristine test suite in order to implement 
+This guide assumes you have read _Conformance Testing with TestNG, Part 1: Essentials_ 
+and have generated a new test suite using the Maven archetype as described in that document. 
+This document presents some recipes for modifying a pristine test suite in order to implement 
 specific test requirements. The OGC [GeoPackage](http://www.geopackage.org/) specification 
 will be used to provide concrete examples.
 
@@ -385,3 +386,19 @@ public class VerifySQLiteContainerTests {
 Elements of the test fixture can be mocked or stubbed as appropriate. See the 
 [Mockito documentation](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html) 
 for more information.
+
+
+## <a name="s11">11</a> Publish test suite documentation
+
+Test suite documentation can be published as a [GitHub Pages](https://pages.github.com/) 
+site that is freely hosted in the `github.io` domain. A Maven project site is generated 
+when the test suite is built. Simply push the site content to the special _gh-pages_ branch 
+in order to make it publicly available.
+
+    git checkout --orphan gh-pages
+    git rm -rf .
+    jar xf $HOME/ets-gpkg10-0.1-SNAPSHOT-site.jar
+    git commit -a -m "Update site content for release 0.1-SNAPSHOT"
+    git push origin gh-pages
+
+The site may be accessed at http://opengeospatial.github.io/ets-gpkg10/.
