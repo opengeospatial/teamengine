@@ -1,39 +1,24 @@
 package com.occamlab.te.spi.jaxrs;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.ws.rs.core.Application;
-import com.occamlab.te.spi.jaxrs.resources.ImageResource;
-import com.occamlab.te.spi.jaxrs.resources.StoreRunResources;
-import com.occamlab.te.spi.jaxrs.resources.TestFinalResult;
-import com.occamlab.te.spi.jaxrs.resources.TestMapResources;
-import com.occamlab.te.spi.jaxrs.resources.TestRunResource;
-import com.occamlab.te.spi.jaxrs.resources.TestSuiteOverviewResource;
-import com.occamlab.te.spi.jaxrs.resources.TestSuiteSetResource;
+import com.sun.jersey.api.core.PackagesResourceConfig;
 
 /**
- * Designates the components of the application in a portable manner. This
- * information is used to configure a JAX-RS runtime environment (such as a
- * hosting container).
+ * Dynamically searches for root resource and provider classes. An instance of
+ * this class defines the components of a JAX-RS application and is used to
+ * configure a runtime environment such as a web container.
  * 
+ * @see com.sun.jersey.api.core.PackagesResourceConfig
  * @see javax.ws.rs.core.Application
  */
-public class ApplicationComponents extends Application {
+public class ApplicationComponents extends PackagesResourceConfig {
 
     /**
-     * Identifies the set of root resource and provider classes that implement
-     * the service API.
+     * Default constructor scans for root resource classes in the
+     * <code>com.occamlab.te.spi.jaxrs.resources</code> package (or a
+     * sub-package).
      */
-    @Override
-    public Set<Class<?>> getClasses() {
-        Set<Class<?>> appClasses = new HashSet<Class<?>>();
-        appClasses.add(TestSuiteSetResource.class);
-        appClasses.add(TestSuiteOverviewResource.class);
-        appClasses.add(TestRunResource.class);
-        appClasses.add(ImageResource.class);
-        appClasses.add(StoreRunResources.class);
-        appClasses.add(TestMapResources.class);
-        appClasses.add(TestFinalResult.class);
-        return appClasses;
+    public ApplicationComponents() {
+        super("com.occamlab.te.spi.jaxrs.resources");
     }
+
 }

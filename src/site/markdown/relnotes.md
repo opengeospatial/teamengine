@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+## 4.5 (2016-MM-DD)
+- [spi] Resolve [#139](https://github.com/opengeospatial/teamengine/issues/139): Move 
+  supporting JAX-RS classes to WMS 1.3 client test suite
+- Update site documentation (TestNG cookbook)
+
+
 ## 4.4 (2015-11-03)
 - [spi] Merge [PR #137](https://github.com/opengeospatial/teamengine/pull/137) to fix 
   [#136](https://github.com/opengeospatial/teamengine/issues/136): Exception error message 
