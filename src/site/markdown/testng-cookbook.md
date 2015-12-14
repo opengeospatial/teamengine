@@ -5,7 +5,7 @@
 01. [Introduction](#s1)
 02. [Add a dependency on a third-party library](#s2)
 03. [Process test run arguments](#s3)
-04. [Create a shared test fixture](#s4)
+04. [Create a reusable test fixture](#s4)
 05. [Declare specification-related constants](#s5)
 06. [Create a package for each conformance class](#s6)
 07. [Add a test method](#s7)
@@ -13,6 +13,7 @@
 09. [Update TestNG configuration file](#s9)
 10. [Verify a test method](#s10)
 11. [Publish test suite documentation](#s11)
+12. [Run the tests](#s12)
 
 -----
 
@@ -81,9 +82,21 @@ void processSuiteParameters(ISuite suite) {
 ```
 
 
-## <a name="s4">4</a> Create a shared test fixture
+## <a name="s4">4</a> Create a reusable test fixture
 
-It is often convenient to create a shared test fixture that provides easy access to 
+A test fixture (also known as a test context) establishes a consistent baseline for 
+running tests. It includes all the things that must be in place in order to run a test 
+and verify a particular outcome. In practice, a fixture includes a set of of reusable 
+components that persist for the duration of multiple tests--or even the lifetime of 
+the entire test run. Examples of fixture items include: 
+
+* a description of the test subject (e.g. service metadata);
+* Pre-compiled schemas used to validate response messages; 
+* an HTTP client component used to interact with a web service; 
+* sample data that must be loaded in advance of testing;
+* a driver used to create a database connection.
+
+It is often convenient to create a shared fixture that provides easy access to 
 commonly used objects for the duration of a test run. The `CommonFixture` class in 
 the root package may be used for this purpose. In this test suite a shared fixture 
 contains the following elements:
@@ -111,12 +124,10 @@ protected DataSource dataSource;
  */
 @BeforeClass
 public void initCommonFixture(ITestContext testContext) {
-    Object testFile = testContext.getSuite().getAttribute(
-        SuiteAttribute.TEST_SUBJ_FILE.getName());
+    Object testFile = testContext.getSuite().getAttribute(SuiteAttribute.TEST_SUBJ_FILE.getName());
     if (null == testFile || !File.class.isInstance(testFile)) {
         throw new IllegalArgumentException(
-            String.format("Suite attribute value is not a File: %s", 
-                SuiteAttribute.TEST_SUBJ_FILE.getName()));
+                String.format("Suite attribute value is not a File: %s", SuiteAttribute.TEST_SUBJ_FILE.getName()));
     }
     this.gpkgFile = File.class.cast(testFile);
     SQLiteConfig dbConfig = new SQLiteConfig();
@@ -128,6 +139,13 @@ public void initCommonFixture(ITestContext testContext) {
     this.dataSource = sqliteSource;
 }
 ```
+
+Note that the File object is obtained from a suite attribute in the `ITestContext` 
+object that is injected into the **initCommonFixture** method. Any @Before or @Test 
+method can declare a parameter of type `ITestContext`; when this is done, TestNG 
+will perform the dependency injection automatically. The DataSource belongs to 
+the test class (as a protected field, so it's accessible to all subclasses).
+
 
 ## <a name="s5">5</a> Declare specification-related constants
 
@@ -402,3 +420,50 @@ in order to make it publicly available.
     git push origin gh-pages
 
 The site may be accessed at http://opengeospatial.github.io/ets-gpkg10/.
+
+## <a name="s12">12</a> Run the tests
+
+
+### 12-1. Integrated development environment (IDE)
+
+You can use a Java IDE such as Eclipse, NetBeans, or IntelliJ to build and run the test 
+suite. First, clone the repository and build the project. All of these IDEs have built-in 
+support for [Apache Maven](https://maven.apache.org/).
+
+**Set the main class to run**: `org.opengis.cite.gpkg10.TestNGController`
+
+**Arguments**: The first argument must refer to an XML properties file containing the 
+required test run arguments. If not specified, the default location at `${user.home}/test-run-props.xml` 
+will be used. You can modify the sample file in `src/main/config/test-run-props.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties version="1.0">
+  <comment>Test run arguments</comment>
+  <entry key="iut">http://www.geopackage.org/data/simple_sewer_features.gpkg</entry>
+</properties>
+```
+
+The TestNG results file (`testng-results.xml`) will be written to a subdirectory
+in `${user.home}/testng/` having a UUID value as its name.
+
+### 12-2. Command shell (console)
+
+One of the build artifacts is an "all-in-one" JAR file that includes the test 
+suite and all of its dependencies; this makes it very easy to execute the test 
+suite in a command shell:
+
+    java -jar ets-gpkg10-0.1-SNAPSHOT-aio.jar [-o|--outputDir $TMPDIR] [test-run-props.xml]
+
+### 12-3. OGC test harness
+
+You may also use [TEAM Engine](https://github.com/opengeospatial/teamengine), the official 
+OGC test harness, to execute the test suite. The latest test suite releases are usually 
+available at the [beta testing facility](http://cite.opengeospatial.org/te2/). As an 
+alternative, you can [build and deploy](https://github.com/opengeospatial/teamengine) the 
+test harness yourself and use a local installation. The test suite can be invoked through 
+the graphical interface or by using the RESTful API as indicated below.
+
+    /teamengine/rest/suites/gpkg10/0.1-SNAPSHOT/run?iut=http://www.geopackage.org/data/simple_sewer_features.gpkg
+
