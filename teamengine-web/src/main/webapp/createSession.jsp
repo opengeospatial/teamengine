@@ -7,11 +7,13 @@
 	Map<String, List<String>> revisionMap = null;
 //	Map<String, SuiteEntry> suites = null;
 	Map<String, List<ProfileEntry>> profiles = null;
+	String defaultOrgnization;
 	
 	public void jspInit() {
 		try {
 			Conf = new Config();
 			organizationList = Conf.getOrganizationList();
+			defaultOrgnization = Conf.getDefaultOrganization();
 			standardMap = Conf.getStandardMap();
 			versionMap = Conf.getVersionMap();
 			revisionMap = Conf.getRevisionMap();
@@ -46,8 +48,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Compliance Testing</title>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script>
     var profiles_key = null;
+    
+    var defaultOrganization = <%=defaultOrgnization%>
 
 	function fillOrganization(){ 
 		 // this function is used to fill the category list on load
@@ -78,6 +83,17 @@
 		<%}//loop i%>
 	}//function
 
+	$(document).ready(function() {
+		$( "#Organization" ).change(function() {
+	  
+	        $("#Standard").html($('#Standard option').sort(function(x, y) {
+	            return $(x).val() < $(y).val() ? -1 : 1;
+	        }));
+	        $("#Standard").get(0).selectedIndex = 0;
+	        //e.preventDefault();
+		});   
+	});
+	
 	
 	function SelectVersion(){
 		// ON selection of organization this function will work
@@ -174,11 +190,14 @@
 		}
 	}
 	
-	function addOption(selectbox, value, text )
+	function addOption(selectbox, value, text)
 	{
 		var optn = document.createElement("OPTION");
 		optn.text = text;
 		optn.value = value;
+		if(text == defaultOrganization){
+			optn.selected = true;
+		}
 	
 		selectbox.options.add(optn);
 	}
@@ -246,7 +265,7 @@ Select a test suite:
 	<tr>
 		<td>
 			<select  id="Organization" name="Organization" onChange="SelectStandard();" >
-			<option value="">Organization</option>
+			<!-- <option value="">Organization</option> -->
 			</select>
 		</td>
 		<td>
@@ -267,7 +286,7 @@ Select a test suite:
 	</tr>
 </table>
 <br/>
-Select Profile(s): <br />
+
 <%
 	for (int i=0; i < organizationList.size(); i++) {
 	    String org = organizationList.get(i);
@@ -283,6 +302,7 @@ Select Profile(s): <br />
 				    String key = org + "_" + std + "_" + ver + "_" + rev;
 %>
 <div id="Profiles_<%=key%>" style="display:none">
+Select Profile(s): <br />
 <%
 					List<ProfileEntry> profileList = profiles.get(key);
 					for (int m=0; m < profileList.size(); m++) {

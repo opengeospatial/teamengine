@@ -64,6 +64,7 @@ public class Config {
                                              // a list of sources
     private Map<String, String> webdirs; // Key is org_std_ver_rev, value a
                                          // webdir
+    private String defaultOrganization;
     /**
      * Collection of directories containing ETS resources. The map key
      * identifies a given ETS revision ("$org_$std_$ver_$rev").
@@ -95,6 +96,14 @@ public class Config {
                 String organization = DomUtils.getElementByTagName(
                         organizationEl, "name").getTextContent();
                 organizationList.add(organization);
+                
+                if(DomUtils.getElementByTagName(organizationEl, "default") != null){
+                	
+	                String isDefault = DomUtils.getElementByTagName(organizationEl, "default").getTextContent();
+	                if(isDefault.equalsIgnoreCase("true")){
+	                	defaultOrganization = DomUtils.getElementByTagName(organizationEl, "name").getTextContent();
+	                }
+                }
 
                 ArrayList<String> standardList = new ArrayList<String>();
                 for (Element standardEl : DomUtils.getElementsByTagName(
@@ -284,5 +293,9 @@ public class Config {
 
     public Map<String, File> getResources() {
         return resources;
+    }
+    
+    public String getDefaultOrganization(){
+    	return defaultOrganization;
     }
 }
