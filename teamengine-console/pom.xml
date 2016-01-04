@@ -27,6 +27,13 @@
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- Workaround for circular dependency (Xerces, PsychoPath processor) -->
+    <dependency>
+      <groupId>edu.princeton.cup</groupId>
+      <artifactId>java-cup</artifactId>
+      <version>10k</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -61,7 +68,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>2.6</version>
         <configuration>
           <descriptors>
             <descriptor>${basedir}/src/assembly/bin.xml</descriptor>
@@ -74,6 +81,16 @@
             <goals>
               <goal>single</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>site-package</id>
+            <phase>ignore</phase>
           </execution>
         </executions>
       </plugin>

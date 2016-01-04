@@ -35,7 +35,6 @@
   <files>
     <file>
       <source>${project.basedir}/src/assembly/README.txt</source>
-      <outputDirectory>/</outputDirectory>
     </file>
     <file>
       <source>${project.basedir}/src/assembly/index.html</source>
