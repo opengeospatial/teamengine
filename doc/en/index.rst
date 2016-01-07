@@ -411,7 +411,7 @@ Several environment variables must be set first (this can be done in the setenv 
 	- ETS_SRC: A file system path that refers to a directory containing the Git repositories; (a repository will be cloned into here if it doesn't already exist).
 	- JAVA_HOME: Refers to a JDK installation directory.	
 
-An example of how to run a test with the file argument is as follows::
+Example commands of how to install the tests are:
 	
 	In Unix:
 	$ ~/te-install/bin/unix/export-ctl.sh c:\path-to-the-file\ctl-scripts-release.csv
