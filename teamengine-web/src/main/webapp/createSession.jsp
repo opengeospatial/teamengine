@@ -52,7 +52,7 @@
 <script>
     var profiles_key = null;
     
-    var defaultOrganization = <%=defaultOrgnization%>
+    var defaultOrganization = "<%=defaultOrgnization%>";
 
 	function fillOrganization(){ 
 		 // this function is used to fill the category list on load
@@ -62,6 +62,8 @@
 		%>
 		addOption(document.standardsForm.Organization, "<%=organizationList.get(i)%>", "<%=organizationList.get(i)%>", "");
 		<%}//for loop%>
+		
+		SelectStandard();
 	}
 
 	function SelectStandard(){
@@ -91,7 +93,14 @@
 	        }));
 	        $("#Standard").get(0).selectedIndex = 0;
 	        //e.preventDefault();
-		});   
+		});
+		
+		//On version change select default value for the revision
+		$( "#Version" ).change(function() {
+			  
+	        $("#Test").get(0).selectedIndex = 1;
+	        
+		});  
 	});
 	
 	
@@ -265,7 +274,7 @@ Select a test suite:
 	<tr>
 		<td>
 			<select  id="Organization" name="Organization" onChange="SelectStandard();" >
-			<!-- <option value="">Organization</option> -->
+			<option value="">Organization</option>
 			</select>
 		</td>
 		<td>
@@ -279,7 +288,7 @@ Select a test suite:
 			</select>
 		</td>
 		<td>
-			<select id="Test" name="Test" onChange="SelectProfile();" >
+			<select id="Test" name="Test" onChange="SelectProfile();" disabled="true" >
 			<option value="">Revision</option>
 			</select>
 		</td>
