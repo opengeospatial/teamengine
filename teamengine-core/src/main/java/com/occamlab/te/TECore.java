@@ -774,7 +774,7 @@ public class TECore implements Runnable {
         }
 
         int oldVerdict = this.verdict;
-        test.setResult(PASS);
+//        test.setResult(PASS);
     RecordTestResult recordTestResult = new RecordTestResult();
     recordTestResult.storeStartTestDetail(test, dirPath);
     this.verdict = defaultResult;
@@ -945,6 +945,10 @@ public class TECore implements Runnable {
                             parentTest.getResult() });
     }
         switch (currTest.getResult()) {
+        case PASS:
+        	parentTest.setResult(PASS);
+        break;
+        
         case FAIL:
             // fall through
         case INHERITED_FAILURE:
