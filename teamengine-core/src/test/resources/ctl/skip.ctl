@@ -44,11 +44,15 @@
 
   <ctl:test name="ex:test-2">
     <ctl:param name="int"/>
-    <ctl:assertion>Accept integers less than 100.</ctl:assertion>
+    <ctl:assertion>Accept non-negative integers less than 100.</ctl:assertion>
     <ctl:code>
       <xsl:if test="xsd:integer($int) ge 100">
         <ctl:message>[SKIP] <xsl:value-of select="$int"/> is greater than 100.</ctl:message>
-        <ctl:skipped/>
+        <ctl:skipped />
+      </xsl:if>
+      <xsl:if test="xsd:integer($int) lt 0">
+        <ctl:message>[FAIL] <xsl:value-of select="$int"/> is negative.</ctl:message>
+        <ctl:fail />
       </xsl:if>
     </ctl:code>
   </ctl:test>

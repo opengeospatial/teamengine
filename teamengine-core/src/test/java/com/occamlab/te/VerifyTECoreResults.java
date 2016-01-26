@@ -78,6 +78,30 @@ public class VerifyTECoreResults {
 		assertTestResult(teCore.getIndex(), "test-2", TECore.PASS);
 	}
 
+	@Test
+	public void subtestFailed() throws Throwable {
+		Index testIndex = getTestIndex(new File(
+				"src/test/resources/ctl/skip.ctl"));
+		engine.addFunctionLibrary(Collections.singletonList(testIndex));
+		runOpts.addParam("input=-2");
+		TECore teCore = new TECore(engine, testIndex, runOpts);
+		assertNotNull(teCore);
+		teCore.execute();
+		SuiteEntry testSuite = teCore.getIndex().getSuite("ex:skip");
+		assertNotNull(testSuite);
+		TestEntry mainTest = teCore.getIndex().getTest(
+				testSuite.getStartingTest());
+		assertNotNull(mainTest);
+		// Main test result should be Failed-Inherited
+		int mainResult = mainTest.getResult();
+		assertEquals(
+				String.format("Unexpected main result: '%s'.",
+						TECore.getResultDescription(mainResult)),
+				TECore.INHERITED_FAILURE, mainResult);
+		assertTestResult(teCore.getIndex(), "test-1", TECore.PASS);
+		assertTestResult(teCore.getIndex(), "test-2", TECore.FAIL);
+	}
+
 	Index getTestIndex(File ctlFile) throws Throwable {
 		assertTrue(ctlFile.exists());
 		SetupOptions setupOptions = new SetupOptions();
