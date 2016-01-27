@@ -76,11 +76,29 @@
 		%>
 			if(document.standardsForm.Organization.value == '<%=organizationList.get(i)%>'){
 			<% 
+			// get standard
 				List<String> standardList = standardMap.get(organizationList.get(i)); 
 				for(int j=0; j < standardList.size(); j++){
+					
+					// Get version
+					List<String> versionList = versionMap.get(organizationList.get(i) + "_" + standardList.get(j)); 
+					for(int k=0; k < versionList.size(); k++){
+						
+						// Get Revision 
+						List<String> revisionList = revisionMap.get(organizationList.get(i) + "_" + standardList.get(j) + "_" + versionList.get(k)); 
+						    for(int l=0; l < revisionList.size(); l++){
+						    	
 			%>
-				addOption(document.standardsForm.Standard,"<%=standardList.get(j)%>", "<%=standardList.get(j)%>");
-				<%}//loop j%>
+			
+			var std_ver_rev_value="<%=organizationList.get(i)%>" + "_" + "<%=standardList.get(j)%>" + "_" +"<%=versionList.get(k)%>" + "_" + "<%=revisionList.get(l)%>";
+			var std_ver_rev_key="<%=standardList.get(j)%>" + " - " +"<%=versionList.get(k)%>" + "  " + "[ <%=revisionList.get(l)%> ]";
+				addOption(document.standardsForm.Standard,std_ver_rev_value, std_ver_rev_key);
+			
+			<%
+						    }//loop l
+					}//loop k
+				}//loop j
+			%>
 			}//organization	
 		<%}//loop i%>
 	}//function
@@ -177,11 +195,15 @@
 				}
 			}
 		}
-	    profiles_key = "Profiles";
+		profiles_key = "Profiles";
+	    profiles_key += "_" + document.standardsForm.Standard.value;
+	    /* 
 	    profiles_key += "_" + document.standardsForm.Organization.value;
 	    profiles_key += "_" + document.standardsForm.Standard.value;
 	    profiles_key += "_" + document.standardsForm.Version.value;
 	    profiles_key += "_" + document.standardsForm.Test.value;
+	    */
+	    
         profile_div = document.getElementById(profiles_key);
         if (profile_div != null) {
 			profile_div.style.display = "block";
@@ -250,7 +272,9 @@
 		if (form.Organization.value == "" || form.Standard.value == "" || form.Version.value == "" || form.Test.value == "") {
 	    	alert("Please select from available standards");
 	    } else {
-	        var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
+	      //  var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
+	        var sourceId = form.Standard.value;
+	        
 			document.forms["standardsForm"].elements["sources"].value = sourceId;
 			document.standardsForm.submit();
 	    }
@@ -268,8 +292,8 @@ Select a test suite:
 	<tr>
 		<th width="15%">Organization</th>
 		<th width="15%">Specification</th>
-		<th width="15%">Version</th>
-		<th width="15%">Revision</th>
+	<!-- <th width="15%">Version</th>
+		<th width="15%">Revision</th>  -->
 	</tr>
 	<tr>
 		<td>
@@ -278,10 +302,11 @@ Select a test suite:
 			</select>
 		</td>
 		<td>
-			<select id="Standard" name="Standard" onChange="SelectVersion();" >
+			<select id="Standard" name="Standard" onChange="SelectProfile();" >
 			<option value="">Specification</option>
 			</select>
 		</td>
+		<!-- 
 		<td>
 			<select id="Version" name="Version" onChange="SelectTest();" >
 			<option value="">Version</option>
@@ -292,6 +317,7 @@ Select a test suite:
 			<option value="">Revision</option>
 			</select>
 		</td>
+		-->
 	</tr>
 </table>
 <br/>
