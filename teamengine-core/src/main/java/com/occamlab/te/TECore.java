@@ -212,6 +212,8 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
+  public static ArrayList<TestEntry> subTestArray = new ArrayList<TestEntry>();
+  public static TestEntry parentTestEntry;
 
   public TECore() {
 
@@ -668,6 +670,12 @@ public class TECore implements Runnable {
   public int executeTest(TestEntry test, XdmNode params, XPathContext context)
           throws Exception {
     testStack.push(test);
+    if(testStack.size() == 2){
+    	parentTestEntry = test;
+    }
+    else if(testStack.size() == 3){
+    	subTestArray.add(test);
+    }
     testType = test.getType();
     defaultResult = test.getDefaultResult();
         defaultResultName = (defaultResult == BEST_PRACTICE) ? "BestPractice"
@@ -822,8 +830,42 @@ public class TECore implements Runnable {
         testStack.pop();
       }
     }
+    	//if at Parent test level
+    	if(testStack.size() == 2){
+    		if(this.verdict == SKIPPED && test.getResult() == PASS){
+    			if(parentTestEntry != null){
+    				boolean testSkipped = false;
+    				boolean testFailed = false;
+    				boolean testPassed = false;
+    				
+    				for(int i =0; i <subTestArray.size();i++){
+    					
+    					if(subTestArray.get(i).getResult() == SKIPPED){
+    						testSkipped = true;
+    					}
+    					else if(subTestArray.get(i).getResult() == FAIL){
+    						testFailed = true;
+    						break;
+    					}
+    					else if(subTestArray.get(i).getResult() == PASS){
+    						testPassed = true;
+    						break;
+    					}
+    					
+    				}
+    				
+    				if(testFailed){
+    					parentTestEntry.setResult(INHERITED_FAILURE);
+    				}else if(testPassed){
+    					parentTestEntry.setResult(PASS);
+    				}else if(testSkipped){
+    					parentTestEntry.setResult(SKIPPED);
+    				}
+    			}
+    		}
+    	}
         // Check if verdict was already set by a failing subtest
-        if (test.getResult() != INHERITED_FAILURE) {
+    	else if (test.getResult() != INHERITED_FAILURE) {
             test.setResult(verdict);
         }
     if (logger != null) {
@@ -919,6 +961,9 @@ public class TECore implements Runnable {
     }
     updateParentTestResult(test);
     testStack.pop();
+    if(testStack.size() == 1){
+    	subTestArray.clear();
+    }
   }
 
   /**
@@ -946,6 +991,7 @@ public class TECore implements Runnable {
     }
         switch (currTest.getResult()) {
         case PASS:
+        	if(parentTest.getResult() != INHERITED_FAILURE)
         	parentTest.setResult(PASS);
         break;
         
@@ -955,7 +1001,7 @@ public class TECore implements Runnable {
             parentTest.setResult(INHERITED_FAILURE);
         break;
         case SKIPPED:
-        if (!parentTest.getType().equalsIgnoreCase("Optional")) {
+        if (!currTest.getType().equalsIgnoreCase("Optional") && !currTest.getType().equalsIgnoreCase("MandatoryIfImplemented")) {
                 parentTest.setResult(INHERITED_FAILURE);
         }
         break;

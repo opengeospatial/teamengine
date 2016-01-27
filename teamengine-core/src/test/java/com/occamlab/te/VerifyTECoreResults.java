@@ -49,13 +49,37 @@ public class VerifyTECoreResults {
 		assertEquals(
 				String.format("Unexpected main result: '%s'.",
 						TECore.getResultDescription(mainResult)),
+				TECore.INHERITED_FAILURE, mainResult);
+		assertTestResult(teCore.getIndex(), "test-1", TECore.SKIPPED);
+		assertTestResult(teCore.getIndex(), "test-2", TECore.SKIPPED);
+	}
+	
+	@Test
+	public void allMandatoryIfImplementedSubtestsSkipped() throws Throwable {
+		Index testIndex = getTestIndex(new File(
+				"src/test/resources/ctl/skip_mif.ctl"));
+		engine.addFunctionLibrary(Collections.singletonList(testIndex));
+		runOpts.addParam("input=103");
+		TECore teCore = new TECore(engine, testIndex, runOpts);
+		assertNotNull(teCore);
+		teCore.execute();
+		SuiteEntry testSuite = teCore.getIndex().getSuite("ex:skip");
+		assertNotNull(testSuite);
+		TestEntry mainTest = teCore.getIndex().getTest(
+				testSuite.getStartingTest());
+		assertNotNull(mainTest);
+		// Main test result should be SKIP
+		int mainResult = mainTest.getResult();
+		assertEquals(
+				String.format("Unexpected main result: '%s'.",
+						TECore.getResultDescription(mainResult)),
 				TECore.SKIPPED, mainResult);
 		assertTestResult(teCore.getIndex(), "test-1", TECore.SKIPPED);
 		assertTestResult(teCore.getIndex(), "test-2", TECore.SKIPPED);
 	}
-
+	
 	@Test
-	public void someSubtestsSkipped() throws Throwable {
+	public void someSubtestsSkipped2() throws Throwable {
 		Index testIndex = getTestIndex(new File(
 				"src/test/resources/ctl/skip.ctl"));
 		engine.addFunctionLibrary(Collections.singletonList(testIndex));
@@ -72,16 +96,88 @@ public class VerifyTECoreResults {
 		int mainResult = mainTest.getResult();
 		assertEquals(
 				String.format("Unexpected main result: '%s'.",
-						TECore.getResultDescription(mainResult)), TECore.PASS,
+						TECore.getResultDescription(mainResult)), TECore.INHERITED_FAILURE,
 				mainResult);
 		assertTestResult(teCore.getIndex(), "test-1", TECore.SKIPPED);
 		assertTestResult(teCore.getIndex(), "test-2", TECore.PASS);
 	}
 
 	@Test
+	public void someSubtestsSkipped() throws Throwable {
+		Index testIndex = getTestIndex(new File(
+				"src/test/resources/ctl/skip.ctl"));
+		engine.addFunctionLibrary(Collections.singletonList(testIndex));
+		runOpts.addParam("input=140");
+		TECore teCore = new TECore(engine, testIndex, runOpts);
+		assertNotNull(teCore);
+		teCore.execute();
+		SuiteEntry testSuite = teCore.getIndex().getSuite("ex:skip");
+		assertNotNull(testSuite);
+		TestEntry mainTest = teCore.getIndex().getTest(
+				testSuite.getStartingTest());
+		assertNotNull(mainTest);
+		// Main test result should be PASS
+		int mainResult = mainTest.getResult();
+		assertEquals(
+				String.format("Unexpected main result: '%s'.",
+						TECore.getResultDescription(mainResult)), TECore.INHERITED_FAILURE,
+				mainResult);
+		assertTestResult(teCore.getIndex(), "test-1", TECore.PASS);
+		assertTestResult(teCore.getIndex(), "test-2", TECore.SKIPPED);
+	}
+	
+	@Test
+	public void someMandatoryIfImplementedSubtestsSkipped() throws Throwable {
+		Index testIndex = getTestIndex(new File(
+				"src/test/resources/ctl/skip_mif.ctl"));
+		engine.addFunctionLibrary(Collections.singletonList(testIndex));
+		runOpts.addParam("input=-13");
+		TECore teCore = new TECore(engine, testIndex, runOpts);
+		assertNotNull(teCore);
+		teCore.execute();
+		SuiteEntry testSuite = teCore.getIndex().getSuite("ex:skip");
+		assertNotNull(testSuite);
+		TestEntry mainTest = teCore.getIndex().getTest(
+				testSuite.getStartingTest());
+		assertNotNull(mainTest);
+		// Main test result should be PASS
+		int mainResult = mainTest.getResult();
+		assertEquals(
+				String.format("Unexpected main result: '%s'.",
+						TECore.getResultDescription(mainResult)), TECore.INHERITED_FAILURE,
+				mainResult);
+		assertTestResult(teCore.getIndex(), "test-1", TECore.SKIPPED);
+		assertTestResult(teCore.getIndex(), "test-2", TECore.FAIL);
+	}
+
+	@Test
 	public void subtestFailed() throws Throwable {
 		Index testIndex = getTestIndex(new File(
 				"src/test/resources/ctl/skip.ctl"));
+		engine.addFunctionLibrary(Collections.singletonList(testIndex));
+		runOpts.addParam("input=-2");
+		TECore teCore = new TECore(engine, testIndex, runOpts);
+		assertNotNull(teCore);
+		teCore.execute();
+		SuiteEntry testSuite = teCore.getIndex().getSuite("ex:skip");
+		assertNotNull(testSuite);
+		TestEntry mainTest = teCore.getIndex().getTest(
+				testSuite.getStartingTest());
+		assertNotNull(mainTest);
+		// Main test result should be Failed-Inherited
+		int mainResult = mainTest.getResult();
+		assertEquals(
+				String.format("Unexpected main result: '%s'.",
+						TECore.getResultDescription(mainResult)),
+				TECore.INHERITED_FAILURE, mainResult);
+		assertTestResult(teCore.getIndex(), "test-1", TECore.PASS);
+		assertTestResult(teCore.getIndex(), "test-2", TECore.FAIL);
+	}
+	
+	@Test
+	public void subtestMandatoryIfImplementedFailed() throws Throwable {
+		Index testIndex = getTestIndex(new File(
+				"src/test/resources/ctl/skip_mif.ctl"));
 		engine.addFunctionLibrary(Collections.singletonList(testIndex));
 		runOpts.addParam("input=-2");
 		TECore teCore = new TECore(engine, testIndex, runOpts);
