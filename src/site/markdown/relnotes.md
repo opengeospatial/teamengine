@@ -1,11 +1,13 @@
 Release Notes
 =============
 
-## 4.5 (2016-01-DD)
-- [core] Resolve [#138](https://github.com/opengeospatial/teamengine/issues/138): Add 
-  support for XML Schema 1.1
-- [spi] Resolve [#139](https://github.com/opengeospatial/teamengine/issues/139): Move 
-  supporting JAX-RS classes to WMS 1.3 client test suite
+## 4.5 (2016-01-28)
+- [core] Resolve [#138](https://github.com/opengeospatial/teamengine/issues/138): 
+  Add support for XML Schema 1.1
+- [spi] Resolve [#139](https://github.com/opengeospatial/teamengine/issues/139): 
+  Move supporting JAX-RS classes to WMS 1.3 client test suite
+- [spi] Resolve [#127](https://github.com/opengeospatial/teamengine/issues/127): 
+  Improve TestNG report (test descriptions)
 - Update site documentation (TestNG cookbook)
 
 

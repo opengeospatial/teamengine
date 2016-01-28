@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:math="http://exslt.org/math"
-                xmlns:testng="http://testng.org">
+                xmlns:testng="http://testng.org"
+                xmlns:dc="http://purl.org/dc/terms/">
 
-  <db:abstract xmlns:db="http://docbook.org/ns/docbook">
-    <db:para>Based on ReportNG. See http://reportng.uncommons.org/.</db:para>
-  </db:abstract>
+  <dc:description>Based on TestNG-XSLT (see https://github.com/prashanth-sams/testng-xslt-1.1.2)</dc:description>
 
   <xsl:output method="html" indent="yes" omit-xml-declaration="yes"
                 doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -1031,16 +1030,17 @@
           <xsl:if test="@description">
             <xsl:if test="(not(contains(@description,'TableA1')))">
               <xsl:value-of select="@description"/>
+              <xsl:call-template name="link-javadoc">
+                <xsl:with-param name="test-method" select="."/>
+              </xsl:call-template>
             </xsl:if>
             <xsl:if test="contains(@description,'TableA1')">
               <xsl:call-template name="split">
                 <xsl:with-param name="str" select=
      "substring-after(@description,'=')"/>
               </xsl:call-template>
-            </xsl:if> 
-                            
+            </xsl:if>
           </xsl:if>
-                    
         </td>
         <td nowrap="true" style="vertical-align:top">
           <xsl:value-of select="substring(@started-at, 12, 8)"/>
@@ -1282,4 +1282,15 @@
     </xsl:if>
   </xsl:template>
 
+  <dc:description>Generates a link to the Javadoc documentation for a test method. 
+  A link is constructed using the base URL 'http://opengeospatial.github.io/' 
+  (GitHub Pages).</dc:description>
+  <xsl:template name="link-javadoc">
+    <xsl:param name="test-method"/>
+    <xsl:variable name="ets-code" select="substring-before($test-method/ancestor::suite/@name,'-')" />
+    <xsl:variable name="apidocs" select="concat('http://opengeospatial.github.io/ets-',$ets-code,'/apidocs/')" />
+    <xsl:variable name="url" select="concat($apidocs,replace(../@name,'\.','/'),'#',substring-before(@signature,'['))" />
+    <xsl:text> | </xsl:text>
+    <a target="_blank" href="{$url}">Details &#8599;</a>
+  </xsl:template>
 </xsl:stylesheet>
