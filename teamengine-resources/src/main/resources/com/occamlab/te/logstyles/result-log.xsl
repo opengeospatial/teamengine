@@ -5,8 +5,15 @@
   xmlns:encoder="java:java.net.URLEncoder"
   xmlns:file="java:java.io.File"
   xmlns:ctl="http://www.occamlab.com/ctl"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   exclude-result-prefixes="viewlog encoder file te ctl"
   version="2.0">
+
+  <xsl:function name="ctl:getFileURI">
+    <xsl:param name="path" as="xs:string"/>
+    <xsl:sequence select="file:toURI(file:new($path))"/>
+  </xsl:function>
+
   <xsl:template name="Client-Result">
     <xsl:param name="continue">-1</xsl:param>
     <xsl:param name="bestPractice">0</xsl:param>
@@ -16,9 +23,11 @@
     <xsl:param name="warning">4</xsl:param>
     <xsl:param name="inheritedFailure">5</xsl:param>
     <xsl:param name="fail">6</xsl:param>
+    <!-- collection() function accepts URI, not file system path -->
+    <xsl:variable name="logdir-uri" select="ctl:getFileURI($logdir)" />
     <xsl:variable name="coverage-results">
       <service-requests>
-        <xsl:for-each select="collection(concat($logdir,'/',$sessionDir,'?select=WMS-*.xml'))">
+        <xsl:for-each select="collection(concat($logdir-uri,'/',$sessionDir,'?select=WMS-*.xml'))">
           <xsl:copy-of select="doc(document-uri(.))"/>
         </xsl:for-each>
       </service-requests>
