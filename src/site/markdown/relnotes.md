@@ -1,7 +1,9 @@
 Release Notes
 =============
 
-## 4.5 (2016-01-28)
+## 4.5 (2016-02-03)
+- [resources] Merge [PR #145](https://github.com/opengeospatial/teamengine/pull/145): 
+  Update style sheet that displays WMS client test results
 - [core] Resolve [#138](https://github.com/opengeospatial/teamengine/issues/138): 
   Add support for XML Schema 1.1
 - [spi] Resolve [#139](https://github.com/opengeospatial/teamengine/issues/139): 
