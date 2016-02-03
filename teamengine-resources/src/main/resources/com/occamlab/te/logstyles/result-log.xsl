@@ -70,7 +70,7 @@
       }
 
       function getUser() {
-      var userName = '<xsl:value-of select="$logdir"/>';
+      var userName = '<xsl:value-of select="$logdir-uri"/>';
       return userName.split("users/")[1];
       }
     </script>   
@@ -81,12 +81,13 @@
                 var url = location.href;
                 var result_url = url.split("viewSessionLog");
                 var c_name_value = getUser();
+                c_name_value = c_name_value.replace(/\//g, '');
                 var c_sessionID_value = getSession();
                 var urlpath = "";
                 var success = "images/pass.png";
                 var error = "images/fail.png";
                 var warning = "images/warning.png";
-                urlpath = result_url[0] + "restResult/suiteResult?userID=" + c_name_value + "&sessionID=" + c_sessionID_value;
+                urlpath = result_url[0] + "rest/suiteResult?userID=" + c_name_value + "&sessionID=" + c_sessionID_value;
                 $.ajax({
                     type: "GET",
                     url: urlpath,
