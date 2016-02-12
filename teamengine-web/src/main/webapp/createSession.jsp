@@ -281,7 +281,7 @@
 	
 	function submitform() {
 		var form = document.standardsForm;
-		if (form.Organization.value == "" || form.Standard.value == "" || form.Version.value == "" || form.Test.value == "") {
+		if (form.Organization.value == "" || form.Standard.value == "") {
 	    	alert("Please select from available standards");
 	    } else {
 	      //  var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
