@@ -63,6 +63,18 @@
 		addOption(document.standardsForm.Organization, "<%=organizationList.get(i)%>", "<%=organizationList.get(i)%>", "");
 		<%}//for loop%>
 		
+		/**
+		 * Check if defaultorganization is not provided then 
+		 * select the default organization "OGC" in dropdownlist. 
+		 */
+
+		if('<%=defaultOrgnization%>' == '' || '<%=defaultOrgnization%>' == 'null') {
+			 
+	 		$("#Organization").val('OGC');
+	 		
+		}
+
+		// When default organization is selected then corresponding standards will appear in dropdownlist
 		SelectStandard();
 	}
 
@@ -298,12 +310,12 @@ Select a test suite:
 	<tr>
 		<td>
 			<select  id="Organization" name="Organization" onChange="SelectStandard();" >
-			<option value="">Organization</option>
+			<!--  <option value="">Organization</option> -->
 			</select>
 		</td>
 		<td>
 			<select id="Standard" name="Standard" onChange="SelectProfile();" >
-			<option value="">Specification</option>
+			<!-- <option value="">Specification</option> -->
 			</select>
 		</td>
 		<!-- 
