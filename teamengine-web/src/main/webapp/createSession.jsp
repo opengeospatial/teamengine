@@ -7,13 +7,11 @@
 	Map<String, List<String>> revisionMap = null;
 //	Map<String, SuiteEntry> suites = null;
 	Map<String, List<ProfileEntry>> profiles = null;
-	String defaultOrgnization;
 	
 	public void jspInit() {
 		try {
 			Conf = new Config();
 			organizationList = Conf.getOrganizationList();
-			defaultOrgnization = Conf.getDefaultOrganization();
 			standardMap = Conf.getStandardMap();
 			versionMap = Conf.getVersionMap();
 			revisionMap = Conf.getRevisionMap();
@@ -51,9 +49,6 @@
     <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script>
     var profiles_key = null;
-    
-    var defaultOrganization = "<%=defaultOrgnization%>";
-
 	function fillOrganization(){ 
 		 // this function is used to fill the category list on load
 		<% 
@@ -62,18 +57,9 @@
 		%>
 		addOption(document.standardsForm.Organization, "<%=organizationList.get(i)%>", "<%=organizationList.get(i)%>", "");
 		<%}//for loop%>
-		
-		/**
-		 * Check if defaultorganization is not provided then 
-		 * select the default organization "OGC" in dropdownlist. 
-		 */
-
-		if('<%=defaultOrgnization%>' == '' || '<%=defaultOrgnization%>' == 'null') {
-			 
-	 		$("#Organization").val('OGC');
-	 		
-		}
-
+        
+        $("#Organization").val($("#Organization option:first").val());
+        
 		// When default organization is selected then corresponding standards will appear in dropdownlist
 		SelectStandard();
 	}
@@ -124,13 +110,6 @@
 	        $("#Standard").get(0).selectedIndex = 0;
 	        //e.preventDefault();
 		});
-		
-		//On version change select default value for the revision
-		$( "#Version" ).change(function() {
-			  
-	        $("#Test").get(0).selectedIndex = 1;
-	        
-		});  
 	});
 	
 	
@@ -159,7 +138,6 @@
 			}//organization
 		<%}//loop i%>
 	}//function
-
 	function SelectTest(){
 		// ON selection of organization this function will work
 		
@@ -192,7 +170,6 @@
 			}//organization
 		<%}//loop i%>
 	}//funciton
-
 	
 	function SelectProfile() {
         var profile_div;
@@ -238,9 +215,6 @@
 		var optn = document.createElement("OPTION");
 		optn.text = text;
 		optn.value = value;
-		if(text == defaultOrganization){
-			optn.selected = true;
-		}
 	
 		selectbox.options.add(optn);
 	}
