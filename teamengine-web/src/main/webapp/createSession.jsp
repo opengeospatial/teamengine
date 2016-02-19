@@ -272,26 +272,31 @@
 <%@ include file="header.jsp"%>
 <form name="standardsForm" action="test.jsp" method="post" >
 
-Select a test suite:
+<h4> Select a test suite: </h4>
 
-<table border="1" width="60%" >
-	<tr>
+<table  width="60%" >
+	<!-- <tr>
 		<th width="15%">Organization</th>
 		<th width="15%">Specification</th>
-	<!-- <th width="15%">Version</th>
-		<th width="15%">Revision</th>  -->
-	</tr>
+	<th width="15%">Version</th>
+		<th width="15%">Revision</th> 
+	</tr> -->
 	<tr>
-		<td>
-			<select  id="Organization" name="Organization" onChange="SelectStandard();" >
+		<td style="width:20%;">Organization</td>
+		<td style="width:100%;">
+			<select  id="Organization" name="Organization" onChange="SelectStandard();" style="width:60%;">
 			<!--  <option value="">Organization</option> -->
 			</select>
 		</td>
-		<td>
-			<select id="Standard" name="Standard" onChange="SelectProfile();" >
+	</tr>
+	<tr>
+	    <td style="width:20%;">Specification</td>	
+		<td style="width:100%;">
+			<select id="Standard" name="Standard" onChange="SelectProfile();" style="width:60%;" >
 			<!-- <option value="">Specification</option> -->
 			</select>
 		</td>
+		
 		<!-- 
 		<td>
 			<select id="Version" name="Version" onChange="SelectTest();" >
@@ -305,8 +310,16 @@ Select a test suite:
 		</td>
 		-->
 	</tr>
+
+	<tr>
+		<td style="width:20%;">Description (Optional):</td>
+		<td style="width:100%;"> 
+			<input type="text" name="description" id="description" style="width:60%;" />
+		</td>
+	</tr>
+	
 </table>
-<br/>
+
 
 <%
 	for (int i=0; i < organizationList.size(); i++) {
@@ -323,9 +336,15 @@ Select a test suite:
 				    String key = org + "_" + std + "_" + ver + "_" + rev;
 %>
 <div id="Profiles_<%=key%>" style="display:none">
-Select Profile(s): <br />
+		<%
+		List<ProfileEntry> profileList = profiles.get(key);
+ 		if(profileList.size() != 0){ 
+		%>
+			<br />
+			Select Profile(s): <br/>
 <%
-					List<ProfileEntry> profileList = profiles.get(key);
+		}
+					
 					for (int m=0; m < profileList.size(); m++) {
 					    ProfileEntry profile = profileList.get(m);
 %>
@@ -341,11 +360,7 @@ Select Profile(s): <br />
 	}
 %>
 <br/>
-Enter Session Description (Optional):<br/>
-<input type="text" name="description" id="description" size="50"/>
-<br/>
-<br/>
-<input type="submit" value="Start a new test session" onclick="submitform()" />
+<input type="submit" value="Start a new test session" onclick="submitform()" /> 
 <br/>
 <input type="hidden" name="mode" value="test" />
 <input type="hidden" id="sources" name="sources" />
