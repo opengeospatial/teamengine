@@ -46,9 +46,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Compliance Testing</title>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script>
     var profiles_key = null;
-
 	function fillOrganization(){ 
 		 // this function is used to fill the category list on load
 		<% 
@@ -57,6 +57,11 @@
 		%>
 		addOption(document.standardsForm.Organization, "<%=organizationList.get(i)%>", "<%=organizationList.get(i)%>", "");
 		<%}//for loop%>
+        
+        $("#Organization").val($("#Organization option:first").val());
+        
+		// When default organization is selected then corresponding standards will appear in dropdownlist
+		SelectStandard();
 	}
 
 	function SelectStandard(){
@@ -69,15 +74,44 @@
 		%>
 			if(document.standardsForm.Organization.value == '<%=organizationList.get(i)%>'){
 			<% 
+			// get standard
 				List<String> standardList = standardMap.get(organizationList.get(i)); 
 				for(int j=0; j < standardList.size(); j++){
+					
+					// Get version
+					List<String> versionList = versionMap.get(organizationList.get(i) + "_" + standardList.get(j)); 
+					for(int k=0; k < versionList.size(); k++){
+						
+						// Get Revision 
+						List<String> revisionList = revisionMap.get(organizationList.get(i) + "_" + standardList.get(j) + "_" + versionList.get(k)); 
+						    for(int l=0; l < revisionList.size(); l++){
+						    	
 			%>
-				addOption(document.standardsForm.Standard,"<%=standardList.get(j)%>", "<%=standardList.get(j)%>");
-				<%}//loop j%>
+			
+			var std_ver_rev_value="<%=organizationList.get(i)%>" + "_" + "<%=standardList.get(j)%>" + "_" +"<%=versionList.get(k)%>" + "_" + "<%=revisionList.get(l)%>";
+			var std_ver_rev_key="<%=standardList.get(j)%>" + " - " +"<%=versionList.get(k)%>" + "  " + "[ <%=revisionList.get(l)%> ]";
+				addOption(document.standardsForm.Standard,std_ver_rev_value, std_ver_rev_key);
+			
+			<%
+						    }//loop l
+					}//loop k
+				}//loop j
+			%>
 			}//organization	
 		<%}//loop i%>
 	}//function
 
+	$(document).ready(function() {
+		$( "#Organization" ).change(function() {
+	  
+	        $("#Standard").html($('#Standard option').sort(function(x, y) {
+	            return $(x).val() < $(y).val() ? -1 : 1;
+	        }));
+	        $("#Standard").get(0).selectedIndex = 0;
+	        //e.preventDefault();
+		});
+	});
+	
 	
 	function SelectVersion(){
 		// ON selection of organization this function will work
@@ -104,7 +138,6 @@
 			}//organization
 		<%}//loop i%>
 	}//function
-
 	function SelectTest(){
 		// ON selection of organization this function will work
 		
@@ -137,7 +170,6 @@
 			}//organization
 		<%}//loop i%>
 	}//funciton
-
 	
 	function SelectProfile() {
         var profile_div;
@@ -152,11 +184,15 @@
 				}
 			}
 		}
-	    profiles_key = "Profiles";
+		profiles_key = "Profiles";
+	    profiles_key += "_" + document.standardsForm.Standard.value;
+	    /* 
 	    profiles_key += "_" + document.standardsForm.Organization.value;
 	    profiles_key += "_" + document.standardsForm.Standard.value;
 	    profiles_key += "_" + document.standardsForm.Version.value;
 	    profiles_key += "_" + document.standardsForm.Test.value;
+	    */
+	    
         profile_div = document.getElementById(profiles_key);
         if (profile_div != null) {
 			profile_div.style.display = "block";
@@ -174,7 +210,7 @@
 		}
 	}
 	
-	function addOption(selectbox, value, text )
+	function addOption(selectbox, value, text)
 	{
 		var optn = document.createElement("OPTION");
 		optn.text = text;
@@ -219,10 +255,12 @@
 	
 	function submitform() {
 		var form = document.standardsForm;
-		if (form.Organization.value == "" || form.Standard.value == "" || form.Version.value == "" || form.Test.value == "") {
+		if (form.Organization.value == "" || form.Standard.value == "") {
 	    	alert("Please select from available standards");
 	    } else {
-	        var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
+	      //  var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
+	        var sourceId = form.Standard.value;
+	        
 			document.forms["standardsForm"].elements["sources"].value = sourceId;
 			document.standardsForm.submit();
 	    }
@@ -234,40 +272,55 @@
 <%@ include file="header.jsp"%>
 <form name="standardsForm" action="test.jsp" method="post" >
 
-Select a test suite:
+<h4> Select a test suite: </h4>
 
-<table border="1" width="60%" >
-	<tr>
+<table  width="60%" >
+	<!-- <tr>
 		<th width="15%">Organization</th>
 		<th width="15%">Specification</th>
-		<th width="15%">Version</th>
-		<th width="15%">Revision</th>
+	<th width="15%">Version</th>
+		<th width="15%">Revision</th> 
+	</tr> -->
+	<tr>
+		<td style="width:20%;">Organization</td>
+		<td style="width:100%;">
+			<select  id="Organization" name="Organization" onChange="SelectStandard();" style="width:60%;">
+			<!--  <option value="">Organization</option> -->
+			</select>
+		</td>
 	</tr>
 	<tr>
-		<td>
-			<select  id="Organization" name="Organization" onChange="SelectStandard();" >
-			<option value="">Organization</option>
+	    <td style="width:20%;">Specification</td>	
+		<td style="width:100%;">
+			<select id="Standard" name="Standard" onChange="SelectProfile();" style="width:60%;" >
+			<!-- <option value="">Specification</option> -->
 			</select>
 		</td>
-		<td>
-			<select id="Standard" name="Standard" onChange="SelectVersion();" >
-			<option value="">Specification</option>
-			</select>
-		</td>
+		
+		<!-- 
 		<td>
 			<select id="Version" name="Version" onChange="SelectTest();" >
 			<option value="">Version</option>
 			</select>
 		</td>
 		<td>
-			<select id="Test" name="Test" onChange="SelectProfile();" >
+			<select id="Test" name="Test" onChange="SelectProfile();" disabled="true" >
 			<option value="">Revision</option>
 			</select>
 		</td>
+		-->
 	</tr>
+
+	<tr>
+		<td style="width:20%;">Description (Optional):</td>
+		<td style="width:100%;"> 
+			<input type="text" name="description" id="description" style="width:60%;" />
+		</td>
+	</tr>
+	
 </table>
-<br/>
-Select Profile(s): <br />
+
+
 <%
 	for (int i=0; i < organizationList.size(); i++) {
 	    String org = organizationList.get(i);
@@ -283,8 +336,15 @@ Select Profile(s): <br />
 				    String key = org + "_" + std + "_" + ver + "_" + rev;
 %>
 <div id="Profiles_<%=key%>" style="display:none">
+		<%
+		List<ProfileEntry> profileList = profiles.get(key);
+ 		if(profileList.size() != 0){ 
+		%>
+			<br />
+			Select Profile(s): <br/>
 <%
-					List<ProfileEntry> profileList = profiles.get(key);
+		}
+					
 					for (int m=0; m < profileList.size(); m++) {
 					    ProfileEntry profile = profileList.get(m);
 %>
@@ -300,11 +360,7 @@ Select Profile(s): <br />
 	}
 %>
 <br/>
-Enter Session Description (Optional):<br/>
-<input type="text" name="description" id="description" size="50"/>
-<br/>
-<br/>
-<input type="submit" value="Start a new test session" onclick="submitform()" />
+<input type="submit" value="Start a new test session" onclick="submitform()" /> 
 <br/>
 <input type="hidden" name="mode" value="test" />
 <input type="hidden" id="sources" name="sources" />
