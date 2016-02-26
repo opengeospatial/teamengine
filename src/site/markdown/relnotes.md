@@ -3,6 +3,7 @@ Release Notes
 
 ## 4.6 (2016-02-23)
 - [web] [#142](https://github.com/opengeospatial/teamengine/issues/142) - Simplify the user interface when creating a new session
+- [site] changed documentation related to using Java 8
 
 ## 4.5 (2016-02-03)
 - [resources] Merge [PR #145](https://github.com/opengeospatial/teamengine/pull/145): 

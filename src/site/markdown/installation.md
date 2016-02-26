@@ -132,7 +132,7 @@ README](https://github.com/opengeospatial/ets-resources) for details.
 
 #### System requirements
 
--   Java runtime: Oracle JDK 7 - [latest JDK
+-   Java runtime: Oracle JDK 8 - [latest JDK
     release](http://www.oracle.com/technetwork/java/javase/downloads/)
 -   Servlet container: Apache Tomcat 7.0 - [latest Tomcat
     release](http://tomcat.apache.org/download-70.cgi)
