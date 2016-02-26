@@ -2,9 +2,7 @@
 
 ## Easy via a shell script
 
-
-This project provides scripts to build TEAM Engine and the tests for Unix like systems
-https://github.com/opengeospatial/teamengine-builder
+The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-builder) provide a very easy way to build TEAM Engine and the tests. Script for Windows and Unix-like systems are available. Detailed instructions are provide in this tutorial.
 
 ## Downloading and building
 
@@ -98,6 +96,7 @@ structure of the TE\_BASE directory is shown below.
       |-- config.xml    # main configuration file
       |-- resources/    # shared test suite resources
           |-- site      # site-specific HTML (welcome, title, etc.)
+          |-- lib       # libraries required by some test (e.g. TestNG tests)
       |-- scripts/      # CTL test scripts
       |-- work/         # teamengine work directory
       +-- users/
@@ -177,6 +176,26 @@ hence the context path) has been changed from the default value
 * `/teamengine`: Home page for selecting and running CTL test suites
 * `/teamengine/rest/suites`: Presents a listing of available (TestNG) test suites, 
 with links to test suite documentation
+
+
+### Installations of tests in TEAM ENGINE
+
+There are various examples of tests that can be installed in TEAM Engine. For example.
+
+- [GML 3.2.1](https://github.com/opengeospatial/ets-gml32)
+- [WMS 1.3](https://github.com/opengeospatial/ets-wms13)
+
+Even though the first one uses TestNG and the second uses CTL, they both follow maven best practice conventions and are build and treated the same way when installing them in TEAM Engine. To download and install a test do the following steps:
+
+1. checkout the test repository: e.g. `git clone  https://github.com/opengeospatial/ets-gml32.git`
+2. go inside the project" `cd ets-gml32`
+3. checkout a specific version. e.g. for 1.23 `git checkout 1.123`
+4. build using maven `mvn clean install`
+5. check that the build is succesful. You should see a **BUILD SUCCESS** text in the terminal
+6. go to the target folder `cd target`
+7. unzip the file that ends with *ctl.zip* to $TE_BASE/scripts
+8. unzip the file that ends with *deps.zip* to $TE_BASE/resources/lib, to run in command line
+9. unzip the file that ends with *deps.zip* to the web app library. If teamngine was installed as teamengine in tomcat, then the libraies in deps.zip should be copied under webapps/teamengine/WEB-INF/lib 
 
 
 ### Customizing the welcome page
