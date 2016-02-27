@@ -6,6 +6,14 @@ The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-b
 
 ## Downloading and building
 
+## Prerequisites
+
+- **Java 8**: Download Java JDK (Java Development Kit) 8, from `here <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>`_.
+- **Maven 2**: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
+- **Git 1.8**: Download Git-SCM version 1.8 or newer  `here <http://git-scm.com/download/win>`_.
+- **Apache Tomcat 7**: It has been tested with Tomcat version 7.0.52, can be download from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
+
+
 ### Getting the Source Code 
 
 The source code is available from [GitHub](https://github.com/opengeospatial/teamengine). 
