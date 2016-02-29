@@ -1,7 +1,7 @@
 Release Notes
 =============
 
-## 4.6 (2016-02-26)
+## 4.6 (2016-02-29)
 - [web] [#142](https://github.com/opengeospatial/teamengine/issues/142) - Simplify the user interface when creating a new session
 - [site] Updated documentation related to using Java 8, prerequisites and adding tests (ETS)
 
