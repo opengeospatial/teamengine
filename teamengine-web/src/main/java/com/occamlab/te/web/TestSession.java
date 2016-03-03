@@ -23,14 +23,18 @@ package com.occamlab.te.web;
 
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.StringUtils;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -56,7 +60,8 @@ public class TestSession {
     public void save(File logdir) throws Exception {
         File sessionDir = new File(logdir, sessionId);
         sessionDir.mkdir();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = new Date();
         currentDate=dateFormat.format(date);
         PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
