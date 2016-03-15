@@ -62,6 +62,7 @@
         
 		// When default organization is selected then corresponding standards will appear in dropdownlist
 		SelectStandard();
+		sortStandards();
 	}
 
 	function SelectStandard(){
@@ -104,13 +105,18 @@
 	$(document).ready(function() {
 		$( "#Organization" ).change(function() {
 	  
-	        $("#Standard").html($('#Standard option').sort(function(x, y) {
-	            return $(x).val() < $(y).val() ? -1 : 1;
-	        }));
-	        $("#Standard").get(0).selectedIndex = 0;
+			sortStandards();
 	        //e.preventDefault();
 		});
 	});
+	
+	function sortStandards(){
+		
+		$("#Standard").html($('#Standard option').sort(function(x, y) {
+            return $(x).val() < $(y).val() ? -1 : 1;
+        }));
+        $("#Standard").get(0).selectedIndex = 0;
+	}
 	
 	
 	function SelectVersion(){
