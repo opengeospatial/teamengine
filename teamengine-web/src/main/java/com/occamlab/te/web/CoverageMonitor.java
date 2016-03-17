@@ -63,24 +63,13 @@ public class CoverageMonitor {
             .getPackage().getName());
     private static final Map<URI, String> ICS_MAP = createICSMap();
 
-    private static Map<URI, String> createICSMap() {
-        HashMap<URI, String> icsMap = new HashMap<URI, String>();
-        icsMap.put(URI.create("urn:wms_client_test_suite/GetCapabilities"),
-                "WMS-GetCapabilities.xml");
-        icsMap.put(URI.create("urn:wms_client_test_suite/GetMap"),
-                "WMS-GetMap.xml");
-        icsMap.put(URI.create("urn:wms_client_test_suite/GetFeatureInfo"),
-                "WMS-GetFeatureInfo.xml");
-        return icsMap;
-    }
-
     private URI requestId;
     private Document coverageDoc;
     private File testSessionDir;
 
     /**
      * Creates a CoverageMonitor for a given service request.
-     * 
+     *
      * @param uri
      *            A URI value that identifies a service request message.
      */
@@ -96,6 +85,17 @@ public class CoverageMonitor {
             LOGR.warning(e.getMessage());
         }
         LOGR.config("Created coverage monitor using ICS at " + icsPath);
+    }
+
+    private static Map<URI, String> createICSMap() {
+        HashMap<URI, String> icsMap = new HashMap<URI, String>();
+        icsMap.put(URI.create("urn:wms_client_test_suite/GetCapabilities"),
+                "WMS-GetCapabilities.xml");
+        icsMap.put(URI.create("urn:wms_client_test_suite/GetMap"),
+                "WMS-GetMap.xml");
+        icsMap.put(URI.create("urn:wms_client_test_suite/GetFeatureInfo"),
+                "WMS-GetFeatureInfo.xml");
+        return icsMap;
     }
 
     /**
