@@ -57,6 +57,63 @@ public class XMLValidatingParser {
 	private static Logger jlogger = Logger
 			.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
+	public XMLValidatingParser() {
+		if (SF == null) {
+			String property_name = "javax.xml.validation.SchemaFactory:"
+					+ XMLConstants.W3C_XML_SCHEMA_NS_URI;
+			String oldprop = System.getProperty(property_name);
+			System.setProperty(property_name,
+					"org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+			SF = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			try {
+				SF.setFeature(
+						"http://apache.org/xml/features/validation/schema-full-checking",
+						false);
+			} catch (Exception e) {
+				jlogger.warning("Unable to set feature '*/schema-full-checking'");
+			}
+			if (oldprop == null) {
+				System.clearProperty(property_name);
+			} else {
+				System.setProperty(property_name, oldprop);
+			}
+		}
+
+		if (nonValidatingDBF == null) {
+			String property_name = "javax.xml.parsers.DocumentBuilderFactory";
+			String oldprop = System.getProperty(property_name);
+			System.setProperty(property_name,
+					"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+			nonValidatingDBF = DocumentBuilderFactory.newInstance();
+			nonValidatingDBF.setNamespaceAware(true);
+			schemaValidatingDBF = DocumentBuilderFactory.newInstance();
+			schemaValidatingDBF.setNamespaceAware(true);
+			schemaValidatingDBF.setValidating(true);
+			schemaValidatingDBF.setAttribute(
+					"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+					"http://www.w3.org/2001/XMLSchema");
+			dtdValidatingDBF = DocumentBuilderFactory.newInstance();
+			dtdValidatingDBF.setNamespaceAware(true);
+			dtdValidatingDBF.setValidating(true);
+			if (oldprop == null) {
+				System.clearProperty(property_name);
+			} else {
+				System.setProperty(property_name, oldprop);
+			}
+		}
+
+		if (TF == null) {
+			TF = TransformerFactory.newInstance();
+		}
+	}
+
+	public XMLValidatingParser(Document schema_links) throws Exception {
+		this();
+		if (null != schema_links) {
+			loadSchemaLists(schema_links, this.schemaList, this.dtdList);
+		}
+	}
+
 	private void loadSchemaList(Document schemaLinks,
 			ArrayList<Object> schemas, String schemaType) throws Exception {
 		NodeList nodes = schemaLinks.getElementsByTagNameNS(
@@ -120,63 +177,6 @@ public class XMLValidatingParser {
 		}
 	}
 
-	public XMLValidatingParser() {
-		if (SF == null) {
-			String property_name = "javax.xml.validation.SchemaFactory:"
-					+ XMLConstants.W3C_XML_SCHEMA_NS_URI;
-			String oldprop = System.getProperty(property_name);
-			System.setProperty(property_name,
-					"org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-			SF = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			try {
-				SF.setFeature(
-						"http://apache.org/xml/features/validation/schema-full-checking",
-						false);
-			} catch (Exception e) {
-				jlogger.warning("Unable to set feature '*/schema-full-checking'");
-			}
-			if (oldprop == null) {
-				System.clearProperty(property_name);
-			} else {
-				System.setProperty(property_name, oldprop);
-			}
-		}
-
-		if (nonValidatingDBF == null) {
-			String property_name = "javax.xml.parsers.DocumentBuilderFactory";
-			String oldprop = System.getProperty(property_name);
-			System.setProperty(property_name,
-					"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-			nonValidatingDBF = DocumentBuilderFactory.newInstance();
-			nonValidatingDBF.setNamespaceAware(true);
-			schemaValidatingDBF = DocumentBuilderFactory.newInstance();
-			schemaValidatingDBF.setNamespaceAware(true);
-			schemaValidatingDBF.setValidating(true);
-			schemaValidatingDBF.setAttribute(
-					"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-					"http://www.w3.org/2001/XMLSchema");
-			dtdValidatingDBF = DocumentBuilderFactory.newInstance();
-			dtdValidatingDBF.setNamespaceAware(true);
-			dtdValidatingDBF.setValidating(true);
-			if (oldprop == null) {
-				System.clearProperty(property_name);
-			} else {
-				System.setProperty(property_name, oldprop);
-			}
-		}
-
-		if (TF == null) {
-			TF = TransformerFactory.newInstance();
-		}
-	}
-
-	public XMLValidatingParser(Document schema_links) throws Exception {
-		this();
-		if (null != schema_links) {
-			loadSchemaLists(schema_links, this.schemaList, this.dtdList);
-		}
-	}
-
 	/**
 	 * Attempts to parse a resource read using the given connection to a URL.
 	 * 
@@ -201,7 +201,7 @@ public class XMLValidatingParser {
 			doc = parse(inStream, instruction, logger);
 		} catch (Exception e) {
 			throw new RuntimeException(String.format(
-					"Failed to parse resource from %s \n %s", uc.getURL(),
+					"Failed to parse resource from %s %n %s", uc.getURL(),
 					e.getMessage()));
 		}
 		return doc;

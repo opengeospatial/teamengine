@@ -41,6 +41,29 @@ public class XSLTransformationParser {
     Boolean defaultIgnoreErrors;
     Boolean defaultIgnoreWarnings;
 
+    public XSLTransformationParser() throws Exception {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        db = dbf.newDocumentBuilder();
+        tf = TransformerFactory.newInstance();
+        defaultProperties = new HashMap<String, String>();
+        defaultParams = new HashMap<String, String>();
+        defaultIgnoreErrors = new Boolean(false);
+        defaultIgnoreWarnings = new Boolean(true);
+    }
+
+    public XSLTransformationParser(Node node) throws Exception {
+        super();
+        defaultTemplates = parseInstruction(DomUtils.getElement(node),
+                defaultProperties, defaultParams, defaultIgnoreErrors,
+                defaultIgnoreWarnings);
+    }
+
+    public XSLTransformationParser(String reftype, String ref) throws Exception {
+        super();
+        defaultTemplates = tf.newTemplates(getSource(reftype, ref));
+    }
+
     private Source getSource(String reftype, String ref) throws Exception {
         if (reftype.equals("url")) {
             URL url = new URL(ref);
@@ -97,29 +120,6 @@ public class XSLTransformationParser {
         return templates;
     }
 
-    public XSLTransformationParser() throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        db = dbf.newDocumentBuilder();
-        tf = TransformerFactory.newInstance();
-        defaultProperties = new HashMap<String, String>();
-        defaultParams = new HashMap<String, String>();
-        defaultIgnoreErrors = new Boolean(false);
-        defaultIgnoreWarnings = new Boolean(true);
-    }
-
-    public XSLTransformationParser(Node node) throws Exception {
-        super();
-        defaultTemplates = parseInstruction(DomUtils.getElement(node),
-                defaultProperties, defaultParams, defaultIgnoreErrors,
-                defaultIgnoreWarnings);
-    }
-
-    public XSLTransformationParser(String reftype, String ref) throws Exception {
-        super();
-        defaultTemplates = tf.newTemplates(getSource(reftype, ref));
-    }
-
     public Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
         HashMap<String, String> properties = new HashMap<String, String>();
@@ -153,7 +153,7 @@ public class XSLTransformationParser {
         try {
             if (LOGR.isLoggable(Level.FINER)) {
                 String msg = String
-                        .format("Attempting to transform source from %s using instruction set:\n %s",
+                        .format("Attempting to transform source from %s using instruction set:%n %s",
                                 uc.getURL(),
                                 DomUtils.serializeNode(instruction));
                 LOGR.finer(msg);
