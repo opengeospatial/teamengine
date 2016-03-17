@@ -39,7 +39,6 @@ public class EmailLogServlet extends javax.servlet.http.HttpServlet implements
         try {
             File userdir = new File(Conf.getUsersDir(),
                     request.getParameter("userId"));
-            // File userdir = new File(Conf.getUsersDir(), "tester1");
             File zipFile = new File(userdir,
                     request.getParameter("zipFileName"));
 
@@ -68,7 +67,6 @@ public class EmailLogServlet extends javax.servlet.http.HttpServlet implements
             String sessionId = request.getParameter("session");
             String zipFileName = sessionId + ".zip";
             File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
-            // File userdir = new File(Conf.getUsersDir(), "tester1");
             File sessiondir = new File(userdir, sessionId);
             File zipFile = new File(userdir, zipFileName);
             ZipUtils.zipDir(zipFile, sessiondir);

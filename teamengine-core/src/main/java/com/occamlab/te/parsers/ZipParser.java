@@ -90,11 +90,6 @@ public class ZipParser {
      * @return a DOM Document representing the manifest of items in the archive.
      * @throws Throwable
      */
-    /*
-     * public static Document parse(HttpResponse resp, Element instruction,
-     * PrintWriter logger) throws Throwable { return
-     * parse(resp.getEntity().getContent(), instruction, logger); }
-     */
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Throwable {
         return parse(uc.getInputStream(), instruction, logger);

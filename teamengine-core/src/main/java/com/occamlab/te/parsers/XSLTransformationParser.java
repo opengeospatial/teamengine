@@ -142,7 +142,6 @@ public class XSLTransformationParser {
             t.setOutputProperty(prop.getKey(), prop.getValue());
         }
         for (Entry<String, String> param : params.entrySet()) {
-            // System.out.println(param.getKey() + ": " + param.getValue());
             t.setParameter(param.getKey(), param.getValue());
         }
         XSLTransformationErrorHandler el = new XSLTransformationErrorHandler(

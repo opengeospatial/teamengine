@@ -29,7 +29,6 @@ public class DownloadLogServlet extends javax.servlet.http.HttpServlet
             String sessionId = request.getParameter("session");
             String zipFileName = sessionId + ".zip";
             File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
-            // File userdir = new File(Conf.getUsersDir(), "tester1");
             File sessiondir = new File(userdir, sessionId);
             File zipFile = new File(userdir, zipFileName);
             ZipUtils.zipDir(zipFile, sessiondir);
@@ -41,21 +40,12 @@ public class DownloadLogServlet extends javax.servlet.http.HttpServlet
             response.setContentLength((int) zipFile.length());
             System.out.println("file length : " + (int) zipFile.length());
             int length;
-
             BufferedInputStream fileInBuf = new BufferedInputStream(
                     new FileInputStream(zipFile));
-
-            // ByteArrayOutputStream baos = new ByteArrayOutputStream();
             OutputStream out = response.getOutputStream();
-
             while ((length = fileInBuf.read(buf)) > 0) {
                 out.write(buf, 0, length);
-                // baos.write(buf, 0, length);
             }
-
-            // response.getOutputStream().write(baos.toByteArray());
-            // response.getOutputStream().flush();
-            // response.getOutputStream().close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
