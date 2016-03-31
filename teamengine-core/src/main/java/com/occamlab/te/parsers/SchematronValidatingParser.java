@@ -113,6 +113,8 @@ public class SchematronValidatingParser {
                 // to a StreamResult
                 try {
                     TransformerFactory tFactory = TransformerFactory.newInstance();
+                        // Fortify Mod: prevent external entity injection 
+                        tFactory.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
                     Transformer transformer = tFactory.newTransformer();
                     transformer.setOutputProperty("encoding", "ISO-8859-1");
                     transformer.setOutputProperty("indent", "yes");
@@ -279,6 +281,8 @@ public class SchematronValidatingParser {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+	   dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = null;
         try {
@@ -294,6 +298,8 @@ public class SchematronValidatingParser {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+	   dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = null;
         try {

@@ -148,6 +148,8 @@ public class XMLValidatingParser {
 			System.setProperty(property_name,
 					"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 			nonValidatingDBF = DocumentBuilderFactory.newInstance();
+			// Fortify Mod: Disable entity expansion to foil External Entity Injections
+			nonValidatingDBF.setExpandEntityReferences(false);
 			nonValidatingDBF.setNamespaceAware(true);
 			schemaValidatingDBF = DocumentBuilderFactory.newInstance();
 			schemaValidatingDBF.setNamespaceAware(true);
@@ -158,6 +160,8 @@ public class XMLValidatingParser {
 			dtdValidatingDBF = DocumentBuilderFactory.newInstance();
 			dtdValidatingDBF.setNamespaceAware(true);
 			dtdValidatingDBF.setValidating(true);
+			// Fortify Mod: Disable entity expansion to foil External Entity Injections
+			dtdValidatingDBF.setExpandEntityReferences(false);
 			if (oldprop == null) {
 				System.clearProperty(property_name);
 			} else {
@@ -429,7 +433,11 @@ public class XMLValidatingParser {
 		jlogger.finer("Validating XML resource from " + doc.getDocumentURI());
 		DocumentBuilder db = dtdValidatingDBF.newDocumentBuilder();
 		db.setErrorHandler(errHandler);
-		Transformer copier = TransformerFactory.newInstance().newTransformer();
+		// Fortify Mod: Set the XMLConstants.ACCESS_EXTERNAL_DTD to false to 
+		// prevent external entity injection attacks
+		TransformerFactory tf = TransformerFactory.newInstance();
+		tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+		Transformer copier = tf.newTransformer();
 		ByteArrayOutputStream content = new ByteArrayOutputStream();
 		Result copy = new StreamResult(content);
 		if (null == dtdList || dtdList.isEmpty()) {

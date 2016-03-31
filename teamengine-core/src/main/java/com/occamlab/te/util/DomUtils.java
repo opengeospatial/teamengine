@@ -75,6 +75,8 @@ public class DomUtils {
         Transformer identity = null;
         try {
             TransformerFactory TF = TransformerFactory.newInstance();
+               // Fortify Mod: disable external entity injection
+    		 TF.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
             identity = TF.newTransformer();
             identity.transform(new DOMSource(doc), new DOMResult(newDoc));
         } catch (Exception ex) {
@@ -150,6 +152,8 @@ public class DomUtils {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
+              // Fortify Mod: disable external entity injection
+    		factory.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
             Transformer transformer = factory.newTransformer();
 
             StreamResult dest = new StreamResult(baos);
@@ -235,6 +239,8 @@ public class DomUtils {
     static public void displayNode(Node node) {
         try {
             TransformerFactory TF = TransformerFactory.newInstance();
+              // Fortify Mod: disable external entity injection
+    		 TF.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
             Transformer identity = TF.newTransformer();
             identity.transform(new DOMSource(node),
                     new StreamResult(System.out));
@@ -281,9 +287,15 @@ public class DomUtils {
     static public Document createDocument(Node node) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+	   dbf.setExpandEntityReferences(false);
         Document doc = dbf.newDocumentBuilder().newDocument();
         if (node != null) {
-            Transformer t = TransformerFactory.newInstance().newTransformer();
+        	// Fortify Mod: disable external entity injection
+             TransformerFactory tf = TransformerFactory.newInstance();
+    		tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+             Transformer t = tf.newTransformer();
+		// End Fortify Mod
             t.transform(new DOMSource(node), new DOMResult(doc));
         }
         return doc;

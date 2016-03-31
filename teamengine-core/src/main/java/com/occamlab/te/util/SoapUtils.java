@@ -65,9 +65,15 @@ public class SoapUtils {
          */
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+	   dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document soapMessage = db.newDocument();
-        Transformer t = TransformerFactory.newInstance().newTransformer();
+          // Fortify Mod: prevent external entity injection
+          TransformerFactory tf = TransformerFactory.newInstance();
+          tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+          Transformer t = tf.newTransformer();
+	   // End Fortify Mod
         t.transform(new StreamSource(in), new DOMResult(soapMessage));
         return soapMessage;
     }
@@ -144,6 +150,8 @@ public class SoapUtils {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         TransformerFactory tf = TransformerFactory.newInstance();
+          // Fortify Mod: prevent external entity injection
+          tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
         Transformer t = tf.newTransformer();
         t.setOutputProperty(OutputKeys.ENCODING, encoding);
         t.transform(new DOMSource(message), new StreamResult(baos));
