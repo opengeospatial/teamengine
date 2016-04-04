@@ -15,7 +15,9 @@
  * Grumman Corporation are Copyright (C) 2005-2006, Northrop Grumman
  * Corporation. All Rights Reserved.
  *
- * Contributor(s): S. Gianfranceschi (Intecs): Added the SOAP suport
+ * Contributor(s): 
+ *	S. Gianfranceschi (Intecs): Added the SOAP suport
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
  */
