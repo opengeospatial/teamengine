@@ -1,3 +1,10 @@
+/**
+* **************************************************************************
+* Contributor(s):
+*	C. Heazel (WiSC): Added Fortify adjudication changes
+*
+* **************************************************************************
+*/
 package com.occamlab.te.util;
 
 import java.io.File;
@@ -22,6 +29,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
@@ -76,8 +84,9 @@ public class DomUtils {
         try {
             TransformerFactory TF = TransformerFactory.newInstance();
                // Fortify Mod: disable external entity injection
-    		 TF.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+            TF.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             identity = TF.newTransformer();
+		    // End Fortify Mod
             identity.transform(new DOMSource(doc), new DOMResult(newDoc));
         } catch (Exception ex) {
             System.out.println("ERROR: " + ex.getMessage());
@@ -153,8 +162,9 @@ public class DomUtils {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
               // Fortify Mod: disable external entity injection
-    		factory.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = factory.newTransformer();
+		   // End Fortify Mod
 
             StreamResult dest = new StreamResult(baos);
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
@@ -240,8 +250,9 @@ public class DomUtils {
         try {
             TransformerFactory TF = TransformerFactory.newInstance();
               // Fortify Mod: disable external entity injection
-    		 TF.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+            TF.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer identity = TF.newTransformer();
+		   // End Fortify Mod
             identity.transform(new DOMSource(node),
                     new StreamResult(System.out));
         } catch (Exception ex) {
@@ -291,12 +302,12 @@ public class DomUtils {
 	   dbf.setExpandEntityReferences(false);
         Document doc = dbf.newDocumentBuilder().newDocument();
         if (node != null) {
-        	// Fortify Mod: disable external entity injection
-             TransformerFactory tf = TransformerFactory.newInstance();
-    		tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
-             Transformer t = tf.newTransformer();
-		// End Fortify Mod
-            t.transform(new DOMSource(node), new DOMResult(doc));
+        	    // Fortify Mod: disable external entity injection
+           TransformerFactory tf = TransformerFactory.newInstance();
+           tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+           Transformer t = tf.newTransformer();
+		    // End Fortify Mod
+           t.transform(new DOMSource(node), new DOMResult(doc));
         }
         return doc;
     }

@@ -65,6 +65,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
@@ -1237,7 +1238,7 @@ public class TECore implements Runnable {
       StringWriter sw = new StringWriter();
        // Fortify Mod: prevent external entity injection
        TransformerFactory tf = TransformerFactory.newInstance();
-       tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+       tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
        Transformer transformer = tf.newTransformer();
 	// End Fortify Mod 
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -1857,7 +1858,7 @@ public class TECore implements Runnable {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
     // Fortify Mod: prevent external entity injection
-    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     DocumentBuilder db = dbf.newDocumentBuilder();
 
     TransformerFactory tf = TransformerFactory.newInstance();
@@ -1964,10 +1965,9 @@ public class TECore implements Runnable {
    */
   public Element parse(URLConnection uc, Node instruction,
           Document response_doc) throws Exception {
-	// Fortify Mod: To prevent external entity injection, added creation of tf and 
-	// tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false)
+	// Fortify Mod: To prevent external entity injections
 	TransformerFactory tf = TransformerFactory.newInstance();
-	tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+     tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 	Transformer idt = tf.newTransformer();
 	// End Fortify Mod
     Element parser_e = response_doc.createElement("parser");

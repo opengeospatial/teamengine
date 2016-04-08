@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.parsers;
 
 import java.io.ByteArrayInputStream;
@@ -170,7 +178,14 @@ public class XMLValidatingParser {
 		}
 
 		if (TF == null) {
+                  // Fortify Mod: prevent external entity injection
+			  // includes try block to capture exceptions to setFeature. 
 			TF = TransformerFactory.newInstance();
+			try {
+       		TF.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			} catch (Exception e) {
+		         jlogger.warning("Failed to secure Transformer");
+			}
 		}
 	}
 
@@ -433,12 +448,17 @@ public class XMLValidatingParser {
 		jlogger.finer("Validating XML resource from " + doc.getDocumentURI());
 		DocumentBuilder db = dtdValidatingDBF.newDocumentBuilder();
 		db.setErrorHandler(errHandler);
-		// Fortify Mod: Set the XMLConstants.ACCESS_EXTERNAL_DTD to false to 
-		// prevent external entity injection attacks
+              // Fortify Mod: prevent external entity injection
+	         // includes try block to capture exceptions to setFeature.
 		TransformerFactory tf = TransformerFactory.newInstance();
-		tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
-		Transformer copier = tf.newTransformer();
-		ByteArrayOutputStream content = new ByteArrayOutputStream();
+		try {
+       	    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		    } catch (Exception e) {
+		        jlogger.warning("Failed to secure Transformer");
+		    }
+		// End Fortify Mod
+	     Transformer copier = tf.newTransformer();
+           ByteArrayOutputStream content = new ByteArrayOutputStream();
 		Result copy = new StreamResult(content);
 		if (null == dtdList || dtdList.isEmpty()) {
 			DocumentType doctype = doc.getDoctype();

@@ -1,3 +1,12 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
+
 package com.occamlab.te.parsers;
 
 import java.io.File;
@@ -19,6 +28,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -113,8 +123,8 @@ public class SchematronValidatingParser {
                 // to a StreamResult
                 try {
                     TransformerFactory tFactory = TransformerFactory.newInstance();
-                        // Fortify Mod: prevent external entity injection 
-                        tFactory.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+                      // Fortify Mod: prevent external entity injection 
+                    tFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                     Transformer transformer = tFactory.newTransformer();
                     transformer.setOutputProperty("encoding", "ISO-8859-1");
                     transformer.setOutputProperty("indent", "yes");

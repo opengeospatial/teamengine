@@ -1,3 +1,12 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
+
 package com.occamlab.te.web;
 
 import java.io.File;
