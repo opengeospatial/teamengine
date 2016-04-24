@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te;
 
 import static com.occamlab.te.TECore.getResultDescription;
@@ -21,6 +29,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -74,6 +83,8 @@ public class RecordTestResult {
     if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
       //Create a document builder for storing the data.
       TECore.icFactory = DocumentBuilderFactory.newInstance();
+      // Fortify Mod: prevent external entity injection
+      TECore.icFactory.setExpandEntityReferences(false);
       try {
         TECore.icBuilder = TECore.icFactory.newDocumentBuilder();
         // Create a document for storing the xml data
@@ -91,6 +102,8 @@ public class RecordTestResult {
     if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
       //Create a document builder for storing the data.
       TECore.icFactoryClause = DocumentBuilderFactory.newInstance();
+      // Fortify Mod: prevent external entity injection
+      TECore.icFactoryClause.setExpandEntityReferences(false);
       try {
         TECore.icBuilderClause = TECore.icFactoryClause.newDocumentBuilder();
         // Create a document for storing the xml data
@@ -117,6 +130,8 @@ public class RecordTestResult {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.doc);
         TransformerFactory xformFactory = TransformerFactory.newInstance();
+        // Fortify Mod: prevent external entity injection 
+        xformFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer idTransform = xformFactory.newTransformer();
         // Declare document is XML
         idTransform.setOutputProperty(OutputKeys.METHOD, XML);
@@ -163,6 +178,8 @@ public class RecordTestResult {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.docClause);
         TransformerFactory xformFactory = TransformerFactory.newInstance();
+        // Fortify Mod: prevent external entity injection 
+        xformFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer idTransform = xformFactory.newTransformer();
         // Declare document is XML
         idTransform.setOutputProperty(OutputKeys.METHOD, XML);

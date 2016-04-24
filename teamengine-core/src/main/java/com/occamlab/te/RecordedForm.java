@@ -1,8 +1,17 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te;
 
 import java.io.File;
 import java.util.Arrays;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -15,7 +24,12 @@ public class RecordedForm {
     }
 
     try {
-      Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(formSource);
+      // Fortify Mod: prevent external entity injection
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setExpandEntityReferences(false);
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      Document doc = db.parse(formSource);
+      //Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(formSource);
       teCore.setFormResults(doc);
     } catch (Exception e) {
       throw new RuntimeException("Could not parse form file" + formSource.getAbsolutePath(), e);

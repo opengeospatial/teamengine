@@ -15,7 +15,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
  */
 package com.occamlab.te;
 
@@ -45,6 +46,7 @@ import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;    // Fortify mod.
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.Misc;
@@ -199,8 +201,12 @@ public class Generator {
                     InputSource input = new InputSource(new FileInputStream(
                             sourceFile));
                     input.setSystemId(sourceFile.toURI().toString());
-                    Source ctlSource = new SAXSource(parser.getXMLReader(),
-                            input);
+                    // Fortify Mods to prevent External Entity Injection
+                    XMLReader reader = parser.getXMLReader();
+                    reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    Source ctlSource = new SAXSource(reader, input);
+                    // Source ctlSource = new SAXSource(parser.getXMLReader(),input);
+                    // End Fortify Mods
                     // Run the generator transformation. Output is an index file
                     // and is saved to disk. The generator also creates XSL
                     // template files in the working dir.

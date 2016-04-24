@@ -16,7 +16,8 @@
  (IMAA) part of the Italian National Research Council (CNR). 
  Portions created by Fabrizio Vitale are Copyright (C) 2009. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
 package com.occamlab.te.util;
@@ -35,6 +36,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
 
@@ -99,7 +101,11 @@ public class DocumentationHelper {
     private void prettyprint(String xmlLogsFile, FileOutputStream htmlReportFile)
             throws Exception {
         TransformerFactory tFactory = TransformerFactory.newInstance();
+        // Fortify Mod: prevent external entity injection
+        tFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // Fortify Mod: prevent external entity injection
+        factory.setExpandEntityReferences(false);
         factory.setNamespaceAware(true);
         factory.setXIncludeAware(true);
         DocumentBuilder parser = factory.newDocumentBuilder();
@@ -125,7 +131,11 @@ public class DocumentationHelper {
     public void generateDocumentation(String sourcecodePath, String suiteName,
             FileOutputStream htmlFileOutput) throws Exception {
         TransformerFactory tFactory = TransformerFactory.newInstance();
+        // Fortify Mod: prevent external entity injection
+        tFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // Fortify Mod: prevent external entity injection
+        factory.setExpandEntityReferences(false);
         factory.setNamespaceAware(true);
         factory.setXIncludeAware(true);
         DocumentBuilder parser = factory.newDocumentBuilder();

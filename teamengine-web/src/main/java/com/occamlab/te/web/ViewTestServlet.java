@@ -16,7 +16,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
 package com.occamlab.te.web;
@@ -33,6 +34,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import com.occamlab.te.util.Misc;
 
@@ -51,8 +53,12 @@ public class ViewTestServlet extends HttpServlet {
         try {
             File stylesheet = Misc
                     .getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
-            viewTestTemplates = TransformerFactory.newInstance().newTemplates(
-                    new StreamSource(stylesheet));
+                // Fortify Mod: prevent external entity injection
+            TransformerFactory tf = TransformerFactory.newInstance();
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            viewTestTemplates = tf.newTemplates(new StreamSource(stylesheet));
+                //  viewTestTemplates = TransformerFactory.newInstance().newTemplates(
+                //  new StreamSource(stylesheet));
         } catch (Exception e) {
             throw new ServletException(e);
         }

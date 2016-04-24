@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.util;
 
 import java.io.ByteArrayInputStream;
@@ -159,6 +167,8 @@ public class Utils {
                     "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
+                // Fortify Mod: prevent external entity injection
+            dbf.setExpandEntityReferences(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             doc = db.parse(baip);
         } catch (Exception e) {

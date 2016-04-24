@@ -182,7 +182,7 @@ public class XMLValidatingParser {
 			  // includes try block to capture exceptions to setFeature. 
 			TF = TransformerFactory.newInstance();
 			try {
-       		TF.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+               	    TF.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			} catch (Exception e) {
 		         jlogger.warning("Failed to secure Transformer");
 			}
@@ -452,7 +452,7 @@ public class XMLValidatingParser {
 	         // includes try block to capture exceptions to setFeature.
 		TransformerFactory tf = TransformerFactory.newInstance();
 		try {
-       	    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      	        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		    } catch (Exception e) {
 		        jlogger.warning("Failed to secure Transformer");
 		    }

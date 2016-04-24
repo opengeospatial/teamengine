@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.config;
 
 import java.io.File;
@@ -34,8 +42,11 @@ public final class ConfigEntry {
     }
 
     void readConfigFile(File file) throws Exception {
-        DocumentBuilder db = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder();
+        // Fortify Mod: prevent external entity injection
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setExpandEntityReferences(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        //DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = db.parse(file);
         Element config = doc.getDocumentElement();
         Element organizationEl = getElementByTagName(config, "organization");

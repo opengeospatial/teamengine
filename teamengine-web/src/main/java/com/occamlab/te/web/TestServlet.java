@@ -16,7 +16,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
 package com.occamlab.te.web;
@@ -47,6 +48,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import net.sf.saxon.FeatureKeys;
 import net.sf.saxon.s9api.Processor;
@@ -132,11 +134,19 @@ public class TestServlet extends HttpServlet {
             }
             conf = new Config();
             this.setupOpts = new SetupOptions();
+                // Fortify Mod: prevent external entity injection
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setExpandEntityReferences(false);
+            DB = dbf.newDocumentBuilder();
+            // DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                // End Fortify Mod
 
-            DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-            identityTransformer = TransformerFactory.newInstance()
-                    .newTransformer();
+                // Forify Mod: prevent external entity injection 
+            TransformerFactory tf = TransformerFactory.newInstance();
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            identityTransformer = tf.newTransformer();
+            // identityTransformer = TransformerFactory.newInstance().newTransformer();
 
             indexes = new HashMap<String, Index>();
 

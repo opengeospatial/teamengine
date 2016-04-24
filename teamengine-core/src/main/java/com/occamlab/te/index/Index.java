@@ -15,7 +15,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
  */
 
 package com.occamlab.te.index;
@@ -63,6 +64,8 @@ public class Index {
         this.indexFile = indexFile;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        // Fortify Mod: prevent external entity injection
+        dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(indexFile);
         Element index = (Element) doc.getDocumentElement();

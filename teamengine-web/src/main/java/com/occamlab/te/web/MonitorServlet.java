@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.web;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +37,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
@@ -267,9 +276,16 @@ public class MonitorServlet extends HttpServlet {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
+                // Fortify Mod: prevent external entity injection
+            dbf.setExpandEntityReferences(false);
             DB = dbf.newDocumentBuilder();
-            identityTransformer = TransformerFactory.newInstance()
-                    .newTransformer();
+                // Fortify Mod: prevent external entity injection 
+            TransformerFactory tf = TransformerFactory.newInstance();
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            identityTransformer = tf.newTransformer();
+            // identityTransformer = TransformerFactory.newInstance().newTransformer();
+	           // End Fortify Mod
+
             servletName = this.getServletName();
         } catch (Exception e) {
             throw new ServletException(e);
@@ -318,8 +334,12 @@ public class MonitorServlet extends HttpServlet {
                     || mime.indexOf("application/xml") == 0) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(data);
                 Element eBody = doc.createElementNS(CTL_NS, "ctl:body");
-                Transformer t = TransformerFactory.newInstance()
-                        .newTransformer();
+                    // Fortify Mod: prevent external entity injection 
+                TransformerFactory tf = TransformerFactory.newInstance();
+                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                Transformer t = tf.newTransformer();
+                // Transformer t = TransformerFactory.newInstance().newTransformer();
+	               // End Fortify Mod
                 t.transform(new StreamSource(bais), new DOMResult(eBody));
                 eRequest.appendChild(eBody);
             } else if (mime.indexOf("text/") == 0) {

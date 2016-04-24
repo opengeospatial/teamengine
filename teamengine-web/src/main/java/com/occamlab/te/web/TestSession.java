@@ -16,7 +16,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
 package com.occamlab.te.web;
@@ -82,6 +83,8 @@ public class TestSession {
         File sessionDir = new File(logdir, sessionId);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+            // Fortify Mod: prevent external entity injection
+        dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File(sessionDir, "session.xml"));
         Element session = (Element) (doc.getElementsByTagName("session")

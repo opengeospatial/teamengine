@@ -1237,9 +1237,9 @@ public class TECore implements Runnable {
     try {
       StringWriter sw = new StringWriter();
        // Fortify Mod: prevent external entity injection
-       TransformerFactory tf = TransformerFactory.newInstance();
-       tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-       Transformer transformer = tf.newTransformer();
+      TransformerFactory tf = TransformerFactory.newInstance();
+      tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true); 
+      Transformer transformer = tf.newTransformer();
 	// End Fortify Mod 
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
@@ -1679,8 +1679,8 @@ public class TECore implements Runnable {
 
     // System.out.println(sUrl);
     TransformerFactory tf = TransformerFactory.newInstance();
-    // Fotify Mod: prevent external entity injection 
-    tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+    // Fortify Mod: prevent external entity injection
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     Transformer t = tf.newTransformer();
 
     // Open the URLConnection
@@ -1858,12 +1858,12 @@ public class TECore implements Runnable {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
     // Fortify Mod: prevent external entity injection
-    dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    dbf.setExpandEntityReferences(false);
     DocumentBuilder db = dbf.newDocumentBuilder();
 
     TransformerFactory tf = TransformerFactory.newInstance();
-     // Fotify Mod: prevent external entity injection 
-     tf.setFeature(XMLConstants.ACCESS_EXTERNAL_DTD, false);
+     // Fortify Mod: prevent external entity injection 
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     Transformer t = null;
     Node content = null;
     Document parser_instruction = null;
@@ -1949,7 +1949,7 @@ public class TECore implements Runnable {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
 	// Fortify Mod: Disable entity expansion to foil External Entity Injections
-	dbf.setExpandEntityReferences(false);
+    dbf.setExpandEntityReferences(false);
     DocumentBuilder db = dbf.newDocumentBuilder();
     Document response_doc = db.newDocument();
     return parse(uc, instruction, response_doc);
@@ -1966,9 +1966,9 @@ public class TECore implements Runnable {
   public Element parse(URLConnection uc, Node instruction,
           Document response_doc) throws Exception {
 	// Fortify Mod: To prevent external entity injections
-	TransformerFactory tf = TransformerFactory.newInstance();
-     tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-	Transformer idt = tf.newTransformer();
+    TransformerFactory tf = TransformerFactory.newInstance();
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    Transformer idt = tf.newTransformer();
 	// End Fortify Mod
     Element parser_e = response_doc.createElement("parser");
     Element response_e = response_doc.createElement("response");
