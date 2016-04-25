@@ -1,4 +1,4 @@
-package com.occamlab.te.web;
+package com.occamlab.te.web.authn;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
