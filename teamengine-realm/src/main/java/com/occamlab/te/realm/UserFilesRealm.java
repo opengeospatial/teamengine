@@ -24,16 +24,15 @@ import org.w3c.dom.NodeList;
  * below.
  * 
  * <pre>
- * &lt;user>
- *   &lt;name>p.fogg&lt;/name>
- *   &lt;roles>
- *     &lt;name>user&lt;/name>
- *   &lt;/roles>
- *   &lt;password>password&lt;/password>
- *   &lt;email>p.fogg@example.org&lt;/email>
- * &lt;/user>
+ * &lt;user&gt;
+ *   &lt;name&gt;p.fogg&lt;/name&gt;
+ *   &lt;roles&gt;
+ *     &lt;name&gt;user&lt;/name&gt;
+ *   &lt;/roles&gt;
+ *   &lt;password&gt;password&lt;/password&gt;
+ *   &lt;email&gt;p.fogg@example.org&lt;/email&gt;
+ * &lt;/user&gt;
  * </pre>
- * 
  * <p>
  * <strong>WARNING:</strong> This implementation is deprecated, since it only
  * handles clear text passwords.

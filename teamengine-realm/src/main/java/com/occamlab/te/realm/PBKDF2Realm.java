@@ -25,19 +25,17 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
  * A custom Tomcat Realm implementation that reads user information from an XML
  * file located in a sub-directory of the TEAMengine users directory. A sample
  * representation is shown below.
- * <p>
  * 
  * <pre>
- * &lt;user>
- *   &lt;name>p.fogg&lt;/name>
- *   &lt;roles>
- *     &lt;name>user&lt;/name>
- *   &lt;/roles>
- *   &lt;password>password-digest&lt;/password>
- *   &lt;email>p.fogg@example.org&lt;/email>
- * &lt;/user>
+ * &lt;user&gt;
+ *   &lt;name&gt;p.fogg&lt;/name&gt;
+ *   &lt;roles&gt;
+ *     &lt;name&gt;user&lt;/name&gt;
+ *   &lt;/roles&gt;
+ *   &lt;password&gt;password-digest&lt;/password&gt;
+ *   &lt;email&gt;p.fogg@example.org&lt;/email&gt;
+ * &lt;/user&gt;
  * </pre>
- * 
  * <p>
  * The password digest must be generated using the {@link PasswordStorage
  * PBKDF2} function; it consists of five fields separated by the colon (':')
