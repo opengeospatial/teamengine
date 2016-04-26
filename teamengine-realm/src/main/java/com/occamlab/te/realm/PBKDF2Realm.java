@@ -1,4 +1,4 @@
-package com.occamlab.te.web.authn;
+package com.occamlab.te.realm;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -18,12 +18,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.occamlab.te.web.authn.PasswordStorage.CannotPerformOperationException;
-import com.occamlab.te.web.authn.PasswordStorage.InvalidHashException;
+import com.occamlab.te.realm.PasswordStorage.CannotPerformOperationException;
+import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
 
 /**
  * A custom Tomcat Realm implementation that reads user information from an XML
- * file located in a subdirectory of the TEAMengine users directory. A sample
+ * file located in a sub-directory of the TEAMengine users directory. A sample
  * representation is shown below.
  * <p>
  * 
@@ -33,16 +33,24 @@ import com.occamlab.te.web.authn.PasswordStorage.InvalidHashException;
  *   &lt;roles>
  *     &lt;name>user&lt;/name>
  *   &lt;/roles>
- *   &lt;password>hashed-password&lt;/password>
+ *   &lt;password>password-digest&lt;/password>
  *   &lt;email>p.fogg@example.org&lt;/email>
  * &lt;/user>
  * </pre>
  * 
+ * <p>
+ * The password digest must be generated using the {@link PasswordStorage
+ * PBKDF2} function; it consists of five fields separated by the colon (':')
+ * character. For example:
+ * <code>sha1:64000:18:a6BHX18eMTR1WnCvyR6NzG6VMJcdJE2D:8qPU0jpdPIapbyC+H5dqiaNE</code>
  * </p>
+ * 
+ * @see <a href="https://github.com/defuse/password-hashing">Secure Password
+ *      Storage v2.0</a>
  */
-public class UserFilesRealm extends RealmBase {
+public class PBKDF2Realm extends RealmBase {
 
-    private static final Logger LOGR = Logger.getLogger(UserFilesRealm.class.getName());
+    private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
     private String rootPath = null;
     private DocumentBuilder DB = null;
     private HashMap<String, Principal> principals = new HashMap<String, Principal>();
@@ -51,16 +59,21 @@ public class UserFilesRealm extends RealmBase {
         return rootPath;
     }
 
+    /**
+     * Return the Principal associated with the specified username and
+     * credentials, if one exists in the user data store; otherwise return null.
+     */
     @Override
     public Principal authenticate(String username, String credentials) {
         GenericPrincipal principal = (GenericPrincipal) getPrincipal(username);
         if (null != principal) {
             try {
                 if (!PasswordStorage.verifyPassword(credentials, principal.getPassword())) {
-                    return null;
+                    principal = null;
                 }
             } catch (CannotPerformOperationException | InvalidHashException e) {
-                LOGR.log(Level.WARNING, e.getMessage(), e);
+                LOGR.log(Level.WARNING, e.getMessage());
+                principal = null;
             }
         }
         return principal;

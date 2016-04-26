@@ -1,11 +1,8 @@
-package com.occamlab.te.web.authn;
+package com.occamlab.te.realm;
 
+import static com.occamlab.te.realm.PasswordStorage.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
-
-import com.occamlab.te.web.authn.PasswordStorage;
-import com.occamlab.te.web.authn.PasswordStorage.CannotPerformOperationException;
-import com.occamlab.te.web.authn.PasswordStorage.InvalidHashException;
 
 public class VerifyPasswordStorage {
 

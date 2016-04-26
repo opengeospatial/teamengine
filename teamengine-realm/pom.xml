@@ -12,8 +12,8 @@
   <name>TEAM Engine - Tomcat Realm</name>
   <description>
   This module implements a custom Tomcat Realm for checking credentials 
-  from XML user files. Place it in the $CATALINA_BASE/lib directory of 
-  the Tomcat instance.
+  in XML user files. It must be available in the $CATALINA_BASE/lib directory 
+  of the Tomcat instance.
   </description>
 
   <dependencies>
@@ -21,23 +21,15 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.10.19</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
-    <profile>
-      <id>tomcat6</id>
-      <properties>
-        <container>tomcat6</container>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.tomcat</groupId>
-          <artifactId>catalina</artifactId>
-          <version>6.0.43</version>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-    </profile>
     <profile>
       <id>tomcat7</id>
       <properties>
@@ -50,7 +42,7 @@
         <dependency>
           <groupId>org.apache.tomcat</groupId>
           <artifactId>tomcat-catalina</artifactId>
-          <version>7.0.57</version>
+          <version>7.0.69</version>
           <scope>provided</scope>
         </dependency>
       </dependencies>

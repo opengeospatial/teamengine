@@ -1,4 +1,4 @@
-package com.occamlab.te.web.authn;
+package com.occamlab.te.realm;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -9,10 +9,25 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * Creates and verifies "hashed" passwords. Original code by
- * <a href="https://github.com/defuse">Taylor Hornby</a> and other contributors
- * is licensed under the terms of a derivative BSD 2-Clause License.
+ * Creates and verifies a password digest using the PBKDF2 function. Original
+ * code by <a href="https://github.com/defuse">Taylor Hornby</a> and other
+ * contributors is licensed under the terms of a derivative BSD 2-Clause
+ * License.
  *
+ * <p>
+ * The hash format consists of five fields separated by the colon (':')
+ * character: <code>algorithm:iterations:hashSize:salt:hash</code>.
+ * </p>
+ * <ul>
+ * <li><em>algorithm</em> - the name of the cryptographic hash function ("sha1")
+ * </li>
+ * <li><em>iterations</em> - the number of PBKDF2 iterations ("64000")</li>
+ * <li><em>hashSize</em> - the length, in bytes, of the hash field (after
+ * decoding)</li>
+ * <li><em>salt</em> - the salt (base64 encoded)</li>
+ * <li><em>hash</em> - the PBKDF2 output (base64 encoded)</li>
+ * </ul>
+ * 
  * @see <a href="https://github.com/defuse/password-hashing">Secure Password
  *      Storage v2.0</a>
  */
@@ -56,7 +71,7 @@ public class PasswordStorage {
     public static final int PBKDF2_INDEX = 4;
 
     /**
-     * Creates a "hashed" password using the PBKDF2 key derivation function
+     * Creates a password digest using the PBKDF2 key derivation function
      * (64,000 iterations of SHA1 by default) with a cryptographically-random
      * salt.
      * 

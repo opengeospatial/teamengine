@@ -37,19 +37,10 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-catalina</artifactId>
-      <version>7.0.69</version>
-      <scope>provided</scope>
-    </dependency>
-<!--
-    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>teamengine-realm</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>
     </dependency>
--->
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-servlet</artifactId>
@@ -91,6 +82,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-catalina</artifactId>
+      <version>7.0.69</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.10.2.0</version>
@@ -106,12 +103,6 @@
     	<artifactId>teamengine-resources</artifactId>
     	<version>${project.version}</version>
     </dependency>
-    <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>1.10.19</version>
-        <scope>test</scope>
-      </dependency>
   </dependencies>
 
   <build>

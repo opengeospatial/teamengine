@@ -1,8 +1,7 @@
 <Context reloadable="true"
   aliases="/docs=${TE_BASE}/resources/docs,/about=${TE_BASE}/scripts,/reports=${TE_BASE}/users,/site=${TE_BASE}/resources/site">
 
-  <Realm className="com.occamlab.te.realm.UserFilesRealm"
-         root="${TE_BASE}/users"/>
+  <Realm className="com.occamlab.te.realm.PBKDF2Realm" root="${TE_BASE}/users"/>
 
   <Resource name="jdbc/EPSG" type="javax.sql.DataSource" 
             auth="Container" 
@@ -13,6 +12,6 @@
             url="jdbc:derby:EPSG/7.09;create=true" />
 
   <WatchedResource>${TE_BASE}/config.xml</WatchedResource>
-   <WatchedResource>${TE_BASE}/scripts</WatchedResource>
+  <WatchedResource>${TE_BASE}/scripts</WatchedResource>
 
 </Context>
