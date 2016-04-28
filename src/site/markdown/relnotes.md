@@ -1,9 +1,16 @@
 Release Notes
 =============
 
+## 4.7 (2016-MM-DD)
+- [realm] [#150](https://github.com/opengeospatial/teamengine/issues/150): Use PBKDF2 function to 
+  generate password hashes
+- [web] Add context listener to check that stored user passwords are not in clear text (generate hash if so).
+
+
 ## 4.6 (2016-02-29)
 - [web] [#142](https://github.com/opengeospatial/teamengine/issues/142) - Simplify the user interface when creating a new session
 - [site] Updated documentation related to using Java 8, prerequisites and adding tests (ETS)
+
 
 ## 4.5 (2016-02-03)
 - [resources] Merge [PR #145](https://github.com/opengeospatial/teamengine/pull/145): 
