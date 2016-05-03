@@ -1,9 +1,11 @@
-package com.occamlab.te.web;
+package com.occamlab.te.web.listeners;
 
 import com.occamlab.te.SetupOptions;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+
 import java.io.File;
 
 /**
@@ -13,11 +15,12 @@ import java.io.File;
  * configuration file.
  * </p>
  */
+@WebListener
 public class TEServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         event.getServletContext().setAttribute("teConfigFile",
-            SetupOptions.getBaseConfigDirectory().getAbsolutePath() + File.separator + "config.xml");
+                SetupOptions.getBaseConfigDirectory().getAbsolutePath() + File.separator + "config.xml");
     }
 
     @Override

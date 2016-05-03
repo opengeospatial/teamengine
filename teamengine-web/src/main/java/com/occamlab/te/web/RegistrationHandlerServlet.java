@@ -25,6 +25,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.occamlab.te.realm.PasswordStorage;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -43,16 +46,15 @@ public class RegistrationHandlerServlet extends HttpServlet {
         conf = new Config();
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
+            String hashedPassword = PasswordStorage.createHash(password);
             String email = request.getParameter("email");
             File userDir = new File(conf.getUsersDir(), username);
             if (userDir.exists()) {
-                String url = "register.jsp?error=duplicate&username="
-                        + username;
+                String url = "register.jsp?error=duplicate&username=" + username;
                 if (email != null) {
                     url += "&email=" + email;
                 }
@@ -66,7 +68,7 @@ public class RegistrationHandlerServlet extends HttpServlet {
                 out.println(" <roles>");
                 out.println("  <name>user</name>");
                 out.println(" </roles>");
-                out.println(" <password>" + password + "</password>");
+                out.println(" <password>" + hashedPassword + "</password>");
                 out.println(" <email>" + email + "</email>");
                 out.println("</user>");
                 out.close();
