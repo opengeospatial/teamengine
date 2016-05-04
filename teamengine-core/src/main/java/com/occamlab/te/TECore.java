@@ -15,7 +15,9 @@
  * Grumman Corporation are Copyright (C) 2005-2006, Northrop Grumman
  * Corporation. All Rights Reserved.
  *
- * Contributor(s): S. Gianfranceschi (Intecs): Added the SOAP suport
+ * Contributor(s): 
+ *	S. Gianfranceschi (Intecs): Added the SOAP suport
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
  */
@@ -63,6 +65,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
@@ -1233,7 +1236,11 @@ public class TECore implements Runnable {
   public void setFormResults(Document doc) {
     try {
       StringWriter sw = new StringWriter();
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+       // Fortify Mod: prevent external entity injection
+      TransformerFactory tf = TransformerFactory.newInstance();
+      tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true); 
+      Transformer transformer = tf.newTransformer();
+	// End Fortify Mod 
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.transform(new DOMSource(doc), new StreamResult(sw));
@@ -1672,6 +1679,8 @@ public class TECore implements Runnable {
 
     // System.out.println(sUrl);
     TransformerFactory tf = TransformerFactory.newInstance();
+    // Fortify Mod: prevent external entity injection
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     Transformer t = tf.newTransformer();
 
     // Open the URLConnection
@@ -1848,9 +1857,13 @@ public class TECore implements Runnable {
           throws Throwable {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
+    // Fortify Mod: prevent external entity injection
+    dbf.setExpandEntityReferences(false);
     DocumentBuilder db = dbf.newDocumentBuilder();
 
     TransformerFactory tf = TransformerFactory.newInstance();
+     // Fortify Mod: prevent external entity injection 
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     Transformer t = null;
     Node content = null;
     Document parser_instruction = null;
@@ -1935,6 +1948,8 @@ public class TECore implements Runnable {
   public Element parse(URLConnection uc, Node instruction) throws Throwable {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     dbf.setNamespaceAware(true);
+	// Fortify Mod: Disable entity expansion to foil External Entity Injections
+    dbf.setExpandEntityReferences(false);
     DocumentBuilder db = dbf.newDocumentBuilder();
     Document response_doc = db.newDocument();
     return parse(uc, instruction, response_doc);
@@ -1950,7 +1965,11 @@ public class TECore implements Runnable {
    */
   public Element parse(URLConnection uc, Node instruction,
           Document response_doc) throws Exception {
-    Transformer idt = TransformerFactory.newInstance().newTransformer();
+	// Fortify Mod: To prevent external entity injections
+    TransformerFactory tf = TransformerFactory.newInstance();
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    Transformer idt = tf.newTransformer();
+	// End Fortify Mod
     Element parser_e = response_doc.createElement("parser");
     Element response_e = response_doc.createElement("response");
     Element content_e = response_doc.createElement("content");
@@ -2362,6 +2381,8 @@ public class TECore implements Runnable {
     DocumentBuilderFactory docFactory = DocumentBuilderFactory
             .newInstance();
     docFactory.setNamespaceAware(true);
+	// Fortify Mod: Disable entity expansion to foil External Entity Injections
+	docFactory.setExpandEntityReferences(false);
     Document doc = null;
     try {
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();

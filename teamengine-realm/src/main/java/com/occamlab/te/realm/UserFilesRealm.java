@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.realm;
 
 import java.io.File;
@@ -75,7 +83,11 @@ public class UserFilesRealm extends RealmBase {
         Document userInfo = null;
         try {
             if (DB == null) {
-                DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                // Fortify Mod: prevent external entity injection
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                dbf.setExpandEntityReferences(false);
+                DB = dbf.newDocumentBuilder();
+                //DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             }
             userInfo = DB.parse(userfile);
         } catch (Exception e) {

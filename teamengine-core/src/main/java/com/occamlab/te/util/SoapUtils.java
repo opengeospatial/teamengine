@@ -1,19 +1,21 @@
 /****************************************************************************
-The contents of this file are subject to the Mozilla Public License
-Version 1.1 (the "License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.mozilla.org/MPL/
-
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
-
-The Original Code is TEAM Engine.
-
-The Initial Developer of the Original Code is Intecs SPA.  Portions created by
-Intecs SPA are Copyright (C) 2008-2009, Intecs SPA. All Rights Reserved.
-
-Contributor(s): No additional contributors to date
+ * The contents of this file are subject to the Mozilla Public License
+ * Version 1.1 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ *
+ * The Original Code is TEAM Engine.
+ *
+ * The Initial Developer of the Original Code is Intecs SPA.  Portions created by
+ * Intecs SPA are Copyright (C) 2008-2009, Intecs SPA. All Rights Reserved.
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
  ****************************************************************************/
 package com.occamlab.te.util;
 
@@ -29,6 +31,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -65,9 +69,15 @@ public class SoapUtils {
          */
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+	   dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document soapMessage = db.newDocument();
-        Transformer t = TransformerFactory.newInstance().newTransformer();
+          // Fortify Mod: prevent external entity injection
+        TransformerFactory tf = TransformerFactory.newInstance();
+        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        Transformer t = tf.newTransformer();
+	   // End Fortify Mod
         t.transform(new StreamSource(in), new DOMResult(soapMessage));
         return soapMessage;
     }
@@ -144,7 +154,10 @@ public class SoapUtils {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         TransformerFactory tf = TransformerFactory.newInstance();
+          // Fortify Mod: prevent external entity injection
+        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer t = tf.newTransformer();
+		// End Fortify Mod
         t.setOutputProperty(OutputKeys.ENCODING, encoding);
         t.transform(new DOMSource(message), new StreamResult(baos));
 

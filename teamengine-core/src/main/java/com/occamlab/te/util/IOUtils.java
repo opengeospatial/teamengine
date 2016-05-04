@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.util;
 
 import java.io.BufferedReader;
@@ -19,6 +27,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
 
@@ -55,6 +64,8 @@ public class IOUtils {
                 // to a StreamResult
                 try {
                     TransformerFactory tFactory = TransformerFactory.newInstance();
+                    // Fortify Mod: prevent external entity injection
+                    tFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                     Transformer transformer = tFactory.newTransformer();
                     transformer.setOutputProperty("encoding", "UTF-8");
                     transformer.setOutputProperty("indent", "yes");

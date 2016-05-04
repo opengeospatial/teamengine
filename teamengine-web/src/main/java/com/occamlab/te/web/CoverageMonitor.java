@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.web;
 
 import java.io.File;
@@ -88,8 +96,13 @@ public class CoverageMonitor {
         this.requestId = URI.create(uri);
         String icsPath = "/coverage/" + ICS_MAP.get(this.requestId);
         try {
-            DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder();
+	           // Fortify Mod: Disable entity expansion to foil External Entity Injections
+            DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
+            df.setNamespaceAware(true);
+	      df.setExpandEntityReferences(false);
+            DocumentBuilder docBuilder = df.newDocumentBuilder();
+            // DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                // End Fortify Mods
             this.coverageDoc = docBuilder.parse(
                     getClass().getResourceAsStream(icsPath), null);
         } catch (Exception e) {

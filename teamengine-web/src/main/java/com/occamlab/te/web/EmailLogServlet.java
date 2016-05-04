@@ -1,3 +1,12 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
+
 package com.occamlab.te.web;
 
 import java.io.File;
@@ -89,7 +98,8 @@ public class EmailLogServlet extends javax.servlet.http.HttpServlet implements
         boolean success = true;
         System.out.println("host: " + host);
         System.out.println("userId: " + userId);
-        System.out.println("password: " + password);
+        // Fortify Mod: commented out clear text password.
+        // System.out.println("password: " + password);
         System.out.println("to: " + to);
         System.out.println("from: " + from);
         System.out.println("subject: " + subject);

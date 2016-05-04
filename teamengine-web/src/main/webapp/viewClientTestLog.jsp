@@ -26,7 +26,8 @@
     Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
     Grumman Corporation. All Rights Reserved.
   
-    Contributor(s): No additional contributors to date
+    Contributor(s): 
+        C. Heazel (WiSC): Added Fortify adjudication changes
   
    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
@@ -259,6 +260,8 @@
           sessionId = (index > 0) ? test.substring(0, index) : test;
           File fXmlFileClause = new File(userlog + "/" + sessionId + "/test_data/result_clause.xml");
           DocumentBuilderFactory dbFactoryClause = DocumentBuilderFactory.newInstance();
+          // Fortify Mod: prevent external entity injection
+          dbFactoryClause.setExpandEntityReferences(false);
           DocumentBuilder dBuilderClause = dbFactoryClause.newDocumentBuilder();
           Document docClause = dBuilderClause.parse(fXmlFileClause);
           docClause.getDocumentElement().normalize();
@@ -335,6 +338,8 @@
                     String urlNode = "";
                     File fXmlFile = new File(userlog + "/" + sessionId + "/test_data/result_log.xml");
                     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                    // Fortify Mod: prevent external entity injection
+                    dbFactory.setExpandEntityReferences(false);
                     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                     Document doc = dBuilder.parse(fXmlFile);
                     doc.getDocumentElement().normalize();

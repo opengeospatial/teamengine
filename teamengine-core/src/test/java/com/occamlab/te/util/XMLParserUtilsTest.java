@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.util;
 
 import static org.junit.Assert.*;
@@ -22,6 +30,8 @@ public class XMLParserUtilsTest {
         SAXParser parser = XMLParserUtils.createXIncludeAwareSAXParser(false);
         assertNotNull(parser);
         XMLReader reader = parser.getXMLReader();
+        // Fortify mod to prevent External Entity Injections
+        reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
         boolean baseURIFixup = reader
                 .getFeature(Constants.XERCES_FEATURE_PREFIX
                         + Constants.XINCLUDE_FIXUP_BASE_URIS_FEATURE);
@@ -33,6 +43,12 @@ public class XMLParserUtilsTest {
     public void resolveXInclude_omitXMLBase() throws SAXException, IOException {
         File file = new File("src/test/resources/article.xml");
         SAXParser parser = XMLParserUtils.createXIncludeAwareSAXParser(false);
+        // Fortify mod to prevent External Entity Injections
+        // The SAXParser contains an XMLReader.  getXMLReader returns a handle to the
+        // reader.  By setting a Feature on the reader, we also set it on the Parser.          
+        XMLReader reader = parser.getXMLReader();
+        reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        // End Fortify mods
         LegalNoticeHandler handler = new LegalNoticeHandler();
         parser.parse(file, handler);
     }
@@ -41,6 +57,12 @@ public class XMLParserUtilsTest {
     public void resolveXInclude_keepXMLBase() throws SAXException, IOException {
         File file = new File("src/test/resources/article.xml");
         SAXParser parser = XMLParserUtils.createXIncludeAwareSAXParser(true);
+        // Fortify mod to prevent External Entity Injections
+        // The SAXParser contains an XMLReader.  getXMLReader returns a handle to the
+        // reader.  By setting a Feature on the reader, we also set it on the Parser.          
+        XMLReader reader = parser.getXMLReader();
+        reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        // End Fortify mods
         LegalNoticeHandler handler = new LegalNoticeHandler();
         parser.parse(file, handler);
     }

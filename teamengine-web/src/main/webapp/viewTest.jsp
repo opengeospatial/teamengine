@@ -9,6 +9,8 @@ public void jspInit() {
 	try {
 		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
 		TransformerFactory tf = TransformerFactory.newInstance();
+		// Fortify mod: Prevent external entity injections
+		tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true); 
 //		tf.setAttribute(FeatureKeys.XINCLUDE, Boolean.TRUE);
 		ViewTestTemplates = tf.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
@@ -34,7 +36,8 @@ public void jspInit() {
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): No additional contributors to date
+  Contributor(s): 
+    	C. Heazel (WiSC): Added Fortify adjudication changes
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
@@ -53,6 +56,8 @@ public void jspInit() {
       t.setParameter("sesion-id", request.getParameter("sessionid"));
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
       dbf.setNamespaceAware(true);
+      // Fortify Mod: prevent external entity injection
+      dbf.setExpandEntityReferences(false);
       dbf.setFeature("http://apache.org/xml/features/xinclude/fixup-base-uris", false);
       DocumentBuilder db = dbf.newDocumentBuilder();
       Document doc = db.parse(file);

@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.util;
 
 import java.io.BufferedWriter;
@@ -30,6 +38,7 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmNode;
@@ -82,9 +91,13 @@ public class LogUtils {
         if (f.exists()) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
+		 // Fortify Mod: Disable entity expansion to foil External Entity Injections
+		 dbf.setExpandEntityReferences(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.newDocument();
             TransformerFactory tf = TransformerFactory.newInstance();
+       	     // Fortify Mod: prevent external entity injection
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer t = tf.newTransformer();
             t.setErrorListener(new com.occamlab.te.NullErrorListener());
             try {
@@ -270,6 +283,8 @@ public class LogUtils {
             List<List<QName>> excludes) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+	   dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc;
         File testListFile = new File(logdir, path + File.separator
@@ -292,6 +307,8 @@ public class LogUtils {
         }
         if (updated) {
             TransformerFactory tf = TransformerFactory.newInstance();
+        	 // Fortify Mod: disable external entity injection            
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer t = tf.newTransformer();
             t.setOutputProperty(OutputKeys.INDENT, "yes");
             t.transform(new DOMSource(doc), new StreamResult(testListFile));
@@ -430,6 +447,8 @@ public class LogUtils {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
+          // Fortify Mod: Disable entity expansion to foil External Entity Injections
+     	   factory.setExpandEntityReferences(false);
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         // Create the document
@@ -448,6 +467,8 @@ public class LogUtils {
         }
         // Serialize the document into System.out
         TransformerFactory xformFactory = TransformerFactory.newInstance();
+          //Fortify Mod: disable external entity injection 
+        xformFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer idTransform = xformFactory.newTransformer();
         Source input = new DOMSource(doc);
         Result output = new StreamResult(report_logs);

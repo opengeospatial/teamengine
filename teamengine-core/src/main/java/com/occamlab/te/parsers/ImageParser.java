@@ -23,6 +23,7 @@
 		2011-08-24 add case to processFrame() to return image transparency for parsers:transparency tag
 		2011-08-24 add checkTransparentNodata(); call from processBufferedImage() for parsers:model/parsers:transparentNodata tag
 		2011-09-08 add getBase64Data(), parseBase64(), formatName param to processBufferedImage()
+		2016-04-18 C. Heazel (WiSC): Added Fortify adjudication changes
 		
  ****************************************************************************/
 package com.occamlab.te.parsers;
@@ -56,6 +57,7 @@ import java.awt.Transparency; // 2011-08-24 PwD
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 import javax.xml.parsers.*;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -616,6 +618,8 @@ public class ImageParser {
                             Node tree = metadata.getAsTree(format);
                             TransformerFactory tf = TransformerFactory
                                     .newInstance();
+                            // Fortify Mod: prevent external entity injection
+                            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                             Transformer t = tf.newTransformer();
                             t.transform(new DOMSource(tree),
                                     new DOMResult(node));
@@ -623,6 +627,8 @@ public class ImageParser {
                     } catch (javax.imageio.IIOException e) { // 2011--08-23 PwD
                         DocumentBuilderFactory dbf = DocumentBuilderFactory
                                 .newInstance();
+                        // Fortify Mod: prevent external entity injection
+                        dbf.setExpandEntityReferences(false);
                         DocumentBuilder db = dbf.newDocumentBuilder();
                         Document doc = db.newDocument();
                         String format = reader.getFormatName().toLowerCase();
@@ -631,6 +637,8 @@ public class ImageParser {
                         Element formatElt = doc.createElement(formatEltName);
                         TransformerFactory tf = TransformerFactory
                                 .newInstance();
+                        // Fortify Mod: prevent external entity injection
+                        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                         Transformer t = tf.newTransformer();
                         t.transform(new DOMSource(formatElt), new DOMResult(
                                 node));
@@ -727,10 +735,14 @@ public class ImageParser {
         }
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // Fortify Mod: prevent external entity injection
+        dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.newDocument();
 
         TransformerFactory tf = TransformerFactory.newInstance();
+        // Fortify Mod: prevent external entity injection
+        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer t = tf.newTransformer();
         t.transform(new DOMSource(instruction), new DOMResult(doc));
 
@@ -838,6 +850,8 @@ public class ImageParser {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        // Fortify Mod: prevent external entity injection
+        dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(xml_url.openStream());
         // Element instruction = (Element)
@@ -853,6 +867,8 @@ public class ImageParser {
 
         if (result != null) {
             TransformerFactory tf = TransformerFactory.newInstance();
+            // Fortify Mod: prevent external entity injection
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             try {
                 tf.setAttribute("http://saxon.sf.net/feature/strip-whitespace",
                         "all");

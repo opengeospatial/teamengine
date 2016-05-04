@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.spi.executors.testng;
 
 import com.occamlab.te.spi.executors.TestRunExecutor;
@@ -124,6 +132,8 @@ public class TestNGExecutor implements TestRunExecutor {
         Document resultsDoc;
         if (results.isFile()) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // Fortify Mod: prevent external entity injection
+            dbf.setExpandEntityReferences(false);
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             resultsDoc = db.parse(results);

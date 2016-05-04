@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te;
 
 import java.io.File;
@@ -98,7 +106,11 @@ public class SetupOptions {
     TECore.rootTestName.clear();
     String path = getBaseConfigDirectory() + "/config.xml";
     if (new File(path).exists()) {
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        // Fortify Mod: prevent external entity injection
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setExpandEntityReferences(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        //DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = db.parse(path);
         NodeList nodeListForStandardTag = doc.getElementsByTagName("standard");
         if (null!=nodeListForStandardTag && nodeListForStandardTag.getLength() > 0) {

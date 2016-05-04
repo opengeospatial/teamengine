@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.web;
 
 import java.io.File;
@@ -16,6 +24,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import net.sf.saxon.expr.FirstItemExpression;
 
@@ -48,6 +57,8 @@ public class ConfigFileCreator {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 				.newInstance();
 		try {
+                // Fortify Mod: prevent external entity injection
+                documentBuilderFactory.setExpandEntityReferences(false);
 			builder = documentBuilderFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
 
@@ -195,6 +206,8 @@ public class ConfigFileCreator {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
+                    // Fortify Mod: prevent external entity injection
+                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			Transformer transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			DOMSource source = new DOMSource(docMain);
