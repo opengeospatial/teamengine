@@ -3,6 +3,6 @@
  <roles>
   <name>user</name>
  </roles>
- <password>ogctest</password>
+ <password>sha1:64000:18:WF3N7yCxzjXb+l4sP0Or5CAC5nb3aa+2:s8CVK7ZZJdSq/Bpg+tMWuUXC</password>
  <email></email>
 </user>

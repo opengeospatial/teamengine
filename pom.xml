@@ -260,6 +260,22 @@
             <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
           </configuration>
         </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.10.3</version>
+          <configuration>
+            <docfilessubdirs>true</docfilessubdirs>
+            <show>package</show>
+          </configuration>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

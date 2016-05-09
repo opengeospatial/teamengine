@@ -11,9 +11,6 @@
     <param-name>appVersion</param-name>
     <param-value>${project.version}</param-value>
   </context-param>
-  <listener>
-    <listener-class>com.occamlab.te.web.TEServletContextListener</listener-class>
-  </listener>
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>

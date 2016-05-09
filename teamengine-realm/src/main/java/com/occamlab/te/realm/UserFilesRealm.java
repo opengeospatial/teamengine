@@ -28,27 +28,29 @@ import org.w3c.dom.NodeList;
 
 /**
  * A Realm implementation that reads user information from an XML file located
- * in a subdirectory of the users directory. A sample representation is shown
+ * in a sub-directory of the users directory. A sample representation is shown
  * below.
- * <p>
  * 
  * <pre>
- * &lt;user>
- *   &lt;name>p.fogg&lt;/name>
- *   &lt;roles>
- *     &lt;name>user&lt;/name>
- *   &lt;/roles>
- *   &lt;password>password&lt;/password>
- *   &lt;email>p.fogg@example.org&lt;/email>
- * &lt;/user>
+ * &lt;user&gt;
+ *   &lt;name&gt;p.fogg&lt;/name&gt;
+ *   &lt;roles&gt;
+ *     &lt;name&gt;user&lt;/name&gt;
+ *   &lt;/roles&gt;
+ *   &lt;password&gt;password&lt;/password&gt;
+ *   &lt;email&gt;p.fogg@example.org&lt;/email&gt;
+ * &lt;/user&gt;
  * </pre>
- * 
+ * <p>
+ * <strong>WARNING:</strong> This implementation is deprecated, since it only
+ * handles clear text passwords.
  * </p>
+ * 
+ * @deprecated Superseded by {@link PBKDF2Realm}.
  */
 public class UserFilesRealm extends RealmBase {
 
-    private static final Logger LOGR = Logger.getLogger(UserFilesRealm.class
-            .getName());
+    private static final Logger LOGR = Logger.getLogger(UserFilesRealm.class.getName());
     private String rootPath = null;
     private DocumentBuilder DB = null;
     private HashMap<String, Principal> principals = new HashMap<String, Principal>();
@@ -89,25 +91,18 @@ public class UserFilesRealm extends RealmBase {
             }
             userInfo = DB.parse(userfile);
         } catch (Exception e) {
-            LOGR.log(
-                    Level.WARNING,
-                    "Failed to read user info at " + userfile.getAbsolutePath(),
-                    e);
+            LOGR.log(Level.WARNING, "Failed to read user info at " + userfile.getAbsolutePath(), e);
         }
-        Element userElement = (Element) (userInfo.getElementsByTagName("user")
-                .item(0));
-        Element passwordElement = (Element) (userElement
-                .getElementsByTagName("password").item(0));
+        Element userElement = (Element) (userInfo.getElementsByTagName("user").item(0));
+        Element passwordElement = (Element) (userElement.getElementsByTagName("password").item(0));
         String password = passwordElement.getTextContent();
-        Element rolesElement = (Element) (userElement
-                .getElementsByTagName("roles").item(0));
+        Element rolesElement = (Element) (userElement.getElementsByTagName("roles").item(0));
         NodeList roleElements = rolesElement.getElementsByTagName("name");
         for (int i = 0; i < roleElements.getLength(); i++) {
             String name = ((Element) roleElements.item(i)).getTextContent();
             roles.add(name);
         }
-        GenericPrincipal principal = createGenericPrincipal(username, password,
-                roles);
+        GenericPrincipal principal = createGenericPrincipal(username, password, roles);
         return principal;
     }
 
@@ -124,8 +119,7 @@ public class UserFilesRealm extends RealmBase {
      * @return A GenericPrincipal for use by this Realm implementation.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    GenericPrincipal createGenericPrincipal(String username, String password,
-            List<String> roles) {
+    GenericPrincipal createGenericPrincipal(String username, String password, List<String> roles) {
         Class klass = null;
         try {
             klass = Class.forName("org.apache.catalina.realm.GenericPrincipal");
@@ -134,8 +128,7 @@ public class UserFilesRealm extends RealmBase {
         }
         Constructor[] ctors = klass.getConstructors();
         Class firstParamType = ctors[0].getParameterTypes()[0];
-        Class[] paramTypes = new Class[] { Realm.class, String.class,
-                String.class, List.class };
+        Class[] paramTypes = new Class[] { Realm.class, String.class, String.class, List.class };
         Object[] ctorArgs = new Object[] { this, username, password, roles };
         GenericPrincipal principal = null;
         try {
@@ -145,10 +138,8 @@ public class UserFilesRealm extends RealmBase {
                 principal = (GenericPrincipal) ctor.newInstance(ctorArgs);
             } else {
                 // Realm parameter removed in Tomcat 7
-                Constructor ctor = klass.getConstructor(Arrays.copyOfRange(
-                        paramTypes, 1, paramTypes.length));
-                principal = (GenericPrincipal) ctor.newInstance(Arrays
-                        .copyOfRange(ctorArgs, 1, ctorArgs.length));
+                Constructor ctor = klass.getConstructor(Arrays.copyOfRange(paramTypes, 1, paramTypes.length));
+                principal = (GenericPrincipal) ctor.newInstance(Arrays.copyOfRange(ctorArgs, 1, ctorArgs.length));
             }
         } catch (Exception ex) {
             LOGR.log(Level.WARNING, ex.getMessage());
