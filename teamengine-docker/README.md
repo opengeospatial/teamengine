@@ -1,5 +1,8 @@
 # Running OGC TeamEngine with ETS for WFS 2.0 on Docker
 
+This module provides a Dockerfile for building a Docker image with OGC TeamEngine, version 4.6 and ets-wfs20, version 1.22
+pre-installed.
+
 ## Prerequisites
 
 ### Install Docker
@@ -7,27 +10,30 @@
 Check the official [Docker documentation](https://docs.docker.com/engine/) for information how to
   install Docker on your operating system. And then install Docker and supporting tools.
 
-### Build ets-resources:
+### Dependencies 
+
+You may build the following projects first.
+
+#### Build ets-resources:
     
     % git clone https://github.com/opengeospatial/ets-resources.git
     % cd ets-resources
     % git checkout tags/16.0.23
     % mvn clean install
     
-### Build the ETS for WFS 2.0:
+#### Build the ETS for WFS 2.0:
     
     % git clone https://github.com/opengeospatial/ets-wfs20.git
     % cd ets-wfs20
     % git checkout tags/1.22
     % mvn clean install
 
-### Build the TeamEninge:
+#### Build the TeamEninge:
     
     % git clone https://github.com/opengeospatial/teamengine.git
     % cd teamengine
     % git checkout tags/4.6
     % mvn clean install -Dets-resources-version=16.0.23 -Pogc.cite
-
 
 ## Build the Docker image
 The Dockerfile is located in the ```teamengine/teamengine-docker/src/main/config/docker/Dockerfile``` directory. 
