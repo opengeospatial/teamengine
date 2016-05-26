@@ -96,6 +96,7 @@
     <module>teamengine-core</module>
     <module>teamengine-web</module>
     <module>teamengine-console</module>
+    <module>teamengine-docker</module>
   </modules>
 
   <dependencyManagement>
