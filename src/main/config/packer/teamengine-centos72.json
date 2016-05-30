@@ -8,7 +8,7 @@
     "type": "virtualbox-iso",
     "ssh_pty": true,
     "boot_command": [
-      "<tab> inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
+      "<tab> inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg<enter><wait>"
     ],
     "boot_wait": "5s",
     "disk_size": 20480,
@@ -23,10 +23,15 @@
     "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
     "vboxmanage": [
       ["modifyvm", "{{.Name}}", "--memory", "2048"],
-      ["modifyvm", "{{.Name}}", "--cpus", "2"],
-      ["modifyvm", "{{.Name}}", "--boot1", "disk"],
-      ["modifyvm", "{{.Name}}", "--boot2", "dvd"]
+      ["modifyvm", "{{.Name}}", "--cpus", "2"]
     ],
     "vm_name": "teamengine-centos72"
-  }]
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo {{user `ssh_pass`}} | sudo -S sh '{{.Path}}'",
+      "script": "scripts/setup-tomcat.sh"
+    }
+  ]
 }
