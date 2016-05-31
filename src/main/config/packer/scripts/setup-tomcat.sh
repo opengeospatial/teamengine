@@ -2,6 +2,7 @@
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum check-update
 yum -y update
+yum -y install apache-commons-daemon-jsvc
 # Oracle JDK 8u91
 cd /tmp
 curl -L -b "oraclelicense=accept" -O http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz
@@ -24,5 +25,15 @@ cd /srv/tomcat7/base-1
 cp -r /opt/apache.org/tomcat7/conf .
 mkdir lib logs temp webapps work
 chown -R tomcat:tomcat /srv/tomcat7
+# Modify server.xml in place
+sed -i 's/redirectPort="[0-9]\+"/& enableLookups="false" URIEncoding="UTF-8"/' conf/server.xml
+sed -i '/AJP\/1/ i <!--' conf/server.xml
+sed -i '/AJP\/1/ a -->' conf/server.xml
+# Systemd unit file
+cp /tmp/tomcat/tomcat-jsvc.service /etc/systemd/system/
+mkdir /etc/opt/apache.org/
+cp /tmp/tomcat/tomcat7.env /etc/opt/apache.org/
+systemctl daemon-reload
 # Clean up
 rm -f /tmp/*.tar.gz
+rm -fr /tmp/tomcat

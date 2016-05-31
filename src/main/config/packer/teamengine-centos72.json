@@ -14,7 +14,7 @@
     "disk_size": 20480,
     "guest_os_type": "RedHat_64",
     "headless": true,
-    "http_directory": "./http-files",
+    "http_directory": "./files",
     "iso_checksum_type": "md5",
     "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
     "iso_url": "http://pubmirrors.dal.corespace.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
@@ -28,6 +28,11 @@
     "vm_name": "teamengine-centos72"
   }],
   "provisioners": [
+    {
+      "type": "file",
+      "source": "files/tomcat",
+      "destination": "/tmp"
+    },
     {
       "type": "shell",
       "execute_command": "echo {{user `ssh_pass`}} | sudo -S sh '{{.Path}}'",
