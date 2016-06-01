@@ -32,7 +32,7 @@ sed -i '/AJP\/1/ a -->' conf/server.xml
 # Systemd unit file
 cp /tmp/tomcat/tomcat-jsvc.service /etc/systemd/system/
 mkdir /etc/opt/apache.org/
-cp /tmp/tomcat/tomcat7.env /etc/opt/apache.org/
+cp /tmp/tomcat/tomcat.env /etc/opt/apache.org/
 systemctl daemon-reload
 # Clean up
 rm -f /tmp/*.tar.gz

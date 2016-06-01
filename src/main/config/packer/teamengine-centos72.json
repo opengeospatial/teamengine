@@ -23,7 +23,9 @@
     "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
     "vboxmanage": [
       ["modifyvm", "{{.Name}}", "--memory", "2048"],
-      ["modifyvm", "{{.Name}}", "--cpus", "2"]
+      ["modifyvm", "{{.Name}}", "--cpus", "2"],
+      ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,,22"],
+      ["modifyvm", "{{.Name}}", "--natpf1", "tomcat,tcp,,8888,,8080"]
     ],
     "vm_name": "teamengine-centos72"
   }],
@@ -34,9 +36,20 @@
       "destination": "/tmp"
     },
     {
+      "type": "file",
+      "source": "files/teamengine-base.zip",
+      "destination": "/tmp/teamengine-base.zip"
+    },
+    {
       "type": "shell",
-      "execute_command": "echo {{user `ssh_pass`}} | sudo -S sh '{{.Path}}'",
-      "script": "scripts/setup-tomcat.sh"
+      "environment_vars": [
+        "TE_VERSION=4.0.6"
+      ],
+      "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",
+      "scripts": [
+        "scripts/setup-tomcat.sh",
+        "scripts/setup-teamengine.sh"
+      ]
     }
   ]
 }
