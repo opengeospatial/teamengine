@@ -1,6 +1,6 @@
-# Running OGC TeamEngine with ETS for WFS 2.0 on Docker
+# Running OGC TEAM Engine with ETS for WFS 2.0 on Docker
 
-This module provides a Dockerfile for building a Docker image with OGC TeamEngine, version 4.6 and ets-wfs20, version 1.22
+This module provides a Dockerfile for building a Docker image with OGC TEAM Engine, version 4.6 and ets-wfs20, version 1.22
 pre-installed.
 
 ## Prerequisites
@@ -12,7 +12,7 @@ Check the official [Docker documentation](https://docs.docker.com/engine/) for i
 
 ### Dependencies 
 
-You may build the following projects first.
+You may build the following projects first:
 
 #### Build ets-resources:
     
@@ -28,7 +28,7 @@ You may build the following projects first.
     % git checkout tags/1.22
     % mvn clean install
 
-#### Build the TeamEninge:
+#### Build the TEAM Engine:
     
     % git clone https://github.com/opengeospatial/teamengine.git
     % cd teamengine
@@ -44,17 +44,17 @@ To build the Docker image run in directory ```teamengine/teamengine-docker``` th
 This will build a new docker image from scratch. It may take a while the first time since Docker will download some
 base images from [docker hub](https://hub.docker.com).
 
-## Running TeamEngine inside a Docker container 
-The following docker command starts the TeamEngine inside the Docker container with the name ```teamengine``` on port 8088:
+## Running TEAM Engine inside a Docker container 
+The following docker command starts the TEAM Engine inside the Docker container with the name ```teamengine``` on port 8088:
 
     % docker run -p 8088:8080 --name teamengine --rm opengis/teamengine
 
-## Accessing the TeamEngine web interface
+## Accessing the TEAM Engine web interface
 Use a browser of your choice and open the URL:
 
 http://container-ip:8088/teamengine
 
-If your are running Docker on Windows or OS X with docker-machine check the IP with ```docker-machine ip```.  
+If your are running Docker on Windows or OS X with docker-machine check the IP with ```docker-machine ip```.
 On Linux it is most likely localhost/127.0.0.1 on Windows and OS X it might be a IP like:
 
 http://192.168.99.100:8088/teamengine
