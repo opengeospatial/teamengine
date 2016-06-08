@@ -55,7 +55,7 @@
     {
       "type": "shell",
       "environment_vars": [
-        "ETS_RESOURCES_RELEASE=16.02.23"
+        "ETS_RESOURCES_RELEASE=16.06.08"
       ],
       "script": "scripts/ets-resources.sh"
     }

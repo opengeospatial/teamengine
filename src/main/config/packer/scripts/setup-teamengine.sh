@@ -9,7 +9,10 @@ chown -R tomcat:tomcat /srv/derby
 mkdir /srv/teamengine
 cd /srv/teamengine
 unzip -a /tmp/teamengine/teamengine-base.zip
-chown -R tomcat:tomcat /srv/teamengine
+chown -R tomcat:cite /srv/teamengine
+chmod -R g+w /srv/teamengine
+# set group ID on all subdirectories
+find /srv/teamengine -type d -exec chmod g+s '{}' \;
 cd /tmp
 curl -O "https://repo1.maven.org/maven2/org/opengis/cite/teamengine/teamengine-web/${TE_VERSION}/teamengine-web-${TE_VERSION}.war"
 curl -O "https://repo1.maven.org/maven2/org/opengis/cite/teamengine/teamengine-realm/${TE_VERSION}/teamengine-realm-${TE_VERSION}.jar"
