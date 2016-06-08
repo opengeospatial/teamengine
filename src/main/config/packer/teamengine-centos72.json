@@ -37,8 +37,8 @@
     },
     {
       "type": "file",
-      "source": "files/teamengine-base.zip",
-      "destination": "/tmp/teamengine-base.zip"
+      "source": "files/teamengine",
+      "destination": "/tmp"
     },
     {
       "type": "shell",
@@ -48,8 +48,16 @@
       "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",
       "scripts": [
         "scripts/setup-tomcat.sh",
-        "scripts/setup-teamengine.sh"
+        "scripts/setup-teamengine.sh",
+        "scripts/setup-scm.sh"
       ]
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "ETS_RESOURCES_RELEASE=16.02.23"
+      ],
+      "script": "scripts/ets-resources.sh"
     }
   ]
 }
