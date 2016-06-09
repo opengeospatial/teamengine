@@ -20,6 +20,3 @@ if [ -e teamengine-web-$TE_VERSION.war ]; then
   mv teamengine-web-$TE_VERSION.war /srv/tomcat7/base-1/webapps/teamengine.war
   mv teamengine-realm-$TE_VERSION.jar /srv/tomcat7/base-1/lib/
 fi
-systemctl start tomcat-jsvc
-sleep 10
-systemctl stop tomcat-jsvc
