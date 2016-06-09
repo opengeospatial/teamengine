@@ -185,6 +185,9 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-repository-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 

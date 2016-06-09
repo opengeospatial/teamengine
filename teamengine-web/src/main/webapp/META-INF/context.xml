@@ -13,5 +13,6 @@
 
   <WatchedResource>${TE_BASE}/config.xml</WatchedResource>
   <WatchedResource>${TE_BASE}/scripts</WatchedResource>
-
+  <!-- improve startup time -->
+  <JarScanner scanClassPath="false" />
 </Context>
