@@ -1,6 +1,7 @@
 package com.occamlab.te.spi.executors.testng;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +21,7 @@ class PrimarySuiteListener implements ISuiteListener {
 
     private final static Logger LOGR = Logger.getLogger(PrimarySuiteListener.class.getName());
     private Document testRunArgs;
+    private UUID testRunId;
 
     /**
      * Constructs the listener. The test run arguments are expected to be
@@ -31,7 +33,7 @@ class PrimarySuiteListener implements ISuiteListener {
      * 
      * @see java.util.Properties#loadFromXML(java.io.InputStream) loadFromXML
      */
-    PrimarySuiteListener(Document testRunArgs) {
+    public PrimarySuiteListener(Document testRunArgs) {
         LOGR.log(Level.FINE, "Initializing PrimarySuiteListener...");
         if (null == testRunArgs) {
             LOGR.log(Level.WARNING, "Test run input document is null");
@@ -43,6 +45,17 @@ class PrimarySuiteListener implements ISuiteListener {
                     String.format("No test run arguments found in %s", testRunArgs.getDocumentElement().getNodeName()));
         }
         this.testRunArgs = testRunArgs;
+        this.testRunId = UUID.randomUUID();
+    }
+
+    /**
+     * Sets the test run identifier.
+     * 
+     * @param testRunId
+     *            An immutable universally unique identifier (a 128-bit value).
+     */
+    public void setTestRunId(UUID testRunId) {
+        this.testRunId = testRunId;
     }
 
     @Override
@@ -59,6 +72,7 @@ class PrimarySuiteListener implements ISuiteListener {
             params.put(entry.getAttribute("key"), value);
             LOGR.log(Level.FINE, "Added parameter: {0}={1}", new Object[] { entry.getAttribute("key"), value });
         }
+        params.put("uuid", this.testRunId.toString());
     }
 
     @Override

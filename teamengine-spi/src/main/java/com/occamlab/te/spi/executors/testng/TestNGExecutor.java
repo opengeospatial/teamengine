@@ -8,7 +8,6 @@
  */
 package com.occamlab.te.spi.executors.testng;
 
-import com.occamlab.te.spi.executors.TestRunExecutor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,14 +17,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+
 import org.testng.TestNG;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import com.occamlab.te.spi.executors.TestRunExecutor;
 
 /**
  * 
@@ -116,7 +119,9 @@ public class TestNGExecutor implements TestRunExecutor {
             runDir = this.outputDir;
         }
         driver.setOutputDirectory(runDir.getAbsolutePath());
-        driver.addListener(new PrimarySuiteListener(testRunArgs));
+        PrimarySuiteListener suiteListener = new PrimarySuiteListener(testRunArgs);
+        suiteListener.setTestRunId(runId);
+        driver.addListener(suiteListener);
         driver.run();
         Document resultsDoc = null;
         try {
