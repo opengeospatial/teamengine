@@ -1,4 +1,4 @@
-<Context reloadable="true"
+<Context reloadable="true" processTlds="false"
   aliases="/docs=${TE_BASE}/resources/docs,/about=${TE_BASE}/scripts,/reports=${TE_BASE}/users,/site=${TE_BASE}/resources/site">
 
   <Realm className="com.occamlab.te.realm.PBKDF2Realm" root="${TE_BASE}/users"/>
@@ -13,6 +13,9 @@
 
   <WatchedResource>${TE_BASE}/config.xml</WatchedResource>
   <WatchedResource>${TE_BASE}/scripts</WatchedResource>
+
+  <Loader className="org.apache.catalina.loader.VirtualWebappLoader" 
+          virtualClasspath="${TE_BASE}/resources/lib/*.jar"/>
   <!-- improve startup time -->
   <JarScanner scanClassPath="false" />
 </Context>
