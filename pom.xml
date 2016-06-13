@@ -177,6 +177,16 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <descriptors>
+            <descriptor>${basedir}/src/assembly/packer.xml</descriptor>
+          </descriptors>
+          <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+        </configuration>
+      </plugin>
     </plugins>
 
     <pluginManagement>
