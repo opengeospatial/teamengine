@@ -15,7 +15,7 @@
   <WatchedResource>${TE_BASE}/scripts</WatchedResource>
 
   <Loader className="org.apache.catalina.loader.VirtualWebappLoader" 
-          virtualClasspath="${TE_BASE}/resources/lib/*.jar"/>
+          virtualClasspath="${TE_BASE}/resources/lib/*.jar" />
   <!-- improve startup time -->
   <JarScanner scanClassPath="false" />
 </Context>

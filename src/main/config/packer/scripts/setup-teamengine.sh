@@ -20,3 +20,10 @@ if [ -e teamengine-web-$TE_VERSION.war ]; then
   mv teamengine-web-$TE_VERSION.war /srv/tomcat7/base-1/webapps/teamengine.war
   mv teamengine-realm-$TE_VERSION.jar /srv/tomcat7/base-1/lib/
 fi
+cd /srv/tomcat7/base-1/webapps/
+unzip -d teamengine teamengine.war
+chown -R tomcat:tomcat teamengine/
+# unnecessary for TEAMengine 4.7 or later
+if ! grep -q "VirtualWebappLoader" teamengine/META-INF/context.xml; then
+  sed -i '\/scripts<\/Watched/r /tmp/teamengine/context-loader' teamengine/META-INF/context.xml
+fi
