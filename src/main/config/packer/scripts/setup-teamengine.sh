@@ -15,15 +15,15 @@ chmod -R g+w /srv/teamengine
 find /srv/teamengine -type d -exec chmod g+s '{}' \;
 cd /tmp
 curl -O "https://repo1.maven.org/maven2/org/opengis/cite/teamengine/teamengine-web/${TE_VERSION}/teamengine-web-${TE_VERSION}.war"
-curl -O "https://repo1.maven.org/maven2/org/opengis/cite/teamengine/teamengine-realm/${TE_VERSION}/teamengine-realm-${TE_VERSION}.jar"
+curl -O "https://repo1.maven.org/maven2/org/opengis/cite/teamengine/teamengine-web/${TE_VERSION}/teamengine-web-${TE_VERSION}-common-libs.tar.gz"
 if [ -e teamengine-web-$TE_VERSION.war ]; then
   mv teamengine-web-$TE_VERSION.war /srv/tomcat7/base-1/webapps/teamengine.war
-  mv teamengine-realm-$TE_VERSION.jar /srv/tomcat7/base-1/lib/
+  tar xzf /tmp/teamengine-web-$TE_VERSION-common-libs.tar.gz -C /srv/tomcat7/base-1/lib/
 fi
 cd /srv/tomcat7/base-1/webapps/
 unzip -d teamengine teamengine.war
 chown -R tomcat:tomcat teamengine/
-# unnecessary for TEAMengine 4.7 or later
+# does not apply to teamengine 4.7 or later
 if ! grep -q "VirtualWebappLoader" teamengine/META-INF/context.xml; then
   sed -i '\/scripts<\/Watched/r /tmp/teamengine/context-loader' teamengine/META-INF/context.xml
 fi
