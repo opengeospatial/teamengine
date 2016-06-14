@@ -2,7 +2,8 @@
   "variables": {
     "ssh_name": "teamengine",
     "ssh_pass": "teamengine",
-    "ets_resources_release": "16.06.08"
+    "ets_resources_release": "16.06.08",
+    "use_oracle_jdk": "false"
   },
   "builders": [{
     "name": "centos72-virtualbox",
@@ -45,7 +46,8 @@
     {
       "type": "shell",
       "environment_vars": [
-        "TE_VERSION=4.5"
+        "TE_VERSION=4.5",
+        "use_oracle_jdk={{user `use_oracle_jdk`}}"
       ],
       "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",
       "scripts": [

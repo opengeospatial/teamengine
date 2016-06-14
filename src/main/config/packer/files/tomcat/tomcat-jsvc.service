@@ -8,7 +8,7 @@ After=network.target
 Type=forking
 PIDFile=/run/tomcat-jsvc.pid
 EnvironmentFile=/etc/opt/apache.org/tomcat.env
-Environment=JAVA_HOME=/opt/oracle.com/jdk8
+Environment=JAVA_HOME=/opt/jdk8
 Environment=CATALINA_HOME=/opt/apache.org/tomcat7
 Environment=CATALINA_PID=/run/tomcat-jsvc.pid
 
