@@ -9,7 +9,7 @@ cd $HOME
 # Modify ~/.bash_profile in place (login shell)
 sed -i '/^PATH=/ i export TE_BASE=/srv/teamengine' .bash_profile
 sed -i '/^PATH=/ i export ETS_SRC=/usr/local/src/cite' .bash_profile
-sed -i '/^PATH=/ i export JAVA_HOME=/opt/oracle.com/jdk8' .bash_profile
+sed -i '/^PATH=/ i export JAVA_HOME=/opt/jdk8' .bash_profile
 sed -i '/^PATH=/ i export M2_HOME=/opt/apache.org/maven3' .bash_profile
 sed -i '/^PATH=/ s/$/:$M2_HOME\/bin/' .bash_profile
 . ~/.bash_profile
