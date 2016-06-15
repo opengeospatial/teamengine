@@ -47,5 +47,10 @@ public class EARL {
             .addProperty(DCTerms.title, "Automatic");
     public static final Resource Passed = model.createResource(NS_URI + "passed").addProperty(RDF.type, OutcomeValue)
             .addProperty(DCTerms.title, "Passed");
-
+    public static final Resource Failed = model.createResource(NS_URI + "failed").addProperty(RDF.type, OutcomeValue)
+            .addProperty(DCTerms.title, "Failed");
+    public static final Resource Untested = model.createResource(NS_URI + "untested")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Untested");
+    public static final Resource Inconclusive = model.createResource(NS_URI + "cantTell")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Inconclusive");
 }
