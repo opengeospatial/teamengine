@@ -2,7 +2,8 @@
   "variables": {
     "ssh_name": "teamengine",
     "ssh_pass": "teamengine",
-    "ets_resources_release": "16.06.08",
+    "te_version": "4.5",
+    "ets_resources_release": "",
     "use_oracle_jdk": "false"
   },
   "builders": [{
@@ -44,9 +45,14 @@
       "destination": "/tmp"
     },
     {
+      "type": "file",
+      "source": "files/ets-releases.csv",
+      "destination": "~/ets-releases.csv"
+    },
+    {
       "type": "shell",
       "environment_vars": [
-        "TE_VERSION=4.5",
+        "TE_VERSION={{user `te_version`}}",
         "use_oracle_jdk={{user `use_oracle_jdk`}}"
       ],
       "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",

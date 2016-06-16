@@ -12,6 +12,7 @@ if [ $use_oracle_jdk = true ]; then
   tar xzf /tmp/jdk-*.tar.gz
   ln -s /opt/oracle.com/jdk1.8.0_91/ /opt/jdk8
 else 
+  # use OpenJDK
   yum -y install java-1.8.0-openjdk-devel
   ln -s /usr/lib/jvm/java-1.8.0-openjdk /opt/jdk8
 fi
