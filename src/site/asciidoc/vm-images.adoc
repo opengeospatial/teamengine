@@ -1,0 +1,94 @@
+= Virtual Machine Images
+
+== Introduction
+
+This guide describes how to generate a virtual machine image that contains 
+a complete TEAMengine installation along with the latest OGC conformance test suites.
+The components of the software stack are shown in the following figure.
+
+.Software stack 
+image::./images/teamengine-vm.png[software stack]
+
+https://www.packer.io/[Packer] is an open-source tool used to automatically create 
+machine images for a variety of virtual computing environments, including:
+
+* VirtualBox
+* Amazon EC2
+* VMware vSphere
+* Google Compute Engine
+
+The build process is driven by a template: a configuration file (in JSON format) that defines 
+how a machine image is created and provisioned.
+
+To install Packer, simply download the appropriate https://www.packer.io/downloads.html[binary package] 
+for your environment and unpack the archive into a suitable directory; then set the following 
+user environment variables:
+
+PACKER_HOME:: The directory where packer is installed.
+PACKER_CACHE_DIR:: The location of the packer cache (for downloaded resources).
+
+Update the PATH environment variable to include PACKER_HOME.
+
+== VirtualBox
+
+=== Overview
+
+https://www.virtualbox.org/[VirtualBox] is a freely available virtualization product 
+that runs on Windows, Linux, and Mac hosts. It supports a wide variety of guest operating 
+systems and is very useful in creating development or test environments. The Packer 
+template will create a complete, ready-to-run teamengine installation that contains
+the desired set of OGC test suites. The output is an "appliance" (in the standard http://www.dmtf.org/standards/ovf[OVF format]) 
+that can be imported into VirtualBox.
+
+=== Install VirtualBox
+
+To install VirtualBox, download a suitable https://www.virtualbox.org/wiki/Downloads[installation package] for 
+your environment; see the user manual for https://www.virtualbox.org/manual/ch02.html[installation instructions].
+When installation is complete, set the following user environment variable:
+
+VBOX_USER_HOME:: The location where virtual machines will be created.
+
+=== Creating and importing the image
+
+Once VirtualBox is installed and configured, simply change to the directory containing 
+the Packer template (see Note 1) and execute this command in a shell console:
+
+-----
+packer build teamengine-centos72.json
+-----
+
+[icons=None, caption="Note 1"]
+[NOTE]
+==========
+The template file (teamengine-centos72.json) can be found in the src/main/config/packer/ directory in the 
+teamengine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
+this Maven command at the root of the teamengine source tree: `mvn assembly:single`.
+==========
+
+The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 
+system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal distribution intended 
+for "headless" operation). To run it, start VirtualBox and perform the following steps:
+
+. Choose *File > Import Appliance...* and select the *.ovf file 
+. When the import is completed, select the newly created virtual machine and press "Start" 
+. When the boot sequence finishes, login using an SSH client to localhost:2222--or use the 
+VirtualBox terminal--with the teamengine user credentials (see Note 2) 
+. To start or stop Tomcat, execute this command:  `sudo systemctl start|stop tomcat-jsvc`
+. The main teamengine web app is available at \http://localhost:8888/teamengine (see Note 3) 
+
+
+[icons=None, caption="Note 2"]
+[NOTE]
+==========
+The default user credentials are specified using variables in the Packer template: `ssh_name`, `ssh_pass`. 
+The values can be overridden from the command line or a file; see https://www.packer.io/docs/templates/user-variables.html).
+==========
+
+[icons=None, caption="Note 3"]
+[NOTE]
+==========
+The VM runs on a private internal network using the default networking mode: Network 
+Address Translation (NAT). This prevents direct inbound connections, but port forwarding 
+rules allow remote access to the SSH server (via localhost:2222) and the Tomcat web 
+container (via localhost:8888).
+==========
