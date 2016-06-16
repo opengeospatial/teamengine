@@ -23,8 +23,8 @@ import org.testng.TestListenerAdapter;
 import com.occamlab.te.spi.vocabulary.EARL;
 
 /**
- * A TestListener that keeps track of tests as they are run and constructs the
- * EARL RDF model expressing the results.
+ * A TestListener that keeps track of tests as they are run and constructs an
+ * EARL RDF model representing the results.
  *
  * @see <a href="https://www.w3.org/TR/EARL10-Schema/" target="_blank">
  *      Evaluation and Report Language (EARL) 1.0 Schema</a>
@@ -59,14 +59,14 @@ public class EarlReportListener extends TestListenerAdapter {
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
         try {
-            writeModel(this.earlModel, testContext.getOutputDirectory());
+            writeModel(this.earlModel, testContext.getOutputDirectory(), true);
         } catch (IOException iox) {
             throw new RuntimeException("Failed to serialize model to " + testContext.getOutputDirectory(), iox);
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Invoked when a test method passed.
      * 
      * @see org.testng.TestListenerAdapter#onTestSuccess(org.testng.ITestResult)
      */
@@ -76,8 +76,8 @@ public class EarlReportListener extends TestListenerAdapter {
         onTestFinish(result);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Invoked when a test method failed.
      * 
      * @see org.testng.TestListenerAdapter#onTestFailure(org.testng.ITestResult)
      */
@@ -87,8 +87,8 @@ public class EarlReportListener extends TestListenerAdapter {
         onTestFinish(result);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Invoked when a test method was skipped.
      * 
      * @see org.testng.TestListenerAdapter#onTestSkipped(org.testng.ITestResult)
      */
@@ -100,17 +100,22 @@ public class EarlReportListener extends TestListenerAdapter {
 
     /**
      * Invoked when a test method has finished. The actual verdict is one of:
-     * pass, fail, or skip.
+     * pass, fail, or skip. An earl:Assertion statement that describes the test
+     * result is added to the model.
      * 
      * @param result
      *            Information about the test result.
      */
     void onTestFinish(ITestResult result) {
-        System.out.println("onTestFinish - " + result.getName() + " - " + result.getThrowable().getClass().getName());
-        // earl:TestResult
+        // earl:Assertion
         long endTime = result.getEndMillis();
         GregorianCalendar calTime = new GregorianCalendar(TimeZone.getDefault());
         calTime.setTimeInMillis(endTime);
+        Resource assertion = this.earlModel.createResource("assert-" + endTime, EARL.Assertion);
+        assertion.addProperty(EARL.mode, EARL.Automatic);
+        assertion.addProperty(EARL.assertedBy, this.assertor);
+        assertion.addProperty(EARL.subject, this.testSubject);
+        // earl:TestResult
         Resource earlResult = this.earlModel.createResource("result-" + endTime, EARL.TestResult);
         earlResult.addProperty(DCTerms.date, this.earlModel.createTypedLiteral(calTime));
         switch (result.getStatus()) {
@@ -130,11 +135,6 @@ public class EarlReportListener extends TestListenerAdapter {
             earlResult.addProperty(EARL.outcome, EARL.Passed);
             break;
         }
-        // earl:Assertion
-        Resource assertion = this.earlModel.createResource("assert-" + endTime, EARL.Assertion);
-        assertion.addProperty(EARL.mode, EARL.Automatic);
-        assertion.addProperty(EARL.assertedBy, this.assertor);
-        assertion.addProperty(EARL.subject, this.testSubject);
         assertion.addProperty(EARL.result, earlResult);
         // earl:TestCase
         String testMethodName = result.getMethod().getMethodName();
@@ -181,25 +181,33 @@ public class EarlReportListener extends TestListenerAdapter {
     }
 
     /**
-     * Writes the model to a file in the specified directory using the RDF/XML
-     * syntax.
+     * Writes the model to a file (earl.rdf) in the specified directory using
+     * the RDF/XML syntax.
      * 
      * @param model
      *            A representation of an RDF graph.
      * @param outputDirectory
      *            The location of the directory in which the results file is to
      *            be written.
+     * @param abbreviated
+     *            Indicates whether or not to serialize the model using the
+     *            abbreviated syntax.
      * @throws IOException
      *             If an IO error occurred while trying to serialize the model
      *             to a (new) file in the output directory.
      */
-    void writeModel(Model model, String outputDirectory) throws IOException {
+    void writeModel(Model model, String outputDirectory, boolean abbreviated) throws IOException {
         File outputFile = new File(outputDirectory, "earl.rdf");
         OutputStream outStream = null;
         if (outputFile.createNewFile()) {
             outStream = new FileOutputStream(outputFile);
         }
-        RDFWriter writer = model.getWriter("RDF/XML-ABBREV");
+        RDFWriter writer = null;
+        if (abbreviated) {
+            writer = model.getWriter("RDF/XML-ABBREV");
+        } else {
+            writer = model.getWriter("RDF/XML");
+        }
         writer.setProperty("xmlbase", "http://example.org/earl/");
         writer.write(model, outStream, null);
     }
