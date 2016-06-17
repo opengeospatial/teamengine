@@ -6,9 +6,9 @@
 # Note: Maven and Git must be installed and available on the system path.
 
 cd $HOME
-# Fix line endings
+# Fix line endings (strip CR chars)
 if [ -f ets-releases.csv ]; then
-  sed -i 's/^M$//' ets-releases.csv
+  sed -i 's/\r//' ets-releases.csv
 fi
 
 # Modify ~/.bash_profile in place (login shell)
