@@ -50,12 +50,12 @@ VBOX_USER_HOME:: The location where virtual machines will be created.
 
 === Creating and importing the image
 
-Once VirtualBox is installed and configured, simply change to the directory containing 
-the Packer template (see Note 1) and execute this command in a shell console:
-
------
-packer build teamengine-centos72.json
------
+The Packer template makes use of several supporting shell scripts and files (see Note 1). In the 
+'files' subdirectory is a CSV file (ets-releases.csv) that contains a list of OGC test suite releases; 
+each line has two fields: a Git repository URL, and a tag name indicating the release version. The 
+test suites listed in this file will be added to the TEAM-engine instance. If a test suite is not 
+wanted, just comment it out by inserting a number sign (or hash character, #) at the beginning of 
+the appropriate line.
 
 [icons=None, caption="Note 1"]
 [NOTE]
@@ -64,6 +64,13 @@ The template file (teamengine-centos72.json) can be found in the src/main/config
 teamengine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
 this Maven command at the root of the teamengine source tree: `mvn assembly:single`.
 ==========
+
+To create the virtual appliance, simply change to the directory containing the Packer template and 
+execute this command in a shell console:
+
+-----
+packer build teamengine-centos72.json
+-----
 
 The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 
 system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal distribution intended 
@@ -87,8 +94,8 @@ The values can be overridden from the command line or a file; see https://www.pa
 [icons=None, caption="Note 3"]
 [NOTE]
 ==========
-The VM runs on a private internal network using the default networking mode: Network 
-Address Translation (NAT). This prevents direct inbound connections, but port forwarding 
-rules allow remote access to the SSH server (via localhost:2222) and the Tomcat web 
-container (via localhost:8888).
+The VM runs on a private internal network using the default networking mode: network address 
+translation (NAT); this prevents all direct inbound connections, but not outbound connections. 
+Some port forwarding rules are created in order to allow remote access to the SSH server (via 
+localhost:2222) and the Tomcat web container (via localhost:8888).
 ==========
