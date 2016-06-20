@@ -51,17 +51,24 @@ public class EarlReportListener extends TestListenerAdapter {
 
     /**
      * Invoked when the test run has finished. The resulting RDF model is
-     * written to the output directory.
+     * written to the configured output directory; if this directory does not
+     * exist, the model is written to the directory specified by the system
+     * property <code>java.io.tmpdir</code>.
      * 
      * @see org.testng.TestListenerAdapter#onFinish(org.testng.ITestContext)
      */
     @Override
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
+        // SuiteRunner appends suite name to path on read
+        File outputDir = new File(testContext.getOutputDirectory()).getParentFile();
+        if (!outputDir.isDirectory()) {
+            outputDir = new File(System.getProperty("java.io.tmpdir"));
+        }
         try {
-            writeModel(this.earlModel, testContext.getOutputDirectory(), true);
+            writeModel(this.earlModel, outputDir, true);
         } catch (IOException iox) {
-            throw new RuntimeException("Failed to serialize model to " + testContext.getOutputDirectory(), iox);
+            throw new RuntimeException("Failed to serialize model to " + outputDir.getAbsolutePath(), iox);
         }
     }
 
@@ -187,8 +194,8 @@ public class EarlReportListener extends TestListenerAdapter {
      * @param model
      *            A representation of an RDF graph.
      * @param outputDirectory
-     *            The location of the directory in which the results file is to
-     *            be written.
+     *            A File object denoting the directory in which the results file
+     *            will be written.
      * @param abbreviated
      *            Indicates whether or not to serialize the model using the
      *            abbreviated syntax.
@@ -196,7 +203,10 @@ public class EarlReportListener extends TestListenerAdapter {
      *             If an IO error occurred while trying to serialize the model
      *             to a (new) file in the output directory.
      */
-    void writeModel(Model model, String outputDirectory, boolean abbreviated) throws IOException {
+    void writeModel(Model model, File outputDirectory, boolean abbreviated) throws IOException {
+        if (!outputDirectory.isDirectory()) {
+            throw new IllegalArgumentException("Directory does not exist at " + outputDirectory.getAbsolutePath());
+        }
         File outputFile = new File(outputDirectory, "earl.rdf");
         OutputStream outStream = null;
         if (outputFile.createNewFile()) {
@@ -208,8 +218,10 @@ public class EarlReportListener extends TestListenerAdapter {
         } else {
             writer = model.getWriter("RDF/XML");
         }
-        writer.setProperty("xmlbase", "http://example.org/earl/");
-        writer.write(model, outStream, null);
+        String baseUri = new StringBuilder("http://example.org/earl/").append(outputDirectory.getName()).append('/')
+                .toString();
+        writer.setProperty("xmlbase", baseUri);
+        writer.write(model, outStream, baseUri);
     }
 
 }

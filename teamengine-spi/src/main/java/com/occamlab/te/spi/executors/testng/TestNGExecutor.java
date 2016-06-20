@@ -1,11 +1,3 @@
-/**
- * **************************************************************************
- *
- * Contributor(s): 
- *	C. Heazel (WiSC): Added Fortify adjudication changes
- *
- ***************************************************************************
- */
 package com.occamlab.te.spi.executors.testng;
 
 import java.io.File;
@@ -110,7 +102,7 @@ public class TestNGExecutor implements TestRunExecutor {
             throw new IllegalArgumentException("No test run arguments were supplied.");
         }
         TestNG driver = new TestNG();
-        setTestSuites(driver, testngConfig);
+        setTestSuites(driver, this.testngConfig);
         driver.setVerbose(0);
         driver.setUseDefaultListeners(this.useDefaultListeners);
         UUID runId = UUID.randomUUID();
@@ -119,9 +111,10 @@ public class TestNGExecutor implements TestRunExecutor {
             runDir = this.outputDir;
         }
         driver.setOutputDirectory(runDir.getAbsolutePath());
-        PrimarySuiteListener suiteListener = new PrimarySuiteListener(testRunArgs);
-        suiteListener.setTestRunId(runId);
-        driver.addListener(suiteListener);
+        AlterSuiteParametersListener listener = new AlterSuiteParametersListener();
+        listener.setTestRunArgs(testRunArgs);
+        listener.setTestRunId(runId);
+        driver.addAlterSuiteListener(listener);
         driver.run();
         Document resultsDoc = null;
         try {
@@ -137,7 +130,6 @@ public class TestNGExecutor implements TestRunExecutor {
         Document resultsDoc;
         if (results.isFile()) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            // Fortify Mod: prevent external entity injection
             dbf.setExpandEntityReferences(false);
             dbf.setNamespaceAware(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
