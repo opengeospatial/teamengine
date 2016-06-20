@@ -18,7 +18,7 @@ You may build the following projects first:
     
     % git clone https://github.com/opengeospatial/ets-resources.git
     % cd ets-resources
-    % git checkout tags/16.0.23
+    % git checkout tags/16.02.23
     % mvn clean install
     
 #### Build the ETS for WFS 2.0:
@@ -33,7 +33,7 @@ You may build the following projects first:
     % git clone https://github.com/opengeospatial/teamengine.git
     % cd teamengine
     % git checkout tags/4.6
-    % mvn clean install -Dets-resources-version=16.0.23 -Pogc.cite
+    % mvn clean install -Dets-resources-version=16.02.23 -Pogc.cite
 
 ## Build the Docker image
 The Dockerfile is located in the ```teamengine/teamengine-docker/src/main/config/docker/Dockerfile``` directory. 
