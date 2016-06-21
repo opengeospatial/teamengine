@@ -2,23 +2,25 @@
 
 == Introduction
 
-This guide describes how to generate a virtual machine image that contains 
-a complete TEAMengine installation along with the latest OGC conformance test suites.
-The components of the software stack are shown in the following figure.
+This guide describes how to generate a virtual machine image that contains a complete 
+TEAMengine installation along with the latest OGC conformance test suites. The required 
+software components are shown in the following figure.
 
-.Software stack 
-image::./images/teamengine-vm.png[software stack]
+.Software components 
+image::./images/teamengine-vm.png[software components]
 
-https://www.packer.io/[Packer] is an open-source tool used to automatically create 
-machine images for a variety of virtual computing environments, including:
+https://www.packer.io/[Packer] is an open-source infrastructure definition tool used 
+to create machine images for a variety of dynamic infrastructure platforms. It includes  
+builders for many environments, such as:
 
 * VirtualBox
 * Amazon EC2
 * VMware vSphere
 * Google Compute Engine
+* Docker
 
 The build process is driven by a template: a configuration file (in JSON format) that defines 
-how a machine image is created and provisioned.
+how a machine image is created and automatically provisioned.
 
 To install Packer, simply download the appropriate https://www.packer.io/downloads.html[binary package] 
 for your environment and unpack the archive into a suitable directory; then set the following 
@@ -43,7 +45,7 @@ that can be imported into VirtualBox.
 === Install VirtualBox
 
 To install VirtualBox, download a suitable https://www.virtualbox.org/wiki/Downloads[installation package] for 
-your environment; see the user manual for https://www.virtualbox.org/manual/ch02.html[installation instructions].
+your host environment; see the user manual for https://www.virtualbox.org/manual/ch02.html[installation instructions].
 When installation is complete, set the following user environment variable:
 
 VBOX_USER_HOME:: The location where virtual machines will be created.
@@ -64,6 +66,23 @@ The template file (teamengine-centos72.json) can be found in the src/main/config
 teamengine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
 this Maven command at the root of the teamengine source tree: `mvn assembly:single`.
 ==========
+
+The template defines several user variables that can be overridden from the command line or a file; 
+see https://www.packer.io/docs/templates/user-variables.html). These are listed in the table below, 
+along with their default values.
+
+.Template variables
+[cols="1,1,3"]
+|==========
+|Variable |Default value |Description 
+
+|te_version |"4.5" |The desired version of the TEAMengine web application http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22teamengine-web%22[available at Maven Central].
+|ets_resources_release |"" |The desired https://github.com/opengeospatial/ets-resources/releases[ets-resources release version];
+this project aggregates all test suite dependencies. If not specified, the latest snapshot (tip of the master branch) will be used.
+|use_oracle_jdk |"false" |Whether or not to use the Oracle JDK (which is subject to a 
+http://www.oracle.com/technetwork/java/javase/terms/license/index.html[license agreement]). 
+If not, OpenJDK will be used.
+|==========
 
 To create the virtual appliance, simply change to the directory containing the Packer template and 
 execute this command in a shell console:
@@ -87,8 +106,8 @@ VirtualBox terminal--with the teamengine user credentials (see Note 2)
 [icons=None, caption="Note 2"]
 [NOTE]
 ==========
-The default user credentials are specified using variables in the Packer template: `ssh_name`, `ssh_pass`. 
-The values can be overridden from the command line or a file; see https://www.packer.io/docs/templates/user-variables.html).
+The user credentials are specified in the Packer template (`ssh_name`, `ssh_pass`). This is a 
+normal user account with 'sudo' privileges.
 ==========
 
 [icons=None, caption="Note 3"]
