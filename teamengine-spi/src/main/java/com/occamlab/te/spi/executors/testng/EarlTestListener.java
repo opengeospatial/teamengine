@@ -1,23 +1,13 @@
 package com.occamlab.te.spi.executors.testng;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.RDF;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -31,47 +21,43 @@ import com.occamlab.te.spi.vocabulary.EARL;
  * @see <a href="https://www.w3.org/TR/EARL10-Schema/" target="_blank">
  *      Evaluation and Report Language (EARL) 1.0 Schema</a>
  */
-public class EarlReportListener extends TestListenerAdapter {
+public class EarlTestListener extends TestListenerAdapter {
 
-    private static final Logger LOGR = Logger.getLogger(EarlReportListener.class.getPackage().getName());
+    private static final Logger LOGR = Logger.getLogger(EarlTestListener.class.getPackage().getName());
     private Model earlModel;
-    /** ISO 639 language code (2-3 letter, possibly with region subtag). */
-    private String langCode = "en";
+    private int resultCount = 0;
     private Resource assertor;
     private Resource testSubject;
 
     /**
-     * Invoked when the test run starts. The RDF model is initialized.
+     * Invoked when a test set (&lt;test&gt;) starts. This typically corresponds
+     * to a conformance class.
      * 
      * @see org.testng.TestListenerAdapter#onStart(org.testng.ITestContext)
      */
     @Override
     public void onStart(ITestContext testRunContext) {
         super.onStart(testRunContext);
-        this.earlModel = initModel(testRunContext);
+        Object obj = testRunContext.getSuite().getAttribute("earl");
+        if (null == obj) {
+            throw new NullPointerException("RDF model not obtained using suite attribute \"earl\"");
+        }
+        this.earlModel = Model.class.cast(obj);
+        this.assertor = earlModel.listSubjectsWithProperty(RDF.type, EARL.Assertor).next();
+        this.testSubject = earlModel.listSubjectsWithProperty(RDF.type, EARL.TestSubject).next();
     }
 
     /**
-     * Invoked when the test run has finished. The resulting RDF model is
-     * written to the configured output directory; if this directory does not
-     * exist, the model is written to the directory specified by the system
-     * property <code>java.io.tmpdir</code>.
+     * Invoked when a test set has finished. The model is augmented with some
+     * summary information about the results for the set (conformance class)
+     * just completed.
      * 
      * @see org.testng.TestListenerAdapter#onFinish(org.testng.ITestContext)
      */
     @Override
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
-        // SuiteRunner appends suite name to path on read
-        File outputDir = new File(testContext.getOutputDirectory()).getParentFile();
-        if (!outputDir.isDirectory()) {
-            outputDir = new File(System.getProperty("java.io.tmpdir"));
-        }
-        try {
-            writeModel(this.earlModel, outputDir, true);
-        } catch (IOException iox) {
-            throw new RuntimeException("Failed to serialize model to " + outputDir.getAbsolutePath(), iox);
-        }
+        // TODO: Write summary (success rate)
     }
 
     /**
@@ -116,16 +102,18 @@ public class EarlReportListener extends TestListenerAdapter {
      *            Information about the test result.
      */
     void onTestFinish(ITestResult result) {
+        LOGR.fine("Finished test method " + result.getMethod().getMethodName());
+        this.resultCount += 1;
         // earl:Assertion
         long endTime = result.getEndMillis();
         GregorianCalendar calTime = new GregorianCalendar(TimeZone.getDefault());
         calTime.setTimeInMillis(endTime);
-        Resource assertion = this.earlModel.createResource("assert-" + endTime, EARL.Assertion);
+        Resource assertion = this.earlModel.createResource("assert-" + this.resultCount, EARL.Assertion);
         assertion.addProperty(EARL.mode, EARL.Automatic);
         assertion.addProperty(EARL.assertedBy, this.assertor);
         assertion.addProperty(EARL.subject, this.testSubject);
         // earl:TestResult
-        Resource earlResult = this.earlModel.createResource("result-" + endTime, EARL.TestResult);
+        Resource earlResult = this.earlModel.createResource("result-" + this.resultCount, EARL.TestResult);
         earlResult.addProperty(DCTerms.date, this.earlModel.createTypedLiteral(calTime));
         switch (result.getStatus()) {
         case ITestResult.FAILURE:
@@ -162,65 +150,6 @@ public class EarlReportListener extends TestListenerAdapter {
         testReq.addProperty(DCTerms.title, xmlTestName);
         testCase.addProperty(DCTerms.isPartOf, testReq);
         assertion.addProperty(EARL.test, testCase);
-    }
-
-    /**
-     * Initializes the test results with basic information about the assertor
-     * (earl:Assertor) and test subject (earl:TestSubject).
-     * 
-     * @param testRunContext
-     *            Information about the test run.
-     * @return An RDF Model containing EARL statements.
-     */
-    Model initModel(ITestContext testRunContext) {
-        Map<String, String> params = testRunContext.getSuite().getXmlSuite().getAllParameters();
-        LOGR.log(Level.FINE, "Test run parameters\n:" + params);
-        Model model = ModelFactory.createDefaultModel();
-        Map<String, String> nsBindings = new HashMap<>();
-        nsBindings.put("earl", EARL.NS_URI);
-        nsBindings.put("dct", DCTerms.NS);
-        model.setNsPrefixes(nsBindings);
-        this.assertor = model.createResource("https://github.com/opengeospatial/teamengine", EARL.Assertor);
-        this.assertor.addProperty(DCTerms.title, "OGC TEAM Engine", this.langCode);
-        this.assertor.addProperty(DCTerms.description,
-                "Official test harness of the OGC conformance testing program (CITE).", this.langCode);
-        // WARNING: may differ from actual parameter that refers to test subject
-        this.testSubject = model.createResource(params.get("iut"), EARL.TestSubject);
-        return model;
-    }
-
-    /**
-     * Writes the model to a file (earl.rdf) in the specified directory using
-     * the RDF/XML syntax.
-     * 
-     * @param model
-     *            A representation of an RDF graph.
-     * @param outputDirectory
-     *            A File object denoting the directory in which the results file
-     *            will be written.
-     * @param abbreviated
-     *            Indicates whether or not to serialize the model using the
-     *            abbreviated syntax.
-     * @throws IOException
-     *             If an IO error occurred while trying to serialize the model
-     *             to a (new) file in the output directory.
-     */
-    void writeModel(Model model, File outputDirectory, boolean abbreviated) throws IOException {
-        if (!outputDirectory.isDirectory()) {
-            throw new IllegalArgumentException("Directory does not exist at " + outputDirectory.getAbsolutePath());
-        }
-        File outputFile = new File(outputDirectory, "earl.rdf");
-        if (!outputFile.createNewFile()) {
-            outputFile.delete();
-            outputFile.createNewFile();
-        }
-        String syntax = (abbreviated) ? "RDF/XML-ABBREV" : "RDF/XML";
-        String baseUri = new StringBuilder("http://example.org/earl/").append(outputDirectory.getName()).append('/')
-                .toString();
-        OutputStream outStream = new FileOutputStream(outputFile);
-        try (Writer writer = new OutputStreamWriter(outStream, StandardCharsets.UTF_8)) {
-            model.write(writer, syntax, baseUri);
-        }
     }
 
 }

@@ -21,7 +21,7 @@ import org.testng.xml.XmlSuite;
 
 import com.occamlab.te.spi.vocabulary.EARL;
 
-public class VerifyEarlReportListener {
+public class VerifyEarlSuiteListener {
 
     private static ITestContext testContext;
     private static ISuite suite;
@@ -44,8 +44,8 @@ public class VerifyEarlReportListener {
         Map<String, String> params = new HashMap<String, String>();
         params.put("iut", testSubject);
         when(xmlSuite.getAllParameters()).thenReturn(params);
-        EarlReportListener iut = new EarlReportListener();
-        Model model = iut.initModel(testContext);
+        EarlSuiteListener iut = new EarlSuiteListener();
+        Model model = iut.initModel(suite);
         assertNotNull(model);
         ResIterator itr = model.listSubjectsWithProperty(RDF.type, EARL.TestSubject);
         assertEquals("Unexpected URI for earl:TestSubject", testSubject, itr.next().getURI());
@@ -57,8 +57,8 @@ public class VerifyEarlReportListener {
         Map<String, String> params = new HashMap<String, String>();
         params.put("iut", testSubject);
         when(xmlSuite.getAllParameters()).thenReturn(params);
-        EarlReportListener iut = new EarlReportListener();
-        Model model = iut.initModel(testContext);
+        EarlSuiteListener iut = new EarlSuiteListener();
+        Model model = iut.initModel(suite);
         File outputDir = new File(System.getProperty("user.home"));
         iut.writeModel(model, outputDir, true);
         File earlFile = new File(outputDir, "earl.rdf");
