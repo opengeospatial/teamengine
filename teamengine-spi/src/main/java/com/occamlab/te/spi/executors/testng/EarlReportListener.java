@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFWriter;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.testng.ITestContext;
@@ -208,20 +210,17 @@ public class EarlReportListener extends TestListenerAdapter {
             throw new IllegalArgumentException("Directory does not exist at " + outputDirectory.getAbsolutePath());
         }
         File outputFile = new File(outputDirectory, "earl.rdf");
-        OutputStream outStream = null;
-        if (outputFile.createNewFile()) {
-            outStream = new FileOutputStream(outputFile);
+        if (!outputFile.createNewFile()) {
+            outputFile.delete();
+            outputFile.createNewFile();
         }
-        RDFWriter writer = null;
-        if (abbreviated) {
-            writer = model.getWriter("RDF/XML-ABBREV");
-        } else {
-            writer = model.getWriter("RDF/XML");
-        }
+        String syntax = (abbreviated) ? "RDF/XML-ABBREV" : "RDF/XML";
         String baseUri = new StringBuilder("http://example.org/earl/").append(outputDirectory.getName()).append('/')
                 .toString();
-        writer.setProperty("xmlbase", baseUri);
-        writer.write(model, outStream, baseUri);
+        OutputStream outStream = new FileOutputStream(outputFile);
+        try (Writer writer = new OutputStreamWriter(outStream, StandardCharsets.UTF_8)) {
+            model.write(writer, syntax, baseUri);
+        }
     }
 
 }

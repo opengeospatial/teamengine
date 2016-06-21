@@ -3,6 +3,8 @@ package com.occamlab.te.spi.executors.testng;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,5 +49,21 @@ public class VerifyEarlReportListener {
         assertNotNull(model);
         ResIterator itr = model.listSubjectsWithProperty(RDF.type, EARL.TestSubject);
         assertEquals("Unexpected URI for earl:TestSubject", testSubject, itr.next().getURI());
+    }
+
+    @Test
+    public void writeModel() throws IOException {
+        String testSubject = "http://www.example.org/test/subject-2";
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("iut", testSubject);
+        when(xmlSuite.getAllParameters()).thenReturn(params);
+        EarlReportListener iut = new EarlReportListener();
+        Model model = iut.initModel(testContext);
+        File outputDir = new File(System.getProperty("user.home"));
+        iut.writeModel(model, outputDir, true);
+        File earlFile = new File(outputDir, "earl.rdf");
+        assertTrue("EARL results file does not exist at " + earlFile.getAbsolutePath(), earlFile.exists());
+        assertTrue("EARL results file is emtpy.", earlFile.length() > 0);
+        earlFile.delete();
     }
 }
