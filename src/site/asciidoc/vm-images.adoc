@@ -1,23 +1,32 @@
-= Virtual Machine Images
+= Virtualization Images
 
 == Introduction
 
-This guide describes how to generate a virtual machine image that contains a complete 
-TEAMengine installation along with the latest OGC conformance test suites. The required 
-software components are shown in the following figure.
+This guide describes how to generate a virtual machine (VM) or container image that provides 
+a complete TEAMengine installation along with the latest OGC conformance test suites. The 
+required software components are shown in the following figure.
 
 .Software components 
 image::./images/teamengine-vm.png[software components]
 
 https://www.packer.io/[Packer] is an open-source infrastructure definition tool used 
-to create machine images for a variety of dynamic infrastructure platforms. It includes  
-builders for many environments, such as:
+to create images for a variety of dynamic infrastructure platforms. It includes builders 
+for many virtual environments, such as:
 
 * VirtualBox
 * Amazon EC2
 * VMware vSphere
 * Google Compute Engine
-* Docker
+* Docker (container)
+
+.Virtual machines vs. containers
+**********
+A container is not a full-blown virtual machine--it doesn't require a hypervisor and runs in 
+an isolated environment provided by a single host operating system. Since the OS kernel is 
+shared, a container generally has less overhead than a virtual machine. Container technologies 
+such as Docker, Warden, and Rocket offer a way to package and distribute a service or an 
+application along with its dependencies.
+**********
 
 The build process is driven by a template: a configuration file (in JSON format) that defines 
 how a machine image is created and automatically provisioned.
