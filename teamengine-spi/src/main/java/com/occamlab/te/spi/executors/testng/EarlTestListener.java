@@ -25,7 +25,14 @@ public class EarlTestListener extends TestListenerAdapter {
 
     private static final Logger LOGR = Logger.getLogger(EarlTestListener.class.getPackage().getName());
     private Model earlModel;
+    /** Total number of test results for entire suite. */
     private int resultCount = 0;
+    /** Number of PASS verdicts for test set. */
+    private int nPassed = 0;
+    /** Number of SKIP verdicts for test set. */
+    private int nSkipped = 0;
+    /** Number of FAIL verdicts for test set. */
+    private int nFailed = 0;
     private Resource assertor;
     private Resource testSubject;
 
@@ -36,28 +43,37 @@ public class EarlTestListener extends TestListenerAdapter {
      * @see org.testng.TestListenerAdapter#onStart(org.testng.ITestContext)
      */
     @Override
-    public void onStart(ITestContext testRunContext) {
-        super.onStart(testRunContext);
-        Object obj = testRunContext.getSuite().getAttribute("earl");
+    public void onStart(ITestContext testContext) {
+        super.onStart(testContext);
+        Object obj = testContext.getSuite().getAttribute("earl");
         if (null == obj) {
             throw new NullPointerException("RDF model not obtained using suite attribute \"earl\"");
         }
         this.earlModel = Model.class.cast(obj);
         this.assertor = earlModel.listSubjectsWithProperty(RDF.type, EARL.Assertor).next();
         this.testSubject = earlModel.listSubjectsWithProperty(RDF.type, EARL.TestSubject).next();
+        nPassed = nSkipped = nFailed = 0;
     }
 
     /**
      * Invoked when a test set has finished. The model is augmented with some
      * summary information about the results for the set (conformance class)
-     * just completed.
+     * just completed. Each conformance class has a corresponding
+     * earl:TestRequirement node in the results.
      * 
      * @see org.testng.TestListenerAdapter#onFinish(org.testng.ITestContext)
      */
     @Override
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
-        // TODO: Write summary (success rate)
+        Model model = (Model) testContext.getSuite().getAttribute("earl");
+        String contextName = testContext.getName();
+        Resource testReq = model.listResourcesWithProperty(DCTerms.title, contextName).next();
+        StringBuilder summary = new StringBuilder();
+        summary.append("Passed: ").append(this.nPassed).append("; ");
+        summary.append("Failed: ").append(this.nFailed).append("; ");
+        summary.append("Skipped: ").append(this.nSkipped);
+        testReq.addProperty(DCTerms.description, summary.toString());
     }
 
     /**
@@ -68,6 +84,7 @@ public class EarlTestListener extends TestListenerAdapter {
     @Override
     public void onTestSuccess(ITestResult result) {
         super.onTestSuccess(result);
+        this.nPassed += 1;
         onTestFinish(result);
     }
 
@@ -79,6 +96,7 @@ public class EarlTestListener extends TestListenerAdapter {
     @Override
     public void onTestFailure(ITestResult result) {
         super.onTestFailure(result);
+        this.nFailed += 1;
         onTestFinish(result);
     }
 
@@ -90,6 +108,7 @@ public class EarlTestListener extends TestListenerAdapter {
     @Override
     public void onTestSkipped(ITestResult result) {
         super.onTestSkipped(result);
+        this.nSkipped += 1;
         onTestFinish(result);
     }
 

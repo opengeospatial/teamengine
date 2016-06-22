@@ -14,8 +14,8 @@ import org.w3c.dom.NodeList;
 
 /**
  * A listener that sets or updates the suite-level parameters in the test suites
- * using the given test run arguments (a properties document). The value of the
- * key attribute is set as the parameter name. The extra "uuid" parameter
+ * using the test run arguments presented in a properties document. The value of
+ * the key attribute is set as the parameter name. The extra "uuid" parameter
  * contains the test run identifier.
  */
 public class AlterSuiteParametersListener implements IAlterSuiteListener {
@@ -25,7 +25,7 @@ public class AlterSuiteParametersListener implements IAlterSuiteListener {
     private UUID testRunId = UUID.randomUUID();
 
     /**
-     * Sets the test run arguments.
+     * Sets the test run arguments from entries in a properties document.
      * 
      * @param testRunArgs
      *            A Document that contains a set of XML properties.
@@ -49,7 +49,7 @@ public class AlterSuiteParametersListener implements IAlterSuiteListener {
 
     /**
      * Adds the entries from the properties document to the set of test suite
-     * parameters. An entry is skipped if the value is an empty string.
+     * parameters. An entry is skipped if its value is an empty string.
      */
     @Override
     public void alter(List<XmlSuite> xmlSuites) {
