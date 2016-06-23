@@ -37,9 +37,9 @@
       <version>1.10</version>
     </dependency>
     <dependency>
-      <groupId>org.opengis.cite.xerces</groupId>
-      <artifactId>xercesImpl-xsd11</artifactId>
-      <version>2.12-beta-r1667115</version>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.11.0</version>
     </dependency>
     <dependency>
       <!-- this optional dependency of xercesImpl is generally useful -->
