@@ -138,7 +138,7 @@ public class EarlTestListener extends TestListenerAdapter {
         earlResult.addProperty(DCTerms.date, this.earlModel.createTypedLiteral(calTime));
         switch (result.getStatus()) {
         case ITestResult.FAILURE:
-            earlResult.addProperty(DCTerms.description, result.getThrowable().getMessage());
+            earlResult.addProperty(DCTerms.description, getDetailMessage(result));
             if (AssertionError.class.isInstance(result.getThrowable())) {
                 earlResult.addProperty(EARL.outcome, EARL.Failed);
             } else { // an exception occurred
@@ -146,7 +146,7 @@ public class EarlTestListener extends TestListenerAdapter {
             }
             break;
         case ITestResult.SKIP:
-            earlResult.addProperty(DCTerms.description, result.getThrowable().getMessage());
+            earlResult.addProperty(DCTerms.description, getDetailMessage(result));
             earlResult.addProperty(EARL.outcome, EARL.Untested);
             break;
         default:
@@ -171,6 +171,27 @@ public class EarlTestListener extends TestListenerAdapter {
         testReq.addProperty(DCTerms.title, xmlTestName);
         testReq.addProperty(DCTerms.hasPart, testCase);
         assertion.addProperty(EARL.test, testCase);
+    }
+
+    /**
+     * Returns a description of an error or exception associated with a test
+     * result.
+     * 
+     * @param result
+     *            Information about a test result.
+     * @return A String providing diagnostic information.
+     */
+    String getDetailMessage(ITestResult result) {
+        if (null == result.getThrowable()) {
+            return "No details available.";
+        }
+        String msg = result.getThrowable().getMessage();
+        if (null == msg && null != result.getThrowable().getCause()) {
+            msg = result.getThrowable().getCause().getMessage();
+        } else {
+            msg = result.getThrowable().toString();
+        }
+        return msg;
     }
 
 }
