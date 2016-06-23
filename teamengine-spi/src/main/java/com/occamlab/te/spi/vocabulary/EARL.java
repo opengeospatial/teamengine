@@ -43,7 +43,7 @@ public class EARL {
     public static final Property pointer = model.createProperty(NS_URI + "pointer");
     public static final Property info = model.createProperty(NS_URI + "info");
     // EARL instances
-    public static final Resource Automatic = model.createResource(NS_URI + "automatic").addProperty(RDF.type, TestMode)
+    public static final Resource AutomaticMode = model.createResource(NS_URI + "automatic").addProperty(RDF.type, TestMode)
             .addProperty(DCTerms.title, "Automatic");
     public static final Resource Passed = model.createResource(NS_URI + "passed").addProperty(RDF.type, OutcomeValue)
             .addProperty(DCTerms.title, "Passed");

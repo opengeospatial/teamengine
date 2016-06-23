@@ -4,8 +4,10 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.testng.ITestContext;
@@ -67,8 +69,8 @@ public class EarlTestListener extends TestListenerAdapter {
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
         Model model = (Model) testContext.getSuite().getAttribute("earl");
-        String contextName = testContext.getName();
-        Resource testReq = model.listResourcesWithProperty(DCTerms.title, contextName).next();
+        Literal nameLiteral = ResourceFactory.createPlainLiteral(testContext.getName());
+        Resource testReq = model.listResourcesWithProperty(DCTerms.title, nameLiteral).next();
         StringBuilder summary = new StringBuilder();
         summary.append("Passed: ").append(this.nPassed).append("; ");
         summary.append("Failed: ").append(this.nFailed).append("; ");
@@ -128,7 +130,7 @@ public class EarlTestListener extends TestListenerAdapter {
         GregorianCalendar calTime = new GregorianCalendar(TimeZone.getDefault());
         calTime.setTimeInMillis(endTime);
         Resource assertion = this.earlModel.createResource("assert-" + this.resultCount, EARL.Assertion);
-        assertion.addProperty(EARL.mode, EARL.Automatic);
+        assertion.addProperty(EARL.mode, EARL.AutomaticMode);
         assertion.addProperty(EARL.assertedBy, this.assertor);
         assertion.addProperty(EARL.subject, this.testSubject);
         // earl:TestResult
@@ -167,7 +169,7 @@ public class EarlTestListener extends TestListenerAdapter {
         String xmlTestName = result.getTestClass().getXmlTest().getName();
         Resource testReq = this.earlModel.createResource(xmlTestName.replaceAll("\\s", "-"), EARL.TestRequirement);
         testReq.addProperty(DCTerms.title, xmlTestName);
-        testCase.addProperty(DCTerms.isPartOf, testReq);
+        testReq.addProperty(DCTerms.hasPart, testCase);
         assertion.addProperty(EARL.test, testCase);
     }
 

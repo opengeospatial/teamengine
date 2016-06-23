@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,8 +84,22 @@ public class EarlSuiteListener implements ISuiteListener {
         assertor.addProperty(DCTerms.title, "OGC TEAM Engine", this.langCode);
         assertor.addProperty(DCTerms.description,
                 "Official test harness of the OGC conformance testing program (CITE).", this.langCode);
-        // WARNING: may differ from actual parameter that refers to test subject
-        model.createResource(params.get("iut"), EARL.TestSubject);
+        String iut = params.get("iut");
+        if (null == iut) {
+            // non-default parameter refers to test subject--use first URI value
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                try {
+                    URI uri = URI.create(param.getValue());
+                    iut = uri.toString();
+                } catch (IllegalArgumentException e) {
+                    continue;
+                }
+            }
+        }
+        if (null == iut) {
+            throw new NullPointerException("Unable to find URI reference for IUT in test run parameters.");
+        }
+        model.createResource(iut, EARL.TestSubject);
         return model;
     }
 
