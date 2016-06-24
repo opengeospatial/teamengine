@@ -43,7 +43,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
 @Path("suites/{etsCode}/{etsVersion}/run")
-@Produces("application/xml; charset='utf-8'")
+@Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'" })
 public class TestRunResource {
 
     private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
@@ -73,6 +73,8 @@ public class TestRunResource {
             msg.append(params.toString());
             LOGR.fine(msg.toString());
         }
+        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
+        params.put("mediaType", Arrays.asList(preferredMediaType.toString()));
         Source results = executeTestRun(etsCode, etsVersion, params);
         return results;
     }
@@ -107,6 +109,8 @@ public class TestRunResource {
         }
         Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
+        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
+        args.put("mediaType", Arrays.asList(preferredMediaType.toString()));
         Source results = executeTestRun(etsCode, etsVersion, args);
         return results;
     }
@@ -170,6 +174,8 @@ public class TestRunResource {
             }
             args.put("sch", Arrays.asList(schBody.toURI().toString()));
         }
+        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
+        args.put("mediaType", Arrays.asList(preferredMediaType.toString()));
         Source results = executeTestRun(etsCode, etsVersion, args);
         return results;
     }
@@ -230,12 +236,12 @@ public class TestRunResource {
 
     /**
      * Extracts test run arguments from the given Map and inserts them into a
-     * DOM Document.
+     * DOM Document representing an XML properties file.
      * 
      * @param requestParams
      *            A collection of key-value pairs. Each key can have zero or
      *            more values but only the first value is used.
-     * @return A DOM Document representing an XML properties file.
+     * @return A DOM Document node.
      * @see java.util.Properties
      */
     Document readTestRunArguments(Map<String, java.util.List<String>> requestParams) {
