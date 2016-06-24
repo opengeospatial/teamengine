@@ -67,14 +67,6 @@ public class TestRunResource {
     @GET
     public Source handleGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion) {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        if (LOGR.isLoggable(Level.FINE)) {
-            StringBuilder msg = new StringBuilder("Test run arguments - ");
-            msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append(params.toString());
-            LOGR.fine(msg.toString());
-        }
-        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
-        params.put("mediaType", Arrays.asList(preferredMediaType.toString()));
         Source results = executeTestRun(etsCode, etsVersion, params);
         return results;
     }
@@ -100,17 +92,8 @@ public class TestRunResource {
         if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
         }
-        if (LOGR.isLoggable(Level.FINE)) {
-            StringBuilder msg = new StringBuilder("Test run arguments - ");
-            msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append("Entity media type: " + this.headers.getMediaType());
-            msg.append("File location: " + entityBody.getAbsolutePath());
-            LOGR.fine(msg.toString());
-        }
         Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
-        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
-        args.put("mediaType", Arrays.asList(preferredMediaType.toString()));
         Source results = executeTestRun(etsCode, etsVersion, args);
         return results;
     }
@@ -153,13 +136,6 @@ public class TestRunResource {
         if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
         }
-        if (LOGR.isLoggable(Level.FINE)) {
-            StringBuilder msg = new StringBuilder("Test run arguments - ");
-            msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append("Entity media type: " + this.headers.getMediaType());
-            msg.append("File location: " + entityBody.getAbsolutePath());
-            LOGR.fine(msg.toString());
-        }
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
         if (null != schBody) {
             if (!schBody.exists() || schBody.length() == 0) {
@@ -174,8 +150,6 @@ public class TestRunResource {
             }
             args.put("sch", Arrays.asList(schBody.toURI().toString()));
         }
-        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
-        args.put("mediaType", Arrays.asList(preferredMediaType.toString()));
         Source results = executeTestRun(etsCode, etsVersion, args);
         return results;
     }
@@ -194,8 +168,19 @@ public class TestRunResource {
      *             If an error occurs while executing a test run.
      */
     Source executeTestRun(String etsCode, String etsVersion, Map<String, java.util.List<String>> testRunArgs) {
-        TestSuiteController controller = findController(etsCode, etsVersion);
+        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
+        testRunArgs.put("acceptMediaType", Arrays.asList(preferredMediaType.toString()));
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder("Test run arguments - ");
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append(testRunArgs.toString());
+            if (null != this.headers.getMediaType()) {
+                msg.append("Entity media type: " + this.headers.getMediaType());
+            }
+            LOGR.fine(msg.toString());
+        }
         Document xmlArgs = readTestRunArguments(testRunArgs);
+        TestSuiteController controller = findController(etsCode, etsVersion);
         Source testResults = null;
         try {
             testResults = controller.doTestRun(xmlArgs);
@@ -210,6 +195,7 @@ public class TestRunResource {
                     String.format("Error executing test suite (%s-%s)", etsCode, etsVersion));
             throw new WebApplicationException(rsp);
         }
+        LOGR.fine(String.format("Test results for suite %s-%s: %s", etsCode, etsVersion, testResults.getSystemId()));
         return testResults;
     }
 
