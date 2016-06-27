@@ -1,26 +1,27 @@
 package com.occamlab.te.spi.executors.testng;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
 
 import org.testng.TestNG;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
 
 import com.occamlab.te.spi.executors.TestRunExecutor;
 
@@ -64,7 +65,8 @@ public class TestNGExecutor implements TestRunExecutor {
     public TestNGExecutor(String testngSuite, String outputDirPath, boolean useDefaultListeners) {
         this.useDefaultListeners = useDefaultListeners;
         this.outputDir = new File(outputDirPath, "testng");
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
+        if (!this.outputDir.exists() && !this.outputDir.mkdirs()) {
+            LOGR.config("Failed to create output directory at " + this.outputDir);
             this.outputDir = new File(System.getProperty("java.io.tmpdir"));
         }
         if (null != testngSuite && !testngSuite.isEmpty()) {
@@ -111,6 +113,7 @@ public class TestNGExecutor implements TestRunExecutor {
         File runDir = new File(this.outputDir, runId.toString());
         if (!runDir.mkdir()) {
             runDir = this.outputDir;
+            LOGR.config("Created test run directory at " + runDir.getAbsolutePath());
         }
         driver.setOutputDirectory(runDir.getAbsolutePath());
         AlterSuiteParametersListener listener = new AlterSuiteParametersListener();
@@ -121,11 +124,11 @@ public class TestNGExecutor implements TestRunExecutor {
         Source source = null;
         try {
             File resultsFile = getResultsFile(getPreferredMediaType(testRunArgs), driver.getOutputDirectory());
-            // Jersey fails to serialize StreamSource, so use DOMSource
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            source = new DOMSource(builder.parse(resultsFile));
+            InputStream inStream = new FileInputStream(resultsFile);
+            InputSource inSource = new InputSource(new InputStreamReader(inStream, StandardCharsets.UTF_8));
+            source = new SAXSource(inSource);
             source.setSystemId(resultsFile.toURI().toString());
-        } catch (IOException | ParserConfigurationException | SAXException e) {
+        } catch (IOException e) {
             LOGR.log(Level.SEVERE, "Error reading test results: " + e.getMessage());
         }
         return source;
