@@ -37,6 +37,7 @@
       <item href="index.html" name="Overview" />
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
+      <item href="vm-images.html" name="Virtual Machine Images" />
     </menu>
     <menu name="Test Suite Development">
       <item href="testng-essentials.html" name="Using TestNG, Part 1: Essentials" />

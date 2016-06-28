@@ -1,7 +1,10 @@
 {
   "variables": {
     "ssh_name": "teamengine",
-    "ssh_pass": "teamengine"
+    "ssh_pass": "teamengine",
+    "te_version": "4.5",
+    "ets_resources_release": "",
+    "use_oracle_jdk": "false"
   },
   "builders": [{
     "name": "centos72-virtualbox",
@@ -21,6 +24,7 @@
     "ssh_username": "{{user `ssh_name`}}",
     "ssh_password": "{{user `ssh_pass`}}",
     "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
+    "shutdown_timeout": "10m",
     "vboxmanage": [
       ["modifyvm", "{{.Name}}", "--memory", "2048"],
       ["modifyvm", "{{.Name}}", "--cpus", "2"],
@@ -41,9 +45,15 @@
       "destination": "/tmp"
     },
     {
+      "type": "file",
+      "source": "files/ets-releases.csv",
+      "destination": "~/ets-releases.csv"
+    },
+    {
       "type": "shell",
       "environment_vars": [
-        "TE_VERSION=4.5"
+        "TE_VERSION={{user `te_version`}}",
+        "use_oracle_jdk={{user `use_oracle_jdk`}}"
       ],
       "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",
       "scripts": [
@@ -55,7 +65,7 @@
     {
       "type": "shell",
       "environment_vars": [
-        "ETS_RESOURCES_RELEASE=16.06.08"
+        "ETS_RESOURCES_RELEASE={{user `ets_resources_release`}}"
       ],
       "script": "scripts/ets-resources.sh"
     }

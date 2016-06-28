@@ -1,7 +1,9 @@
 Release Notes
 =============
 
-## 4.7 (2016-05-DD)
+## 4.7 (2016-06-DD)
+- [#167] Create [Packer](https://www.packer.io/) template to generate VM image (VirtualBox)
+- [web] Add VirtualWebappLoader to context (TE_BASE/resources/lib/*.jar)
 - [core, web] Merge [PR #163](https://github.com/opengeospatial/teamengine/pull/163) to fix 
   [#158](https://github.com/opengeospatial/teamengine/issues/158): Merge security (XXE) fixes
 - [realm] [#150](https://github.com/opengeospatial/teamengine/issues/150): Use PBKDF2 function to 

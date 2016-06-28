@@ -138,6 +138,11 @@
             <artifactId>doxia-module-markdown</artifactId>
             <version>1.7</version>
           </dependency>
+          <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctor-maven-plugin</artifactId>
+            <version>1.5.3</version>
+          </dependency>
         </dependencies>
         <configuration>
           <relativizeDecorationLinks>false</relativizeDecorationLinks>
@@ -175,6 +180,16 @@
         <configuration>
           <tagNameFormat>@{project.version}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <descriptors>
+            <descriptor>${basedir}/src/assembly/packer.xml</descriptor>
+          </descriptors>
+          <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
         </configuration>
       </plugin>
     </plugins>

@@ -1,0 +1,129 @@
+= Virtualization Images
+
+== Introduction
+
+This guide describes how to generate a virtual machine (VM) or container image that provides 
+a complete TEAMengine installation along with the latest OGC conformance test suites. The 
+required software components are shown in the following figure.
+
+.Software components 
+image::./images/teamengine-vm.png[software components]
+
+https://www.packer.io/[Packer] is an open-source infrastructure definition tool used 
+to create images for a variety of dynamic infrastructure platforms. It includes builders 
+for many virtual environments, such as:
+
+* VirtualBox
+* Amazon EC2
+* VMware vSphere
+* Google Compute Engine
+* Docker (container)
+
+.Virtual machines vs. containers
+**********
+A container is not a full-blown virtual machine--it doesn't require a hypervisor and runs in 
+an isolated environment provided by a single host operating system. Since the OS kernel is 
+shared, a container generally has less overhead than a virtual machine. Container technologies 
+such as Docker, Warden, and Rocket offer a way to package and distribute a service or an 
+application along with its dependencies.
+**********
+
+The build process is driven by a template: a configuration file (in JSON format) that defines 
+how a machine image is created and automatically provisioned.
+
+To install Packer, simply download the appropriate https://www.packer.io/downloads.html[binary package] 
+for your environment and unpack the archive into a suitable directory; then set the following 
+user environment variables:
+
+PACKER_HOME:: The directory where packer is installed.
+PACKER_CACHE_DIR:: The location of the packer cache (for downloaded resources).
+
+Update the PATH environment variable to include PACKER_HOME.
+
+== VirtualBox
+
+=== Overview
+
+https://www.virtualbox.org/[VirtualBox] is a freely available virtualization product 
+that runs on Windows, Linux, and Mac hosts. It supports a wide variety of guest operating 
+systems and is very useful in creating development or test environments. The Packer 
+template will create a complete, ready-to-run teamengine installation that contains
+the desired set of OGC test suites. The output is an "appliance" (in the standard http://www.dmtf.org/standards/ovf[OVF format]) 
+that can be imported into VirtualBox.
+
+=== Install VirtualBox
+
+To install VirtualBox, download a suitable https://www.virtualbox.org/wiki/Downloads[installation package] for 
+your host environment; see the user manual for https://www.virtualbox.org/manual/ch02.html[installation instructions].
+When installation is complete, set the following user environment variable:
+
+VBOX_USER_HOME:: The location where virtual machines will be created.
+
+=== Creating and importing the image
+
+The Packer template makes use of several supporting shell scripts and files (see Note 1). In the 
+'files' subdirectory is a CSV file (ets-releases.csv) that contains a list of OGC test suite releases; 
+each line has two fields: a Git repository URL, and a tag name indicating the release version. The 
+test suites listed in this file will be added to the TEAM-engine instance. If a test suite is not 
+wanted, just comment it out by inserting a number sign (or hash character, #) at the beginning of 
+the appropriate line.
+
+[icons=None, caption="Note 1"]
+[NOTE]
+==========
+The template file (teamengine-centos72.json) can be found in the src/main/config/packer/ directory in the 
+teamengine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
+this Maven command at the root of the teamengine source tree: `mvn assembly:single`.
+==========
+
+The template defines several user variables that can be overridden from the command line or a file; 
+see https://www.packer.io/docs/templates/user-variables.html). These are listed in the table below, 
+along with their default values.
+
+.Template variables
+[cols="1,1,3"]
+|==========
+|Variable |Default value |Description 
+
+|te_version |"4.5" |The desired version of the TEAMengine web application http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22teamengine-web%22[available at Maven Central].
+|ets_resources_release |"" |The desired https://github.com/opengeospatial/ets-resources/releases[ets-resources release version];
+this project aggregates all test suite dependencies. If not specified, the latest snapshot (tip of the master branch) will be used.
+|use_oracle_jdk |"false" |Whether or not to use the Oracle JDK (which is subject to a 
+http://www.oracle.com/technetwork/java/javase/terms/license/index.html[license agreement]). 
+If not, OpenJDK will be used.
+|==========
+
+To create the virtual appliance, simply change to the directory containing the Packer template and 
+execute this command in a shell console:
+
+-----
+packer build teamengine-centos72.json
+-----
+
+The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 
+system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal distribution intended 
+for "headless" operation). To run it, start VirtualBox and perform the following steps:
+
+. Choose *File > Import Appliance...* and select the *.ovf file 
+. When the import is completed, select the newly created virtual machine and press "Start" 
+. When the boot sequence finishes, login using an SSH client to localhost:2222--or use the 
+VirtualBox terminal--with the teamengine user credentials (see Note 2) 
+. To start or stop Tomcat, execute this command:  `sudo systemctl start|stop tomcat-jsvc`
+. The main teamengine web app is available at \http://localhost:8888/teamengine (see Note 3) 
+
+
+[icons=None, caption="Note 2"]
+[NOTE]
+==========
+The user credentials are specified in the Packer template (`ssh_name`, `ssh_pass`). This is a 
+normal user account with 'sudo' privileges.
+==========
+
+[icons=None, caption="Note 3"]
+[NOTE]
+==========
+The VM runs on a private internal network using the default networking mode: network address 
+translation (NAT); this prevents all direct inbound connections, but not outbound connections. 
+Some port forwarding rules are created in order to allow remote access to the SSH server (via 
+localhost:2222) and the Tomcat web container (via localhost:8888).
+==========
