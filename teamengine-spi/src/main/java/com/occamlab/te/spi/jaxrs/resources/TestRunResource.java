@@ -43,7 +43,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
 @Path("suites/{etsCode}/{etsVersion}/run")
-@Produces("application/xml; charset='utf-8'")
+@Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'" })
 public class TestRunResource {
 
     private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
@@ -67,12 +67,6 @@ public class TestRunResource {
     @GET
     public Source handleGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion) {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        if (LOGR.isLoggable(Level.FINE)) {
-            StringBuilder msg = new StringBuilder("Test run arguments - ");
-            msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append(params.toString());
-            LOGR.fine(msg.toString());
-        }
         Source results = executeTestRun(etsCode, etsVersion, params);
         return results;
     }
@@ -97,13 +91,6 @@ public class TestRunResource {
             File entityBody) {
         if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
-        }
-        if (LOGR.isLoggable(Level.FINE)) {
-            StringBuilder msg = new StringBuilder("Test run arguments - ");
-            msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append("Entity media type: " + this.headers.getMediaType());
-            msg.append("File location: " + entityBody.getAbsolutePath());
-            LOGR.fine(msg.toString());
         }
         Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
@@ -149,13 +136,6 @@ public class TestRunResource {
         if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
         }
-        if (LOGR.isLoggable(Level.FINE)) {
-            StringBuilder msg = new StringBuilder("Test run arguments - ");
-            msg.append(etsCode).append("/").append(etsVersion).append("\n");
-            msg.append("Entity media type: " + this.headers.getMediaType());
-            msg.append("File location: " + entityBody.getAbsolutePath());
-            LOGR.fine(msg.toString());
-        }
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
         if (null != schBody) {
             if (!schBody.exists() || schBody.length() == 0) {
@@ -188,8 +168,19 @@ public class TestRunResource {
      *             If an error occurs while executing a test run.
      */
     Source executeTestRun(String etsCode, String etsVersion, Map<String, java.util.List<String>> testRunArgs) {
-        TestSuiteController controller = findController(etsCode, etsVersion);
+        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
+        testRunArgs.put("acceptMediaType", Arrays.asList(preferredMediaType.toString()));
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder("Test run arguments - ");
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append(testRunArgs.toString());
+            if (null != this.headers.getMediaType()) {
+                msg.append("Entity media type: " + this.headers.getMediaType());
+            }
+            LOGR.fine(msg.toString());
+        }
         Document xmlArgs = readTestRunArguments(testRunArgs);
+        TestSuiteController controller = findController(etsCode, etsVersion);
         Source testResults = null;
         try {
             testResults = controller.doTestRun(xmlArgs);
@@ -204,6 +195,7 @@ public class TestRunResource {
                     String.format("Error executing test suite (%s-%s)", etsCode, etsVersion));
             throw new WebApplicationException(rsp);
         }
+        LOGR.fine(String.format("Test results for suite %s-%s: %s", etsCode, etsVersion, testResults.getSystemId()));
         return testResults;
     }
 
@@ -230,12 +222,12 @@ public class TestRunResource {
 
     /**
      * Extracts test run arguments from the given Map and inserts them into a
-     * DOM Document.
+     * DOM Document representing an XML properties file.
      * 
      * @param requestParams
      *            A collection of key-value pairs. Each key can have zero or
      *            more values but only the first value is used.
-     * @return A DOM Document representing an XML properties file.
+     * @return A DOM Document node.
      * @see java.util.Properties
      */
     Document readTestRunArguments(Map<String, java.util.List<String>> requestParams) {

@@ -1,1 +1,3 @@
+com.occamlab.te.spi.executors.testng.EarlSuiteListener
+com.occamlab.te.spi.executors.testng.EarlTestListener
 com.occamlab.te.spi.executors.testng.BasicXMLReporter
