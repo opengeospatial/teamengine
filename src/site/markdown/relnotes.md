@@ -4,7 +4,8 @@ Release Notes
 ## 4.7 (2016-06-DD)
 - [spi:#152] Initial implementation of listeners that generate test results using W3C EARL vocabulary 
   (as application/rdf+xml)
-- [#167] Create [Packer](https://www.packer.io/) template to generate VM image (VirtualBox environment)
+- [virtualization: #167] Create [Packer](https://www.packer.io/) template to generate image for 
+  VirtualBox environment
 - [web] Add VirtualWebappLoader to context (TE_BASE/resources/lib/*.jar)
 - [core] Remove dependency on `xercesImpl-xsd11` (ets-kml2 now uses `xercesImpl-xsd11-shaded`)
 - [core, web] Merge [PR #163](https://github.com/opengeospatial/teamengine/pull/163) to fix 
