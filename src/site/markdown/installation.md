@@ -1,18 +1,24 @@
 # Installation
 
-## Easy via a shell script
+## Quick install
 
-The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-builder) provide a very easy way to build TEAM Engine and the tests. Script for Windows and Unix-like systems are available. Detailed instructions are provide in this tutorial.
+The `teamengine-virtualization` module enables the automatic creation of a fully provisioned server image 
+that can be run on a virtualization platform. Currently only VirtualBox is supported, but support for several 
+other dynamic infrastructure platforms will be added in the future. See the [Virtualization Guide](./virt-guide.html) 
+for instructions.
 
-## Downloading and building
+The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-builder) provides another way 
+to build TEAM Engine and OGC test suites. Shell scripts for Windows and Unix-like systems are available. 
+Detailed instructions are provided in the tutorial.
 
-## Prerequisites
+## Download and build from source
 
-- **Java 8**: Download Java JDK (Java Development Kit) 8, from `here <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>`_.
-- **Maven 2**: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
-- **Git 1.8**: Download Git-SCM version 1.8 or newer  `here <http://git-scm.com/download/win>`_.
-- **Apache Tomcat 7**: It has been tested with Tomcat version 7.0.52, can be download from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
+### Prerequisites
 
+- **Java 8**: Download the Java JDK (Java Development Kit) 8, from <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>.
+- **Apache Maven**: Download the latest release from <https://maven.apache.org/download.cgi>.
+- **Git**: Download the Git VCS (version 1.8 or newer) from <https://git-scm.com/download/>
+- **Apache Tomcat 7**: It has been tested with Tomcat 7.0; the latest release is available from <http://tomcat.apache.org/download-70.cgi>.
 
 ### Getting the Source Code 
 
@@ -26,18 +32,20 @@ as indicated below:
 [Apache Maven 3](http://maven.apache.org/) is required to build the teamengine 
 code base, which consists of the following modules:
 
--   **teamengine-core**: Main CTL script processor
--   **teamengine-resources**: Includes shared resources such as stylesheets
-    and schemas
--   **teamengine-spi**: Provides an extensibility framework and a REST-like
-    API for test execution
--   **teamengine-realm**: A custom Tomcat user realm
--   **teamengine-web**: A web application for executing test suites and
-    browsing test results
--   **teamengine-console**: A console application that provides a
-    command-line interface for executing test suites in Unix and Windows
-    environments.
+- **teamengine-core**: Main CTL script processor
+- **teamengine-resources**: Includes shared resources such as stylesheets
+  and schemas
+- **teamengine-spi**: Provides an extensibility framework and a REST-like
+  API for test execution
+- **teamengine-realm**: A custom Tomcat user realm
+- **teamengine-web**: A web application for executing test suites and
+  browsing test results
+- **teamengine-console**: A console application that provides a command-line interface 
+  for executing test suites in Unix and Windows environments.
+- **teamengine-virtualization**: Enables the automatic creation of virtualization 
+  images using [Packer](https://www.packer.io/).
 
+  
 ### Building with Maven
 
 Simply run `mvn package` in the root project directory to generate all
