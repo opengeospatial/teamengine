@@ -209,9 +209,8 @@ Even though the first one uses TestNG and the second uses CTL, they both follow 
 4. build using maven `mvn clean install`
 5. check that the build is succesful. You should see a **BUILD SUCCESS** text in the terminal
 6. go to the target folder `cd target`
-7. unzip the file that ends with *ctl.zip* to $TE_BASE/scripts
-8. unzip the file that ends with *deps.zip* to $TE_BASE/resources/lib, to run in command line
-9. unzip the file that ends with *deps.zip* to the web app library. If teamngine was installed as teamengine in tomcat, then the libraies in deps.zip should be copied under webapps/teamengine/WEB-INF/lib 
+7. unzip the archive file that ends with *ctl.zip* to $TE_BASE/scripts
+8. unzip the archive file that ends with *deps.zip* to $TE_BASE/resources/lib
 
 
 ### Customizing the welcome page

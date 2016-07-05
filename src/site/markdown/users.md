@@ -209,8 +209,8 @@ Note that the first step is **not** required in order to use the REST API.
 1.  Unpack the \*-ctl.zip archive into the TE\_BASE/scripts directory;
     it includes test suite documentation and a simple CTL wrapper script 
     that invokes the main controller.
-2.  Put the ETS component (a binary JAR file) and any dependencies into
-    the `WEB-INF/lib` directory of the web application.
+2.  Put the ETS component (a binary JAR file) and its dependencies into
+    the `TE_BASE/resources/lib` directory.
 
 The `*-deps` archive assembles the ETS and its dependencies into a single bundle that 
 is unpacked into the lib directory in the last step. In some cases it may be necessary 
