@@ -1,6 +1,6 @@
 #!/bin/bash
 # Environment variable TE_VERSION specifies TEAMengine release version
-: ${TE_VERSION:=4.5}
+: ${TE_VERSION:=4.7}
 yum -y install unzip
 # Derby system directory (derby.system.home)
 mkdir /srv/derby

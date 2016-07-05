@@ -2,7 +2,7 @@
   "variables": {
     "ssh_name": "teamengine",
     "ssh_pass": "teamengine",
-    "te_version": "4.5",
+    "te_version": "4.7",
     "ets_resources_release": "",
     "use_oracle_jdk": "false"
   },
