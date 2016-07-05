@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>4.7</version>
+    <version>4.8-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-resources</artifactId>
