@@ -20,6 +20,7 @@ import org.apache.jena.vocabulary.DCTerms;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 
+import com.occamlab.te.spi.vocabulary.CITE;
 import com.occamlab.te.spi.vocabulary.EARL;
 
 /**
@@ -79,7 +80,10 @@ public class EarlSuiteListener implements ISuiteListener {
         Map<String, String> nsBindings = new HashMap<>();
         nsBindings.put("earl", EARL.NS_URI);
         nsBindings.put("dct", DCTerms.NS);
+        nsBindings.put("cite", CITE.NS_URI);
         model.setNsPrefixes(nsBindings);
+        Resource testRun = model.createResource(CITE.TestRun);
+        testRun.addProperty(DCTerms.title, suite.getName(), this.langCode);
         Resource assertor = model.createResource("https://github.com/opengeospatial/teamengine", EARL.Assertor);
         assertor.addProperty(DCTerms.title, "OGC TEAM Engine", this.langCode);
         assertor.addProperty(DCTerms.description,

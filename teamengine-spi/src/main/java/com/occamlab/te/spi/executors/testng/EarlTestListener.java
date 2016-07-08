@@ -4,10 +4,8 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
 import org.testng.ITestContext;
@@ -37,10 +35,13 @@ public class EarlTestListener extends TestListenerAdapter {
     private int nFailed = 0;
     private Resource assertor;
     private Resource testSubject;
+    /** Name of test set (conformance class). */
+    private Resource testRequirement;
 
     /**
-     * Invoked when a test set (&lt;test&gt;) starts. This typically corresponds
-     * to a conformance class.
+     * Invoked when a test set (denoted by a &lt;test&gt;) starts. This
+     * typically corresponds to a conformance class, which is described by an
+     * earl:TestRequirement resource.
      * 
      * @see org.testng.TestListenerAdapter#onStart(org.testng.ITestContext)
      */
@@ -54,13 +55,16 @@ public class EarlTestListener extends TestListenerAdapter {
         this.earlModel = Model.class.cast(obj);
         this.assertor = earlModel.listSubjectsWithProperty(RDF.type, EARL.Assertor).next();
         this.testSubject = earlModel.listSubjectsWithProperty(RDF.type, EARL.TestSubject).next();
+        String testName = testContext.getCurrentXmlTest().getName();
+        this.testRequirement = earlModel.createResource(testName.replaceAll("\\s", "-"), EARL.TestRequirement);
+        this.testRequirement.addProperty(DCTerms.title, testName);
         nPassed = nSkipped = nFailed = 0;
     }
 
     /**
      * Invoked when a test set has finished. The model is augmented with some
-     * summary information about the results for the set (conformance class)
-     * just completed. Each conformance class has a corresponding
+     * summary information about the results for the test set (conformance
+     * class) just completed. Each conformance class has a corresponding
      * earl:TestRequirement node in the results.
      * 
      * @see org.testng.TestListenerAdapter#onFinish(org.testng.ITestContext)
@@ -68,14 +72,11 @@ public class EarlTestListener extends TestListenerAdapter {
     @Override
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
-        Model model = (Model) testContext.getSuite().getAttribute("earl");
-        Literal nameLiteral = ResourceFactory.createPlainLiteral(testContext.getName());
-        Resource testReq = model.listResourcesWithProperty(DCTerms.title, nameLiteral).next();
         StringBuilder summary = new StringBuilder();
         summary.append("Passed: ").append(this.nPassed).append("; ");
         summary.append("Failed: ").append(this.nFailed).append("; ");
         summary.append("Skipped: ").append(this.nSkipped);
-        testReq.addProperty(DCTerms.description, summary.toString());
+        this.testRequirement.addProperty(DCTerms.description, summary.toString());
     }
 
     /**
@@ -165,12 +166,8 @@ public class EarlTestListener extends TestListenerAdapter {
         if (null != testDescr && !testDescr.isEmpty()) {
             testCase.addProperty(DCTerms.description, testDescr);
         }
-        // earl:TestRequirement (conformance class/level)
-        String xmlTestName = result.getTestClass().getXmlTest().getName();
-        Resource testReq = this.earlModel.createResource(xmlTestName.replaceAll("\\s", "-"), EARL.TestRequirement);
-        testReq.addProperty(DCTerms.title, xmlTestName);
-        testReq.addProperty(DCTerms.hasPart, testCase);
         assertion.addProperty(EARL.test, testCase);
+        this.testRequirement.addProperty(DCTerms.hasPart, testCase);
     }
 
     /**

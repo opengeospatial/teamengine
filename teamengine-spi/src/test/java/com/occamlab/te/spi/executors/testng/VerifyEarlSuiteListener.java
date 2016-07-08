@@ -33,6 +33,7 @@ public class VerifyEarlSuiteListener {
     public static void setUpClass() throws Exception {
         testContext = mock(ITestContext.class);
         suite = mock(ISuite.class);
+        when(suite.getName()).thenReturn("abc20-1.0");
         when(testContext.getSuite()).thenReturn(suite);
         xmlSuite = mock(XmlSuite.class);
         when(suite.getXmlSuite()).thenReturn(xmlSuite);
