@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+## 4.7.1 (2016-07-DD)
+- [spi] Create earl:TestRequirement resources in EarlTestListener#onStart method
+- [spi] Add cite:TestRun resource to EARL results
+
+
 ## 4.7 (2016-07-05)
 - [spi:#152] Initial implementation of listeners that generate test results using W3C EARL vocabulary 
   (as application/rdf+xml)
