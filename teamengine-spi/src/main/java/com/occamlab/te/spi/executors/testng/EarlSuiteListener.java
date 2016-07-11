@@ -59,6 +59,11 @@ public class EarlSuiteListener implements ISuiteListener {
             return;
         }
         Model model = Model.class.cast(obj);
+        Map<String, String> params = suite.getXmlSuite().getAllParameters();
+        String testRunId = params.get("uuid");
+        if (null != testRunId) {
+            this.testRun.addProperty(DCTerms.identifier, testRunId);
+        }
         TestRunSummary summary = new TestRunSummary(suite);
         this.testRun.addLiteral(CITE.testsPassed, new Integer(summary.getTotalPassed()));
         this.testRun.addLiteral(CITE.testsFailed, new Integer(summary.getTotalFailed()));
@@ -96,7 +101,6 @@ public class EarlSuiteListener implements ISuiteListener {
         model.setNsPrefixes(nsBindings);
         this.testRun = model.createResource(CITE.TestRun);
         this.testRun.addProperty(DCTerms.title, suite.getName());
-        this.testRun.addProperty(DCTerms.identifier, params.get("uuid"));
         String nowUTC = ZonedDateTime.now(ZoneId.of("Z")).format(DateTimeFormatter.ISO_INSTANT);
         this.testRun.addProperty(DCTerms.created, nowUTC);
         Resource assertor = model.createResource("https://github.com/opengeospatial/teamengine", EARL.Assertor);
@@ -147,6 +151,7 @@ public class EarlSuiteListener implements ISuiteListener {
             outputFile.delete();
             outputFile.createNewFile();
         }
+        LOGR.log(Level.CONFIG, "Writing EARL results to" + outputFile.getAbsolutePath());
         String syntax = (abbreviated) ? "RDF/XML-ABBREV" : "RDF/XML";
         String baseUri = new StringBuilder("http://example.org/earl/").append(outputDirectory.getName()).append('/')
                 .toString();
