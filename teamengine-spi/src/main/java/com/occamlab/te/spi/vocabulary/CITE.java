@@ -2,6 +2,7 @@ package com.occamlab.te.spi.vocabulary;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
 /**
@@ -14,4 +15,7 @@ public class CITE {
     public static final String NS_URI = "http://cite.opengeospatial.org/";
     public static final Resource NAMESPACE = model.createResource(NS_URI);
     public static final Resource TestRun = model.createResource(NS_URI + "TestRun");
+    public static final Property testsFailed = model.createProperty(NS_URI + "testsFailed");
+    public static final Property testsPassed = model.createProperty(NS_URI + "testsPassed");
+    public static final Property testsSkipped = model.createProperty(NS_URI + "testsSkipped");
 }

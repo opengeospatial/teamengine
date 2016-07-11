@@ -1,9 +1,10 @@
 Release Notes
 =============
 
-## 4.7.1 (2016-07-DD)
+## 4.7.1 (2016-07-11)
 - [spi] Create earl:TestRequirement resources in EarlTestListener#onStart method
-- [spi] Add cite:TestRun resource to EARL results
+- [spi] Add cite:TestRun resource to EARL results (summary of test results)
+- Update site docs (use Maven 3.2.5 or later)
 
 
 ## 4.7 (2016-07-05)

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ResIterator;
@@ -44,6 +45,7 @@ public class VerifyEarlSuiteListener {
         String testSubject = "http://www.example.org/test/subject";
         Map<String, String> params = new HashMap<String, String>();
         params.put("iut", testSubject);
+        params.put("uuid", UUID.randomUUID().toString());
         when(xmlSuite.getAllParameters()).thenReturn(params);
         EarlSuiteListener iut = new EarlSuiteListener();
         Model model = iut.initModel(suite);
@@ -57,6 +59,7 @@ public class VerifyEarlSuiteListener {
         String testSubject = "http://www.example.org/test/subject-2";
         Map<String, String> params = new HashMap<String, String>();
         params.put("iut", testSubject);
+        params.put("uuid", UUID.randomUUID().toString());
         when(xmlSuite.getAllParameters()).thenReturn(params);
         EarlSuiteListener iut = new EarlSuiteListener();
         Model model = iut.initModel(suite);

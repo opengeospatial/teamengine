@@ -29,8 +29,8 @@ as indicated below:
     git clone https://github.com/opengeospatial/teamengine.git
     git checkout ${project.version}
 
-[Apache Maven 3](http://maven.apache.org/) is required to build the teamengine 
-code base, which consists of the following modules:
+[Apache Maven](http://maven.apache.org/) 3.2.5 or later is required to build the teamengine 
+code base, which currently consists of the following modules:
 
 - **teamengine-core**: Main CTL script processor
 - **teamengine-resources**: Includes shared resources such as stylesheets

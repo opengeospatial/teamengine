@@ -8,11 +8,16 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -38,6 +43,7 @@ public class EarlSuiteListener implements ISuiteListener {
     private static final Logger LOGR = Logger.getLogger(EarlSuiteListener.class.getPackage().getName());
     /** ISO 639 language code (2-3 letter, possibly with region subtag). */
     private String langCode = "en";
+    private Resource testRun;
 
     @Override
     public void onStart(ISuite suite) {
@@ -53,6 +59,12 @@ public class EarlSuiteListener implements ISuiteListener {
             return;
         }
         Model model = Model.class.cast(obj);
+        TestRunSummary summary = new TestRunSummary(suite);
+        this.testRun.addLiteral(CITE.testsPassed, new Integer(summary.getTotalPassed()));
+        this.testRun.addLiteral(CITE.testsFailed, new Integer(summary.getTotalFailed()));
+        this.testRun.addLiteral(CITE.testsSkipped, new Integer(summary.getTotalSkipped()));
+        Literal duration = model.createTypedLiteral(summary.getTotalDuration(), XSDDatatype.XSDduration);
+        this.testRun.addLiteral(DCTerms.extent, duration);
         // SuiteRunner appends suite name to path on read
         File outputDir = new File(suite.getOutputDirectory()).getParentFile();
         if (!outputDir.isDirectory()) {
@@ -82,8 +94,11 @@ public class EarlSuiteListener implements ISuiteListener {
         nsBindings.put("dct", DCTerms.NS);
         nsBindings.put("cite", CITE.NS_URI);
         model.setNsPrefixes(nsBindings);
-        Resource testRun = model.createResource(CITE.TestRun);
-        testRun.addProperty(DCTerms.title, suite.getName(), this.langCode);
+        this.testRun = model.createResource(CITE.TestRun);
+        this.testRun.addProperty(DCTerms.title, suite.getName());
+        this.testRun.addProperty(DCTerms.identifier, params.get("uuid"));
+        String nowUTC = ZonedDateTime.now(ZoneId.of("Z")).format(DateTimeFormatter.ISO_INSTANT);
+        this.testRun.addProperty(DCTerms.created, nowUTC);
         Resource assertor = model.createResource("https://github.com/opengeospatial/teamengine", EARL.Assertor);
         assertor.addProperty(DCTerms.title, "OGC TEAM Engine", this.langCode);
         assertor.addProperty(DCTerms.description,
