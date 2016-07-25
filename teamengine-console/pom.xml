@@ -3,15 +3,16 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>4.7-SNAPSHOT</version>
+    <version>4.8-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-console</artifactId>
+  <packaging>pom</packaging>
 
   <name>TEAM Engine - Console Application</name>
   <description>
   This module assembles a console-based application that provides a command-line
-  interface for executing test suites in Unix and Windows environments.
+  interface for executing CTL test suites in Unix and Windows environments.
   </description>
 
   <dependencies>
@@ -27,27 +28,10 @@
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- Workaround for circular dependency (Xerces, PsychoPath processor) -->
-    <dependency>
-      <groupId>edu.princeton.cup</groupId>
-      <artifactId>java-cup</artifactId>
-      <version>10k</version>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-jar</id>
-            <phase>disable</phase>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <artifactId>maven-remote-resources-plugin</artifactId>
         <version>1.5</version>
@@ -85,14 +69,10 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>site-package</id>
-            <phase>ignore</phase>
-          </execution>
-        </executions>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -35,7 +35,7 @@ public class ReportLog {
         //Following code gets the suite name
         String suiteName = suite.getName();
         //Getting the results for the said suite
-        Map suiteResults = suite.getResults();
+        Map<String, ISuiteResult> suiteResults = suite.getResults();
         String input = null;
         String result;
         String failReport = null;
@@ -48,9 +48,8 @@ public class ReportLog {
         int finalFailedTest=0;
         int count = 0;
         String date = null;
-        for (Object obj : suiteResults.values()) {
+        for (ISuiteResult sr : suiteResults.values()) {
             count++;
-            ISuiteResult sr = (ISuiteResult) obj;
             ITestContext tc = sr.getTestContext();
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Calendar cal = Calendar.getInstance();

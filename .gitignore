@@ -7,3 +7,6 @@
 target/
 pom.xml.releaseBackup
 release.properties
+
+# Packer output
+packer_cache/

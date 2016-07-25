@@ -1,31 +1,29 @@
-/**
- * **************************************************************************
- *
- * Contributor(s): 
- *	C. Heazel (WiSC): Added Fortify adjudication changes
- *
- ***************************************************************************
- */
 package com.occamlab.te.spi.executors.testng;
 
-import com.occamlab.te.spi.executors.TestRunExecutor;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+
 import org.testng.TestNG;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import com.occamlab.te.spi.executors.TestRunExecutor;
 
 /**
  * 
@@ -67,7 +65,8 @@ public class TestNGExecutor implements TestRunExecutor {
     public TestNGExecutor(String testngSuite, String outputDirPath, boolean useDefaultListeners) {
         this.useDefaultListeners = useDefaultListeners;
         this.outputDir = new File(outputDirPath, "testng");
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
+        if (!this.outputDir.exists() && !this.outputDir.mkdirs()) {
+            LOGR.config("Failed to create output directory at " + this.outputDir);
             this.outputDir = new File(System.getProperty("java.io.tmpdir"));
         }
         if (null != testngSuite && !testngSuite.isEmpty()) {
@@ -85,8 +84,8 @@ public class TestNGExecutor implements TestRunExecutor {
      * <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
      * <properties version="1.0">
      *   <comment>Test run arguments</comment>
-     *   <entry key="uri">atom-feed.xml</entry>
-     *   <entry key="classes">L2</entry>
+     *   <entry key="arg1">atom-feed.xml</entry>
+     *   <entry key="arg2">L2</entry>
      * </properties>
      * }
      * </pre>
@@ -107,41 +106,77 @@ public class TestNGExecutor implements TestRunExecutor {
             throw new IllegalArgumentException("No test run arguments were supplied.");
         }
         TestNG driver = new TestNG();
-        setTestSuites(driver, testngConfig);
+        setTestSuites(driver, this.testngConfig);
         driver.setVerbose(0);
         driver.setUseDefaultListeners(this.useDefaultListeners);
         UUID runId = UUID.randomUUID();
         File runDir = new File(this.outputDir, runId.toString());
         if (!runDir.mkdir()) {
             runDir = this.outputDir;
+            LOGR.config("Created test run directory at " + runDir.getAbsolutePath());
         }
         driver.setOutputDirectory(runDir.getAbsolutePath());
-        driver.addListener(new PrimarySuiteListener(testRunArgs));
+        AlterSuiteParametersListener listener = new AlterSuiteParametersListener();
+        listener.setTestRunArgs(testRunArgs);
+        listener.setTestRunId(runId);
+        driver.addAlterSuiteListener(listener);
         driver.run();
-        Document resultsDoc = null;
+        Source source = null;
         try {
-            resultsDoc = parseResultsDoc(driver.getOutputDirectory());
-        } catch (Exception ex) {
-            LOGR.log(Level.SEVERE, "Failed to parse test results in " + driver.getOutputDirectory(), ex);
+            File resultsFile = getResultsFile(getPreferredMediaType(testRunArgs), driver.getOutputDirectory());
+            InputStream inStream = new FileInputStream(resultsFile);
+            InputSource inSource = new InputSource(new InputStreamReader(inStream, StandardCharsets.UTF_8));
+            source = new SAXSource(inSource);
+            source.setSystemId(resultsFile.toURI().toString());
+        } catch (IOException e) {
+            LOGR.log(Level.SEVERE, "Error reading test results: " + e.getMessage());
         }
-        return new DOMSource(resultsDoc, resultsDoc.getDocumentURI());
+        return source;
     }
 
-    Document parseResultsDoc(String outputDirectory) throws ParserConfigurationException, SAXException, IOException {
-        File results = new File(outputDirectory, "testng-results.xml");
-        Document resultsDoc;
-        if (results.isFile()) {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            // Fortify Mod: prevent external entity injection
-            dbf.setExpandEntityReferences(false);
-            dbf.setNamespaceAware(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            resultsDoc = db.parse(results);
-            resultsDoc.setDocumentURI(results.getAbsolutePath());
-        } else {
-            throw new FileNotFoundException("Test results not found");
+    /**
+     * Returns the test results in the specified format. The default media type
+     * is "application/xml", but "application/rdf+xml" (RDF/XML) is also
+     * supported.
+     * 
+     * @param mediaType
+     *            The media type of the test results (XML or RDF/XML).
+     * @param outputDirectory
+     *            The directory containing the test run output.
+     * @return A File containing the test results.
+     * @throws FileNotFoundException
+     *             If no test results are found.
+     */
+    File getResultsFile(String mediaType, String outputDirectory) throws FileNotFoundException {
+        // split out any media type parameters
+        String contentType = mediaType.split(";")[0];
+        String fileName = (contentType.endsWith("rdf+xml")) ? "earl.rdf" : "testng-results.xml";
+        File resultsFile = new File(outputDirectory, fileName);
+        if (!resultsFile.exists()) {
+            throw new FileNotFoundException("Test run results not found at " + resultsFile.getAbsolutePath());
         }
-        return resultsDoc;
+        return resultsFile;
+    }
+
+    /**
+     * Gets the preferred media type for the test results as indicated by the
+     * value of the "acceptMediaType" key in the given properties file. The
+     * default value is "application/xml".
+     * 
+     * @param testRunArgs
+     *            An XML properties file containing test run arguments.
+     * @return The preferred media type.
+     */
+    String getPreferredMediaType(Document testRunArgs) {
+        String mediaType = "application/xml";
+        NodeList entries = testRunArgs.getElementsByTagName("entry");
+        for (int i = 0; i < entries.getLength(); i++) {
+            Element entry = (Element) entries.item(i);
+            if (entry.getAttribute("key").equals("acceptMediaType")) {
+                mediaType = entry.getTextContent().trim();
+            }
+        }
+        return mediaType;
     }
 
     /**
