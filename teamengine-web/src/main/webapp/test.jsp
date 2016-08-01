@@ -109,7 +109,8 @@ if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
                     var url = "test?te-operation=Stop&thread=" + threadId + "&t=" + d.getTime();
                     xhr.open("get", url, false);
                     xhr.send(null);
-                    loadLog();
+                    var stop="true";
+                    loadLog(stop);
                 }
 
                 function formSubmitted() {
@@ -160,7 +161,7 @@ if (mode.equals("test") || mode.equals("retest") || mode.equals("cache")) {
                     }
                 }
 
-                function loadLog() {
+                function loadLog(stop) {
                     var d = new Date();
                 <%
 if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
@@ -173,7 +174,7 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
     out.println("\t\t\t\tvar url = \"viewSessionLog.jsp?session=\" + sessionId;");
 }
                 %>
-                    window.location = url + "&t=" + d.getTime();
+                    window.location = url + "&stop=" + stop + "&t=" + d.getTime();
                 }
             </script>
         </head>
