@@ -261,8 +261,14 @@
 	
 	function submitform() {
 		var form = document.standardsForm;
-		if (form.Organization.value == "" || form.Standard.value == "") {
+		if (form.Organization.value == "") {
+	    	alert("Please select from available Organization");
+			document.getElementById("Organization").focus();
+			return false;
+	    } else if (form.Standard.value == "") {
 	    	alert("Please select from available standards");
+			document.getElementById("Standard").focus();
+			return false;
 	    } else {
 	      //  var sourceId = form.Organization.value + "_" + form.Standard.value + "_" + form.Version.value + "_" + form.Test.value;
 	        var sourceId = form.Standard.value;
@@ -366,7 +372,7 @@
 	}
 %>
 <br/>
-<input type="submit" value="Start a new test session" onclick="submitform()" /> 
+<input type="submit" value="Start a new test session" onclick="return submitform();" /> 
 <br/>
 <input type="hidden" name="mode" value="test" />
 <input type="hidden" id="sources" name="sources" />
