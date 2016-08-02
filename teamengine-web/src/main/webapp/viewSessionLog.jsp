@@ -44,6 +44,11 @@ public void jspInit() {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>			
 		<title>Test Session Results</title>
 		<script>
+		var checkStopSession="<%=request.getParameter("stop")%>";
+		if(checkStopSession == "true"){
+			alert("Session was stopped!!!");
+		}
+		
 			function toggleAll(testnum, state) {
 			  for (key in document.images) {
 			    var image = document.images[key];
@@ -110,7 +115,7 @@ public void jspInit() {
       boolean complete = ViewLog.view_log(suiteName,userlog, sessionId, tests, ViewLogTemplates, out);     
       out.println("<br/>");
       if (!complete) {
-          out.println("<input type=\"button\" value=\"Resume executing these tests\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
+          out.println("<input type=\"button\" value=\"Continue executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
       }
 
       String profileParams = "";
@@ -160,7 +165,7 @@ if ( htmlReportDir.isDirectory()) {
 %>
 		<input type="button" value="Delete this session" onclick="deleteSession()"/>
 		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
-		<input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>
+<!-- 		<input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>  -->
 <%--		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/> --%>
 		<br/>
     <p><a href="viewSessions.jsp">Sessions list</a></p>

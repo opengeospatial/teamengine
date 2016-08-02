@@ -111,6 +111,9 @@ public class ViewLog {
         return false;
       }
       Document doc = LogUtils.makeTestList(logdir, session);
+      if(doc == null){
+    	  return false;
+      }
       // increment_counts(doc.getDocumentElement());
       t.transform(new DOMSource(doc), new StreamResult(out));
       Element testElement = DomUtils.getElementByTagName(doc, "test");
@@ -128,6 +131,9 @@ public class ViewLog {
         File f = new File(new File(logdir, test), "log.xml");
         if (f.exists()) {
           Document doc = LogUtils.makeTestList(logdir, test);
+          if(doc == null){
+        	  return false;
+          }
           Element testElement = DomUtils.getElementByTagName(doc,
                   "test");
           if (testElement != null) {

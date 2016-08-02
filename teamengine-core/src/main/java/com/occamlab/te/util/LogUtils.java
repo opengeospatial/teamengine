@@ -293,9 +293,18 @@ public class LogUtils {
         File rootlog = new File(logdir, path + File.separator + "log.xml");
         boolean updated;
         if (testListFile.exists() && testListDate >= rootlog.lastModified()) {
+        	try{
             doc = db.parse(testListFile);
             updated = (updateTestListElement(db, doc.getDocumentElement(),
                     logdir, testListDate) != null);
+	        } catch(Exception e){
+	    		
+	    		if(e.toString().contains("Premature end of file")){
+	    			return null;
+	    		} else {
+	    		throw new Exception("Error while writting the 'testlist.xml' file."+ e);
+	    		}
+	    	}
         } else {
             doc = db.newDocument();
             Element test = makeTestListElement(db, doc, logdir, path);
