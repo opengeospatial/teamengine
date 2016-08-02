@@ -1979,7 +1979,7 @@ public class TECore implements Runnable {
       String contentType = uc.getContentType();
       try {
         is = URLConnectionUtils.getInputStream(uc);
-        if (contentType.contains("xml")) { // a crude check
+        if (contentType != null && contentType.contains("xml")) { // a crude check
           idt.transform(new StreamSource(is),
                   new DOMResult(content_e));
         } else {
