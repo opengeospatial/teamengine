@@ -1,14 +1,23 @@
-# Running OGC TEAM Engine with ETS for WFS 2.0 on Docker
+# Running TEAM Engine on dynamic infrastructure platforms
 
-This module provides a Dockerfile for building a Docker image with OGC TEAM Engine and ets-wfs20, version 1.22
-pre-installed.
+This module generates images for a variety of dynamic infrastructure platforms, such as:
+
+* VirtualBox
+* Amazon EC2
+* VMware vSphere
+* Docker
+
+The TEAM Engine [virtualization guide](http://opengeospatial.github.io/teamengine/virt-guide.html)
+describes how to use [Packer](https://www.packer.io/) to create machine and container images.
+It is also possible to use a Dockerfile to build an image, as described below.
+
 
 ## Prerequisites
 
 ### Install Docker
 
-Check the official [Docker documentation](https://docs.docker.com/engine/) for information how to
-  install Docker on your operating system. And then install Docker and supporting tools.
+Check the official [Docker documentation](https://docs.docker.com/engine/) for information how to 
+install Docker on your operating system. And then install Docker and supporting tools.
 
 ### Dependencies 
 
@@ -18,26 +27,25 @@ You may build the following projects first:
     
     % git clone https://github.com/opengeospatial/ets-resources.git
     % cd ets-resources
-    % git checkout tags/16.02.23
+    % git checkout tags/16.06.08
     % mvn clean install
     
 #### Build the ETS for WFS 2.0:
     
     % git clone https://github.com/opengeospatial/ets-wfs20.git
     % cd ets-wfs20
-    % git checkout tags/1.22
+    % git checkout tags/1.23
     % mvn clean install
 
 #### Build the TEAM Engine:
     
     % git clone https://github.com/opengeospatial/teamengine.git
     % cd teamengine
-    % git checkout tags/4.6
-    % mvn clean install -Dets-resources-version=16.02.23 -Pogc.cite
+    % git checkout tags/4.7.1
+    % mvn clean install -Dets-resources-version=16.06.08 -Pogc.cite
 
 ## Build the Docker image
-The Dockerfile is located in the ```teamengine/teamengine-virtualization/src/main/config/docker``` directory. 
-To build the Docker image run in directory ```teamengine/teamengine-virtualization/``` the Maven goals:
+The Dockerfile is located in the ```src/main/config/docker``` directory. To build the Docker image execute the Maven goals:
 
     % mvn clean package docker:build
 
