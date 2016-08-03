@@ -838,8 +838,10 @@ public class TECore implements Runnable {
       logger.close();
     }
 //  Add missing info in the log.xml E.g. endtag '</log> or' endtest '<endtest result="1" />'.
-    String logDir = opts.getLogDir() + "/" + testPath;
-    addMissingInfo(logDir, test.getResult());
+    if(opts.getLogDir() != null && testPath != null){
+	    String logDir = opts.getLogDir() + "/" + testPath;
+	    addMissingInfo(logDir, test.getResult());
+    }
     }
     //Create node which contain all test detail.
     if ("True".equals(System.getProperty("Record"))) {
