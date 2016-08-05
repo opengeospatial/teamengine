@@ -1,6 +1,19 @@
 Release Notes
 =============
 
+## 4.8 (2016-08-05)
+- [web,core] Merge [PR #182](https://github.com/opengeospatial/teamengine/pull/182): 
+  Fix [ets-wms13#32]()https://github.com/opengeospatial/ets-wms13/issues/32)
+- [web,core] Merge [PR #181](https://github.com/opengeospatial/teamengine/pull/181): 
+  Fix #174
+- [core] Merge [PR #178](https://github.com/opengeospatial/teamengine/pull/178): 
+  Fix NullPointerException if content type is null
+- [virtualization] Merge [PR #176](https://github.com/opengeospatial/teamengine/pull/176): 
+  Add support for building docker image (dockerfile)
+- [web] Merge [PR #175](https://github.com/opengeospatial/teamengine/pull/175): 
+  Fix #173
+
+
 ## 4.7.1 (2016-07-11)
 - [spi] Create earl:TestRequirement resources in EarlTestListener#onStart method
 - [spi] Add cite:TestRun resource to EARL results (summary of test results)
