@@ -93,6 +93,7 @@ import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.SoapUtils;
 import com.occamlab.te.util.StringUtils;
 import com.occamlab.te.util.URLConnectionUtils;
+import com.occamlab.te.util.ValidPath;  // Addition for Fortify modifications
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
@@ -707,6 +708,12 @@ public class TECore implements Runnable {
     out.println("(" + testPath + ")...");
     if(opts.getLogDir()!=null){
       String logDir = opts.getLogDir() + "/" + testPath.split("/")[0];
+      //FORTIFY Mod: Path validation 
+      ValidPath vpath = new ValidPath();
+      vpath.addElement(logDir);
+      if(!vpath.isValid()) {
+    	throw new Exception("FORTIFY Path Error: logDir = " + logDir);  
+      }
       //create log directory
       if ("True".equals(System.getProperty("Record"))) {
         dirPath = new File(logDir + "/test_data");
@@ -2329,7 +2336,11 @@ public class TECore implements Runnable {
   }
 
   public void setTestPath(String testPath) {
-    this.testPath = testPath;
+	  // FORTIFY Mod: validate testPath
+	  ValidPath vpath = new ValidPath();
+	  vpath.addElement(testPath);
+	  if(vpath.isValid())
+		  this.testPath = testPath;
   }
 
   public boolean isWeb() {

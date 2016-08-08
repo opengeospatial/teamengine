@@ -22,6 +22,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.util.Utils;
+import com.occamlab.te.util.ValidPath; // FORTIFY Mod.
 
 /**
  * Parses a zip file input by extracting the contents into the directory
@@ -32,6 +33,9 @@ import com.occamlab.te.util.Utils;
  * full-path="${java.io.tmpdir}/dir/doc.kml" size="2048" /> </ctl:manifest>
  * 
  * @author jparrpearson
+ * 
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
  */
 public class ZipParser {
 
@@ -117,6 +121,9 @@ public class ZipParser {
         NodeList nodes = d.getElementsByTagNameNS(CTL_NS, "SessionDir");
         // Either use the given session directory, or make one in the java temp
         // directory
+        // FORTIFY Mod - added use of ValidPath to prevent path manipulation attacks.
+        ValidPath vpath = new ValidPath();
+        
         String path = "";
         if (nodes.getLength() > 0) {
             Element e = (Element) nodes.item(0);
@@ -126,7 +133,17 @@ public class ZipParser {
         }
         String randomStr = Utils.randomString(16, new Random());
         path = path + "/work/" + randomStr;
-        new File(path).mkdirs();
+        // FORTIFY Mod: validate the path before you use it.
+        vpath.addElement(path);
+        if(!vpath.isValid()) throw new Exception("FORTIFY Path Error: path = " + path);
+// FIX  HERE (line 129)
+// At this point the path is rooted either at the java io temp dir or the path specified  
+// by the SessionDir element from the configuration document.  In either case, it if further
+// restricted as being a randomly named subdirectory.  It should never correspond to an existing
+// directory or file.
+        // FORTIFY Mod: only use the validated path
+        new File(vpath.getPath()).mkdirs();
+        // new File(path).mkdirs();
 
         // Unzip the file to a temporary location (java temp)
         ZipEntry entry = null;
@@ -137,13 +154,25 @@ public class ZipParser {
             String ext = filename.substring(filename.lastIndexOf(".") + 1);
             String mediaType = getMediaType(ext);
             // Make the temp directory and subdirectories if needed
+// FIX HERE (line 139)
+// The .zip file will be expanded under the "path" directory.  "path" should be safe, but
+// a malicious .zip file could traverse up the directory tree.  Add a check to assure that
+// the subdir only goes down the tree, not up or direct to the root.  Hard and symbolic links
+// should not be an issue (?) 
             String subdir = "";
             if (filename.lastIndexOf("/") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("/"));
             else if (filename.lastIndexOf("\\") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("\\"));
-            new File(path + "/" + subdir).mkdirs();
-            File outFile = new File(path, filename);
+// FIX HERE (line 145)
+            // FORTIFY Mod - use a validated path instead of a String
+            // new File(path + "/" + subdir).mkdirs();
+            ValidPath lvpath = new ValidPath();
+            lvpath.addElement(vpath.getPath());
+            lvpath.addElement(subdir);
+            if(!lvpath.isValid()) throw new Exception("FORTIFY Path Error: subdir = " + subdir);
+            new File(lvpath.getPath()).mkdirs();
+            File outFile = new File(lvpath.getPath(), filename);
             if (outFile.isDirectory())
                 continue;
             OutputStream out = new FileOutputStream(outFile);
@@ -154,6 +183,8 @@ public class ZipParser {
             while ((len = zis.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
+            // FORTIFY Mod: close the output file
+            out.close();
 
             // Add the file information to the document
             Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
@@ -188,8 +219,12 @@ public class ZipParser {
         // Get a connection to the Zip file
         FileInputStream is = null;
         ZipInputStream zis = null;
+        // FORTIFY Mod: use a validated filepath
+        ValidPath vfpath = new ValidPath();
+        vfpath.addElement(filepath);
+        if(!vfpath.isValid()) throw new Exception("FORTIFY Path Error: filepath = " + filepath);
         try {
-            is = new FileInputStream(filepath);
+            is = new FileInputStream(vfpath.getPath());
             zis = new ZipInputStream(is);
         } catch (Exception e) {
             jlogger.log(Level.SEVERE, "saveZipFile", e);
@@ -218,7 +253,11 @@ public class ZipParser {
         }
         String randomStr = Utils.randomString(16, new Random());
         path = path + "/work/" + randomStr;
-        new File(path).mkdirs();
+        // FORTIFY Mod: use a validated path
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(path);
+        if(!vpath.isValid()) throw new Exception("FORTIFY Path Error: path = " + path);
+        new File(vpath.getPath()).mkdirs();
 
         // Unzip the file to a temporary location (java temp)
         ZipEntry entry = null;
@@ -235,8 +274,15 @@ public class ZipParser {
                 subdir = filename.substring(0, filename.lastIndexOf("/"));
             else if (filename.lastIndexOf("\\") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("\\"));
-            new File(path + "/" + subdir).mkdirs();
-            File outFile = new File(path, filename);
+            // FORTIFY Mod: only use validated paths
+            // new File(path + "/" + subdir).mkdirs();
+            // File outFile = new File(path, filename);
+            ValidPath lvpath = new ValidPath();
+            lvpath.addElement(vpath.getPath());
+            lvpath.addElement(subdir);
+            if(!lvpath.isValid()) throw new Exception("FORTIFY Path Error: subdir = " + subdir);
+            new File(lvpath.getPath()).mkdirs();
+            File outFile = new File(lvpath.getPath(), filename);
             if (outFile.isDirectory())
                 continue;
             OutputStream out = new FileOutputStream(outFile);
@@ -247,6 +293,8 @@ public class ZipParser {
             while ((len = zis.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
+            // FORTIFY Mod: close the output file.
+            out.close();
 
             // Add the file information to the document
             Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");

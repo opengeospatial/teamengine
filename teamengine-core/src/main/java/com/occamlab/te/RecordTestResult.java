@@ -12,6 +12,8 @@ import static com.occamlab.te.TECore.getResultDescription;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.util.Constants;
+import com.occamlab.te.util.ValidPath;  // FORTIFY Mod
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -139,6 +141,12 @@ public class RecordTestResult {
         idTransform.setOutputProperty(OutputKeys.ENCODING, UT_F8);
         // Declare document is well indented
         idTransform.setOutputProperty(OutputKeys.INDENT, YES);
+        // FORTIFY Mod: validate the file path
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(dirPath.toString());
+        vpath.addElement(Constants.tmp_File);
+        if(!vpath.isValid())
+        	throw new Exception("FORTIFY Path Error: dirPath = " + dirPath.toString() + " tmp_File = " + Constants.tmp_File);
         OutputStream report_logs = new FileOutputStream(new File(dirPath + Constants.tmp_File));
         Result output = new StreamResult(report_logs);
         //transform the output in xml.
@@ -187,6 +195,12 @@ public class RecordTestResult {
         idTransform.setOutputProperty(OutputKeys.ENCODING, UT_F8);
         // Declare document is well indented
         idTransform.setOutputProperty(OutputKeys.INDENT, YES);
+        // FORTIFY Mod: validate the file path
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(dirPath.toString());
+        vpath.addElement(Constants.tmp_File);
+        if(!vpath.isValid())
+        	throw new Exception("FORTIFY Path Error: dirPath = " + dirPath.toString() + " tmp_File = " + Constants.tmp_File);
         OutputStream report_logs = new FileOutputStream(new File(dirPath + Constants.tmp_File));
         Result output = new StreamResult(report_logs);
         //transform the output in xml.
@@ -276,6 +290,12 @@ public class RecordTestResult {
         JSONObject objBeforeTest = new JSONObject();
         objBeforeTest.put(NAME, test.getName());
         objBeforeTest.put(RESULT, "");
+        // FORTIFY Mod: validate the file path
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(dirPath.toString());
+        vpath.addElement(Constants.TEST_RESULTTXT);
+        if(!vpath.isValid())
+        	throw new Exception("FORTIFY Path Error: dirPath = " + dirPath.toString() + " TEST_RESULTTXT = " + Constants.TEST_RESULTTXT);
         // write the data into file in form of json
         OutputStreamWriter writerBefore = new OutputStreamWriter(
                 new FileOutputStream(dirPath + Constants.TEST_RESULTTXT, true), UT_F8);
@@ -317,6 +337,12 @@ public class RecordTestResult {
         }
         obj.put(RESULT, result);
         obj.put(TIME, dateFormat.format(cal.getTime()));
+        // FORTIFY Mod: validate the file path
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(dirPath.toString());
+        vpath.addElement(Constants.TEST_RESULTTXT);
+        if(!vpath.isValid())
+        	throw new Exception("FORTIFY Path Error: dirPath = " + dirPath.toString() + " TEST_RESULTTXT = " + Constants.TEST_RESULTTXT);
         // write the data into file in form of json
         OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(dirPath + Constants.TEST_RESULTTXT, true), UT_F8);

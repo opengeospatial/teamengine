@@ -1,3 +1,11 @@
+/**
+ * **************************************************************************
+ *
+ * Contributor(s): 
+ *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ ***************************************************************************
+ */
 package com.occamlab.te.spi.executors.testng;
 
 import java.io.File;
@@ -23,11 +31,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.occamlab.te.util.ValidPath; // FORTIFY Mod.
+
 import com.occamlab.te.spi.executors.TestRunExecutor;
 
 /**
  * 
  * Executes a TestNG test suite using the given test run arguments.
+ * 
+ *  Contributor(s): 
+ *	    C. Heazel (WiSC): Added Fortify adjudication changes
  */
 public class TestNGExecutor implements TestRunExecutor {
 
@@ -64,6 +77,11 @@ public class TestNGExecutor implements TestRunExecutor {
      */
     public TestNGExecutor(String testngSuite, String outputDirPath, boolean useDefaultListeners) {
         this.useDefaultListeners = useDefaultListeners;
+        // FORTIFY MOD: validate the outputDirPath parameter.
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(outputDirPath);
+        // If path is invalid will return a null
+        outputDirPath = vpath.getPath();
         this.outputDir = new File(outputDirPath, "testng");
         if (!this.outputDir.exists() && !this.outputDir.mkdirs()) {
             LOGR.config("Failed to create output directory at " + this.outputDir);

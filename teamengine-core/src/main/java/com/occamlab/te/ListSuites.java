@@ -4,10 +4,13 @@ import java.io.File;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
+import com.occamlab.te.util.ValidPath;  // Fortify addition
 
 /**
  * Provides utility methods for managing a collection of CTL test suites.
  * 
+ *  Contributor(s): 
+ *  	C. Heazel (WiSC): Added Fortify adjudication changes
  */
 public class ListSuites {
 
@@ -20,7 +23,10 @@ public class ListSuites {
                 File scriptsDir = new File(
                         SetupOptions.getBaseConfigDirectory(), "scripts");
                 File f = new File(scriptsDir, args[i].substring(8));
-                if (f.exists()) {
+                // FORTIFY MOD: don't allow invalid path names
+                ValidPath vpath = new ValidPath();
+                vpath.addElement(f.getAbsolutePath());
+                if (vpath.isValid() && f.exists()) {
                     setupOpts.addSource(f);
                 } else {
                     System.out.println("Error: Can't find CTL script(s) at "

@@ -15,8 +15,9 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
- */
+ Contributor(s): 
+	C. Heazel (WiSC): Added Fortify adjudication changes 
+*/
 
 package com.occamlab.te;
 
@@ -27,6 +28,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.saxon.s9api.XdmNode;
+
+import com.occamlab.te.util.ValidPath;  // FORTIFY Mod
 
 /**
  * Provides runtime configuration settings.
@@ -87,7 +90,13 @@ public class RuntimeOptions {
     }
 
     public void setLogDir(File logDir) {
-        this.testLogDir = logDir;
+    	// FORTIFY Mod: only allow valid testPaths
+        if(logDir != null) {
+    	       ValidPath vpath = new ValidPath();
+    	       vpath.addElement(logDir.toString());
+    	       if(vpath.isValid())  this.testLogDir = logDir;
+	   }
+        else this.testLogDir = null;
     }
 
     public File getWorkDir() {
@@ -95,7 +104,13 @@ public class RuntimeOptions {
     }
 
     public void setWorkDir(File workDir) {
-        this.workDir = workDir;
+    	// FORTIFY Mod: only allow valid testPaths
+        if(workDir != null){
+    	       ValidPath vpath = new ValidPath();
+    	       vpath.addElement(workDir.toString());
+    	       if(vpath.isValid()) this.workDir = workDir;
+        }
+        else this.workDir = null;
     }
 
     public int getMode() {
@@ -111,7 +126,14 @@ public class RuntimeOptions {
     }
 
     public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    	// FORTIFY Mod: sessionID is used to build path names.
+    	// Make sure there is no funny business going on.
+    	   ValidPath vpath = new ValidPath();
+        String tmpdir = System.getProperty("java.io.tmpdir");
+    	   vpath.addElement(tmpdir);  // so that there is a valid root path
+    	   vpath.addElement(sessionId);
+    	   if(vpath.isValid())
+            this.sessionId = sessionId;
     }
 
     public String getSuiteName() {
@@ -135,7 +157,11 @@ public class RuntimeOptions {
     }
 
     public void addTestPath(String testPath) {
-        this.testPaths.add(testPath);
+    	// FORTIFY Mod: only allow valid testPaths
+    	ValidPath vpath = new ValidPath();
+    	vpath.addElement(testPath);
+    	if(vpath.isValid())
+            this.testPaths.add(testPath);
     }
 
     public ArrayList<String> getParams() {
@@ -157,9 +183,12 @@ public class RuntimeOptions {
     public void setTestName(String testName) {
         this.testName = testName;
     }
-    
     public void addRecordedForm(String recordedForm) {
-      recordedForms.add(new File(recordedForm));
+        /* FORTIFY MOD: Validate that the supplied string is a valid path.*/
+    	ValidPath vpath = new ValidPath();
+    	vpath.addElement(recordedForm);
+    	if(vpath.isValid())
+            recordedForms.add(new File(vpath.getPath()));
     }
 
     @Override

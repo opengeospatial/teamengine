@@ -16,7 +16,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+ 	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
 package com.occamlab.te;
@@ -44,6 +45,7 @@ import org.w3c.dom.NodeList;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.ValidPath;  // Fortify addition
 
 /**
  * Presents a test log for display.
@@ -81,6 +83,18 @@ public class ViewLog {
           ArrayList tests, Templates templates, Writer out, int testnum)
           throws Exception {
     hasCache = false;
+    // FORTIFY MOD: don't allow invalid path names
+    ValidPath vpath = new ValidPath();
+    vpath.addElement(logdir.toString());
+    if (!vpath.isValid()){
+        System.out.println("Error: illegal viewlog logdir parameter " + logdir.toString());
+        return false;
+    }
+    vpath.addElement(session);
+    if (!vpath.isValid()){
+        System.out.println("Error: illegal viewlog session parameter " + session);
+        return false;
+    }
     Transformer t = templates.newTransformer();
     t.setParameter("sessionDir", session);
     t.setParameter("TESTNAME", suiteName);
@@ -126,7 +140,11 @@ public class ViewLog {
       while (it.hasNext()) {
         String test = (String) it.next();
         File f = new File(new File(logdir, test), "log.xml");
-        if (f.exists()) {
+        // FORTIFY MOD: don't allow invalid path names
+        vpath = new ValidPath();
+        vpath.addElement(f.getAbsolutePath());
+        if (vpath.isValid() && f.exists()) {  
+        //if (f.exists()) {
           Document doc = LogUtils.makeTestList(logdir, test);
           Element testElement = DomUtils.getElementByTagName(doc,
                   "test");
