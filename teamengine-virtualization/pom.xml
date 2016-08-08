@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>4.8-SNAPSHOT</version>
+    <version>4.9-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-virtualization</artifactId>
@@ -43,6 +43,95 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.10</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.4.10</version>
+        <configuration>
+          <imageName>${docker.image.prefix}/${docker.image.name}</imageName>
+          <dockerDirectory>${project.basedir}/src/main/config/docker</dockerDirectory>
+          <resources>
+            <resource>
+              <targetPath>/</targetPath>
+              <directory>${project.build.directory}</directory>
+              <include>teamengine-web-*.war</include>
+            </resource>
+            <resource>
+              <targetPath>/</targetPath>
+              <directory>${project.build.directory}</directory>
+              <includes>
+                <include>**/*.zip</include>
+              </includes>
+              <excludes>
+                <exclude>**/*.class</exclude>
+              </excludes>
+            </resource>
+          </resources>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>teamengine-web</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>teamengine-web</artifactId>
+      <version>${project.version}</version>
+      <classifier>common-libs</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>teamengine-console</artifactId>
+      <version>${project.version}</version>
+      <classifier>base</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opengis.cite</groupId>
+      <artifactId>ets-wfs20</artifactId>
+      <version>${ets-wfs20.version}</version>
+      <classifier>ctl</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opengis.cite</groupId>
+      <artifactId>ets-wfs20</artifactId>
+      <version>${ets-wfs20.version}</version>
+      <classifier>deps</classifier>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <docker.image.prefix>opengis</docker.image.prefix>
+    <docker.image.name>teamengine</docker.image.name>
+    <ets-wfs20.version>1.22</ets-wfs20.version>
+  </properties>
 </project>

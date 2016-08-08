@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -76,6 +77,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.ErrorHandler;
 
 import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.index.Index;
@@ -824,7 +826,7 @@ public class TECore implements Runnable {
       if (!testStack.isEmpty()) {
         testStack.pop();
       }
-    }
+    } finally{
         // Check if verdict was already set by a failing subtest
         if (test.getResult() != INHERITED_FAILURE) {
             test.setResult(verdict);
@@ -832,7 +834,14 @@ public class TECore implements Runnable {
     if (logger != null) {
             logger.println("<endtest result=\"" + test.getResult() + "\"/>");
       logger.println("</log>");
+      logger.flush();
       logger.close();
+    }
+//  Add missing info in the log.xml E.g. endtag '</log> or' endtest '<endtest result="1" />'.
+    if(opts.getLogDir() != null && testPath != null){
+	    String logDir = opts.getLogDir() + "/" + testPath;
+	    addMissingInfo(logDir, test.getResult());
+    }
     }
     //Create node which contain all test detail.
     if ("True".equals(System.getProperty("Record"))) {
@@ -865,7 +874,65 @@ public class TECore implements Runnable {
         return test.getResult();
     }
 
-  /**
+	public void addMissingInfo(String dir, int testResult) {
+
+		String logdir = dir + File.separator + "log.xml";
+		DocumentBuilderFactory dbf = null;
+		DocumentBuilder docBuilder = null;
+		Document doc = null;
+		File logfile = new File(logdir);
+		try {
+			dbf = DocumentBuilderFactory.newInstance();
+			docBuilder = dbf.newDocumentBuilder();
+			docBuilder.setErrorHandler(null);
+			doc = docBuilder.parse(logfile);
+
+		} catch (Exception e) {
+
+			try {
+				FileWriter fw = new FileWriter(logdir, true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				PrintWriter out = new PrintWriter(bw);
+				out.println("</log>");
+				out.close();
+				bw.close();
+				doc = docBuilder.parse(logfile);
+			} catch (Exception ex) {
+				throw new RuntimeException(
+						"Unable to update missing information in " + logdir);
+			}
+
+		}
+
+		NodeList nl = doc.getElementsByTagName("endtest");
+		if (nl.getLength() == 0) {
+
+			Element root = doc.getDocumentElement();
+			Element endtest = doc.createElement("endtest");
+
+			Attr resultAttribute = doc.createAttribute("result");
+			resultAttribute.setValue(Integer.toString(testResult));
+
+			endtest.setAttributeNode(resultAttribute);
+			root.appendChild(endtest);
+			try {
+				DOMSource source = new DOMSource(doc);
+
+				TransformerFactory transformerFactory = TransformerFactory
+						.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				StreamResult result = new StreamResult(logfile);
+				transformer.transform(source, result);
+			} catch (Exception ex) {
+				throw new RuntimeException(
+						"Unable to update missing information in " + logdir);
+			}
+
+		}
+	}
+
+/**
    * Runs a subtest as directed by a &lt;ctl:call-test&gt; instruction.
    *
      * @param context
@@ -914,8 +981,13 @@ public class TECore implements Runnable {
 
     String oldTestPath = testPath;
     testPath += "/" + callId;
+    try{
         this.verdict = executeTest(test, S9APIUtils.makeNode(params), context);
-    testPath = oldTestPath;
+    } catch(Exception e){
+    	
+    } finally {
+    	testPath = oldTestPath;
+    }
         if (this.verdict == CONTINUE) {
       throw new IllegalStateException(
               "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
@@ -1979,7 +2051,7 @@ public class TECore implements Runnable {
       String contentType = uc.getContentType();
       try {
         is = URLConnectionUtils.getInputStream(uc);
-        if (contentType.contains("xml")) { // a crude check
+        if (contentType != null && contentType.contains("xml")) { // a crude check
           idt.transform(new StreamSource(is),
                   new DOMResult(content_e));
         } else {
