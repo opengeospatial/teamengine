@@ -113,20 +113,6 @@
       <classifier>base</classifier>
       <type>zip</type>
     </dependency>
-    <dependency>
-      <groupId>org.opengis.cite</groupId>
-      <artifactId>ets-wfs20</artifactId>
-      <version>${ets-wfs20.version}</version>
-      <classifier>ctl</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opengis.cite</groupId>
-      <artifactId>ets-wfs20</artifactId>
-      <version>${ets-wfs20.version}</version>
-      <classifier>deps</classifier>
-      <type>zip</type>
-    </dependency>
   </dependencies>
 
   <properties>
