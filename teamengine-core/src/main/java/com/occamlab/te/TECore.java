@@ -954,7 +954,7 @@ public class TECore implements Runnable {
             parentTest.setResult(INHERITED_FAILURE);
         break;
         case SKIPPED:
-        if (!parentTest.getType().equalsIgnoreCase("Optional")) {
+        if (!parentTest.getType().equalsIgnoreCase("Optional") && !currTest.getType().equalsIgnoreCase("MandatoryIfImplemented")) {
                 parentTest.setResult(INHERITED_FAILURE);
         }
         break;
