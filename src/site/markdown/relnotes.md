@@ -1,9 +1,12 @@
 Release Notes
 =============
 
+## 4.8.1 (2016-08-15)
+- Fix [#185](https://github.com/opengeospatial/teamengine/issues/185) - 4.8 not building due to teamengine-virtualization because of dependencies to ets-wfs20
+
 ## 4.8 (2016-08-05)
 - [web,core] Merge [PR #182](https://github.com/opengeospatial/teamengine/pull/182): 
-  Fix [ets-wms13#32]()https://github.com/opengeospatial/ets-wms13/issues/32)
+  Fix [ets-wms13#32](https://github.com/opengeospatial/ets-wms13/issues/32)
 - [web,core] Merge [PR #181](https://github.com/opengeospatial/teamengine/pull/181): 
   Fix #174
 - [core] Merge [PR #178](https://github.com/opengeospatial/teamengine/pull/178): 
