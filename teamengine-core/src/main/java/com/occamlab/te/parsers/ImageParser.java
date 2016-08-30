@@ -376,7 +376,9 @@ public class ImageParser {
                             }
                         }
                         parent.removeChild(node);
-                        node = countnode;
+                        // Fortify Mod: prevent node from being overwritten by a null value
+                        // should only happen if we fall through the while loop.
+                        if(countnode != null) node = countnode;
                     } else {
                         Integer count = (Integer) sampleMap.get(Integer
                                 .decode(sample));

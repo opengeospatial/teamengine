@@ -17,6 +17,7 @@
 
  Contributor(s): 
  2009         F. Vitale     vitale@imaa.cnr.it
+ 2016		Chuck Heazel	WiSC Enterprises - Added fixes for Fortify issues
            
  */
 
@@ -252,7 +253,8 @@ public class Test {
             }
         } else if (mode == REDO_FROM_CACHE_MODE) {
             boolean regenerate = false;
-            if (indexFile.canRead()) {
+            // Fortify Mod: Make sure indexFile has been set.
+            if (indexFile != null && indexFile.canRead()) {
                 masterIndex = new Index(indexFile);
                 if (masterIndex.outOfDate()) {
                     System.out
@@ -272,7 +274,9 @@ public class Test {
                 }
             }
         } else {
-            if (!indexFile.canRead()) {
+        	// Fortify Mod: Make sure indexFile was set.
+        	// Note that this assures that indexFile is also available to set masterIndex
+            if (indexFile == null || !indexFile.canRead()) {
                 System.out.println("Error: Can't read index file.");
                 return;
             }
@@ -301,6 +305,8 @@ public class Test {
             }
         }
 
+        // Fortify Mod: masterIndex == null
+        if(masterIndex == null) masterIndex = Generator.generateXsl(setupOpts);
         masterIndex.setElements(null);
         TEClassLoader cl = new TEClassLoader(findResourcesDirectory(sourceFile));
         Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
