@@ -18,7 +18,8 @@ An installation maintained by the OGC is available at http://cite.opengeospatial
 
 ### How to build
 
-[Apache Maven](http://maven.apache.org/) 3.0 or higher is required to build teamengine.
+[Apache Maven](http://maven.apache.org/) 3.2.5 or higher is required to build teamengine. The latest 
+release is recommended.
 
 * Clone the repository:
 

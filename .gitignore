@@ -3,7 +3,14 @@
 .classpath
 .settings/
 
+# IntelliJ IDEA config
+.idea
+*.iml
+
 # Maven output
 target/
 pom.xml.releaseBackup
 release.properties
+
+# Packer output
+packer_cache/

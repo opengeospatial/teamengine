@@ -1,12 +1,41 @@
 Release Notes
 =============
 
-## 4.7 (2016-05-DD)
+## 4.8.1 (2016-08-15)
+- Fix [#185](https://github.com/opengeospatial/teamengine/issues/185) - 4.8 not building due to teamengine-virtualization because of dependencies to ets-wfs20
+
+## 4.8 (2016-08-05)
+- [web,core] Merge [PR #182](https://github.com/opengeospatial/teamengine/pull/182): 
+  Fix [ets-wms13#32](https://github.com/opengeospatial/ets-wms13/issues/32)
+- [web,core] Merge [PR #181](https://github.com/opengeospatial/teamengine/pull/181): 
+  Fix #174
+- [core] Merge [PR #178](https://github.com/opengeospatial/teamengine/pull/178): 
+  Fix NullPointerException if content type is null
+- [virtualization] Merge [PR #176](https://github.com/opengeospatial/teamengine/pull/176): 
+  Add support for building docker image (dockerfile)
+- [web] Merge [PR #175](https://github.com/opengeospatial/teamengine/pull/175): 
+  Fix #173
+
+
+## 4.7.1 (2016-07-11)
+- [spi] Create earl:TestRequirement resources in EarlTestListener#onStart method
+- [spi] Add cite:TestRun resource to EARL results (summary of test results)
+- Update site docs (use Maven 3.2.5 or later)
+
+
+## 4.7 (2016-07-05)
+- [spi:#152] Initial implementation of listeners that generate test results using W3C EARL vocabulary 
+  (as application/rdf+xml)
+- [virtualization: #167] Create [Packer](https://www.packer.io/) template to generate server image 
+  for VirtualBox environment
+- [web] Add VirtualWebappLoader to context (TE_BASE/resources/lib/*.jar)
+- [core] Remove dependency on `xercesImpl-xsd11` (ets-kml2 now uses `xercesImpl-xsd11-shaded`)
 - [core, web] Merge [PR #163](https://github.com/opengeospatial/teamengine/pull/163) to fix 
   [#158](https://github.com/opengeospatial/teamengine/issues/158): Merge security (XXE) fixes
 - [realm] [#150](https://github.com/opengeospatial/teamengine/issues/150): Use PBKDF2 function to 
   generate password hashes
 - [web] Add context listener to check that stored user passwords are not in clear text (generate hash if so).
+- Update site documentation (Virtualization Guide)
 
 
 ## 4.6 (2016-02-29)

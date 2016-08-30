@@ -15,3 +15,22 @@ pre { margin-top: 1em; margin-bottom: 1em; }
 .figure { 
   margin-top: 2em; margin-bottom: 2em; text-align:center;
 }
+table {
+  margin-bottom: 1.25em;
+}
+/* Asciidoctor table styles */
+table.spread {
+  width: 100%;
+}
+table.tableblock {
+  max-width: 100%; border-collapse: separate;
+}
+table.frame-all {
+  border-width: 1px;
+}
+table.tableblock, th.tableblock, td.tableblock {
+  border: 0 solid #dedede;
+}
+table.grid-all th.tableblock, table.grid-all td.tableblock {
+  border-width: 0 1px 1px 0;
+}
