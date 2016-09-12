@@ -50,6 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
+import com.occamlab.te.util.ValidPath;  // Addition for Fortify modifications
 
 public class LogUtils {
 
@@ -58,6 +59,7 @@ public class LogUtils {
 
     /**
      * Creates a Writer used to write test results to the log.xml file.
+     * FORTIFY MOD: Validate the path to the log file.
      * 
      * @param logDir
      *            The directory containing the test session results.
@@ -70,6 +72,13 @@ public class LogUtils {
     public static PrintWriter createLog(File logDir, String callpath)
             throws Exception {
         if (logDir != null) {
+            /*  FORTIFY MOD: first do path validity check */
+            ValidPath vpath = new ValidPath();
+            vpath.addElement(logDir.getAbsolutePath());
+            vpath.addElement(callpath);
+            if(!vpath.isValid()) {
+            	throw new Exception("FORTIFY Path Error: logDir = " + logDir.toString() + " callpath = " + callpath);
+            }
             File dir = new File(logDir, callpath);
             String path=logDir.toString() + "/" + callpath.split("/")[0];
             System.setProperty("PATH", path);
@@ -209,6 +218,14 @@ public class LogUtils {
 
     private static Element makeTestListElement(DocumentBuilder db,
             Document owner, File logdir, String path) throws Exception {
+    	/*  FORTIFY MOD: validate log path prior to creation */
+    	ValidPath vpath = new ValidPath();
+    	vpath.addElement(logdir.getAbsolutePath());
+    	vpath.addElement(path);
+    	vpath.addElement("log.xml");
+    	if(!vpath.isValid()) {
+    		throw new Exception("FORTIFY Path Error: logdir = " + logdir.toString() + " path = " + path);
+    	}
         File log = new File(new File(logdir, path), "log.xml");
         Document logdoc = LogUtils.readLog(log.getParentFile(), ".");
         if (logdoc == null) {
@@ -281,12 +298,20 @@ public class LogUtils {
      */
     public static Document makeTestList(File logdir, String path,
             List<List<QName>> excludes) throws Exception {
+        // FORTIFY MOD: validate the logdir and path arguments. 
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(logdir.getAbsolutePath());
+        vpath.addElement(path);
+        if(!vpath.isValid()) {
+        	throw new Exception("FORTIFY Path Error: logdir = " + logdir.toString() + " path = " + path);
+        }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
 	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
 	   dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc;
+        // FORTIFY MOD: logdir and path have already been validated.
         File testListFile = new File(logdir, path + File.separator
                 + "testlist.xml");
         long testListDate = testListFile.lastModified();
@@ -349,6 +374,11 @@ public class LogUtils {
     private static Element updateTestListElement(DocumentBuilder db,
             Element test, File logdir, long testListDate) throws Exception {
         String path = test.getAttribute("path");
+        // FORTIFY Mod: validate the path
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(logdir.toString());
+        vpath.addElement(path);
+        if(!vpath.isValid()) throw new Exception("FORTIFY Path Error: logdir = " + logdir.toString() + " path = " + path);
         long logdate = 0;
         if (testListDate > 0) {
             logdate = new File(logdir, path + File.separator + "log.xml")
@@ -421,6 +451,10 @@ public class LogUtils {
     public static String generateSessionId(File logDir) {
         int i = 1;
         String session = "s0001";
+        /* FORTIFY MOD: check that the path is valid */
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(logDir.toString());
+        if(!vpath.isValid()) return null;
         while (new File(logDir, session).exists() && i < 10000) {
             i++;
             session = "s" + Integer.toString(10000 + i).substring(1);
@@ -440,6 +474,13 @@ public class LogUtils {
      */
     public static void createFullReportLog(String sessionLogDir)
             throws Exception {
+    	/* FORTIFY MOD: Validate sessonLogDir parameter */
+    	ValidPath vpath = new ValidPath();
+    	vpath.addElement(sessionLogDir);
+    	if(!vpath.isValid()) 
+    	{
+    		throw new Exception("FORTIFY Path Error: path name = " + sessionLogDir);
+    	}
         File xml_logs_report_file = new File(sessionLogDir + File.separator
                 + "report_logs.xml");
         if (xml_logs_report_file.exists()) {

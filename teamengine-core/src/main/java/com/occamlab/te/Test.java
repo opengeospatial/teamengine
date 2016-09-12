@@ -17,6 +17,7 @@
 
  Contributor(s): 
  2009         F. Vitale     vitale@imaa.cnr.it
+ 2016		Charles Heazel	WiSC Enterprises
            
  */
 
@@ -38,6 +39,7 @@ import com.occamlab.te.index.Index;
 import com.occamlab.te.util.DocumentationHelper;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.ValidPath; // Fortify addition
 
 /**
  * 
@@ -114,7 +116,12 @@ public class Test {
                 cmd = arg.substring(5);
             } else if (arg.startsWith("-source=")) {
                 String sourcePath = arg.substring(8);
-                sourceFile = new File(sourcePath);
+                // FORTIFY Mod: validate the source path
+                ValidPath vpath = new ValidPath();
+                vpath.addElement(sourcePath);
+                if(!vpath.isValid())
+                	throw new Exception("Invalid Argument for -source " + sourcePath);
+                sourceFile = new File(vpath.getPath());
                 if (!sourceFile.isAbsolute()) {
                     File scriptsDir = new File(
                             SetupOptions.getBaseConfigDirectory(), "scripts");

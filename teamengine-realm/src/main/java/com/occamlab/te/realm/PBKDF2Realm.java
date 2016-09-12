@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 
 import com.occamlab.te.realm.PasswordStorage.CannotPerformOperationException;
 import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
+import com.occamlab.te.util.ValidPath; // FORTIFY Mod.
 
 /**
  * A custom Tomcat Realm implementation that reads user information from an XML
@@ -45,6 +46,9 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
  * 
  * @see <a href="https://github.com/defuse/password-hashing">Secure Password
  *      Storage v2.0</a>
+ *  
+ * @author "Richard Martell (Galdos)"
+ * @author "C. Heazel (WiSC): Added Fortify adjudication changes"
  */
 public class PBKDF2Realm extends RealmBase {
 
@@ -133,7 +137,10 @@ public class PBKDF2Realm extends RealmBase {
      *            A String specifying a directory location (TE_BASE/users).
      */
     public void setRoot(String root) {
-        rootPath = root;
+    	//FORTIFY MOD: Validate the new root path is valid
+    	ValidPath vpath = new ValidPath();
+    	vpath.addElement(root);
+        rootPath = vpath.getPath();
     }
 
     private GenericPrincipal readPrincipal(String username) {

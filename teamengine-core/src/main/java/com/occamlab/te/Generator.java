@@ -50,6 +50,7 @@ import org.xml.sax.XMLReader;    // Fortify mod.
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.ValidPath;  // Fortify mod.
 import com.occamlab.te.util.XMLParserUtils;
 
 /**
@@ -106,7 +107,10 @@ public class Generator {
         // Create a list of CTL sources (may be files or dirs)
         ArrayList<File> sources = new ArrayList<File>();
         File f = Misc.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl");
-        if (f.exists()) {
+        // FORTIFY MOD: make sure all source paths are valid
+        ValidPath vpath = new ValidPath();
+        vpath.addElement(f.getAbsolutePath());
+        if (vpath.isValid() && f.exists()) {
             sources.add(f.getParentFile());
         }
         sources.addAll(opts.getSources());
@@ -122,6 +126,15 @@ public class Generator {
                     source.getAbsolutePath());
             String encodedName = createEncodedName(source);
             File workingDir = new File(opts.getWorkDir(), encodedName);
+            // FORTIFY MOD: validate the path for the working directories.
+            vpath = new ValidPath();
+            vpath.addElement(workingDir.getAbsolutePath());
+            if(!vpath.isValid()) {
+                LOGR.log(Level.WARNING,
+                        "Illegal working directory path at {0}",
+                        workingDir.getAbsolutePath());
+                workingDir = null;
+            }
             if (!workingDir.exists() && !workingDir.mkdir()) {
                 LOGR.log(Level.WARNING,
                         "Unable to create working directory at {0}",

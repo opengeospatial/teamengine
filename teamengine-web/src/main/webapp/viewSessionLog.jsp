@@ -35,8 +35,8 @@ public void jspInit() {
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): No additional contributors to date
-
+  Contributor(s): 
+      C. Heazel (WiSC): Added Fortify adjudication changes
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
@@ -95,6 +95,14 @@ public void jspInit() {
 <%
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
+      // FORTIFY MOD: make sure userlog and sessionId do not form an illegal path
+      ValidPath vpath = new ValidPath();
+      vpath.addElement( userlog.getAbsolutePath() );
+      vpath.addElement( sessionId );
+      if(!vpath.isValid()) {
+          userlog = null;
+          sessionId = null;
+      }
       TestSession ts = new TestSession();
       ts.load(userlog, sessionId);
       String suiteName = "null";
