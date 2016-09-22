@@ -92,8 +92,9 @@
   <modules>
     <module>teamengine-realm</module>
     <module>teamengine-resources</module>
-    <module>teamengine-spi</module>
     <module>teamengine-core</module>
+    <module>teamengine-spi</module>
+    <module>teamengine-spi-ctl</module>
     <module>teamengine-web</module>
     <module>teamengine-console</module>
     <module>teamengine-virtualization</module>
