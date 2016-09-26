@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>teamengine-spi</artifactId>
+      <artifactId>teamengine-spi-ctl</artifactId>
       <version>${project.version}</version>
       <scope>runtime</scope>
     </dependency>
