@@ -2,7 +2,9 @@ Release Notes
 =============
 
 ## 4.9 (2016-10-DD)
-- [spi] Fix [#171](https://github.com/opengeospatial/teamengine/issues/171) - Ordering of conformance classes in EARL report 
+- [spi] Fix [#172](https://github.com/opengeospatial/teamengine/issues/172): Add test run input arguments to EARL report
+- [spi] Fix [#171](https://github.com/opengeospatial/teamengine/issues/171): Ordering of conformance classes in EARL report 
+- Add `teamengine-spi-ctl` module to enable execution of CTL suites using RESTful API.
 
 
 ## 4.8.1 (2016-08-15)

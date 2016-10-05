@@ -20,4 +20,6 @@ public class CITE {
     public static final Property testsSkipped = model.createProperty(NS_URI + "testsSkipped");
     /** [cite:TestRun] requirements [earl:TestRequirement] 1..* (rdf:Seq) */
     public static final Property requirements = model.createProperty(NS_URI + "requirements");
+    /** [cite:TestRun] inputs [rdf:Description] 1..* (rdf:Bag) */
+    public static final Property inputs = model.createProperty(NS_URI + "inputs");
 }

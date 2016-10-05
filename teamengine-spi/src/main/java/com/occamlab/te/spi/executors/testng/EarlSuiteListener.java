@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -46,6 +47,7 @@ public class EarlSuiteListener implements ISuiteListener {
     private static final Logger LOGR = Logger.getLogger(EarlSuiteListener.class.getPackage().getName());
     /** ISO 639 language code (2-3 letter, possibly with region subtag). */
     private String langCode = "en";
+    private static final String TEST_RUN_ID = "uuid";
     private Resource testRun;
 
     @Override
@@ -63,11 +65,7 @@ public class EarlSuiteListener implements ISuiteListener {
             return;
         }
         Model model = Model.class.cast(obj);
-        Map<String, String> params = suite.getXmlSuite().getAllParameters();
-        String testRunId = params.get("uuid");
-        if (null != testRunId) {
-            this.testRun.addProperty(DCTerms.identifier, testRunId);
-        }
+        addTestInputs(model, suite.getXmlSuite().getAllParameters());
         TestRunSummary summary = new TestRunSummary(suite);
         this.testRun.addLiteral(CITE.testsPassed, new Integer(summary.getTotalPassed()));
         this.testRun.addLiteral(CITE.testsFailed, new Integer(summary.getTotalFailed()));
@@ -184,5 +182,34 @@ public class EarlSuiteListener implements ISuiteListener {
             reqs.add(testRequirement);
         }
         this.testRun.addProperty(CITE.requirements, reqs);
+    }
+
+    /**
+     * Adds the test inputs to the TestRun resource. Each input is an anonymous
+     * member of an unordered collection (rdf:Bag). A {@value #TEST_RUN_ID}
+     * parameter is treated in special manner: its value is set as the value of
+     * the standard dct:identifier property.
+     * 
+     * @param earl
+     *            An RDF model containing EARL statements.
+     * @param params
+     *            A collection of name-value pairs gleaned from the test suite
+     *            parameters.
+     */
+    void addTestInputs(Model earl, final Map<String, String> params) {
+        Bag inputs = earl.createBag();
+        for (Map.Entry<String, String> param : params.entrySet()) {
+            if (param.getKey().equals(TEST_RUN_ID)) {
+                this.testRun.addProperty(DCTerms.identifier, param.getValue());
+            } else {
+                if (param.getValue().isEmpty())
+                    continue;
+                Resource testInput = earl.createResource();
+                testInput.addProperty(DCTerms.title, param.getKey());
+                testInput.addProperty(DCTerms.description, param.getValue());
+                inputs.add(testInput);
+            }
+        }
+        this.testRun.addProperty(CITE.inputs, inputs);
     }
 }
