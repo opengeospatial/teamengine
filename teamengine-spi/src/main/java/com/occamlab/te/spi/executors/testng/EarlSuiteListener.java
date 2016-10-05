@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,9 +22,11 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Seq;
 import org.apache.jena.vocabulary.DCTerms;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
+import org.testng.xml.XmlTest;
 
 import com.occamlab.te.spi.vocabulary.CITE;
 import com.occamlab.te.spi.vocabulary.EARL;
@@ -48,6 +51,7 @@ public class EarlSuiteListener implements ISuiteListener {
     @Override
     public void onStart(ISuite suite) {
         Model model = initModel(suite);
+        addTestRequirements(model, suite.getXmlSuite().getTests());
         suite.setAttribute("earl", model);
     }
 
@@ -159,5 +163,26 @@ public class EarlSuiteListener implements ISuiteListener {
         try (Writer writer = new OutputStreamWriter(outStream, StandardCharsets.UTF_8)) {
             model.write(writer, syntax, baseUri);
         }
+    }
+
+    /**
+     * Adds the list of conformance classes to the TestRun resource. A
+     * conformance class corresponds to a {@literal <test>} tag in the TestNG
+     * suite definition; it is represented as an earl:TestRequirement resource.
+     * 
+     * @param earl
+     *            An RDF model containing EARL statements.
+     * @param testList
+     *            The list of test sets comprising the test suite.
+     */
+    void addTestRequirements(Model earl, final List<XmlTest> testList) {
+        Seq reqs = earl.createSeq();
+        for (XmlTest xmlTest : testList) {
+            String testName = xmlTest.getName();
+            Resource testRequirement = earl.createResource(testName.replaceAll("\\s", "-"), EARL.TestRequirement);
+            testRequirement.addProperty(DCTerms.title, testName);
+            reqs.add(testRequirement);
+        }
+        this.testRun.addProperty(CITE.requirements, reqs);
     }
 }

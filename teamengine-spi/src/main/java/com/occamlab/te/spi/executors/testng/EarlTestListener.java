@@ -12,6 +12,7 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 
+import com.occamlab.te.spi.vocabulary.CITE;
 import com.occamlab.te.spi.vocabulary.EARL;
 
 /**
@@ -35,7 +36,7 @@ public class EarlTestListener extends TestListenerAdapter {
     private int nFailed = 0;
     private Resource assertor;
     private Resource testSubject;
-    /** Name of test set (conformance class). */
+    /** A test requirement (conformance class). */
     private Resource testRequirement;
 
     /**
@@ -55,9 +56,9 @@ public class EarlTestListener extends TestListenerAdapter {
         this.earlModel = Model.class.cast(obj);
         this.assertor = earlModel.listSubjectsWithProperty(RDF.type, EARL.Assertor).next();
         this.testSubject = earlModel.listSubjectsWithProperty(RDF.type, EARL.TestSubject).next();
-        String testName = testContext.getCurrentXmlTest().getName();
-        this.testRequirement = earlModel.createResource(testName.replaceAll("\\s", "-"), EARL.TestRequirement);
-        this.testRequirement.addProperty(DCTerms.title, testName);
+        String testReqName = testContext.getCurrentXmlTest().getName().replaceAll("\\s", "-");
+        // can return existing resource
+        this.testRequirement = earlModel.createResource(testReqName);
         nPassed = nSkipped = nFailed = 0;
     }
 
@@ -72,11 +73,13 @@ public class EarlTestListener extends TestListenerAdapter {
     @Override
     public void onFinish(ITestContext testContext) {
         super.onFinish(testContext);
-        StringBuilder summary = new StringBuilder();
-        summary.append("Passed: ").append(this.nPassed).append("; ");
-        summary.append("Failed: ").append(this.nFailed).append("; ");
-        summary.append("Skipped: ").append(this.nSkipped);
-        this.testRequirement.addProperty(DCTerms.description, summary.toString());
+        if (nPassed + nFailed == 0) {
+            this.testRequirement.addProperty(DCTerms.description,
+                    "A precondition was not met. All tests in this set were skipped.");
+        }
+        this.testRequirement.addLiteral(CITE.testsPassed, new Integer(this.nPassed));
+        this.testRequirement.addLiteral(CITE.testsFailed, new Integer(this.nFailed));
+        this.testRequirement.addLiteral(CITE.testsSkipped, new Integer(this.nSkipped));
     }
 
     /**
