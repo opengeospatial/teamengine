@@ -31,6 +31,7 @@ import org.testng.xml.XmlTest;
 
 import com.occamlab.te.spi.vocabulary.CITE;
 import com.occamlab.te.spi.vocabulary.EARL;
+import com.occamlab.te.spi.vocabulary.HTTP;
 
 /**
  * A listener that creates and serializes an RDF graph containing the test
@@ -100,6 +101,7 @@ public class EarlSuiteListener implements ISuiteListener {
         nsBindings.put("earl", EARL.NS_URI);
         nsBindings.put("dct", DCTerms.NS);
         nsBindings.put("cite", CITE.NS_URI);
+        nsBindings.put("http", HTTP.NS_URI);
         model.setNsPrefixes(nsBindings);
         this.testRun = model.createResource(CITE.TestRun);
         this.testRun.addProperty(DCTerms.title, suite.getName());

@@ -22,4 +22,6 @@ public class CITE {
     public static final Property requirements = model.createProperty(NS_URI + "requirements");
     /** [cite:TestRun] inputs [rdf:Description] 1..* (rdf:Bag) */
     public static final Property inputs = model.createProperty(NS_URI + "inputs");
+    /** [earl:TestResult] httpReq [http:Request] */
+    public static final Property httpReq = model.createProperty(NS_URI + "httpReq");
 }

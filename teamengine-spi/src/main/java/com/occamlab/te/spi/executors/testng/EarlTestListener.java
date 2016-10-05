@@ -148,6 +148,7 @@ public class EarlTestListener extends TestListenerAdapter {
             } else { // an exception occurred
                 earlResult.addProperty(EARL.outcome, EARL.Inconclusive);
             }
+            // TODO: add cite:info ==> http:Request (from attribute)
             break;
         case ITestResult.SKIP:
             earlResult.addProperty(DCTerms.description, getDetailMessage(result));
