@@ -99,12 +99,27 @@ public void jspInit() {
       ts.load(userlog, sessionId);
       String suiteName = "null";
       String sourcesName = ts.getSourcesName();
+      SuiteEntry suiteEntry = null;
+      String sourceIdKey = "";
+      Map<String, List<ProfileEntry>> profileInfos;
+      for(String key : Conf.getSuites().keySet()) {  	  
+	      String onlySourceName = sourcesName.substring(0,sourcesName.lastIndexOf("_"));
+    	  if(key.contains(onlySourceName)){
+    		  sourceIdKey = key;
+    		 suiteEntry = Conf.getSuites().get(key);
+    	  }
+      }
       if (sourcesName == null) {
           suiteName = "error: sourcesName is null";
       } else {
           SuiteEntry se = Conf.getSuites().get(sourcesName);
           if (se == null) {
-             suiteName = "error: suitEntry is null";
+        	  if(suiteEntry != null){
+        		  String title = suiteEntry.getTitle();
+                  suiteName = (title == null) ? "error: suiteEntry title is null" : title;
+        	  } else {
+             		suiteName = "error: suitEntry is null";
+        	  }
           } else {
               String title = se.getTitle();
               suiteName = (title == null) ? "error: suiteEntry title is null" : title;
@@ -119,9 +134,16 @@ public void jspInit() {
       }
 
       String profileParams = "";
+      String sourceId = "";
       if (complete) {
         int i = 0;
-	      for (ProfileEntry profile : Conf.getProfiles().get(ts.getSourcesName())) {
+        
+        if(Conf.getProfiles().get(ts.getSourcesName()) == null){
+        	sourceId = sourceIdKey;
+        } else {
+        	sourceId = ts.getSourcesName();
+        }
+	      for (ProfileEntry profile : Conf.getProfiles().get(sourceId)) {
 	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
 	          if (ts.getProfiles().contains(profile.getId())) {
 	        	  String path = sessionId + "/" + profile.getLocalName();
