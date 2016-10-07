@@ -4,8 +4,9 @@ Release Notes
 ## 4.9 (2016-10-07)
 - [spi] Fix [#172](https://github.com/opengeospatial/teamengine/issues/172): Add test run input arguments to EARL report
 - [spi] Fix [#171](https://github.com/opengeospatial/teamengine/issues/171): Ordering of conformance classes in EARL report 
-- Add diagnostic info about a failing test to earl:TestResult
-- EARL results (earl-results.rdf) are now created and serialized by EarlReporter, which implements org.testng.IReporter 
+- [web] Merge [PR #192](https://github.com/opengeospatial/teamengine/pull/192) to fix issue [#191](https://github.com/opengeospatial/teamengine/issues/191)
+- [spi] Add diagnostic info about a failing test to earl:TestResult
+- [spi] EARL results (earl-results.rdf) are now created and serialized by EarlReporter, which implements org.testng.IReporter 
 - Add `teamengine-spi-ctl` module to enable execution of CTL suites using RESTful API.
 
 
