@@ -22,7 +22,7 @@ import org.testng.xml.XmlSuite;
 
 import com.occamlab.te.spi.vocabulary.EARL;
 
-public class VerifyEarlSuiteListener {
+public class VerifyEarlReporter {
 
     private static ITestContext testContext;
     private static ISuite suite;
@@ -47,8 +47,8 @@ public class VerifyEarlSuiteListener {
         params.put("iut", testSubject);
         params.put("uuid", UUID.randomUUID().toString());
         when(xmlSuite.getAllParameters()).thenReturn(params);
-        EarlSuiteListener iut = new EarlSuiteListener();
-        Model model = iut.initModel(suite);
+        EarlReporter iut = new EarlReporter();
+        Model model = iut.initializeModel(suite);
         assertNotNull(model);
         ResIterator itr = model.listSubjectsWithProperty(RDF.type, EARL.TestSubject);
         assertEquals("Unexpected URI for earl:TestSubject", testSubject, itr.next().getURI());
@@ -61,11 +61,11 @@ public class VerifyEarlSuiteListener {
         params.put("iut", testSubject);
         params.put("uuid", UUID.randomUUID().toString());
         when(xmlSuite.getAllParameters()).thenReturn(params);
-        EarlSuiteListener iut = new EarlSuiteListener();
-        Model model = iut.initModel(suite);
+        EarlReporter iut = new EarlReporter();
+        Model model = iut.initializeModel(suite);
         File outputDir = new File(System.getProperty("user.home"));
         iut.writeModel(model, outputDir, true);
-        File earlFile = new File(outputDir, "earl.rdf");
+        File earlFile = new File(outputDir, "earl-results.rdf");
         assertTrue("EARL results file does not exist at " + earlFile.getAbsolutePath(), earlFile.exists());
         assertTrue("EARL results file is emtpy.", earlFile.length() > 0);
         earlFile.delete();
