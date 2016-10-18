@@ -20,6 +20,8 @@ public class TestEntry extends TemplateEntry {
     String context;
     String type;
     String assertion;
+    String isConformanceClass;
+    String isBasic;
 
     public TestEntry() {
         super();
@@ -39,9 +41,32 @@ public class TestEntry extends TemplateEntry {
         setDefaultResult(defaultResultName.equals("BestPractice") ? TECore.BEST_PRACTICE
                 : TECore.PASS);
         setResult(getDefaultResult());
+        
+        if(null != test.getAttribute("isConformanceClass") && !test.getAttribute("isConformanceClass").isEmpty()){
+        	setIsConformanceClass(test.getAttribute("isConformanceClass"));
+        }
+        if(null != test.getAttribute("isBasic") && !test.getAttribute("isBasic").isEmpty()){
+        	setIsBasic(test.getAttribute("isBasic"));
+        }
     }
 
-    public int getDefaultResult() {
+    public String getIsConformanceClass() {
+		return isConformanceClass;
+	}
+
+	public void setIsConformanceClass(String isConformanceClass) {
+		this.isConformanceClass = isConformanceClass;
+	}
+
+	public String getIsBasic() {
+		return isBasic;
+	}
+
+	public void setIsBasic(String isBasic) {
+		this.isBasic = isBasic;
+	}
+
+	public int getDefaultResult() {
         return defaultResult;
     }
 

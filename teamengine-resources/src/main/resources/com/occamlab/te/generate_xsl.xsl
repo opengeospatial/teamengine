@@ -571,12 +571,34 @@
         <xsl:otherwise>Mandatory</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:variable name="isConformanceClass">
+      <xsl:choose>
+        <xsl:when test="boolean(@isConformanceClass)">
+          <xsl:value-of select="@isConformanceClass" />
+        </xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="isBasic">
+      <xsl:choose>
+        <xsl:when test="boolean(@isBasic)">
+          <xsl:value-of select="@isBasic" />
+        </xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="filename"
       select="te:get-filename('test', $qname/prefix, $qname/local-name, $qname/namespace-uri, '')" />
     <test prefix="{$qname/prefix}" namespace-uri="{$qname/namespace-uri}"
       local-name="{$qname/local-name}" file="{$filename}">
       <xsl:attribute name="uses-context">
         <xsl:value-of select="boolean(ctl:context)" />
+      </xsl:attribute>
+      <xsl:attribute name="isConformanceClass">
+        <xsl:value-of select="$isConformanceClass" />
+      </xsl:attribute>
+      <xsl:attribute name="isBasic">
+        <xsl:value-of select="$isBasic" />
       </xsl:attribute>
       <xsl:for-each select="ctl:param">
         <xsl:variable name="param-qname">

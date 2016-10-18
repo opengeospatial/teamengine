@@ -833,6 +833,10 @@ public class TECore implements Runnable {
         }
     if (logger != null) {
             logger.println("<endtest result=\"" + test.getResult() + "\"/>");
+            
+            if(test.getIsConformanceClass().equals("true")){
+            	logger.println("<conformanceClass name=\"" + test.getLocalName() + "\"" + " isBasic=\"" + test.getIsBasic() + "\"" + " result=\"" + test.getResult() + "\" />");
+            }
       logger.println("</log>");
       logger.flush();
       logger.close();
