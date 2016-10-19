@@ -3,7 +3,7 @@
 == Introduction
 
 This guide describes how to generate a virtual machine (VM) or container image that provides 
-a complete TEAMengine installation along with the latest OGC conformance test suites. The 
+a complete TEAM Engine installation along with the latest OGC conformance test suites. The 
 required software components are shown in the following figure.
 
 .Software components 
@@ -32,13 +32,14 @@ The build process is driven by a template: a configuration file (in JSON format)
 how a machine image is created and automatically provisioned.
 
 To install Packer, simply download the appropriate https://www.packer.io/downloads.html[binary package] 
-for your environment and unpack the archive into a suitable directory; then set the following 
-user environment variables:
+for your environment and unpack the archive in a suitable directory; then set the following user 
+environment variables:
 
 PACKER_HOME:: The directory where packer is installed.
 PACKER_CACHE_DIR:: The location of the packer cache (for downloaded resources).
 
 Update the PATH environment variable to include PACKER_HOME.
+
 
 == VirtualBox
 
@@ -47,9 +48,9 @@ Update the PATH environment variable to include PACKER_HOME.
 https://www.virtualbox.org/[VirtualBox] is a freely available virtualization product 
 that runs on Windows, Linux, and Mac hosts. It supports a wide variety of guest operating 
 systems and is very useful in creating development or test environments. The Packer 
-template will create a complete, ready-to-run teamengine installation that contains
-the desired set of OGC test suites. The output is an "appliance" (in the standard http://www.dmtf.org/standards/ovf[OVF format]) 
-that can be imported into VirtualBox.
+template will create a complete, ready-to-run TEAM Engine installation that contains
+the desired set of OGC test suites. The output is a "virtual appliance" (in the 
+standard http://www.dmtf.org/standards/ovf[OVF format]) that can be imported into VirtualBox.
 
 === Install VirtualBox
 
@@ -59,7 +60,7 @@ When installation is complete, set the following user environment variable:
 
 VBOX_USER_HOME:: The location where virtual machines will be created.
 
-=== Creating and importing the image
+=== Create and import the image
 
 The Packer template makes use of several supporting shell scripts and files (see Note 1). In the 
 'files' subdirectory is a CSV file (ets-releases.csv) that contains a list of OGC test suite releases; 
@@ -71,9 +72,9 @@ the appropriate line.
 [icons=None, caption="Note 1"]
 [NOTE]
 ==========
-The template file (teamengine-centos72.json) can be found in the src/main/config/packer/ directory in the 
-teamengine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
-this Maven command at the root of the teamengine source tree: `mvn assembly:single`.
+The template file (teamengine-virtualbox.json) can be found in the src/main/config/packer/ directory in the 
+TEAM Engine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
+this Maven command at the root of the TEAM Engine source tree: `mvn assembly:single`.
 ==========
 
 The template defines several user variables that can be overridden from the command line or a file; 
@@ -85,7 +86,7 @@ along with their default values.
 |==========
 |Variable |Default value |Description 
 
-|te_version |"4.7" |The desired version of the TEAMengine web application http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22teamengine-web%22[available at Maven Central].
+|te_version |"4.9" |The desired version of the TEAM Engine web application http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22teamengine-web%22[available at Maven Central].
 |ets_resources_release |"" |The desired https://github.com/opengeospatial/ets-resources/releases[ets-resources release version];
 this project aggregates all test suite dependencies. If not specified, the latest snapshot (tip of the master branch) will be used.
 |use_oracle_jdk |"false" |Whether or not to use the Oracle JDK (which is subject to a 
@@ -97,7 +98,7 @@ To create the virtual appliance, simply change to the directory containing the P
 execute this command in a shell console:
 
 -----
-packer build teamengine-centos72.json
+packer build teamengine-virtualbox.json
 -----
 
 The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 
@@ -107,9 +108,9 @@ for "headless" operation). To run it, start VirtualBox and perform the following
 . Choose *File > Import Appliance...* and select the *.ovf file 
 . When the import is completed, select the newly created virtual machine and press "Start" 
 . When the boot sequence finishes, login using an SSH client to localhost:2222--or use the 
-VirtualBox terminal--with the teamengine user credentials (see Note 2) 
+VirtualBox terminal--with the TEAM Engine user credentials (see Note 2) 
 . To start or stop Tomcat, execute this command:  `sudo systemctl start|stop tomcat-jsvc`
-. The main teamengine web app is available at \http://localhost:8888/teamengine (see Note 3) 
+. The main TEAM Engine web app is available at \http://localhost:8888/teamengine (see Note 3) 
 
 
 [icons=None, caption="Note 2"]
@@ -127,3 +128,55 @@ translation (NAT); this prevents all direct inbound connections, but not outboun
 Some port forwarding rules are created in order to allow remote access to the SSH server (via 
 localhost:2222) and the Tomcat web container (via localhost:8888).
 ==========
+
+
+== Amazon EC2
+
+=== Overview
+Amazon Web Services (AWS) is a diverse platform of services that offer computing, storage, and 
+networking capabilities in a public cloud environment. Amazon Elastic Compute Cloud (EC2) is a 
+constituent service that provides a dynamic infrastructure as a service (IaaS). Virtual servers 
+can be created, launched, configured, and managed as needed.
+
+=== Preparation
+Before building an image, an Amazon Web Services (AWS) account must be available to use. If not, 
+[sign up for an AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/).
+The Packer template complies with the restrictions of the [free tier](https://aws.amazon.com/free/) 
+so you will not be charged unless your usage exceeds the stipulated limits. It is strongly recommended 
+to *not* use the root account (that is, the account owner). Instead, create a separate AWS Identity 
+and Access Management (IAM) user to interact with AWS. For guidance about how to do this, see 
+[Creating Your First IAM Admin User and Group](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html). 
+
+You will need the security credentials for the IAM user; specifically, the [access keys](https://aws.amazon.com/developers/access-keys/) 
+required to send requests using various AWS APIs. Set them as the values of the environment variables 
+shown below (which are also supported by the AWS command-line interface). The Packer template will 
+obtain the credentials from these environment variables:
+
+AWS_ACCESS_KEY_ID:: Access Key ID
+AWS_SECRET_ACCESS_KEY:: Secret Access Key
+
+The source image is the official [CentOS 7 HVM image](https://wiki.centos.org/Cloud/AWS), which is 
+freely available from the AWS Marketplace. However, a subscription is required in order to access it. 
+Visit the [AWS Marketplace page](http://aws.amazon.com/marketplace/pp?sku=aw0evgkw8e5c1q413zgy5pjce) 
+for the official CentOS 7 image. Click "Continue" and select the "Manual Launch" tab. Then click 
+"Accept Software Terms" in order to subscribe and enable access in any supported region.
+
+=== Create and register the image
+
+The same template variables as defined for the VirtualBox image apply here. To create and register 
+the image, change to the directory containing the Packer template and execute this command in a shell 
+console:
+
+-----
+packer build teamengine-aws.json
+-----
+
+When the process is completed, the image will appear in the AWS EC2 console (under Images/AMIs) 
+for the "N. Virginia" (us-east-1) region. Note that the image will be marked as private, so it 
+can only be launched by the owning account. If you have installed and configured the 
+[AWS command-line tools](http://docs.aws.amazon.com/cli/latest/userguide/), run the `describe-images` 
+command:
+
+-----
+aws ec2 describe-images --owners self --region us-east-1
+-----

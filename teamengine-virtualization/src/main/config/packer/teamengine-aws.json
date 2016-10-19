@@ -1,0 +1,23 @@
+{
+  "variables": {
+    "te_version": "4.9",
+    "ets_resources_release": "",
+    "use_oracle_jdk": "false",
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+  },
+  "builders": [
+  {
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami": "ami-6d1c2007",
+    "instance_type": "t2.micro",
+    "ssh_username": "centos",
+    "ami_name": "teamengine-{{user `te_version`}}-{{isotime \"20060102\"}}",
+    "ami_description": "OGC TEAM Engine: A conformance test execution service. See <https://github.com/opengeospatial/teamengine>.",
+    "force_deregister": "true"
+  }
+  ]
+}
