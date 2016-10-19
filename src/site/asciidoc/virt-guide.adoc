@@ -140,14 +140,14 @@ can be created, launched, configured, and managed as needed.
 
 === Preparation
 Before building an image, an Amazon Web Services (AWS) account must be available to use. If not, 
-[sign up for an AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/).
-The Packer template complies with the restrictions of the [free tier](https://aws.amazon.com/free/) 
-so you will not be charged unless your usage exceeds the stipulated limits. It is strongly recommended 
-to *not* use the root account (that is, the account owner). Instead, create a separate AWS Identity 
+https://portal.aws.amazon.com/gp/aws/developer/registration/[sign up for an AWS account]. The Packer 
+template complies with the restrictions of the https://aws.amazon.com/free/[free tier] so you will 
+not be charged unless your usage exceeds the stipulated limits. It is strongly recommended to *not* 
+use the root account (that is, the account owner). Instead, create a separate AWS Identity 
 and Access Management (IAM) user to interact with AWS. For guidance about how to do this, see 
-[Creating Your First IAM Admin User and Group](http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html). 
+http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html[Creating Your First IAM Admin User and Group].
 
-You will need the security credentials for the IAM user; specifically, the [access keys](https://aws.amazon.com/developers/access-keys/) 
+You will need the security credentials for the IAM user; specifically, the https://aws.amazon.com/developers/access-keys/[access keys] 
 required to send requests using various AWS APIs. Set them as the values of the environment variables 
 shown below (which are also supported by the AWS command-line interface). The Packer template will 
 obtain the credentials from these environment variables:
@@ -155,9 +155,9 @@ obtain the credentials from these environment variables:
 AWS_ACCESS_KEY_ID:: Access Key ID
 AWS_SECRET_ACCESS_KEY:: Secret Access Key
 
-The source image is the official [CentOS 7 HVM image](https://wiki.centos.org/Cloud/AWS), which is 
+The source image is the official https://wiki.centos.org/Cloud/AWS[CentOS 7 HVM image], which is 
 freely available from the AWS Marketplace. However, a subscription is required in order to access it. 
-Visit the [AWS Marketplace page](http://aws.amazon.com/marketplace/pp?sku=aw0evgkw8e5c1q413zgy5pjce) 
+Visit the http://aws.amazon.com/marketplace/pp?sku=aw0evgkw8e5c1q413zgy5pjce[AWS Marketplace page] 
 for the official CentOS 7 image. Click "Continue" and select the "Manual Launch" tab. Then click 
 "Accept Software Terms" in order to subscribe and enable access in any supported region.
 
@@ -174,7 +174,7 @@ packer build teamengine-aws.json
 When the process is completed, the image will appear in the AWS EC2 console (under Images/AMIs) 
 for the "N. Virginia" (us-east-1) region. Note that the image will be marked as private, so it 
 can only be launched by the owning account. If you have installed and configured the 
-[AWS command-line tools](http://docs.aws.amazon.com/cli/latest/userguide/), run the `describe-images` 
+http://docs.aws.amazon.com/cli/latest/userguide/[AWS command-line tools], run the `describe-images` 
 command:
 
 -----
