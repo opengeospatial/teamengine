@@ -21,6 +21,35 @@
     "tags": {
       "teamengine-version": "{{user `te_version`}}"
     }
-  }
+  }],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "files/tomcat",
+      "destination": "/tmp"
+    },
+    {
+      "type": "file",
+      "source": "files/teamengine",
+      "destination": "/tmp"
+    },
+    {
+      "type": "file",
+      "source": "files/ets-releases.csv",
+      "destination": "~/ets-releases.csv"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "TE_VERSION={{user `te_version`}}",
+        "use_oracle_jdk={{user `use_oracle_jdk`}}"
+      ],
+      "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",
+      "scripts": [
+        "scripts/setup-tomcat.sh",
+        "scripts/setup-teamengine.sh",
+        "scripts/setup-scm.sh"
+      ]
+    }
   ]
 }

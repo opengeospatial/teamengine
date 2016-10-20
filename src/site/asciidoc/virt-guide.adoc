@@ -153,7 +153,7 @@ http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-gro
 The AWS Free Tier offerings are available to new AWS customers for 12 months following the sign-up 
 date. It allows up to 750 hours usage per month of a moderately small instance (instance type "t2.micro": 
 1 vCPU, 1 GiB memory). Note that the monthly allotment for Linux and Microsoft Windows instances is counted 
-separately. Usage that exceeeds the free tier limits is subject to billing. For more information, see 
+separately. Usage that exceeds the free tier limits is subject to billing. For more information, see 
 http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-free-tier.html[Using the Free Tier].
 ==========
 
@@ -181,9 +181,9 @@ console:
 packer build teamengine-aws.json
 -----
 
-When the process is completed, the image will appear in the AWS EC2 console (under IMAGES/AMIs) 
-for the "N. Virginia" (us-east-1) region. Note that the image will be marked as private, so it 
-can only be launched by the owning account. If you have installed and configured the 
+When the process is completed, the image will appear in the AWS EC2 console--under IMAGES/AMIs--for 
+the "N. Virginia" region (us-east-1). Note that the image will be marked as private, so it can 
+only be launched by the owning account. If you have installed and configured the 
 http://docs.aws.amazon.com/cli/latest/userguide/[AWS command-line tools], run the `describe-images` 
 command:
 
@@ -192,8 +192,9 @@ aws ec2 describe-images --owners self --region us-east-1
 -----
 
 An instance can be launched from the EC2 dashboard by selecting the image and clicking "Launch".
-By default, access via SSH is permitted from anywhere; the source IP address can be restricted 
-to a single address or an address range (in CIDR notation). When the instance reaches the "running" 
-state it will appear in the console under INSTANCES/Instances. The public hostname and IP address 
-will be displayed on the "Description" tab. Connect via SSH and login as 'centos' using the key 
-specified at launch.
+Access via SSH is permitted from anywhere by default, but the source IP address can be restricted 
+to a single address or an address range (in CIDR notation: 192.168.0.0/16). When the instance 
+reaches the "running" state it will appear in the console under INSTANCES/Instances. The public 
+hostname and IP address will be displayed on the "Description" tab. Connect via SSH and login 
+as 'centos' using the key specified at launch. The server may be stopped and started as needed 
+by selecting the appropriate action on the `Actions > Instance State` submenu.

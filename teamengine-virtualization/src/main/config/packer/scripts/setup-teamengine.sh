@@ -1,6 +1,6 @@
 #!/bin/bash
 # Environment variable TE_VERSION specifies TEAMengine release version
-: ${TE_VERSION:=4.7}
+: ${TE_VERSION:=4.9}
 yum -y install unzip
 # Derby system directory (derby.system.home)
 mkdir /srv/derby
@@ -26,7 +26,3 @@ tar xzf /tmp/teamengine-web-$TE_VERSION-common-libs.tar.gz -C /srv/tomcat7/base-
 cd /srv/tomcat7/base-1/webapps/
 unzip -d teamengine teamengine.war
 chown -R tomcat:tomcat teamengine/
-# this does not apply to teamengine 4.7 or later
-if ! grep -q "VirtualWebappLoader" teamengine/META-INF/context.xml; then
-  sed -i '\/scripts<\/Watched/r /tmp/teamengine/context-loader' teamengine/META-INF/context.xml
-fi

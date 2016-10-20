@@ -9,7 +9,7 @@ yum -y install git
 
 # Install Maven 3.3
 cd /tmp
-curl --retry 1 -O http://apache.mirror.gtcomm.net/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+curl --retry 1 -O https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
 cd /opt/apache.org
 tar xzf /tmp/apache-maven-*.tar.gz
 ln -s apache-maven-3.3.9/ maven3

@@ -2,12 +2,12 @@
   "variables": {
     "ssh_name": "teamengine",
     "ssh_pass": "teamengine",
-    "te_version": "4.7",
+    "te_version": "4.9",
     "ets_resources_release": "",
     "use_oracle_jdk": "false"
   },
   "builders": [{
-    "name": "centos72-virtualbox",
+    "name": "teamengine-virtualbox",
     "type": "virtualbox-iso",
     "ssh_pty": true,
     "boot_command": [

@@ -6,11 +6,11 @@ yum -y update
 yum -y install apache-commons-daemon-jsvc
 if [ $use_oracle_jdk = true ]; then
   cd /tmp
-  curl --retry 2 -L -b "oraclelicense=accept" -O http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.tar.gz
+  curl --retry 2 -L -b "oraclelicense=accept" -O http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz
   mkdir /opt/oracle.com
   cd /opt/oracle.com
   tar xzf /tmp/jdk-*.tar.gz
-  ln -s /opt/oracle.com/jdk1.8.0_91/ /opt/jdk8
+  ln -s /opt/oracle.com/jdk1.8.0_111/ /opt/jdk8
 else 
   # use OpenJDK
   yum -y install java-1.8.0-openjdk-devel
@@ -19,13 +19,13 @@ fi
 
 # Apache Tomcat 7.0
 cd /tmp
-curl --retry 1 -O http://apache.mirror.gtcomm.net/tomcat/tomcat-7/v7.0.69/bin/apache-tomcat-7.0.69.tar.gz
+curl --retry 1 -O http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.72/bin/apache-tomcat-7.0.72.tar.gz
 useradd tomcat
 echo "tomcat:t0mc4t" | chpasswd
 mkdir /opt/apache.org
 cd /opt/apache.org
 tar xzf /tmp/apache-tomcat-*.tar.gz
-ln -s apache-tomcat-7.0.69/ tomcat7
+ln -s apache-tomcat-7.0.72/ tomcat7
 # Create Tomcat instance
 mkdir -p /srv/tomcat7/base-1
 cd /srv/tomcat7/base-1

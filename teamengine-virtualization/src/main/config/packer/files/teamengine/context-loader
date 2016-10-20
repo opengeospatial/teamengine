@@ -1,1 +1,0 @@
-  <Loader className="org.apache.catalina.loader.VirtualWebappLoader" virtualClasspath="${TE_BASE}/resources/lib/*.jar" />
