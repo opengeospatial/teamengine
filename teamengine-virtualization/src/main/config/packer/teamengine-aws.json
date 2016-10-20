@@ -17,7 +17,10 @@
     "ssh_username": "centos",
     "ami_name": "teamengine-{{user `te_version`}}-{{isotime \"20060102\"}}",
     "ami_description": "OGC TEAM Engine: A conformance test execution service. See <https://github.com/opengeospatial/teamengine>.",
-    "force_deregister": "true"
+    "force_deregister": "true",
+    "tags": {
+      "teamengine-version": "{{user `te_version`}}"
+    }
   }
   ]
 }

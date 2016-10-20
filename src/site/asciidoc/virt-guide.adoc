@@ -135,7 +135,7 @@ localhost:2222) and the Tomcat web container (via localhost:8888).
 === Overview
 Amazon Web Services (AWS) is a diverse platform of services that offer computing, storage, and 
 networking capabilities in a public cloud environment. Amazon Elastic Compute Cloud (EC2) is a 
-constituent service that provides a dynamic infrastructure as a service (IaaS). Virtual servers 
+constituent service that provides dynamic infrastructure as a service (IaaS). Virtual servers 
 can be created, launched, configured, and managed as needed.
 
 === Preparation
@@ -146,6 +146,16 @@ not be charged unless your usage exceeds the stipulated limits. It is strongly r
 use the root account (that is, the account owner). Instead, create a separate AWS Identity 
 and Access Management (IAM) user to interact with AWS. For guidance about how to do this, see 
 http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html[Creating Your First IAM Admin User and Group].
+
+[icons=None, caption="Note 4"]
+[NOTE]
+==========
+The AWS Free Tier offerings are available to new AWS customers for 12 months following the sign-up 
+date. It allows up to 750 hours usage per month of a moderately small instance (instance type "t2.micro": 
+1 vCPU, 1 GiB memory). Note that the monthly allotment for Linux and Microsoft Windows instances is counted 
+separately. Usage that exceeeds the free tier limits is subject to billing. For more information, see 
+http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-free-tier.html[Using the Free Tier].
+==========
 
 You will need the security credentials for the IAM user; specifically, the https://aws.amazon.com/developers/access-keys/[access keys] 
 required to send requests using various AWS APIs. Set them as the values of the environment variables 
@@ -171,7 +181,7 @@ console:
 packer build teamengine-aws.json
 -----
 
-When the process is completed, the image will appear in the AWS EC2 console (under Images/AMIs) 
+When the process is completed, the image will appear in the AWS EC2 console (under IMAGES/AMIs) 
 for the "N. Virginia" (us-east-1) region. Note that the image will be marked as private, so it 
 can only be launched by the owning account. If you have installed and configured the 
 http://docs.aws.amazon.com/cli/latest/userguide/[AWS command-line tools], run the `describe-images` 
@@ -180,3 +190,10 @@ command:
 -----
 aws ec2 describe-images --owners self --region us-east-1
 -----
+
+An instance can be launched from the EC2 dashboard by selecting the image and clicking "Launch".
+By default, access via SSH is permitted from anywhere; the source IP address can be restricted 
+to a single address or an address range (in CIDR notation). When the instance reaches the "running" 
+state it will appear in the console under INSTANCES/Instances. The public hostname and IP address 
+will be displayed on the "Description" tab. Connect via SSH and login as 'centos' using the key 
+specified at launch.
