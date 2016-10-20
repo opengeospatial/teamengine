@@ -9,6 +9,7 @@
   "builders": [
   {
     "type": "amazon-ebs",
+    "ssh_pty": true,
     "access_key": "{{user `aws_access_key`}}",
     "secret_key": "{{user `aws_secret_key`}}",
     "region": "us-east-1",
@@ -17,7 +18,7 @@
     "ssh_username": "centos",
     "ami_name": "teamengine-{{user `te_version`}}-{{isotime \"20060102\"}}",
     "ami_description": "OGC TEAM Engine: A conformance test execution service. See <https://github.com/opengeospatial/teamengine>.",
-    "force_deregister": "true",
+    "force_deregister": true,
     "tags": {
       "teamengine-version": "{{user `te_version`}}"
     }
@@ -44,7 +45,7 @@
         "TE_VERSION={{user `te_version`}}",
         "use_oracle_jdk={{user `use_oracle_jdk`}}"
       ],
-      "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'",
+      "execute_command": "{{ .Vars }} sudo -E sh '{{.Path}}'",
       "scripts": [
         "scripts/setup-tomcat.sh",
         "scripts/setup-teamengine.sh",

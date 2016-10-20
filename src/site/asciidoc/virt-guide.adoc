@@ -191,6 +191,8 @@ command:
 aws ec2 describe-images --owners self --region us-east-1
 -----
 
+=== Launch the image
+
 An instance can be launched from the EC2 dashboard by selecting the image and clicking "Launch".
 Access via SSH is permitted from anywhere by default, but the source IP address can be restricted 
 to a single address or an address range (in CIDR notation: 192.168.0.0/16). When the instance 

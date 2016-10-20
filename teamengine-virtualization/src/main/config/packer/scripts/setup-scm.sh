@@ -15,5 +15,9 @@ tar xzf /tmp/apache-maven-*.tar.gz
 ln -s apache-maven-3.3.9/ maven3
 mv /tmp/teamengine/mavenrc /etc/
 
+if ! id -u teamengine > /dev/null 2>&1; then
+  useradd teamengine
+  echo "teamengine:teamengine" | chpasswd
+fi
 mkdir /usr/local/src/cite
 chown teamengine:teamengine /usr/local/src/cite
