@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+## 4.10 (2016-MM-DD)
+- [virtualization] Add Amazon EC2 template (teamengine-aws) and update user guide
+
+
 ## 4.9 (2016-10-07)
 - [spi] Fix [#172](https://github.com/opengeospatial/teamengine/issues/172): Add test run input arguments to EARL report
 - [spi] Fix [#171](https://github.com/opengeospatial/teamengine/issues/171): Ordering of conformance classes in EARL report 

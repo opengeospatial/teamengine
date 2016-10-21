@@ -5,7 +5,8 @@ yum -y install unzip
 # Derby system directory (derby.system.home)
 mkdir /srv/derby
 chown -R tomcat:tomcat /srv/derby
-# TEAMengine instance directory
+# TEAM Engine instance directory
+groupadd cite
 mkdir /srv/teamengine
 cd /srv/teamengine
 unzip -a /tmp/teamengine/teamengine-base.zip

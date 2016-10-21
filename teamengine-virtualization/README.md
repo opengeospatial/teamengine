@@ -4,7 +4,6 @@ This module generates images for a variety of dynamic infrastructure platforms, 
 
 * VirtualBox
 * Amazon EC2
-* VMware vSphere
 * Docker
 
 The TEAM Engine [virtualization guide](http://opengeospatial.github.io/teamengine/virt-guide.html)
@@ -34,14 +33,14 @@ You may build the following projects first:
     
     % git clone https://github.com/opengeospatial/ets-wfs20.git
     % cd ets-wfs20
-    % git checkout tags/1.23
+    % git checkout tags/1.25
     % mvn clean install
 
 #### Build the TEAM Engine:
-    
+
     % git clone https://github.com/opengeospatial/teamengine.git
     % cd teamengine
-    % git checkout tags/4.7.1
+    % git checkout tags/4.9
     % mvn clean install -Dets-resources-version=16.06.08 -Pogc.cite
 
 ## Build the Docker image

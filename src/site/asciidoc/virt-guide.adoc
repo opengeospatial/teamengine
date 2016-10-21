@@ -109,7 +109,7 @@ for "headless" operation). To run it, start VirtualBox and perform the following
 . When the import is completed, select the newly created virtual machine and press "Start" 
 . When the boot sequence finishes, login using an SSH client to localhost:2222--or use the 
 VirtualBox terminal--with the TEAM Engine user credentials (see Note 2) 
-. To start or stop Tomcat, execute this command:  `sudo systemctl start|stop tomcat-jsvc`
+. To start or stop Tomcat, execute this command:  `sudo systemctl {start|stop} tomcat-jsvc`
 . The main TEAM Engine web app is available at \http://localhost:8888/teamengine (see Note 3) 
 
 
@@ -199,4 +199,11 @@ to a single address or an address range (in CIDR notation: 192.168.0.0/16). When
 reaches the "running" state it will appear in the console under INSTANCES/Instances. The public 
 hostname and IP address will be displayed on the "Description" tab. Connect via SSH and login 
 as 'centos' using the key specified at launch. The server may be stopped and started as needed 
-by selecting the appropriate action on the `Actions > Instance State` submenu.
+by selecting the appropriate action on the _Actions > Instance State_ submenu.
+
+Execute this command to start or stop the Tomcat web container: `sudo systemctl {start|stop} tomcat-jsvc`. 
+The main TEAM Engine web application will be available at <\http://{ip-address}:8080/teamengine/>.
+However, no in-bound HTTP traffic is permitted by default. A firewall rule must be added either 
+when launching the instance or by editing the security group that applies to the running instance.
+To do the latter, on the "Description" tab select the security group and choose the _Actions > Edit 
+inbound rules_ submenu; add a custom TCP rule for port 8080.
