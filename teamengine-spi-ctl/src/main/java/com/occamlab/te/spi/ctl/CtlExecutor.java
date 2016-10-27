@@ -53,12 +53,14 @@ public class CtlExecutor implements TestRunExecutor {
         if (null == runOpts.getSessionId()) {
             runOpts.setSessionId(UUID.randomUUID().toString());
         }
+        String suiteName;
         try {
             Index masterIndex = Generator.generateXsl(this.setupOpts);
             TEClassLoader defaultLoader = new TEClassLoader(null);
             Engine engine = new Engine(masterIndex,
                     setupOpts.getSourcesName(), defaultLoader);
             TECore ctlRunner = new TECore(engine, masterIndex, runOpts);
+           suiteName = runOpts.getSuiteName();
             ctlRunner.execute();
         } catch (Exception ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE,
@@ -67,6 +69,13 @@ public class CtlExecutor implements TestRunExecutor {
         }
         File resultsDir = new File(runOpts.getLogDir(), runOpts.getSessionId());
         File testLog = new File(resultsDir, "report_logs.xml");
+        
+        CtlEarlReporter report = new CtlEarlReporter();
+        try{
+        	report.generateEarlReport (resultsDir, testLog);
+        }  catch (IOException iox) {
+            throw new RuntimeException("Failed to serialize EARL results to " + resultsDir.getAbsolutePath(), iox);
+        }
         // NOTE: Final result should be transformed to EARL report (RDF/XML)
         // resolve xinclude directives in CTL results
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

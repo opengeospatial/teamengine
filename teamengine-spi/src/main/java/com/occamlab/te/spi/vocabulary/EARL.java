@@ -49,8 +49,18 @@ public class EARL {
             .addProperty(DCTerms.title, "Passed");
     public static final Resource Failed = model.createResource(NS_URI + "failed").addProperty(RDF.type, OutcomeValue)
             .addProperty(DCTerms.title, "Failed");
-    public static final Resource Untested = model.createResource(NS_URI + "untested")
+    public static final Resource Skipped = model.createResource(NS_URI + "skipped")
             .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Untested");
     public static final Resource Inconclusive = model.createResource(NS_URI + "cantTell")
             .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Inconclusive");
+    public static final Resource Best_Practice = model.createResource(NS_URI + "bestPractice").addProperty(RDF.type, OutcomeValue)
+            .addProperty(DCTerms.title, "BestPractice");
+    public static final Resource Warning = model.createResource(NS_URI + "warning")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Warning");
+    public static final Resource Continue = model.createResource(NS_URI + "continue")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Continue");
+    public static final Resource Not_Tested = model.createResource(NS_URI + "notTested")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "NotTested");
+    public static final Resource Inherited_Failure = model.createResource(NS_URI + "inheritedFailure")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "InheritedFailure");
 }
