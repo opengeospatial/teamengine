@@ -162,8 +162,8 @@ required to send requests using various AWS APIs. Set them as the values of the 
 shown below (which are also supported by the AWS command-line interface). The Packer template will 
 obtain the credentials from these environment variables:
 
-AWS_ACCESS_KEY_ID:: Access Key ID
-AWS_SECRET_ACCESS_KEY:: Secret Access Key
+AWS_ACCESS_KEY_ID:: _Access Key ID_ (Example: AKIAIOSFODNN7EXAMPLE)
+AWS_SECRET_ACCESS_KEY:: _Secret Access Key_ (Example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY)
 
 The source image is the official https://wiki.centos.org/Cloud/AWS[CentOS 7 HVM image], which is 
 freely available from the AWS Marketplace. However, a subscription is required in order to access it. 

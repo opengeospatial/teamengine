@@ -51,6 +51,13 @@
         "scripts/setup-teamengine.sh",
         "scripts/setup-scm.sh"
       ]
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "ETS_RESOURCES_RELEASE={{user `ets_resources_release`}}"
+      ],
+      "script": "scripts/ets-resources.sh"
     }
   ]
 }
