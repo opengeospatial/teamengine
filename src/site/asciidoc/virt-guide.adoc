@@ -92,13 +92,17 @@ this project aggregates all test suite dependencies. If not specified, the lates
 |use_oracle_jdk |"false" |Whether or not to use the Oracle JDK (which is subject to a 
 http://www.oracle.com/technetwork/java/javase/terms/license/index.html[license agreement]). 
 If not, OpenJDK will be used.
+|iso_url |"http://pubmirrors.dal.corespace.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso" |A URL referring to the base ISO installation image.
 |==========
 
-To create the virtual appliance, simply change to the directory containing the Packer template and 
-execute this command in a shell console:
+Any of the template variables can be overridden by a command-line assignment. For example, 
+if a local copy of the base installation image exists it can be referenced using a file URL. 
+To create the virtual appliance, simply change to the directory containing the Packer template 
+and execute the `packer build` command in a shell console.
 
+.Example: Build appliance from a local ISO image
 -----
-packer build teamengine-virtualbox.json
+packer build -var iso_url=file:///tmp/CentOS-7-x86_64-Minimal-1511.iso teamengine-virtualbox.json
 -----
 
 The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 

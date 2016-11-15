@@ -4,7 +4,8 @@
     "ssh_pass": "teamengine",
     "te_version": "4.9",
     "ets_resources_release": "",
-    "use_oracle_jdk": "false"
+    "use_oracle_jdk": "false",
+    "iso_url": "http://pubmirrors.dal.corespace.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso"
   },
   "builders": [{
     "name": "teamengine-virtualbox",
@@ -20,7 +21,7 @@
     "http_directory": "./files",
     "iso_checksum_type": "md5",
     "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
-    "iso_url": "http://pubmirrors.dal.corespace.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
+    "iso_url": "{{ user `iso_url` }}",
     "ssh_username": "{{user `ssh_name`}}",
     "ssh_password": "{{user `ssh_pass`}}",
     "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
@@ -31,7 +32,7 @@
       ["modifyvm", "{{.Name}}", "--natpf1", "ssh,tcp,,2222,,22"],
       ["modifyvm", "{{.Name}}", "--natpf1", "tomcat,tcp,,8888,,8080"]
     ],
-    "vm_name": "teamengine-centos72"
+    "vm_name": "teamengine-{{user `te_version`}}"
   }],
   "provisioners": [
     {
