@@ -314,18 +314,18 @@ public class EarlReporter implements IReporter {
             case ITestResult.FAILURE:
                 earlResult.addProperty(DCTerms.description, getDetailMessage(tngResult));
                 if (AssertionError.class.isInstance(tngResult.getThrowable())) {
-                    earlResult.addProperty(EARL.outcome, EARL.Failed);
+                    earlResult.addProperty(EARL.outcome, EARL.Fail);
                 } else { // an exception occurred
-                    earlResult.addProperty(EARL.outcome, EARL.Inconclusive);
+                    earlResult.addProperty(EARL.outcome, EARL.CannotTell);
                 }
                 processResultAttributes(earlResult, tngResult);
                 break;
             case ITestResult.SKIP:
                 earlResult.addProperty(DCTerms.description, getDetailMessage(tngResult));
-                earlResult.addProperty(EARL.outcome, EARL.Untested);
+                earlResult.addProperty(EARL.outcome, EARL.NotTested);
                 break;
             default:
-                earlResult.addProperty(EARL.outcome, EARL.Passed);
+                earlResult.addProperty(EARL.outcome, EARL.Pass);
                 break;
             }
             assertion.addProperty(EARL.result, earlResult);

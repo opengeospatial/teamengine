@@ -7,16 +7,21 @@ import com.occamlab.te.SetupOptions;
 import com.occamlab.te.TEClassLoader;
 import com.occamlab.te.TECore;
 import com.occamlab.te.index.Index;
+import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.spi.executors.TestRunExecutor;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,6 +33,7 @@ import org.xml.sax.SAXException;
 public class CtlExecutor implements TestRunExecutor {
 
     private final SetupOptions setupOpts;
+    private String iut = null;
 
     /**
      * Constructs a new CtlExecutor using the given set of configuration
@@ -53,12 +59,23 @@ public class CtlExecutor implements TestRunExecutor {
         if (null == runOpts.getSessionId()) {
             runOpts.setSessionId(UUID.randomUUID().toString());
         }
+        String suiteName = null;
         try {
             Index masterIndex = Generator.generateXsl(this.setupOpts);
+            SuiteEntry se = null;
+            if (suiteName == null) {
+              Iterator<String> it = masterIndex.getSuiteKeys().iterator();
+              if (!it.hasNext()) {
+                throw new Exception("Error: No suites in sources.");
+              }
+              se = masterIndex.getSuite(it.next());
+            }
+            suiteName = se.getTitle();
             TEClassLoader defaultLoader = new TEClassLoader(null);
             Engine engine = new Engine(masterIndex,
                     setupOpts.getSourcesName(), defaultLoader);
             TECore ctlRunner = new TECore(engine, masterIndex, runOpts);
+
             ctlRunner.execute();
         } catch (Exception ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE,
@@ -67,6 +84,13 @@ public class CtlExecutor implements TestRunExecutor {
         }
         File resultsDir = new File(runOpts.getLogDir(), runOpts.getSessionId());
         File testLog = new File(resultsDir, "report_logs.xml");
+        
+        CtlEarlReporter report = new CtlEarlReporter();
+        try{
+        	report.generateEarlReport (resultsDir, testLog, suiteName, this.iut);
+        }  catch (IOException iox) {
+            throw new RuntimeException("Failed to serialize EARL results to " + resultsDir.getAbsolutePath(), iox);
+        }
         // NOTE: Final result should be transformed to EARL report (RDF/XML)
         // resolve xinclude directives in CTL results
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -106,6 +130,10 @@ public class CtlExecutor implements TestRunExecutor {
                 Element entry = (Element) entries.item(i);
                 String kvp = String.format("%s=%s", entry.getAttribute("key"), entry.getTextContent().trim());
                 runOpts.addParam(kvp);
+                
+                if(entry.getAttribute("key").contains("iut") || entry.getAttribute("key").contains("capabilities-url")){
+                	this.iut = entry.getTextContent().trim();
+                }
             }
         }
         return runOpts;

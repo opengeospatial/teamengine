@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * Additional vocabulary terms that are used to describe a test run.
@@ -18,6 +19,11 @@ public class CITE {
     public static final Property testsFailed = model.createProperty(NS_URI + "testsFailed");
     public static final Property testsPassed = model.createProperty(NS_URI + "testsPassed");
     public static final Property testsSkipped = model.createProperty(NS_URI + "testsSkipped");
+    public static final Property testsContinue = model.createProperty(NS_URI + "testsContinue");
+    public static final Property testsBestPractice = model.createProperty(NS_URI + "testsBestPractice");
+    public static final Property testsNotTested = model.createProperty(NS_URI + "testsNotTested");
+    public static final Property testsWarning = model.createProperty(NS_URI + "testsWarning");
+    public static final Property testsInheritedFailure = model.createProperty(NS_URI + "testsInheritedFailure");
     /** [cite:TestRun] requirements [earl:TestRequirement] 1..* (rdf:Seq) */
     public static final Property requirements = model.createProperty(NS_URI + "requirements");
     /** [cite:TestRun] inputs [rdf:Description] 1..* (rdf:Bag) */
@@ -26,4 +32,15 @@ public class CITE {
     public static final Property message = model.createProperty(NS_URI + "message");
     /** [earl:Assertion] arguments [rdf:Description] 1..* (rdf:Seq) */
     public static final Property arguments = model.createProperty(NS_URI + "arguments");
+    // CTL test verdicts
+    public static final Resource Best_Practice = model.createResource(NS_URI + "bestPractice").addProperty(RDF.type,
+            EARL.OutcomeValue);
+    public static final Resource Warning = model.createResource(NS_URI + "warning").addProperty(RDF.type,
+            EARL.OutcomeValue);
+    public static final Resource Continue = model.createResource(NS_URI + "continue").addProperty(RDF.type,
+            EARL.OutcomeValue);
+    public static final Resource Not_Tested = model.createResource(NS_URI + "notTested").addProperty(RDF.type,
+            EARL.OutcomeValue);
+    public static final Resource Inherited_Failure = model.createResource(NS_URI + "inheritedFailure")
+            .addProperty(RDF.type, EARL.OutcomeValue);
 }

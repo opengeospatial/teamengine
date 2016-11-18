@@ -43,14 +43,16 @@ public class EARL {
     public static final Property pointer = model.createProperty(NS_URI + "pointer");
     public static final Property info = model.createProperty(NS_URI + "info");
     // EARL instances
-    public static final Resource AutomaticMode = model.createResource(NS_URI + "automatic").addProperty(RDF.type, TestMode)
-            .addProperty(DCTerms.title, "Automatic");
-    public static final Resource Passed = model.createResource(NS_URI + "passed").addProperty(RDF.type, OutcomeValue)
-            .addProperty(DCTerms.title, "Passed");
-    public static final Resource Failed = model.createResource(NS_URI + "failed").addProperty(RDF.type, OutcomeValue)
-            .addProperty(DCTerms.title, "Failed");
-    public static final Resource Untested = model.createResource(NS_URI + "untested")
-            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Untested");
-    public static final Resource Inconclusive = model.createResource(NS_URI + "cantTell")
-            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Inconclusive");
+    public static final Resource AutomaticMode = model.createResource(NS_URI + "automatic")
+            .addProperty(RDF.type, TestMode).addProperty(DCTerms.title, "Automatic");
+    public static final Resource Pass = model.createResource(NS_URI + "Pass").addProperty(RDF.type, OutcomeValue)
+            .addProperty(DCTerms.title, "Pass");
+    public static final Resource Fail = model.createResource(NS_URI + "Fail").addProperty(RDF.type, OutcomeValue)
+            .addProperty(DCTerms.title, "Fail");
+    public static final Resource CannotTell = model.createResource(NS_URI + "CannotTell")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Undetermined");
+    public static final Resource NotTested = model.createResource(NS_URI + "NotTested")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Not tested");
+    public static final Resource NotApplicable = model.createResource(NS_URI + "NotApplicable")
+            .addProperty(RDF.type, OutcomeValue).addProperty(DCTerms.title, "Not applicable");
 }
