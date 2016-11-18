@@ -59,7 +59,7 @@ public class CtlEarlReporter {
 
     }
 
-    public void generateEarlReport(File outputDirectory, File reportFile) throws UnsupportedEncodingException {
+    public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, String iut) throws UnsupportedEncodingException {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -77,9 +77,7 @@ public class CtlEarlReporter {
 
         // Here comes the root node
         Element root = document.getDocumentElement();
-        System.out.println(root.getNodeName());
-        String suiteName = "OGC-SampleTest";
-        Model model = initializeModel(suiteName);
+        Model model = initializeModel(suiteName, iut);
         this.reqs = model.createSeq();
 
         NodeList executionList = document.getElementsByTagName("execution");
@@ -209,7 +207,7 @@ public class CtlEarlReporter {
         return attr;
     }
 
-    Model initializeModel(String suiteName) {
+    Model initializeModel(String suiteName, String iut) {
         Model model = ModelFactory.createDefaultModel();
         Map<String, String> nsBindings = new HashMap<>();
         nsBindings.put("earl", EARL.NS_URI);
@@ -237,7 +235,7 @@ public class CtlEarlReporter {
          * NullPointerException("Unable to find URI reference for IUT in test run parameters."
          * ); }
          */
-        String iut = "inut=41";
+       
         this.testSubject = model.createResource(iut, EARL.TestSubject);
         return model;
     }
