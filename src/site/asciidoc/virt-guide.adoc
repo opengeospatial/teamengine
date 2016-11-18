@@ -2,16 +2,17 @@
 
 == Introduction
 
-This guide describes how to generate a virtual machine (VM) or container image that provides 
-a complete TEAM Engine installation along with the latest OGC conformance test suites. The 
-required software components are shown in the following figure.
+This guide describes how to use https://www.packer.io/[Packer] to create a virtual machine (VM) 
+or container image that includes a complete TEAM Engine installation along with the latest OGC 
+conformance test suites. The generated image will contain the software components shown in the 
+following figure (<<teamengine-vm>>).
 
-.Software components 
-image::./images/teamengine-vm.png[software components]
+[[teamengine-vm]]
+.Software installed in the image 
+image::./images/teamengine-vm.png[software components,align=center]
 
-https://www.packer.io/[Packer] is an open-source infrastructure definition tool used 
-to create images for a variety of dynamic infrastructure platforms. It includes builders 
-for many virtual environments, such as:
+Packer is an open-source infrastructure definition tool used to create images for a variety of 
+dynamic infrastructure platforms. It includes builders for many virtual environments, such as:
 
 * VirtualBox
 * Amazon EC2
@@ -19,7 +20,7 @@ for many virtual environments, such as:
 * Google Compute Engine
 * Docker (container)
 
-.Virtual machines vs. containers
+.Virtual machine vs. container
 **********
 A container is not a full-blown virtual machine--it doesn't require a hypervisor and runs in 
 an isolated environment provided by a single host operating system. Since the OS kernel is 
@@ -31,14 +32,17 @@ application along with its dependencies.
 The build process is driven by a template: a configuration file (in JSON format) that defines 
 how a machine image is created and automatically provisioned.
 
-To install Packer, simply download the appropriate https://www.packer.io/downloads.html[binary package] 
-for your environment and unpack the archive in a suitable directory; then set the following user 
-environment variables:
+To install Packer, download the appropriate https://www.packer.io/downloads.html[binary package] 
+for your environment. Packages are available for all major operating systems (Windows, macOS, and Linux). 
+Unpack the archive in a suitable directory, and then set the following user environment variables:
 
-PACKER_HOME:: The directory where packer is installed.
-PACKER_CACHE_DIR:: The location of the packer cache (for downloaded resources).
+PACKER_HOME:: The directory where Packer is installed (Example: /usr/local/bin)
+PACKER_CACHE_DIR:: The location of the Packer cache; this is an optional setting (Example: /tmp)
 
-Update the PATH environment variable to include PACKER_HOME.
+Update the PATH environment variable to include PACKER_HOME. On Linux or macOS, add 
+`export PATH=$PACKER_HOME:$PATH` to the shell environment. To do this on Windows, press 
+*Win* > *Run...* and enter `sysdm.cpl`. On the _Advanced_ tab select "Environment Variables". 
+Edit the user-level PATH variable by appending `;%PACKER_HOME%` to the end (don't omit the semicolon).
 
 
 == VirtualBox
@@ -49,8 +53,8 @@ https://www.virtualbox.org/[VirtualBox] is a freely available virtualization pro
 that runs on Windows, Linux, and Mac hosts. It supports a wide variety of guest operating 
 systems and is very useful in creating development or test environments. The Packer 
 template will create a complete, ready-to-run TEAM Engine installation that contains
-the desired set of OGC test suites. The output is a "virtual appliance" (in the 
-standard http://www.dmtf.org/standards/ovf[OVF format]) that can be imported into VirtualBox.
+the desired set of OGC test suites. The output is a "virtual appliance" (in the standard 
+http://www.dmtf.org/standards/ovf[OVF format]) that can be imported into VirtualBox.
 
 === Install VirtualBox
 
@@ -58,23 +62,28 @@ To install VirtualBox, download a suitable https://www.virtualbox.org/wiki/Downl
 your host environment; see the user manual for https://www.virtualbox.org/manual/ch02.html[installation instructions].
 When installation is complete, set the following user environment variable:
 
-VBOX_USER_HOME:: The location where virtual machines will be created.
+VBOX_USER_HOME:: The location where virtual machines will be created (Example: /srv/virtualbox)
+
+By default virtual machines will be created in a subdirectory below the user home directory. The 
+environment variable `VBOX_USER_HOME` overrides the default configuration to specify an alternative 
+location.
+
 
 === Create and import the image
 
 The Packer template makes use of several supporting shell scripts and files (see Note 1). In the 
 'files' subdirectory is a CSV file (ets-releases.csv) that contains a list of OGC test suite releases; 
 each line has two fields: a Git repository URL, and a tag name indicating the release version. The 
-test suites listed in this file will be added to the TEAM-engine instance. If a test suite is not 
-wanted, just comment it out by inserting a number sign (or hash character, #) at the beginning of 
-the appropriate line.
+test suites listed in this file will be added to the TEAM Engine instance. To omit a particular 
+test suite, just comment it out by inserting a number sign (or hash character, #) at the beginning 
+of the appropriate line.
 
 [icons=None, caption="Note 1"]
 [NOTE]
 ==========
-The template file (teamengine-virtualbox.json) can be found in the src/main/config/packer/ directory in the 
-TEAM Engine source tree, or wherever the Packer assembly was unpacked. To create the packer assembly, run 
-this Maven command at the root of the TEAM Engine source tree: `mvn assembly:single`.
+The template file (teamengine-virtualbox.json) can be found in the src/main/config/packer/ directory 
+in the TEAM Engine source tree, or wherever the Packer assembly was unpacked. To create the packer 
+assembly, run this Maven command at the root of the TEAM Engine source tree: `mvn assembly:single`.
 ==========
 
 The template defines several user variables that can be overridden from the command line or a file; 
@@ -95,8 +104,9 @@ If not, OpenJDK will be used.
 |iso_url |"http://pubmirrors.dal.corespace.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso" |A URL referring to the base ISO installation image.
 |==========
 
-Any of the template variables can be overridden by a command-line assignment. For example, 
-if a local copy of the base installation image exists it can be referenced using a file URL. 
+Any of the template variables can be overridden by a command-line assignment. For example, if a 
+local copy of the base installation image exists it can be referenced using a file URL (the 
+final image will be created more quickly if the base image doesn't have to be downloaded). 
 To create the virtual appliance, simply change to the directory containing the Packer template 
 and execute the `packer build` command in a shell console.
 
@@ -107,7 +117,8 @@ packer build -var iso_url=file:///tmp/CentOS-7-x86_64-Minimal-1511.iso teamengin
 
 The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 
 system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal distribution intended 
-for "headless" operation). To run it, start VirtualBox and perform the following steps:
+for "headless" operation without a GUI). To run it, start VirtualBox and perform the following 
+steps:
 
 . Choose *File > Import Appliance...* and select the *.ovf file 
 . When the import is completed, select the newly created virtual machine and press "Start" 
@@ -205,7 +216,10 @@ hostname and IP address will be displayed on the "Description" tab. Connect via 
 as 'centos' using the key specified at launch. The server may be stopped and started as needed 
 by selecting the appropriate action on the _Actions > Instance State_ submenu.
 
-Execute this command to start or stop the Tomcat web container: `sudo systemctl {start|stop} tomcat-jsvc`. 
+Execute this command to start or stop the Tomcat web container: 
+
+  sudo systemctl {start|stop} tomcat-jsvc
+
 The main TEAM Engine web application will be available at <\http://{ip-address}:8080/teamengine/>.
 However, no in-bound HTTP traffic is permitted by default. A firewall rule must be added either 
 when launching the instance or by editing the security group that applies to the running instance.

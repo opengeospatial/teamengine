@@ -17,6 +17,7 @@
     <item name="Conformance Testing Using TestNG, Part 1: Essentials" ref="testng-essentials.md"/>
     <item name="Conformance Testing Using TestNG, Part 2: Cookbook" ref="testng-cookbook.md"/>
     <item name="Conformance Testing Using CTL Scripts" ref="ctl.md"/>
+    <item name="Virtualization Guide" ref="virt-guide.adoc"/>
   </toc>
 
   <cover>
