@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>4.10-SNAPSHOT</version>
+    <version>4.10-RC1</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-virtualization</artifactId>
