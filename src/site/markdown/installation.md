@@ -2,14 +2,15 @@
 
 ## Quick install
 
-The `teamengine-virtualization` module enables the automatic creation of a fully provisioned server image 
-that can be run on a virtualization platform. Currently only VirtualBox is supported, but support for several 
-other dynamic infrastructure platforms will be added in the future. See the [Virtualization Guide](./virt-guide.html) 
-for instructions.
+The `teamengine-virtualization` module enables the automatic creation of a fully provisioned server 
+image that can be deployed and run on a dynamic infrastructure platform such as [Amazon EC2](https://aws.amazon.com/ec2/) 
+and [VirtualBox](https://www.virtualbox.org/). See the [Virtualization Guide](./virt-guide.html) for 
+instructions.
 
-The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-builder) provides another way 
-to build TEAM Engine and OGC test suites. Shell scripts for Windows and Unix-like systems are available. 
-Detailed instructions are provided in the tutorial.
+The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-builder) provides 
+another way to build TEAM Engine and OGC test suites on a physical host machine. Shell scripts 
+for Windows and Unix-like systems are available. Detailed instructions are provided in the tutorial.
+
 
 ## Download and build from source
 
@@ -17,14 +18,14 @@ Detailed instructions are provided in the tutorial.
 
 - **Java 8**: Download the Java JDK (Java Development Kit) 8, from <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>.
 - **Apache Maven**: Download the latest release from <https://maven.apache.org/download.cgi>.
-- **Git**: Download the Git VCS (version 1.8 or newer) from <https://git-scm.com/download/>
-- **Apache Tomcat 7**: It has been tested with Tomcat 7.0; the latest release is available from <http://tomcat.apache.org/download-70.cgi>.
+- **Git**: Download the Git version control system (version 1.8 or newer) from <https://git-scm.com/download/>
+- **Apache Tomcat 7**: TEAM Engine has been tested with Tomcat 7.0; the latest release is available 
+from <http://tomcat.apache.org/download-70.cgi>.
 
-### Getting the Source Code 
+### Get the source code 
 
 The source code is available from [GitHub](https://github.com/opengeospatial/teamengine). 
-Use a Git client to clone the repository and checkout a branch or a tagged release 
-as indicated below:
+Use Git to clone the repository and checkout a branch or a tagged release as indicated below:
 
     git clone https://github.com/opengeospatial/teamengine.git
     git checkout ${project.version}
@@ -37,7 +38,8 @@ code base, which currently consists of the following modules:
   and schemas
 - **teamengine-spi**: Provides an extensibility framework and a REST-like
   API for test execution
-- **teamengine-realm**: A custom Tomcat user realm
+- **teamengine-spi-ctl**: Enables the execution of legacy CTL test suites using a RESTful API.
+- **teamengine-realm**: A custom Tomcat user realm for file-based authentication
 - **teamengine-web**: A web application for executing test suites and
   browsing test results
 - **teamengine-console**: A console application that provides a command-line interface 
@@ -46,10 +48,10 @@ code base, which currently consists of the following modules:
   images using [Packer](https://www.packer.io/).
 
   
-### Building with Maven
+### Build with Maven
 
 Simply run `mvn package` in the root project directory to generate all
-build artifacts, or run `mvn install` to install them into the local
+build artifacts, or run `mvn install` to also install them into the local
 Maven repository. The main build artifacts are listed below.
 
 - **teamengine-console-\${project.version}-bin.[zip|tar.gz]**: Archive containing the console application (command-line usage)
@@ -59,91 +61,37 @@ Maven repository. The main build artifacts are listed below.
 - **teamengine-common-libs.[zip|tar.gz]**: Archive containing common runtime dependencies (e.g. JAX-RS 1.1,
     Apache Derby)
 
-Alternatively, build the teamengine-web module and activate the
-`ogc.cite` profile when doing so; this will automatically add all
-supporting libraries to the WEB-INF/lib directory in the WAR file.
-Specify the desired version of the ets-resources project in the
-user-specific Maven settings file located at
-`${user.home}/.m2/settings.xml`. See the [ets-resources project at
-GitHub](https://github.com/opengeospatial/ets-resources) to determine
-the latest version number (this is denoted by YY.MM.DD in the listing
-below).
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!-- ${user.home}/.m2/settings.xml -->
-    <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" 
-      <!-- other elements omitted -->
-      <profiles>
-        <profile>
-          <id>ogc.cite</id>
-          <!-- Activate profile by default or using the -P option
-          <activation>
-            <activeByDefault>true</activeByDefault>
-          </activation>
-          -->
-          <properties>
-            <ets-resources-version>YY.MM.DD</ets-resources-version>
-          </properties>
-        </profile>
-      </profiles>
-    </settings>
-
-A simpler alternative is to activate the profile and specify the
-property using only command-line options:
-
-    mvn package -P ogc.cite -Dets-resources-version=YY.MM.DD
-
-The site documentation can be generated by simply executing the 'mvn
-site' phase against the top-level POM. An aggregrate PDF document is
-also created and placed in the target/pdf directory.
+The site documentation can be generated by simply executing the 'mvn site' phase 
+against the top-level POM. An aggregrate PDF document is also created and placed 
+in the target/pdf directory.
 
 
-### Setting up an instance directory (TE_BASE)
+### Set up an instance directory (TE_BASE)
 
-The value of the `TE_BASE` system property or environment variable
-specifies the location of the instance directory that contains several
-essential sub-directories. Create the TE_BASE directory (e.g.
-/srv/teamengine) and unpack the contents of the
-teamengine-console-\${project.version}-base archive into this location;
-make sure that users (including the Tomcat user) have write access. The
-structure of the TE\_BASE directory is shown below.
+The value of the `TE_BASE` system property or environment variable specifies the 
+location of the instance directory that contains several essential sub-directories. 
+Create the TE_BASE directory (e.g. at /srv/teamengine) and unpack the contents of 
+the teamengine-console-\${project.version}-base archive into this location; make 
+sure that users (including the Tomcat user) have write access. The structure of 
+the TE\_BASE directory is shown below.
 
     TE_BASE
       |-- config.xml    # main configuration file
-      |-- resources/    # shared test suite resources
+      |-- resources/    # test suite resources
           |-- site      # site-specific HTML (welcome, title, etc.)
-          |-- lib       # libraries required by some test (e.g. TestNG tests)
+          |-- lib       # Java-based test suites and supporting libraries
       |-- scripts/      # CTL test scripts
       |-- work/         # teamengine work directory
       +-- users/
-         |-- {user1}/   # user account details and test run results
+         |-- {user1}/   # user account information and test run results
          |-- {user2}/
          +-- ...
 
-CTL test scripts are placed in the TE_BASE/scripts directory. As a
-convenience, the shell script `setup-tebase` is provided as part of the
-[ets-resources](https://github.com/opengeospatial/ets-resources)
-project; it may be run to initialize the instance directory with a set
-of test suites specified in a CSV file. Note that in order to run the
-script Maven and Git must be installed and available on the system path.
+CTL test scripts must be placed in the TE_BASE/scripts directory. Java-based test 
+suites along with their supporting libraries are placed in the TE_BASE/resources/lib 
+directory.
 
-The location of a CSV file is passed as the first argument to the
-script. Each line in the file should contain two fields: a Git
-repository URL, and a tag name.
-
-    https://github.com/opengeospatial/ets-gml32.git,1.21
-    https://github.com/opengeospatial/ets-wfs20.git,1.19
-    https://github.com/opengeospatial/ets-wfs11.git,1.24
-    https://github.com/opengeospatial/ets-cat30.git,0.9
-    ...
-
-Running the script will populate the TE_BASE/scripts directory with the
-listed test suites, add all required dependencies to
-TE_BASE/resources/lib (for command line usage). See the [project
-README](https://github.com/opengeospatial/ets-resources) for details.
-
-
-### Deploying the web application
+### Deploy the web application
 
 #### System requirements
 
@@ -156,10 +104,10 @@ README](https://github.com/opengeospatial/ets-resources) for details.
 
 Apache Tomcat 7.0 is a supported servlet container. It is **strongly**
 recommended that a dedicated Tomcat instance be created to host the
-teamengine application. That is, keep the instance-specific
+teamengine application. That is, keep the location of the instance-specific
 data--referred to as `CATALINA_BASE` in the Tomcat documentation--separate 
-from the Tomcat software installation (CATALINA_HOME). Create it as 
-outlined below for the applicable operating system.
+from the Tomcat software installation (CATALINA_HOME). Create it as outlined 
+below for your operating system.
 
 To create a CATALINA_BASE directory in Windows:
 
@@ -184,52 +132,45 @@ CATALINA_BASE/lib directory. Deploy the `teamengine.war` component by
 either copying it into the CATALINA_BASE/webapps directory or using the
 Tomcat *Manager* application. Start the Tomcat instance.
 
-The URIs listed below provide starting points for discovering and
-executing test suites. Modify the path if the name of the WAR file (and
-hence the context path) has been changed from the default value
-"teamengine".
+The URIs listed below provide starting points for discovering and executing 
+test suites. Modify the path if the name of the WAR file (and hence the context 
+path) has been changed from the default value: "teamengine".
 
-* `/teamengine`: Home page for selecting and running CTL test suites
-* `/teamengine/rest/suites`: Presents a listing of available (TestNG) test suites, 
-with links to test suite documentation
+* `/teamengine`: Home page for selecting and running test suites using the web interface
+* `/teamengine/rest/suites`: Presents a listing of available test suites that expose 
+a RESTful API, with links to test suite documentation
 
 
-### Installations of tests in TEAM ENGINE
+### Install test suites in TEAM Engine
 
-There are various examples of tests that can be installed in TEAM Engine. For example.
+There are various examples of an executable test suite (ETS) that can be installed in 
+TEAM Engine. For example.
 
 - [GML 3.2.1](https://github.com/opengeospatial/ets-gml32)
 - [WMS 1.3](https://github.com/opengeospatial/ets-wms13)
 
-Even though the first one uses TestNG and the second uses CTL, they both follow maven best practice conventions and are build and treated the same way when installing them in TEAM Engine. To download and install a test do the following steps:
+Even though the GML suite is a Java-based implementation that uses TestNG and the WMS 1.3 
+suite uses OGC CTL scripts, they both follow Maven conventions; the suites are built and 
+deployed in a similar manner. To download and install a test suite do the following steps:
 
-1. checkout the test repository: e.g. `git clone  https://github.com/opengeospatial/ets-gml32.git`
-2. go inside the project" `cd ets-gml32`
-3. checkout a specific version. e.g. for 1.23 `git checkout 1.123`
-4. build using maven `mvn clean install`
-5. check that the build is succesful. You should see a **BUILD SUCCESS** text in the terminal
-6. go to the target folder `cd target`
-7. unzip the archive file that ends with *ctl.zip* to $TE_BASE/scripts
-8. unzip the archive file that ends with *deps.zip* to $TE_BASE/resources/lib
+1. Checkout the test suite: e.g. `git clone  https://github.com/opengeospatial/ets-gml32.git`
+2. Change to the project directory `cd ets-gml32`
+3. Checkout a specific release version (run the `git tag` command to list these) e.g. for GML, `git checkout 1.25`
+4. Build the test suite: `mvn clean install`
+5. Check that the build is successful--you should see **BUILD SUCCESS** displayed in the terminal output
+6. Change to the target folder `cd target`
+7. Unpack the archive file that ends with *ctl.zip* into $TE_BASE/scripts
+8. Unpack the archive file that ends with *deps.zip* into $TE_BASE/resources/lib
 
 
-### Customizing the welcome page
+### Customize the welcome page
 
-Several elements of the welcome page may be changed if desired: the logo
-in the header, the main text, and the content in the footer. The files
-located in the TE_BASE/resources/site directory can be modified to
-provide site-specific content:
+Several elements of the welcome page may be customized if desired: the logo in the header, 
+the main text, and the content in the footer. The files located in the TE_BASE/resources/site 
+directory can be modified to provide site-specific content:
 
 
 - **site/logo.png**: The logo that appears in the header (at top left). The size of the default image is 127x58 px.
 - **site/welcome.txt**: The main text.
 - **site/footer.txt**: Footer content.
 - **site/title.html**: Title of the web application
-
-
-An alias path must be added to the [web application context](https://tomcat.apache.org/tomcat-7.0-doc/config/context.html)
-in order to make the site-specific content visible. Append the `/site` alias 
-to the aliases attribute value in the META-INF/context.xml file as shown below. 
-Reload the application (or restart Tomcat) to enable the new alias.
-
-    <Context aliases="...,/site=${TE_BASE}/resources/site">
