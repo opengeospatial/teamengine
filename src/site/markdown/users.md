@@ -153,46 +153,25 @@ to create a new user account. After logging in, previous test sessions
 are displayed. Select "Create new session" and choose a test suite to
 execute.
 
-The TE\_BASE/config.xml file is a "watched" resource--the web
-application will be reloaded whenever this file is modified. This means
-that test suites can be added or updated and become available for use
-without having to restart the Tomcat instance. Simply put the CTL
-scripts in TE\_BASE/scripts and insert or update an entry in the main
-configuration file. Supporting libraries, if any, must be placed in the
-WEB-INF/lib directory.
-
-As a convenience, the `ets-resources` project may be [cloned from
-GitHub](https://github.com/opengeospatial/ets-resources) and built (run
-'mvn package') to generate an archive containing all supporting
-libraries for the latest OGC test suites. The contents of the archive
-are described below.
-
-name | description
---- | --- 
-config.xml | TEAM-engine instance configuration file (TE\_BASE/config.xml).
-ctl-scripts-release.csv | A CSV file that contains a list of test suite releases. Each line has two fields: Git repository URL, tag name.
-lib/*.jar | A directory containing the required Java libraries that must be available on the class path; that is, WEB-INF/lib for the web application or TE\_BASE/resources/lib for command-line execution.
-bin/ | A directory containing shell scripts for Windows- and UNIX-based (Linux/Mac) hosts. The \`setup-tebase\` script will set up a TEAM-engine instance (TE\_BASE) with the test suites identified in a referenced CSV file.
-
 
 ### Using the REST API
 
 A simple REST API (based on [JAX-RS 1.1](http://jcp.org/en/jsr/detail?id=311)) 
-enables programmatic execution of some test suites; currently only TestNG-based 
-suites can be run in this manner. It exposes the following end points:
+enables programmatic execution of many test suites; it is comprised of the following 
+end points:
 
-| URI (relative to base) | Resource | Representation |
+| URI (relative to base) | Resource | Response media type |
 |--- | --- | --- |
 | /rest/suites | Test suite collection |  application/xhtml+xml |
-| /rest/suites/{etsCode}/{etsVersion} | Test suite documentation | text/html |
-| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | application/xml |
+| /rest/suites/{etsCode}/{etsVersion} | Test suite documentation | application/xhtml+xml |
+| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | application/xml, application/rdf+xml |
 
 In the request URIs the `{etsCode}` and `{etsVersion}` parameters denote the
 test suite code and version, respectively, for a particular test suite.
 
 ![warning](./images/warn-16px.png) **Warning:** When using the REST API, if any
 test run argument includes a URI value that contains an ampersand ('&')
-character in a query component, it must be percent-encoded as %26 since
+character in the query component, it must be percent-encoded as %26 since
 it is a "data octet" in this context (see [RFC 3986, sec.
 2.1](http://tools.ietf.org/html/rfc3986#section-2.1)).
 

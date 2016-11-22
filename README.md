@@ -2,24 +2,23 @@
 
 ### Overview 
 
-TEAM Engine (Test, Evaluation, And Measurement Engine) is a Java-based test 
-harness for testing web services and other resources. It executes test scripts 
-written in the OGC Compliance Test Language (CTL), TestNG, and possibly other 
-JVM-friendly languages. It is lightweight and easy to run from the command-line 
-or as a web application. 
+TEAM Engine (Test, Evaluation, And Measurement Engine) is a Java-based application for 
+testing web services and other information resources. It executes test suites developed 
+using the popular TestNG framework, OGC Compliance Test Language (CTL) scripts, and possibly 
+other JVM-friendly languages. It is lightweight and easy to run from the command-line or 
+as a web application. 
 
-TEAM Engine can be used to test any type of service or information resource. 
-It is the official test harness used by the Open Geospatial Consortium's 
-(OGC) [compliance program](http://cite.opengeospatial.org/). Visit the 
-[project documentation website](http://opengeospatial.github.io/teamengine/) 
+TEAM Engine can be used to test almost any type of service or information resource. It is 
+the official test harness used by the Open Geospatial Consortium's (OGC) [compliance program](http://cite.opengeospatial.org/). 
+Visit the [project documentation website](http://opengeospatial.github.io/teamengine/) 
 for more information.
 
-An installation maintained by the OGC is available at http://cite.opengeospatial.org/teamengine/.
+An installation is maintained by the OGC at http://cite.opengeospatial.org/teamengine/.
 
 ### How to build
 
-[Apache Maven](http://maven.apache.org/) 3.2.5 or higher is required to build teamengine. The latest 
-release is recommended.
+[Apache Maven](http://maven.apache.org/) 3.2.5 or higher is required to build TEAM Engine. 
+The latest release is recommended.
 
 * Clone the repository:
 
@@ -33,7 +32,9 @@ release is recommended.
 
    `mvn install`
 
+   
 ### More information 
+
 The following sources include documentation about how to install the tests, run TEAM Engine via the 
 command line or as a web application in a Java servlet container.
 
