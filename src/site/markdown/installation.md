@@ -8,8 +8,9 @@ and [VirtualBox](https://www.virtualbox.org/). See the [Virtualization Guide](./
 instructions.
 
 The [TEAM Engine Builder project](https://github.com/opengeospatial/teamengine-builder) provides 
-another way to build TEAM Engine and OGC test suites on a physical host machine. Shell scripts 
-for Windows and Unix-like systems are available. Detailed instructions are provided in the tutorial.
+another way to build TEAM Engine and selected OGC test suites on a physical or virtual machine. Shell 
+scripts for Windows and Unix-like systems are available. Detailed instructions are provided in the 
+tutorial.
 
 
 ## Download and build from source
