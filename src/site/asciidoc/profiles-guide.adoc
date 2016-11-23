@@ -1,4 +1,4 @@
-= Profile Testing Guide
+= Developing Tests for Application Profiles
 
 == Introduction
 

@@ -43,7 +43,7 @@
       <item href="testng-essentials.html" name="Using TestNG, Part 1: Essentials" />
       <item href="testng-cookbook.html" name="Using TestNG, Part 2: Cookbook" />
       <item href="ctl.html" name="Using CTL Scripts" />
-      <item href="profiles-guide.html" name="Profile Testing" />
+      <item href="profiles-guide.html" name="Application Profiles" />
     </menu>
     <menu ref="reports" />
     <menu name="About">
