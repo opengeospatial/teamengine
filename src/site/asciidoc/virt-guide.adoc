@@ -104,8 +104,8 @@ along with their default values.
 |==========
 |Variable |Default value |Description 
 
-|te_version |"4.9" |The desired version of the TEAM Engine web application http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22teamengine-web%22[available at Maven Central].
-|ets_resources_release |"" |The desired https://github.com/opengeospatial/ets-resources/releases[ets-resources release version];
+|te_version |"4.10" |The desired version of the TEAM Engine web application http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22teamengine-web%22[available at Maven Central].
+|ets_resources_release |"16.11.24" |The desired https://github.com/opengeospatial/ets-resources/releases[ets-resources release version];
 this project aggregates all test suite dependencies. If not specified, the latest snapshot (tip of the master branch) will be used.
 |use_oracle_jdk |"false" |Whether or not to use the Oracle JDK (which is subject to a 
 http://www.oracle.com/technetwork/java/javase/terms/license/index.html[license agreement]). 
@@ -124,10 +124,10 @@ and execute the `packer build` command in a shell console.
 packer build -var iso_url=file:///tmp/CentOS-7-x86_64-Minimal-1511.iso teamengine-virtualbox.json
 -----
 
-The appliance will be created in the output-centos72-virtualbox subdirectory. The base operating 
-system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal distribution intended 
-for "headless" operation without a GUI). To run it, start VirtualBox and perform the following 
-steps:
+The appliance will be created in the "output-teamengine-virtualbox" subdirectory. The base 
+operating system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal 
+distribution is intended for headless operation without a GUI). To run it, start VirtualBox 
+and perform the following steps:
 
 . Choose *File > Import Appliance...* and select the *.ovf file 
 . When the import is completed, select the newly created virtual machine and press "Start" 
