@@ -1,7 +1,7 @@
 {
   "variables": {
     "te_version": "4.10",
-    "ets_resources_release": "",
+    "ets_resources_release": "16.11.24",
     "use_oracle_jdk": "false",
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"

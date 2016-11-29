@@ -3,7 +3,7 @@
     "ssh_name": "teamengine",
     "ssh_pass": "teamengine",
     "te_version": "4.10",
-    "ets_resources_release": "",
+    "ets_resources_release": "16.11.24",
     "use_oracle_jdk": "false",
     "iso_url": "http://pubmirrors.dal.corespace.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso"
   },

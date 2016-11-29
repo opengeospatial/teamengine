@@ -30,14 +30,23 @@ application along with its dependencies.
 **********
 
 The build process is driven by a template: a configuration file (in JSON format) that defines 
-how a machine image is created and automatically provisioned.
+how a machine image is created and provisioned. Several Packer templates have been developed for 
+various virtualization environments; these are available in the teamengine-virtualization module. 
+An archive file containing the source code for the https://github.com/opengeospatial/teamengine/releases/latest[latest release] 
+can be downloaded from GitHub (or try the https://github.com/opengeospatial/teamengine/archive/master.zip[current snapshot]).
+Unpack the archive in a convenient location. The Packer templates can be found in this 
+subdirectory: `teamengine-virtualization/src/main/config/packer/`.
+
+
+== Packer 
 
 To install Packer, download the appropriate https://www.packer.io/downloads.html[binary package] 
-for your environment. Packages are available for all major operating systems (Windows, macOS, and Linux). 
-Unpack the archive in a suitable directory, and then set the following user environment variables:
+for your host environment. Packages are available for all major operating systems (Windows, macOS, 
+and Linux). Unpack the archive in a suitable directory, and then set the following user environment 
+variables:
 
 PACKER_HOME:: The directory where Packer is installed (Example: /usr/local/bin)
-PACKER_CACHE_DIR:: The location of the Packer cache; this is an optional setting (Example: /tmp)
+PACKER_CACHE_DIR:: (Optional) The location of the Packer cache (Example: /tmp)
 
 Update the PATH environment variable to include PACKER_HOME. On Linux or macOS, add 
 `export PATH=$PACKER_HOME:$PATH` to the shell environment. To do this on Windows, press 
