@@ -126,7 +126,7 @@ packer build -var iso_url=file:///tmp/CentOS-7-x86_64-Minimal-1511.iso teamengin
 
 The appliance will be created in the "output-teamengine-virtualbox" subdirectory. The base 
 operating system is https://www.centos.org/[CentOS] 7.2 (more specifically, the minimal 
-distribution is intended for headless operation without a GUI). To run it, start VirtualBox 
+distribution that is intended for headless operation without a GUI). To run it, start VirtualBox 
 and perform the following steps:
 
 . Choose *File > Import Appliance...* and select the *.ovf file 
