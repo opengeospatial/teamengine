@@ -46,11 +46,6 @@
       "destination": "/tmp"
     },
     {
-      "type": "file",
-      "source": "files/ets-releases.csv",
-      "destination": "~/ets-releases.csv"
-    },
-    {
       "type": "shell",
       "environment_vars": [
         "TE_VERSION={{user `te_version`}}",
