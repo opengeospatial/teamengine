@@ -80,20 +80,12 @@ location.
 
 === Create and import the image
 
-The Packer template makes use of several supporting shell scripts and files (see Note 1). In the 
-'files' subdirectory is a CSV file (ets-releases.csv) that contains a list of OGC test suite releases; 
-each line has two fields: a Git repository URL, and a tag name indicating the release version. The 
-test suites listed in this file will be added to the TEAM Engine instance. To omit a particular 
-test suite, just comment it out by inserting a number sign (or hash character, #) at the beginning 
-of the appropriate line.
-
-[icons=None, caption="Note 1"]
-[NOTE]
-==========
-The template file (teamengine-virtualbox.json) can be found in the src/main/config/packer/ directory 
-in the TEAM Engine source tree, or wherever the Packer assembly was unpacked. To create the packer 
-assembly, run this Maven command at the root of the TEAM Engine source tree: `mvn assembly:single`.
-==========
+The Packer templates can be downloaded from GitHub as described in the introduction. Alternatively, if 
+Git is installed you can clone the https://github.com/opengeospatial/teamengine[teamengine repository]. 
+The template file (teamengine-virtualbox.json) is in the src/main/config/packer/ directory within the 
+teamengine-virtualization module. Or build teamengine (`mvn package`) to generate the packer assembly, 
+an archive that contains the templates and supporting files; it can be found in the teamengine-virtualization/target 
+directory (a ZIP/GZIP file named teamengine-virtualization-${version}-packer).
 
 The template defines several user variables that can be overridden from the command line or a file; 
 see https://www.packer.io/docs/templates/user-variables.html). These are listed in the table below, 
@@ -132,19 +124,19 @@ and perform the following steps:
 . Choose *File > Import Appliance...* and select the *.ovf file 
 . When the import is completed, select the newly created virtual machine and press "Start" 
 . When the boot sequence finishes, login using an SSH client to localhost:2222--or use the 
-VirtualBox terminal--with the TEAM Engine user credentials (see Note 2) 
+VirtualBox terminal--with the TEAM Engine user credentials (see Note 1) 
 . To start or stop Tomcat, execute this command:  `sudo systemctl {start|stop} tomcat-jsvc`
-. The main TEAM Engine web app is available at \http://localhost:8888/teamengine (see Note 3) 
+. The main TEAM Engine web app is available at \http://localhost:8888/teamengine (see Note 2) 
 
 
-[icons=None, caption="Note 2"]
+[icons=None, caption="Note 1"]
 [NOTE]
 ==========
 The user credentials are specified in the Packer template (`ssh_name`, `ssh_pass`). This is a 
 normal user account with 'sudo' privileges.
 ==========
 
-[icons=None, caption="Note 3"]
+[icons=None, caption="Note 2"]
 [NOTE]
 ==========
 The VM runs on a private internal network using the default networking mode: network address 
@@ -171,7 +163,7 @@ use the root account (that is, the account owner). Instead, create a separate AW
 and Access Management (IAM) user to interact with AWS. For guidance about how to do this, see 
 http://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html[Creating Your First IAM Admin User and Group].
 
-[icons=None, caption="Note 4"]
+[icons=None, caption="Note 3"]
 [NOTE]
 ==========
 The AWS Free Tier offerings are available to new AWS customers for 12 months following the sign-up 
