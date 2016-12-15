@@ -1744,7 +1744,8 @@ public class TECore implements Runnable {
     }
 
     // Complete GET KVP syntax
-    if (method.equals("GET") && sParams.length() > 0) {
+    // Fortify Mod: It is possible to get here without setting sUrl.  Check for it.
+    if (method.equals("GET") && sParams.length() > 0 && sUrl != null) {
       if (sUrl.indexOf("?") == -1) {
         sUrl += "?";
       } else if (!sUrl.endsWith("?") && !sUrl.endsWith("&")) {
@@ -1996,12 +1997,15 @@ public class TECore implements Runnable {
       t = tf.newTransformer();
     }
     File temp = File.createTempFile("$te_", ".xml");
-    if (content.getNodeType() == Node.TEXT_NODE) {
-      RandomAccessFile raf = new RandomAccessFile(temp, "rw");
-      raf.writeBytes(((Text) content).getTextContent());
-      raf.close();
-    } else {
-      t.transform(new DOMSource(content), new StreamResult(temp));
+    // Fortify Mod: it is possible for content not to be set.  Check for it.
+    if(content != null) {
+    	if (content.getNodeType() == Node.TEXT_NODE) {
+    		RandomAccessFile raf = new RandomAccessFile(temp, "rw");
+    		raf.writeBytes(((Text) content).getTextContent());
+    		raf.close();
+    	} else {
+    		t.transform(new DOMSource(content), new StreamResult(temp));
+    	}
     }
     URLConnection uc = temp.toURI().toURL().openConnection();
     Element result = parse(uc, parser_instruction);

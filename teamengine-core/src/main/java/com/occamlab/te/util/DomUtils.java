@@ -95,7 +95,8 @@ public class DomUtils {
         // Get all named nodes in the doucment
         NodeList namedTags = newDoc.getElementsByTagNameNS(tagNamespaceURI,
                 tagName);
-        for (int i = 0; i < namedTags.getLength(); i++) {
+        // Fortify Mod: Make sure namedTags is not null. 
+        for (int i = 0; namedTags != null && i < namedTags.getLength(); i++) {
             // Add the attribute to each one
             Element element = (Element) namedTags.item(i);
             element.setAttribute(attrName, attrValue);

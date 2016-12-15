@@ -202,6 +202,9 @@ public class CoverageMonitor {
             writeDocument(fos, this.coverageDoc);
         } catch (FileNotFoundException e) {
         } finally {
+        	// Fortify Mod: Arguably the try block around fos:close should address the
+        	// fos = null case, but an explicit check is cleaner.
+        	if(fos != null){
             try {
                 fos.close();
                 LOGR.config("Wrote coverage results to "
@@ -209,6 +212,7 @@ public class CoverageMonitor {
             } catch (IOException ioe) {
                 LOGR.warning(ioe.getMessage());
             }
+        	}
         }
 
     }
@@ -231,6 +235,8 @@ public class CoverageMonitor {
         }
         DOMImplementationLS impl = (DOMImplementationLS) domRegistry
                 .getDOMImplementation("LS");
+        // Fortify Mod: getDOMImplementation can return null.  Check for it.
+        if(impl != null) {
         LSSerializer writer = impl.createLSSerializer();
         writer.getDomConfig().setParameter("xml-declaration", false);
         writer.getDomConfig().setParameter("format-pretty-print", true);
@@ -238,5 +244,9 @@ public class CoverageMonitor {
         output.setEncoding("UTF-8");
         output.setByteStream(outStream);
         writer.write(doc, output);
+        }
+        else {
+            LOGR.warning("CoverageMonitor.writeDocument: Failed to write output document");
+        }
     }
 }
