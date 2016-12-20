@@ -4,11 +4,13 @@
  import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
+TECore core;
 DocumentBuilderImpl DB;
 Templates ViewLogTemplates;
 
 public void jspInit() {
 	try {
+		core = new TECore();
 		Conf = new Config();
 		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
@@ -160,10 +162,18 @@ public void jspInit() {
 <%
 File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
+core.earlHtmlReport(userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng");
+File earlHtml = new  File(userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng" + System.getProperty("file.separator") + "output.html");
 if ( htmlReportDir.isDirectory()) {
 %>
     <p>
     See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
+ 	</p>
+<% } %>
+
+<% if ( earlHtml.isFile()) { %>
+	<p>
+    See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/testng/output.html">EARL Report</a>.
  	</p>
 <% } %>
 

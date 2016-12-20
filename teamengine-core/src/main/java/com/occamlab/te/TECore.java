@@ -2444,6 +2444,30 @@ public class TECore implements Runnable {
     this.testServletURL = testServletURL;
   }
 
+	public void earlHtmlReport(String outputDir) {
+
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
+		File earlResult = null;
+		File htmlOutput = null;
+		File file = new File(outputDir);
+		String[] dir = file.list();
+		if (new File(outputDir + System.getProperty("file.separator") + dir[0]).isDirectory()) {
+			String d = outputDir + System.getProperty("file.separator") + dir[0];
+			htmlOutput = new File(outputDir);
+			earlResult = new File(d, "earl-results.rdf");
+		}
+		try {
+			Transformer transformer = TransformerFactory.newInstance()
+					.newTransformer(new StreamSource(earlXsl));
+
+			transformer.transform(new StreamSource(earlResult),
+					new StreamResult(new File(htmlOutput, "output.html")));
+		} catch (Exception e) {
+			System.out.println(e.getMessage() + e.getCause());
+		}
+	}
+  
   /**
    * Builds a DOM Document representing a classpath resource.
    *
