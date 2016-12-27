@@ -17,8 +17,14 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.HttpMethod;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -59,7 +65,7 @@ public class CtlEarlReporter {
 
     }
 
-    public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, String iut) throws UnsupportedEncodingException {
+    public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, String iut) throws UnsupportedEncodingException, XPathExpressionException {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -119,7 +125,7 @@ public class CtlEarlReporter {
     }
 
     public void getSubtestResult(Model model, NodeList testcallList, NodeList logList, String fTestname)
-            throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException, XPathExpressionException {
 
         String conformanceClass = "";
         for (int k = 0; k < testcallList.getLength(); k++) {
@@ -255,7 +261,7 @@ public class CtlEarlReporter {
      * 
      */
     public void processTestResults(Model earl, Element logElements, NodeList logList, String logtestcallPath,
-            String conformanceClass) throws UnsupportedEncodingException {
+            String conformanceClass) throws UnsupportedEncodingException, XPathExpressionException {
 
         NodeList childtestcallList = logElements.getElementsByTagName("testcall");
         String testcallPath;
@@ -313,6 +319,10 @@ public class CtlEarlReporter {
                 break;
             case 6: // Fail
                 earlResult.addProperty(EARL.outcome, EARL.Fail);
+				Element errorMessage = getErrorMessage(childlogElements);
+				if(errorMessage != null){
+					earlResult.addProperty(DCTerms.description,errorMessage.getTextContent());
+				}
                 this.cFailCount++;
                 break;
             case 3:
@@ -325,12 +335,15 @@ public class CtlEarlReporter {
                 break;
             case 5:
                 earlResult.addProperty(EARL.outcome, CITE.Inherited_Failure);
-                this.cWarningCount++;
+                this.cInheritedFailureCount++;
                 break;
             default:
                 earlResult.addProperty(EARL.outcome, EARL.Pass);
                 break;
             }
+            
+            processResultAttributes(earlResult, childlogElements);
+            
             assertion.addProperty(EARL.result, earlResult);
             // link earl:TestCase to earl:Assertion and earl:TestRequirement
             String testName = testDetails.get("testName");
@@ -349,6 +362,54 @@ public class CtlEarlReporter {
         }
     }
 
+    private Element getErrorMessage(Element childlogElements) {
+    	Element exceptionElement = null;
+    	NodeList exceptionList = childlogElements.getElementsByTagName("exception");
+		if (exceptionList.getLength() > 0) {
+			exceptionElement = (Element) childlogElements.getElementsByTagName("exception").item(0);
+		}
+		return exceptionElement;
+	}
+    
+    void processResultAttributes(Resource earlResult, Element childlogElements) throws XPathExpressionException {
+        if (null == childlogElements)
+            return;
+        NodeList requestList = childlogElements.getElementsByTagName("request");
+        Element reqElement = (Element) requestList.item(0);
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression expr = xpath.compile("/request/ctl:request/ctl:method");
+        
+        Node reqNode = (Node) expr.evaluate(reqElement.getOwnerDocument(), XPathConstants.NODE);
+        System.out.println("Request Method=  " + reqNode.getTextContent());
+        String httpMethod = reqNode.getTextContent();
+        Resource httpReq = this.earlModel.createResource(HTTP.Request);
+        httpReq.addProperty(HTTP.methodName, httpMethod);
+        if (httpMethod.equals(HttpMethod.GET)) {
+            httpReq.addProperty(HTTP.requestURI, reqElement.getNodeName());
+        } else {
+            Resource reqContent = this.earlModel.createResource(CONTENT.ContentAsXML);
+            
+            reqContent.addProperty(CONTENT.rest, reqElement.getNodeName());
+            httpReq.addProperty(HTTP.body, reqContent);
+        }
+        
+        NodeList responseList = childlogElements.getElementsByTagName("response");
+        Element resElement = (Element) responseList.item(0);
+        
+        XPathExpression resExpr = xpath.compile("/request/response/content");
+        Node resNode = (Node) resExpr.evaluate(resElement.getOwnerDocument(), XPathConstants.NODE);
+        if (null != resNode) {
+            Resource httpRsp = this.earlModel.createResource(HTTP.Response);
+           
+            Resource rspContent = this.earlModel.createResource(CONTENT.ContentAsXML);
+            rspContent.addProperty(CONTENT.rest, resNode.getTextContent());
+            httpRsp.addProperty(HTTP.body, rspContent);
+            httpReq.addProperty(HTTP.resp, httpRsp);
+        }
+        earlResult.addProperty(CITE.message, httpReq);
+    }
+    
     /*
      * Write CTL result into EARL report.
      */
