@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, java.io.BufferedReader, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
 TECore core;
@@ -127,10 +127,10 @@ public void jspInit() {
               suiteName = (title == null) ? "error: suiteEntry title is null" : title;
           }
       }
-      out.println("<h3>Test Suite: " + suiteName + "</h3>");
+     /*  out.println("<h3>Test Suite: " + suiteName + "</h3>"); */
       ArrayList tests = new ArrayList();
       boolean complete = ViewLog.view_log(suiteName,userlog, sessionId, tests, ViewLogTemplates, out);     
-      out.println("<br/>");
+      /* out.println("<br/>"); */
       if (!complete) {
           out.println("<input type=\"button\" value=\"Continue executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
       }
@@ -162,20 +162,30 @@ public void jspInit() {
 <%
 File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
+String resultdir = userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng";
+File resDir = new File(resultdir);
+if(resDir.exists()){
 core.earlHtmlReport(userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng");
 File earlHtml = new  File(userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng" + System.getProperty("file.separator") + "output.html");
-if ( htmlReportDir.isDirectory()) {
+BufferedReader reader = new java.io.BufferedReader( new java.io.FileReader( earlHtml ) ); 
+String line = null; 
+while ( null != ( line = reader.readLine() )) { 
+out.write(line); 
+} 
+reader.close();
+}
+/* if ( htmlReportDir.isDirectory()) { */
 %>
-    <p>
+    <%-- <p>
     See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
- 	</p>
-<% } %>
+ 	</p> --%>
+<% /* } */ %>
 
-<% if ( earlHtml.isFile()) { %>
-	<p>
+<% /* if ( earlHtml.isFile()) {  */%>
+	<%-- <p>
     See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/testng/output.html">EARL Report</a>.
- 	</p>
-<% } %>
+ 	</p> --%>
+<% /* } */ %>
 
 <%--
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
