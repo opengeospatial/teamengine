@@ -3,7 +3,7 @@
 	xmlns:dct="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:earl="http://www.w3.org/ns/earl#" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:cite="http://cite.opengeospatial.org/"
-	version="1.0">
+	version="2.0">
 <xsl:output encoding="UTF-8" indent="yes" method="xml"
 		standalone="no" omit-xml-declaration="no" />
 	<xsl:template match="/">

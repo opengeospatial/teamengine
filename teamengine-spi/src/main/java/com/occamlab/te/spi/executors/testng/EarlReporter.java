@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,8 +41,10 @@ import org.testng.xml.XmlTest;
 
 import com.occamlab.te.spi.vocabulary.CITE;
 import com.occamlab.te.spi.vocabulary.CONTENT;
+import com.occamlab.te.spi.vocabulary.Config;
 import com.occamlab.te.spi.vocabulary.EARL;
 import com.occamlab.te.spi.vocabulary.HTTP;
+
 
 /**
  * A reporter that creates and serializes an RDF graph containing the test
@@ -69,9 +72,12 @@ public class EarlReporter implements IReporter {
     private static final String REQ_ATTR = "request";
     private static final String RSP_ATTR = "response";
     private Model earlModel;
+    private String suiteName;
+    private Config config;
 
     public EarlReporter() {
         this.earlModel = ModelFactory.createDefaultModel();
+        config = new Config();
     }
 
     @Override
@@ -151,6 +157,7 @@ public class EarlReporter implements IReporter {
         nsBindings.put("http", HTTP.NS_URI);
         nsBindings.put("cnt", CONTENT.NS_URI);
         model.setNsPrefixes(nsBindings);
+        suiteName = suite.getName();
         this.testRun = model.createResource(CITE.TestRun);
         this.testRun.addProperty(DCTerms.title, suite.getName());
         String nowUTC = ZonedDateTime.now(ZoneId.of("Z")).format(DateTimeFormatter.ISO_INSTANT);
@@ -191,10 +198,24 @@ public class EarlReporter implements IReporter {
      */
     void addTestRequirements(Model earl, final List<XmlTest> testList) {
         Seq reqs = earl.createSeq();
+        String key = null;
         for (XmlTest xmlTest : testList) {
             String testName = xmlTest.getName();
+            for (Entry<String, List<String>> ccEntry : config.getConformanceClassMap().entrySet()) {
+        		if(ccEntry.getKey().contains(suiteName)){
+        			key = ccEntry.getKey();	
+        		}
+        	}
             Resource testReq = earl.createResource(testName.replaceAll("\\s", "-"), EARL.TestRequirement);
             testReq.addProperty(DCTerms.title, testName);
+            if(null != key){
+                List<String> ConfClass = config.getConformanceClassMap().get(key);
+                for (String cClass : ConfClass) {
+                	if(cClass.equalsIgnoreCase(testName)){
+                		testReq.addProperty(CITE.isBasic, "true");
+                	}
+                }
+             }
             reqs.add(testReq);
         }
         this.testRun.addProperty(CITE.requirements, reqs);
@@ -335,7 +356,7 @@ public class EarlReporter implements IReporter {
             StringBuilder testCaseId = new StringBuilder(testClassName);
             testCaseId.append('#').append(testMethodName);
             Resource testCase = earl.createResource(testCaseId.toString(), EARL.TestCase);
-            testCase.addProperty(DCTerms.title, testMethodName);
+            testCase.addProperty(DCTerms.title, breakIntoWords(testMethodName));
             String testDescr = tngResult.getMethod().getDescription();
             if (null != testDescr && !testDescr.isEmpty()) {
                 testCase.addProperty(DCTerms.description, testDescr);
@@ -390,4 +411,37 @@ public class EarlReporter implements IReporter {
         }
         earlResult.addProperty(CITE.message, httpReq);
     }
+    
+    /*
+     * This method is used to correct the mangled name issue.
+     * 	e.g. 'compileXMLSchema' ===> 'compile XML Schema'
+     *  
+     * @param testName
+     *           Name of the test method. 
+     */
+    public String breakIntoWords(String testName) {
+		String updateTestName = "";
+		String[] id = { "_1_", "_2_", "_3_", "_4_", "_5_", "_6_", "_7_", "_8_",
+				"_9_" };
+		String[] name = { "XML", "XSD", "GML", "CRS", "(GET)", "(POST)",
+				"BBOX", "URI", "WFS" };
+
+		for (int i = 0; i < id.length; i++) {
+			if (testName.indexOf(name[i]) > -1) {
+				testName = testName.replace(name[i], " " + id[i]);
+			}
+		}
+		String[] temp = testName.split("(?=\\p{Upper})");
+
+		for (int index = 0; index < temp.length; index++) {
+			updateTestName = updateTestName + temp[index] + " ";
+		}
+
+		for (int index = 0; index < id.length; index++) {
+			if (updateTestName.indexOf(id[index]) > -1) {
+				updateTestName = updateTestName.replace(id[index], name[index]);
+			}
+		}
+		return updateTestName;
+	}
 }
