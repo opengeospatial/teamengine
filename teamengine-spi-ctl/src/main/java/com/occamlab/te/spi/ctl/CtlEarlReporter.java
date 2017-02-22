@@ -143,14 +143,14 @@ public class CtlEarlReporter {
                 String decodedBaseURL = "";
 
                 decodedBaseURL = java.net.URLDecoder.decode(logElements.getAttribute("xml:base"), "UTF-8");
-                String pattern = Pattern.quote(System.getProperty("file.separator"));
-                String[] decodedBaseURLArr = decodedBaseURL.split(pattern);
-                String output = "";
-                for (int a = 3; a < decodedBaseURLArr.length; a++) {
-                    output = output + "\\" + decodedBaseURLArr[a];
-                }
-                String logtestcall = output.substring(output.indexOf("\\") + 1, output.lastIndexOf("\\")).replace("\\",
-                        "/");
+                String baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
+        		int first = baseUrl.indexOf(System.getProperty("file.separator"));
+        		int second = baseUrl.indexOf(System.getProperty("file.separator"), first + 1);
+        		String logtestcall = baseUrl.substring(second + 1, baseUrl.lastIndexOf(System.getProperty("file.separator")));
+
+        		if(logtestcall.contains("\\")){
+        			logtestcall = logtestcall.replace("\\", "/");
+        		}
 
                 // Check sub-testcall is matching with the <log baseURL="">
 
@@ -288,14 +288,14 @@ public class CtlEarlReporter {
                 childlogElements = (Element) logList.item(m);
                 String decodedBaseURL = java.net.URLDecoder.decode(childlogElements.getAttribute("xml:base"), "UTF-8");
 
-                String pattern = Pattern.quote(System.getProperty("file.separator"));
-                String[] decodedBaseURLArr = decodedBaseURL.split(pattern);
-                String output = "";
-                for (int a = 3; a < decodedBaseURLArr.length; a++) {
-                    output = output + "\\" + decodedBaseURLArr[a];
-                }
-                childLogtestcall = output.substring(output.indexOf("\\") + 1, output.lastIndexOf("\\")).replace("\\",
-                        "/");
+                String baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
+        		int first = baseUrl.indexOf(System.getProperty("file.separator"));
+        		int second = baseUrl.indexOf(System.getProperty("file.separator"), first + 1);
+        		childLogtestcall = baseUrl.substring(second + 1, baseUrl.lastIndexOf(System.getProperty("file.separator")));
+
+        		if(childLogtestcall.contains("\\")){
+        			childLogtestcall = childLogtestcall.replace("\\", "/");
+        		}
                 if (testcallPath.equals(childLogtestcall)) {
                     break;
                 }
