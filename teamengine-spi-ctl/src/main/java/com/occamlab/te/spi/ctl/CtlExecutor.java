@@ -1,5 +1,6 @@
 package com.occamlab.te.spi.ctl;
 
+import com.occamlab.te.CtlEarlReporter;
 import com.occamlab.te.Engine;
 import com.occamlab.te.Generator;
 import com.occamlab.te.RuntimeOptions;

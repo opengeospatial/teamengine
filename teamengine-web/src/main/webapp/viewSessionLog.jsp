@@ -164,9 +164,12 @@ File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
 String resultdir = userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng";
 File resDir = new File(resultdir);
+if(!resDir.exists()){
+	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
+}
 if(resDir.exists()){
-core.earlHtmlReport(userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng");
-File earlHtml = new  File(userLog.toString() + System.getProperty("file.separator") + sessionId + System.getProperty("file.separator") + "testng" + System.getProperty("file.separator") + "output.html");
+core.earlHtmlReport(resDir.toString());
+File earlHtml = new  File(resDir + System.getProperty("file.separator") + "output.html");
 BufferedReader reader = new java.io.BufferedReader( new java.io.FileReader( earlHtml ) ); 
 String line = null; 
 while ( null != ( line = reader.readLine() )) { 

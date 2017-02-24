@@ -330,6 +330,25 @@ public class TECore implements Runnable {
         // Create xml execution report file
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
+        /*
+         *  Transform CTL result into EARL result, 
+         *  when the CTL test is executed through the webapp.
+         */
+				try {
+					File resultsDir = new File(opts.getLogDir(),
+							opts.getSessionId());
+					File testLog = new File(resultsDir, "report_logs.xml");
+					CtlEarlReporter report = new CtlEarlReporter();
+
+					if (null != opts.getSuiteName()) {
+						report.generateEarlReport(resultsDir, testLog,
+								opts.getSuiteName(),
+								"http://cite.opengeospatial.org/teamengine/");
+					}
+				} catch (IOException iox) {
+					throw new RuntimeException(
+							"Failed to serialize EARL results to " + iox);
+				}
       }
     }
   }
@@ -2452,7 +2471,10 @@ public class TECore implements Runnable {
 		File htmlOutput = null;
 		File file = new File(outputDir);
 		String[] dir = file.list();
-		if (new File(outputDir + System.getProperty("file.separator") + dir[0]).isDirectory()) {
+		if(new File(outputDir, "earl-results.rdf").exists()){
+			htmlOutput = new File(outputDir);
+			earlResult = new File(outputDir, "earl-results.rdf");
+		} else if (new File(outputDir + System.getProperty("file.separator") + dir[0]).isDirectory()) {
 			String d = outputDir + System.getProperty("file.separator") + dir[0];
 			htmlOutput = new File(outputDir);
 			earlResult = new File(d, "earl-results.rdf");

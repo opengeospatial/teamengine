@@ -25,17 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.occamlab.te.SetupOptions;
-import com.occamlab.te.index.ProfileEntry;
-import com.occamlab.te.index.SuiteEntry;
-import com.occamlab.te.util.DomUtils;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Reads the test harness configuration file at TE_BASE/config.xml.
@@ -54,15 +50,6 @@ public class Config {
                                                   // list of versions
     private Map<String, List<String>> revisionMap; // Key is org_std_ver, value
                                                    // is a list of revisions
-//    private Map<String, SuiteEntry> suites; // Key is org_std_ver_rev, value is
-                                            // a SuiteEntry
-//    private Map<String, List<ProfileEntry>> profiles; // Key is org_std_ver_rev,
-                                                      // value is a list of
-                                                      // profiles
-//    private Map<String, List<File>> sources; // Key is org_std_ver_rev, value is
-                                             // a list of sources
-//    private Map<String, String> webdirs; // Key is org_std_ver_rev, value a
-                                         // webdir
     private Map<String, List<String>> conformanceClassMap; // Key is testname, value is a
 														   // list of conformance classes
     /**
@@ -72,7 +59,16 @@ public class Config {
     private Map<String, File> resources;
 
     public Config() {
-        this.baseDir = SetupOptions.getBaseConfigDirectory();
+    	String basePath = System.getProperty("TE_BASE");
+        if (null == basePath) {
+          basePath = System.getenv("TE_BASE");
+        }
+        if (null == basePath) {
+          basePath = System.getProperty("user.home")
+                  + System.getProperty("file.separator") + "teamengine";
+        }
+    	
+        this.baseDir = new File(basePath);
         try {
                 // Fortify Mod: prevent external entity injection
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -88,40 +84,35 @@ public class Config {
             standardMap = new HashMap<String, List<String>>();
             versionMap = new HashMap<String, List<String>>();
             revisionMap = new HashMap<String, List<String>>();
-//            suites = new HashMap<String, SuiteEntry>();
-//            profiles = new HashMap<String, List<ProfileEntry>>();
-//            sources = new HashMap<String, List<File>>();
-//            webdirs = new HashMap<String, String>();
-//            resources = new HashMap<String, File>();
             conformanceClassMap = new HashMap<String, List<String>>();
             String suiteLocalName = null;
-            for (Element organizationEl : DomUtils.getElementsByTagName(
+            for (Element organizationEl : getElementsByTagName(
                     configElem, "organization")) {
-                String organization = DomUtils.getElementByTagName(
+                String organization = getElementByTagName(
                         organizationEl, "name").getTextContent();
 
-                for (Element standardEl : DomUtils.getElementsByTagName(
+                for (Element standardEl : getElementsByTagName(
                         organizationEl, "standard")) {
-                    String standard = DomUtils.getElementByTagName(standardEl,
+                    String standard = getElementByTagName(standardEl,
                             "name").getTextContent();
 
                     ArrayList<String> versionList = new ArrayList<String>();
-                    for (Element versionEl : DomUtils.getElementsByTagName(
+                    for (Element versionEl : getElementsByTagName(
                             standardEl, "version")) {
-                        String version = DomUtils.getElementByTagName(
+                        String version = getElementByTagName(
                                 versionEl, "name").getTextContent();
                         versionList.add(version);
                         String verKey = organization + "_" + standard;
-                        Element suiteEl = DomUtils.getElementByTagName(
+                        Element suiteEl = getElementByTagName(
                                 versionEl, "suite");
-                        suiteLocalName = DomUtils.getElementByTagName(
+                        suiteLocalName = getElementByTagName(
                                 suiteEl, "local-name").getTextContent();
                         
                         String key = null;
                         ArrayList<String> revisionList = new ArrayList<String>();
-                        for (Element el : DomUtils.getChildElements(versionEl)) {
+                        for (Element el : getChildElements(versionEl)) {
                             if (el.getNodeName().equals("revision")) {
-                                String revision = DomUtils.getElementByTagName(
+                                String revision = getElementByTagName(
                                         el, "name").getTextContent();
                                 revisionList.add(revision);
                                 String revKey = verKey + "_" + version;
@@ -130,10 +121,10 @@ public class Config {
                         }
                         
                         ArrayList<String> ccList = new ArrayList<String>(); // Conformance class list.
-                        Element conformanceClasses = DomUtils.getElementByTagName(suiteEl, "conformanceClasses");
+                        Element conformanceClasses = getElementByTagName(suiteEl, "conformanceClasses");
                         
                         if(null != conformanceClasses){
-                            for (Element ccElement : DomUtils.getChildElements(conformanceClasses)) {
+                            for (Element ccElement : getChildElements(conformanceClasses)) {
                                 if (ccElement.getNodeName().equals("conformanceClass")) {
                                     String confClass = ccElement.getTextContent();
                                     ccList.add(confClass);
@@ -195,5 +186,49 @@ public class Config {
     
     public Map<String, List<String>> getConformanceClassMap() {
         return conformanceClassMap;
+    }
+    
+    public List<Element> getElementsByTagName(Node node, String tagname) {
+        ArrayList<Element> list = new ArrayList<Element>();
+        NodeList nl;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            nl = ((Document) node).getElementsByTagName(tagname);
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            nl = ((Element) node).getElementsByTagName(tagname);
+        } else {
+            return null;
+        }
+        for (int i = 0; i < nl.getLength(); i++) {
+            list.add((Element) nl.item(i));
+        }
+        return list;
+    }
+    
+    public Element getElementByTagName(Node node, String tagname) {
+        NodeList nl;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            nl = ((Document) node).getElementsByTagName(tagname);
+        } else if (node.getNodeType() == Node.ELEMENT_NODE) {
+            nl = ((Element) node).getElementsByTagName(tagname);
+        } else {
+            return null;
+        }
+        if (nl.getLength() >= 0) {
+            return (Element) nl.item(0);
+        } else {
+            return null;
+        }
+    }
+    
+    public List<Element> getChildElements(Node node) {
+        ArrayList<Element> list = new ArrayList<Element>();
+        NodeList nl = node.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                list.add((Element) nl.item(i));
+            }
+        }
+        return list;
     }
 }
