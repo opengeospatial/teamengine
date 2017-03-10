@@ -26,6 +26,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.jena.rdf.model.Bag;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -59,10 +60,25 @@ public class CtlEarlReporter {
     private int cNotTestedCount;
     private int cWarningCount;
     private int cInheritedFailureCount;
+    private int totalPassCount;
+    private int totalFailCount;
+    private int totalSkipCount;
+    private int totalContinueCount;
+    private int totalBestPracticeCount;
+    private int totalNotTestedCount;
+    private int totalWarningCount;
+    private int totalInheritedFailureCount;
 
     public CtlEarlReporter() {
         this.earlModel = ModelFactory.createDefaultModel();
-
+        totalPassCount = 0;
+        totalFailCount = 0;
+        totalSkipCount = 0;
+        totalContinueCount = 0;
+        totalBestPracticeCount = 0;
+        totalNotTestedCount = 0;
+        totalWarningCount = 0;
+        totalInheritedFailureCount = 0;
     }
 
     public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, String iut) throws UnsupportedEncodingException {
@@ -84,6 +100,7 @@ public class CtlEarlReporter {
         // Here comes the root node
         Element root = document.getDocumentElement();
         Model model = initializeModel(suiteName, iut);
+        addTestInputs(model, iut);
         this.reqs = model.createSeq();
 
         NodeList executionList = document.getElementsByTagName("execution");
@@ -114,6 +131,15 @@ public class CtlEarlReporter {
         }
 
         this.testRun.addProperty(CITE.requirements, this.reqs);
+        this.testRun.addLiteral(CITE.testsPassed, new Integer(this.totalPassCount));
+        this.testRun.addLiteral(CITE.testsFailed, new Integer(this.totalFailCount));
+        this.testRun.addLiteral(CITE.testsSkipped, new Integer(this.totalSkipCount));
+        this.testRun.addLiteral(CITE.testsContinue, new Integer(this.totalContinueCount));
+        this.testRun.addLiteral(CITE.testsBestPractice, new Integer(this.totalBestPracticeCount));
+        this.testRun.addLiteral(CITE.testsNotTested, new Integer(this.totalNotTestedCount));
+        this.testRun.addLiteral(CITE.testsWarning, new Integer(this.totalWarningCount));
+        this.testRun.addLiteral(CITE.testsInheritedFailure, new Integer(this.totalInheritedFailureCount));
+        
         this.earlModel.add(model);
 
         try {
@@ -159,8 +185,6 @@ public class CtlEarlReporter {
                     Map<String, String> testinfo = getTestinfo(logElements);
 
                     if (testinfo.get("isConformanceClass").equals("true")) {
-                        System.out.println("             The test '" + testinfo.get("testName")
-                                + "' is the conformance class and BASE URL is=  " + decodedBaseURL);
                         conformanceClass = testinfo.get("testName");
                         this.cPassCount = 0;
                         this.cFailCount = 0;
@@ -187,6 +211,14 @@ public class CtlEarlReporter {
                     testReq.addLiteral(CITE.testsNotTested, new Integer(this.cNotTestedCount));
                     testReq.addLiteral(CITE.testsWarning, new Integer(this.cWarningCount));
                     testReq.addLiteral(CITE.testsInheritedFailure, new Integer(this.cInheritedFailureCount));
+                    this.totalPassCount += cPassCount;
+                    this.totalFailCount += cFailCount;
+                    this.totalSkipCount += cSkipCount;
+                    this.totalContinueCount += cContinueCount;
+                    this.totalBestPracticeCount += cBestPracticeCount;
+                    this.totalNotTestedCount += cNotTestedCount;
+                    this.totalWarningCount += cWarningCount;
+                    this.totalInheritedFailureCount += cInheritedFailureCount;
                     break;
                 } // end of sub-testcall
             }
@@ -204,6 +236,11 @@ public class CtlEarlReporter {
         Element starttestElements = (Element) starttestLists.item(0);
 
         Element endtestElements = (Element) logElements.getElementsByTagName("endtest").item(0);
+        NodeList assertionElements = logElements.getElementsByTagName("assertion");
+        if(assertionElements.getLength() > 0){
+        	Element assertionElement =  (Element) assertionElements.item(0);
+        	attr.put("assertion", assertionElement.getTextContent());
+        } else attr.put("assertion","Null");
         attr.put("testName", starttestElements.getAttribute("local-name"));
         attr.put("result", endtestElements.getAttribute("result"));
         NodeList isConformanceClassList = logElements.getElementsByTagName("conformanceClass");
@@ -360,7 +397,7 @@ public class CtlEarlReporter {
             testCaseId.append('#').append(testName);
             Resource testCase = earl.createResource(testCaseId.toString(), EARL.TestCase);
             testCase.addProperty(DCTerms.title, testName);
-            testCase.addProperty(DCTerms.description, "Test satisfies the OGC specification");
+            testCase.addProperty(DCTerms.description, testDetails.get("assertion"));
             assertion.addProperty(EARL.test, testCase);
             earl.createResource(conformanceClass).addProperty(DCTerms.hasPart, testCase);
             NodeList testcallLists = childtestcallElement.getElementsByTagName("testcall");
@@ -483,6 +520,16 @@ public class CtlEarlReporter {
 		if (null != httpReq) {
 			earlResult.addProperty(CITE.message, httpReq);
 		}
+    }
+    
+   private void addTestInputs(Model earl, String params) {
+        Bag inputs = earl.createBag();
+        
+                Resource testInput = earl.createResource(CONTENT.ContentAsXML);
+                testInput.addProperty(DCTerms.description, params);
+                inputs.add(testInput);
+        
+        this.testRun.addProperty(CITE.inputs, inputs);
     }
     
     /*

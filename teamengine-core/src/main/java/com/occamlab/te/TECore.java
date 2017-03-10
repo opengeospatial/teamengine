@@ -61,6 +61,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -217,6 +218,7 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
+  public String userInputs = "";
 
   public TECore() {
 
@@ -330,6 +332,7 @@ public class TECore implements Runnable {
         // Create xml execution report file
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
+
         /*
          *  Transform CTL result into EARL result, 
          *  when the CTL test is executed through the webapp.
@@ -343,7 +346,7 @@ public class TECore implements Runnable {
 					if (null != opts.getSuiteName()) {
 						report.generateEarlReport(resultsDir, testLog,
 								opts.getSuiteName(),
-								"http://cite.opengeospatial.org/teamengine/");
+								this.userInputs);
 					}
 				} catch (IOException iox) {
 					throw new RuntimeException(
@@ -1339,6 +1342,7 @@ public class TECore implements Runnable {
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.transform(new DOMSource(doc), new StreamResult(sw));
+      this.userInputs = sw.toString();
       LOGR.info("Setting form results:\n " + sw.toString());
     } catch(Exception e) {
       LOGR.log(Level.SEVERE, "Failed to log the form results", e);
