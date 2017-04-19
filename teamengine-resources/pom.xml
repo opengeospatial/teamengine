@@ -32,6 +32,8 @@
             <include>**/*.xsl</include>
             <include>**/*.ctl</include>
             <include>**/*.xsd</include>
+            <include>**/*.js</include>
+            <include>**/*.css</include>
           </includes>
         </configuration>
       </plugin>

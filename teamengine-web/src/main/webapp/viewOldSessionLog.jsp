@@ -1,16 +1,13 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, java.io.BufferedReader, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
 %><%!
 Config Conf;
-TECore core;
 DocumentBuilderImpl DB;
 Templates ViewLogTemplates;
-
 public void jspInit() {
 	try {
-		core = new TECore();
 		Conf = new Config();
 		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
@@ -20,25 +17,19 @@ public void jspInit() {
 }
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
   The contents of this file are subject to the Mozilla Public License
   Version 1.1 (the "License"); you may not use this file except in
   compliance with the License. You may obtain a copy of the License at
   http://www.mozilla.org/MPL/ 
-
   Software distributed under the License is distributed on an "AS IS" basis,
   WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
   the specific language governing rights and limitations under the License. 
-
   The Original Code is TEAM Engine.
-
   The Initial Developer of the Original Code is Northrop Grumman Corporation
   jointly with The National Technology Alliance.  Portions created by
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
-
   Contributor(s): No additional contributors to date
-
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
@@ -63,7 +54,6 @@ public void jspInit() {
 			    }
 			  }
 			}
-
 			function toggle(testnum, e) {
 			  var evt = e || window.event;
 			  if (document.images['image' + testnum].src.indexOf('minus') > 0) {
@@ -82,17 +72,10 @@ public void jspInit() {
 			    }
 			  }
 			}
-
-
 			function deleteSession() {
 				if (confirm("Are you sure you want to delete session <%=request.getParameter("session")%>?")) {
 					window.location = "deleteSession?session=<%=request.getParameter("session")%>"
 				}
-			}
-			
-			function viewTestDetails(path){
-				var testDetailsUrl = path.substring(path.lastIndexOf("/") + 1, path.length);
-				window.location.replace("<%=request.getContextPath()%>"+ "/reports/" + "<%=request.getRemoteUser()%>" + "/" + "<%=request.getParameter("session")%>" +"/result/"+ testDetailsUrl);
 			}
 		</script>		
 	</head>
@@ -132,14 +115,13 @@ public void jspInit() {
               suiteName = (title == null) ? "error: suiteEntry title is null" : title;
           }
       }
-     /*  out.println("<h3>Test Suite: " + suiteName + "</h3>"); */
+      out.println("<h3>Test Suite: " + suiteName + "</h3>");
       ArrayList tests = new ArrayList();
       boolean complete = ViewLog.view_log(suiteName,userlog, sessionId, tests, ViewLogTemplates, out);     
-      /* out.println("<br/>"); */
+      out.println("<br/>");
       if (!complete) {
           out.println("<input type=\"button\" value=\"Continue executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
       }
-
       String profileParams = "";
       String sourceId = "";
       if (complete) {
@@ -167,38 +149,12 @@ public void jspInit() {
 <%
 File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
-String resultdir = userLog.toString() + System.getProperty("file.separator") + sessionId;
-File resDir = new File(resultdir + System.getProperty("file.separator") + "testng");
-if(!resDir.exists()){
-	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
-}
-if(resDir.exists()){
-core.earlHtmlReport(resultdir.toString());
-File earlHtml = new  File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
-
-}
-/* if ( htmlReportDir.isDirectory()) { */
+if ( htmlReportDir.isDirectory()) {
 %>
-<%
-String testurl= "reports/" + request.getRemoteUser()+ "/" + request.getParameter("session") + "/result/index.html";
-%>
-
-<jsp:include page="<%= testurl %>"></jsp:include>
-
-    <%-- <p>
+    <p>
     See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
- 	</p> --%>
-<% /* } */ %>
-
-<% /* if ( earlHtml.isFile()) {  */%>
-	<%-- <p>
-    See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/testng/output.html">EARL Report</a>.
- 	</p> --%>
-<% /* } */ %>
-
- <p>
-    See the <a href="<%=request.getContextPath()%>/viewOldSessionLog.jsp?session=<%=sessionId%>">detailed old test report</a>.
- </p> 
+ 	</p>
+<% } %>
 
 <%--
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());

@@ -69,6 +69,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.XMLConstants; // Addition for Fortify modifications
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Comment;
@@ -332,7 +333,9 @@ public class TECore implements Runnable {
         // Create xml execution report file
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
-
+        System.out.println("Form Result: " + this.userInputs);
+         
+        
         /*
          *  Transform CTL result into EARL result, 
          *  when the CTL test is executed through the webapp.
@@ -2466,29 +2469,35 @@ public class TECore implements Runnable {
   public void setTestServletURL(String testServletURL) {
     this.testServletURL = testServletURL;
   }
-
+  	/**
+  	 * Transform CTL result into EARL report using XSLT.
+  	 * @param outputDir 
+  	 */
 	public void earlHtmlReport(String outputDir) {
 
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		String resourceDir = cl.getResource("com/occamlab/te/earl/lib").getPath();
 		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
 		File earlResult = null;
 		File htmlOutput = null;
-		File file = new File(outputDir);
+		File file = new File(outputDir + System.getProperty("file.separator") + "testng");
 		String[] dir = file.list();
-		if(new File(outputDir, "earl-results.rdf").exists()){
-			htmlOutput = new File(outputDir);
+		String outDir = null;
+		if(!file.exists()){
+			htmlOutput = new File(outputDir,"result");
 			earlResult = new File(outputDir, "earl-results.rdf");
-		} else if (new File(outputDir + System.getProperty("file.separator") + dir[0]).isDirectory()) {
-			String d = outputDir + System.getProperty("file.separator") + dir[0];
-			htmlOutput = new File(outputDir);
-			earlResult = new File(d, "earl-results.rdf");
+		} else if (new File(file + System.getProperty("file.separator") + dir[0]).isDirectory()) {
+			earlResult = new File(file + System.getProperty("file.separator") + dir[0], "earl-results.rdf");
+			outDir = file + System.getProperty("file.separator") + dir[0];
+			htmlOutput = new File(outputDir, "result");
 		}
 		try {
 			Transformer transformer = TransformerFactory.newInstance()
 					.newTransformer(new StreamSource(earlXsl));
-
+			transformer.setParameter("outputDir", htmlOutput);
 			transformer.transform(new StreamSource(earlResult),
-					new StreamResult(new File(htmlOutput, "output.html")));
+					new StreamResult(new FileOutputStream("index.html")));
+			FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
 		} catch (Exception e) {
 			System.out.println(e.getMessage() + e.getCause());
 		}
