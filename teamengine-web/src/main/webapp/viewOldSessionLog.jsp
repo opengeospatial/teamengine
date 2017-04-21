@@ -9,7 +9,7 @@ Templates ViewLogTemplates;
 public void jspInit() {
 	try {
 		Conf = new Config();
-		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewoldlog.xsl");
 		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
 	} catch (Exception e) {
 		e.printStackTrace(System.out);
