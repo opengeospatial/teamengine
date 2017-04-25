@@ -121,7 +121,7 @@ public class Config {
                         }
                         
                         ArrayList<String> ccList = new ArrayList<String>(); // Conformance class list.
-                        Element conformanceClasses = getElementByTagName(suiteEl, "conformanceClasses");
+                        Element conformanceClasses = getElementByTagName(suiteEl, "BasicConformanceClasses");
                         
                         if(null != conformanceClasses){
                             for (Element ccElement : getChildElements(conformanceClasses)) {
