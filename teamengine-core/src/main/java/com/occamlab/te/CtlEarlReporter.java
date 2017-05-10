@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -36,6 +38,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.occamlab.te.spi.vocabulary.CITE;
@@ -523,12 +526,45 @@ public class CtlEarlReporter {
     }
     
    private void addTestInputs(Model earl, String params) {
-        Bag inputs = earl.createBag();
-        
-                Resource testInput = earl.createResource(CONTENT.ContentAsXML);
-                testInput.addProperty(DCTerms.description, params);
-                inputs.add(testInput);
-        
+	   Bag inputs = earl.createBag();
+	    DocumentBuilder docBuild;
+	    Document inputDoc = null;
+	    if(!params.equals("") && params != null){
+		try {
+			docBuild = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		
+	    InputSource inputsrc = new InputSource();
+	    inputsrc.setCharacterStream(new StringReader(params));
+
+	    inputDoc = docBuild.parse(inputsrc);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+		NodeList valuesList = inputDoc.getElementsByTagName("values");
+		Element valuesElement = (Element) valuesList.item(0);
+		NodeList valueList = valuesElement.getElementsByTagName("value");
+		String value = "";
+		String key = "";
+		
+		for (int i = 0; i < valueList.getLength(); i++) {
+		      Element valueElement = (Element) valueList.item(i);  
+		      key = valueElement.getAttribute("key");
+		      NodeList fileList = valueElement.getElementsByTagName("file-entry");
+   		  
+		      System.out.println("Element Name:  " + valueElement.getNodeName());
+		      if(fileList.getLength() > 0){
+		    	  Element fileElement = (Element) fileList.item(0);
+		    		  System.out.println("Key: " + valueElement.getAttribute("key"));
+		    		  value = fileElement.getAttribute("full-path");
+		      } else value = valueElement.getTextContent();
+		      
+		      System.out.println("Key: " + valueElement.getAttribute("key")+ " ==> " + "Value: " + value);
+		      Resource testInputs = earl.createResource();
+		      testInputs.addProperty(DCTerms.title, key);
+		      testInputs.addProperty(DCTerms.description, value);
+               inputs.add(testInputs);
+		    }
+	    }
         this.testRun.addProperty(CITE.inputs, inputs);
     }
     

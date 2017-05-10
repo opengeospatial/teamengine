@@ -38,21 +38,61 @@
 			<body>
 				<h3>
 					<font color="black">
-					
-						Test Name: <xsl:value-of select="rdf:RDF/cite:TestRun/dct:title" />
+						
+						<xsl:variable name="testTitle" select="rdf:RDF/cite:TestRun/dct:title" />
+						<xsl:variable name="delimiters">
+							<xsl:choose>
+									<xsl:when test="contains($testTitle, '_')">
+										<xsl:value-of select="'_'"/>
+									</xsl:when>
+									<xsl:when test="contains($testTitle, '-') and not(contains($testTitle, '_'))">
+										<xsl:value-of select="'-'"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="'_'" />
+									</xsl:otherwise>	
+								</xsl:choose>
+						</xsl:variable>
+						<xsl:variable name="testVersion">
+							<xsl:call-template name="substring-before-after">
+							  <xsl:with-param name="getString" select="'after'" />
+							  <xsl:with-param name="string" select="$testTitle" />
+							  <xsl:with-param name="delimiter" select="$delimiters" />
+							</xsl:call-template>
+						</xsl:variable>
+						
+						<xsl:variable name="testName">
+							<xsl:call-template name="substring-before-after">
+							  <xsl:with-param name="getString" select="'before'" />
+							  <xsl:with-param name="string" select="$testTitle" />
+							  <xsl:with-param name="delimiter" select="$delimiters" />
+							</xsl:call-template>
+						</xsl:variable>
+						
+						Test Name: <xsl:value-of select="$testName" />
+						<br />
+						Test version: <xsl:value-of select="$testVersion" />
 						<br />
 						Time:
 						<xsl:value-of select="rdf:RDF/cite:TestRun/dct:created"/>
 						<br />
 						Test INPUT: 
 						<xsl:choose>
-							<xsl:when test="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li/cnt:ContentAsXML/dct:description">
+							<xsl:when test="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
+							<p>
+								<table border="1" style="border-collapse:collapse; table-layout:fixed;" >
+									<xsl:for-each select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
+										<tr>
+											<td style="word-wrap:break-word; width:300px"><xsl:value-of select="dct:title" /></td>
+											<td style="word-wrap:break-word; width:300px"><xsl:value-of select="dct:description" /></td>
+										</tr>
+									</xsl:for-each>
+								</table>
+							</p>
 								<div style="text-indent:50px;"> <xsl:value-of select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li/cnt:ContentAsXML/dct:description"/> </div>
 							</xsl:when>
 							<xsl:otherwise>
-								
-								<div style="text-indent:50px;"> Resource: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li/dct:title" /> </div>
-								<div style="text-indent:50px;"> URI: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li/dct:description" /> </div>
+							<xsl:value-of select="NULL" />
 							</xsl:otherwise>	
 						</xsl:choose>			
 						Result: <br />
@@ -527,4 +567,39 @@
 		</xsl:for-each> <!--  TestRequirement --> 
 	</xsl:template>
 
+	<xsl:template name="substring-before-after">
+	<xsl:param name="getString" />
+    <xsl:param name="string" />
+    <xsl:param name="delimiter" />
+    <xsl:choose>
+    <xsl:when test="$getString = 'after'">
+    <xsl:choose>
+      <xsl:when test="contains($string, $delimiter)">
+        <xsl:call-template name="substring-before-after">
+        <xsl:with-param name="getString" select="$getString" />
+          <xsl:with-param name="string" select="substring-after($string, $delimiter)" />
+          <xsl:with-param name="delimiter" select="$delimiter" />
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+      	<xsl:value-of select="$string" />
+      </xsl:otherwise>
+    </xsl:choose>
+    </xsl:when>
+    <xsl:when test="$getString = 'before'">
+    	 <xsl:choose>
+	    	<xsl:when test="contains($string, $delimiter)">
+		    	<xsl:variable name="s-tokenized" select="tokenize($string, $delimiter)"/>
+				<xsl:value-of select="replace(string-join(remove($s-tokenized, count($s-tokenized)),$delimiter), $delimiter, ' ')"/>
+			</xsl:when>
+	      <xsl:otherwise>
+	      	<xsl:value-of select="$string" />
+	      </xsl:otherwise>
+    	</xsl:choose>	
+    </xsl:when>
+    <xsl:otherwise>
+    	<xsl:value-of select="$string" />
+    </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 </xsl:stylesheet>

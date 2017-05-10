@@ -219,7 +219,7 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
-  public String userInputs = "";
+  public static String userInputs = "";
 
   public TECore() {
 
@@ -333,7 +333,7 @@ public class TECore implements Runnable {
         // Create xml execution report file
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
-        System.out.println("Form Result: " + this.userInputs);
+        System.out.println("Form Result: " + userInputs);
          
         
         /*
@@ -346,10 +346,10 @@ public class TECore implements Runnable {
 					File testLog = new File(resultsDir, "report_logs.xml");
 					CtlEarlReporter report = new CtlEarlReporter();
 
-					if (null != opts.getSuiteName()) {
+					if (null != opts.getSourcesName()) {
 						report.generateEarlReport(resultsDir, testLog,
-								opts.getSuiteName(),
-								this.userInputs);
+								opts.getSourcesName(),
+								userInputs);
 					}
 				} catch (IOException iox) {
 					throw new RuntimeException(
@@ -1345,7 +1345,7 @@ public class TECore implements Runnable {
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.transform(new DOMSource(doc), new StreamResult(sw));
-      this.userInputs = sw.toString();
+      userInputs = sw.toString();
       LOGR.info("Setting form results:\n " + sw.toString());
     } catch(Exception e) {
       LOGR.log(Level.SEVERE, "Failed to log the form results", e);
