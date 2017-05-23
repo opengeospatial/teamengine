@@ -17,6 +17,7 @@
 	<xsl:param name="outputDir"/>
     <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" /> 
     <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" /> 	
+    
     <xsl:variable name="htmlXslt.outputDir" select="$outputDir" /> 	
 
 	
@@ -75,6 +76,17 @@
 						<br />
 						Time:
 						<xsl:value-of select="rdf:RDF/cite:TestRun/dct:created"/>
+						<br />
+						Basic Conformance Classes:
+						<table border="1" style="border-collapse:collapse; table-layout:fixed;" >
+							<xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
+							<xsl:if test="cite:isBasic = 'true'">
+								<tr>
+									<td style="word-wrap:break-word; width:300px"><xsl:value-of select="dct:title" /></td>
+								</tr>
+							</xsl:if>
+							</xsl:for-each>
+						</table>
 						<br />
 						Test INPUT: 
 						<xsl:choose>
