@@ -78,29 +78,18 @@
 						<xsl:value-of select="rdf:RDF/cite:TestRun/dct:created"/>
 						<br />
 						Basic Conformance Classes:
-						<table border="1" style="border-collapse:collapse; table-layout:fixed;" >
-							<xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
+						<xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
 							<xsl:if test="cite:isBasic = 'true'">
-								<tr>
-									<td style="word-wrap:break-word; width:300px"><xsl:value-of select="dct:title" /></td>
-								</tr>
+								<div style="text-indent:50px;"> <xsl:value-of select="dct:title" /></div>
 							</xsl:if>
-							</xsl:for-each>
-						</table>
+						</xsl:for-each>
 						<br />
 						Test INPUT: 
 						<xsl:choose>
 							<xsl:when test="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
-							<p>
-								<table border="1" style="border-collapse:collapse; table-layout:fixed;" >
-									<xsl:for-each select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
-										<tr>
-											<td style="word-wrap:break-word; width:300px"><xsl:value-of select="dct:title" /></td>
-											<td style="word-wrap:break-word; width:300px"><xsl:value-of select="dct:description" /></td>
-										</tr>
-									</xsl:for-each>
-								</table>
-							</p>
+							<xsl:for-each select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
+							<div style="text-indent:50px;"> <xsl:value-of select="dct:title" /> :  <xsl:value-of select="dct:description" /></div>
+							</xsl:for-each>
 								<div style="text-indent:50px;"> <xsl:value-of select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li/cnt:ContentAsXML/dct:description"/> </div>
 							</xsl:when>
 							<xsl:otherwise>
