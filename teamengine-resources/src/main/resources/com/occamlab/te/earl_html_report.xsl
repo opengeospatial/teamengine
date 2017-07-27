@@ -178,6 +178,16 @@
 						</xsl:variable> -->
 						<xsl:value-of select="cite:testsSkipped" />
 					</td>
+					<td>
+						Total tests:
+						<xsl:variable name="totalTestCount">
+							<xsl:call-template name="testCount">
+								<xsl:with-param name="count" select="0" />
+							</xsl:call-template>
+						</xsl:variable>
+						
+						<xsl:value-of select="string-length($totalTestCount)" />
+					</td>
 				</tr>
 			</table>
 		</p>
@@ -187,9 +197,8 @@
 	</xsl:template>
 
 	<!-- Get the count of the test result according to conformace class E.g. Pass: Fail: Skip:   -->
-	<xsl:template name="resultCount">
+	<xsl:template name="testCount">
 
-		<xsl:param name="result_status" />
 		<xsl:param name="count" />
 
 		<xsl:for-each select="dct:hasPart">
@@ -210,7 +219,7 @@
 			</xsl:variable>
 
 
-			<xsl:for-each select="../..//earl:Assertion">
+			<xsl:for-each select="../../../../../..//earl:Assertion">
 
 				<xsl:variable name="assertion_test_uri">
 					<xsl:choose>
@@ -222,13 +231,9 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-				<xsl:variable name="result"
-					select="earl:result/earl:TestResult/earl:outcome/@rdf:resource" />
 				<xsl:if test="$test_uri = $assertion_test_uri">
-					<xsl:if test="substring-after($result, '#')=$result_status">
-						<xsl:variable name="count" select="$count+1" />
-						<xsl:value-of select="$count" />
-					</xsl:if>
+					<xsl:variable name="count" select="$count+1" />
+					<xsl:value-of select="$count" />
 				</xsl:if>
 			</xsl:for-each>
 

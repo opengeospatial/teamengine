@@ -334,15 +334,16 @@ public class TECore implements Runnable {
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
         System.out.println("Form Result: " + userInputs);
-         
-        
+        File resultsDir = new File(opts.getLogDir(),
+				opts.getSessionId());
+         if (! new File(resultsDir, "testng").exists())
+         {
         /*
          *  Transform CTL result into EARL result, 
          *  when the CTL test is executed through the webapp.
          */
 				try {
-					File resultsDir = new File(opts.getLogDir(),
-							opts.getSessionId());
+					
 					File testLog = new File(resultsDir, "report_logs.xml");
 					CtlEarlReporter report = new CtlEarlReporter();
 
@@ -355,6 +356,7 @@ public class TECore implements Runnable {
 					throw new RuntimeException(
 							"Failed to serialize EARL results to " + iox);
 				}
+      }
       }
     }
   }
