@@ -150,7 +150,7 @@ public class TestNGExecutor implements TestRunExecutor {
     File getResultsFile(String mediaType, String outputDirectory) throws FileNotFoundException {
         // split out any media type parameters
         String contentType = mediaType.split(";")[0];
-        String fileName = (contentType.endsWith("rdf+xml")) ? "earl.rdf" : "testng-results.xml";
+        String fileName = (contentType.endsWith("rdf+xml")) ? "earl-results.rdf" : "testng-results.xml";
         File resultsFile = new File(outputDirectory, fileName);
         if (!resultsFile.exists()) {
             throw new FileNotFoundException("Test run results not found at " + resultsFile.getAbsolutePath());
