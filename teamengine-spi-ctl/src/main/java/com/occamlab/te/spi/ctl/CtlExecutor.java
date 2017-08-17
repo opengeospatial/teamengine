@@ -11,6 +11,7 @@ import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.spi.executors.TestRunExecutor;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.UUID;
@@ -98,8 +99,9 @@ public class CtlExecutor implements TestRunExecutor {
         docFactory.setXIncludeAware(true);
         Source results = null;
         try {
-            Document resultsDoc = docFactory.newDocumentBuilder().parse(testLog);
-            results = new DOMSource(resultsDoc, testLog.toURI().toString());
+            File resultsFile = getResultsFile(getPreferredMediaType(testRunArgs), resultsDir.toString());
+            Document resultsDoc = docFactory.newDocumentBuilder().parse(resultsFile);
+            results = new DOMSource(resultsDoc, resultsFile.toURI().toString());
             //results = new StreamSource(new FileInputStream(testLog), testLog.toURI().toString());
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new RuntimeException(e);
@@ -137,6 +139,51 @@ public class CtlExecutor implements TestRunExecutor {
             }
         }
         return runOpts;
+    }
+    
+    /**
+     * Returns the test results in the specified format. The default media type
+     * is "application/xml", but "application/rdf+xml" (RDF/XML) is also
+     * supported.
+     * 
+     * @param mediaType
+     *            The media type of the test results (XML or RDF/XML).
+     * @param outputDirectory
+     *            The directory containing the test run output.
+     * @return A File containing the test results.
+     * @throws FileNotFoundException
+     *             If no test results are found.
+     */
+    File getResultsFile(String mediaType, String outputDirectory) throws FileNotFoundException {
+        // split out any media type parameters
+        String contentType = mediaType.split(";")[0];
+        String fileName = (contentType.endsWith("rdf+xml")) ? "earl-results.rdf" : "report_logs.xml";
+        File resultsFile = new File(outputDirectory, fileName);
+        if (!resultsFile.exists()) {
+            throw new FileNotFoundException("Test run results not found at " + resultsFile.getAbsolutePath());
+        }
+        return resultsFile;
+    }
+    
+    /**
+     * Gets the preferred media type for the test results as indicated by the
+     * value of the "acceptMediaType" key in the given properties file. The
+     * default value is "application/xml".
+     * 
+     * @param testRunArgs
+     *            An XML properties file containing test run arguments.
+     * @return The preferred media type.
+     */
+    String getPreferredMediaType(Document testRunArgs) {
+        String mediaType = "application/xml";
+        NodeList entries = testRunArgs.getElementsByTagName("entry");
+        for (int i = 0; i < entries.getLength(); i++) {
+            Element entry = (Element) entries.item(i);
+            if (entry.getAttribute("key").equals("acceptMediaType")) {
+                mediaType = entry.getTextContent().trim();
+            }
+        }
+        return mediaType;
     }
 
 }
