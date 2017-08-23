@@ -118,6 +118,5 @@
   <properties>
     <docker.image.prefix>opengis</docker.image.prefix>
     <docker.image.name>teamengine</docker.image.name>
-    <ets-wfs20.version>1.22</ets-wfs20.version>
   </properties>
 </project>
