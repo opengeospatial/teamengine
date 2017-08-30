@@ -84,7 +84,7 @@ public class CtlEarlReporter {
         totalInheritedFailureCount = 0;
     }
 
-    public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, String iut) throws UnsupportedEncodingException {
+    public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, Map params) throws UnsupportedEncodingException {
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
@@ -97,13 +97,13 @@ public class CtlEarlReporter {
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
-
+        String iut = "";
         document.getDocumentElement().normalize();
 
         // Here comes the root node
         Element root = document.getDocumentElement();
         Model model = initializeModel(suiteName, iut);
-        addTestInputs(model, iut);
+        addTestInputs(model, params);
         this.reqs = model.createSeq();
 
         NodeList executionList = document.getElementsByTagName("execution");
@@ -169,13 +169,23 @@ public class CtlEarlReporter {
             for (int j = 0; j < logList.getLength(); j++) {
 
                 Element logElements = (Element) logList.item(j);
-                String decodedBaseURL = "";
+        		String baseUrl= "";
+        		String logtestcall = "";
+        		String decodedBaseURL = java.net.URLDecoder.decode(logElements.getAttribute("xml:base"), "UTF-8");
 
-                decodedBaseURL = java.net.URLDecoder.decode(logElements.getAttribute("xml:base"), "UTF-8");
-                String baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
-        		int first = baseUrl.indexOf(System.getProperty("file.separator"));
-        		int second = baseUrl.indexOf(System.getProperty("file.separator"), first + 1);
-        		String logtestcall = baseUrl.substring(second + 1, baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        		if (decodedBaseURL.contains("users")) {
+        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
+        			int first = baseUrl.indexOf(System.getProperty("file.separator"));
+        			int second = baseUrl.indexOf(System.getProperty("file.separator"),
+        					first + 1);
+        			logtestcall = baseUrl.substring(second + 1,
+        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        		} else if (decodedBaseURL.contains("temp")) {
+        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("temp"));
+        			logtestcall = baseUrl.substring(
+        					baseUrl.indexOf(System.getProperty("file.separator")) + 1,
+        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        		}
 
         		if(logtestcall.contains("\\")){
         			logtestcall = logtestcall.replace("\\", "/");
@@ -328,10 +338,21 @@ public class CtlEarlReporter {
                 childlogElements = (Element) logList.item(m);
                 String decodedBaseURL = java.net.URLDecoder.decode(childlogElements.getAttribute("xml:base"), "UTF-8");
 
-                String baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
-        		int first = baseUrl.indexOf(System.getProperty("file.separator"));
-        		int second = baseUrl.indexOf(System.getProperty("file.separator"), first + 1);
-        		childLogtestcall = baseUrl.substring(second + 1, baseUrl.lastIndexOf(System.getProperty("file.separator")));
+            	String baseUrl= "";
+
+        		if (decodedBaseURL.contains("users")) {
+        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
+        			int first = baseUrl.indexOf(System.getProperty("file.separator"));
+        			int second = baseUrl.indexOf(System.getProperty("file.separator"),
+        					first + 1);
+        			childLogtestcall = baseUrl.substring(second + 1,
+        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        		} else if (decodedBaseURL.contains("temp")) {
+        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("temp"));
+        			childLogtestcall = baseUrl.substring(
+        					baseUrl.indexOf(System.getProperty("file.separator")) + 1,
+        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        		}
 
         		if(childLogtestcall.contains("\\")){
         			childLogtestcall = childLogtestcall.replace("\\", "/");
@@ -524,49 +545,26 @@ public class CtlEarlReporter {
 			earlResult.addProperty(CITE.message, httpReq);
 		}
     }
-    
-   private void addTestInputs(Model earl, String params) {
-	   Bag inputs = earl.createBag();
-	    DocumentBuilder docBuild;
-	    Document inputDoc = null;
-	    if(!params.equals("") && params != null){
-		try {
-			docBuild = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		
-	    InputSource inputsrc = new InputSource();
-	    inputsrc.setCharacterStream(new StringReader(params));
-
-	    inputDoc = docBuild.parse(inputsrc);
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			e.printStackTrace();
+    /**
+     * This method is used to add test inputs in to earl report.
+     * @param earl Model object to add the result into it.
+     * @param params 
+     * 			The variable is type of Map with all the user input.
+     */
+	private void addTestInputs(Model earl, Map<String, String> params) {
+		Bag inputs = earl.createBag();
+		if (!params.equals("") && params != null) {
+			String value = "";
+			for (String key : params.keySet()) {
+				value = params.get(key);
+				Resource testInputs = earl.createResource();
+				testInputs.addProperty(DCTerms.title, key);
+				testInputs.addProperty(DCTerms.description, value);
+				inputs.add(testInputs);
+			}
 		}
-		NodeList valuesList = inputDoc.getElementsByTagName("values");
-		Element valuesElement = (Element) valuesList.item(0);
-		NodeList valueList = valuesElement.getElementsByTagName("value");
-		String value = "";
-		String key = "";
-		
-		for (int i = 0; i < valueList.getLength(); i++) {
-		      Element valueElement = (Element) valueList.item(i);  
-		      key = valueElement.getAttribute("key");
-		      NodeList fileList = valueElement.getElementsByTagName("file-entry");
-   		  
-		      System.out.println("Element Name:  " + valueElement.getNodeName());
-		      if(fileList.getLength() > 0){
-		    	  Element fileElement = (Element) fileList.item(0);
-		    		  System.out.println("Key: " + valueElement.getAttribute("key"));
-		    		  value = fileElement.getAttribute("full-path");
-		      } else value = valueElement.getTextContent();
-		      
-		      System.out.println("Key: " + valueElement.getAttribute("key")+ " ==> " + "Value: " + value);
-		      Resource testInputs = earl.createResource();
-		      testInputs.addProperty(DCTerms.title, key);
-		      testInputs.addProperty(DCTerms.description, value);
-               inputs.add(testInputs);
-		    }
-	    }
-        this.testRun.addProperty(CITE.inputs, inputs);
-    }
+		this.testRun.addProperty(CITE.inputs, inputs);
+	}
     
     /*
      * Write CTL result into EARL report.

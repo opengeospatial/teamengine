@@ -219,7 +219,7 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
-  public static String userInputs = "";
+  public static Document userInputs = null;
 
   public TECore() {
 
@@ -333,10 +333,12 @@ public class TECore implements Runnable {
         // Create xml execution report file
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
-        System.out.println("Form Result: " + userInputs);
         File resultsDir = new File(opts.getLogDir(),
 				opts.getSessionId());
-         if (! new File(resultsDir, "testng").exists())
+        Map<String, String> testInputMap = new HashMap<String, String>();
+        testInputMap = extractTestInputs(userInputs, opts);
+        
+         if (! new File(resultsDir, "testng").exists() && null != testInputMap)
          {
         /*
          *  Transform CTL result into EARL result, 
@@ -350,7 +352,7 @@ public class TECore implements Runnable {
 					if (null != opts.getSourcesName()) {
 						report.generateEarlReport(resultsDir, testLog,
 								opts.getSourcesName(),
-								userInputs);
+								testInputMap);
 					}
 				} catch (IOException iox) {
 					throw new RuntimeException(
@@ -1347,7 +1349,9 @@ public class TECore implements Runnable {
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.transform(new DOMSource(doc), new StreamResult(sw));
-      userInputs = sw.toString();
+      if(userInputs == null){
+      userInputs = doc;
+      }
       LOGR.info("Setting form results:\n " + sw.toString());
     } catch(Exception e) {
       LOGR.log(Level.SEVERE, "Failed to log the form results", e);
@@ -2504,7 +2508,37 @@ public class TECore implements Runnable {
 			System.out.println(e.getMessage() + e.getCause());
 		}
 	}
-  
+
+	/**
+	 * This method is used to extract the test input into
+	 * Map from the document element.
+	 * @param userInput Document node
+	 * @param runOpts 
+	 * @return User Input Map
+	 */
+	private Map<String, String> extractTestInputs(Document userInput,
+			RuntimeOptions runOpts) {
+		Map<String, String> inputMap = new HashMap<String, String>();
+		if (null != userInputs) {
+			NodeList values = userInputs.getDocumentElement()
+					.getElementsByTagName("value");
+			if (values.getLength() == 0) {
+				throw new IllegalArgumentException("No test inputs found.");
+			}
+			for (int i = 0; i < values.getLength(); i++) {
+				Element value = (Element) values.item(i);
+				inputMap.put(value.getAttribute("key"), value.getTextContent());
+			}
+		} else if (null != opts.getParams()) {
+			List<String> runParams = opts.getParams();
+			for (String param : runParams) {
+				String[] kvp = param.split("=");
+				inputMap.put(kvp[0], kvp[1]);
+			}
+		}
+		return inputMap;
+	}
+	
   /**
    * Builds a DOM Document representing a classpath resource.
    *

@@ -1,17 +1,15 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -27,134 +25,47 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
-import com.sun.jersey.multipart.FormDataParam;
 
-/**
- * A controller resource that provides the results of a test run. An XML
- * representation of the results is obtained using HTTP/1.1 methods in accord
- * with the JAX-RS 1.1 specification (JSR 311).
- * 
- * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
- */
-@Path("suites/{etsCode}/{etsVersion}/run")
-@Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/zip; charset='utf-8'" })
-public class TestRunResource {
+@Path("suites/{etsCode}/{etsVersion}/html/run")
+@Produces("application/zip")
+public class TestResultLog {
 
-    private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
+	private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
     @Context
     private UriInfo reqUriInfo;
 
     @Context
     private HttpHeaders headers;
-
-    /**
-     * Processes a request submitted using the GET method. The test run
-     * arguments are specified in the query component of the Request-URI as a
-     * sequence of key-value pairs.
-     * 
-     * @param etsCode
-     *            A String that identifies the test suite to be run.
-     * @param etsVersion
-     *            A String specifying the desired test suite version.
-     * @return An XML representation of the test results.
-     */
-    @GET
-    public Source handleGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion) {
-        MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
+	
+	@GET
+   // @Consumes({"application/html"})
+    public Response handleHtmlGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) throws IOException {
+    	MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
         Source results = executeTestRun(etsCode, etsVersion, params);
-        return results;
-    }
-
-    /**
-     * Processes a request submitted using the POST method. The request entity
-     * represents the test subject or provides metadata about it. The entity
-     * body is written to a local file, the location of which is set as the
-     * value of the {@code iut} parameter.
-     * 
-     * @param etsCode
-     *            A String that identifies the test suite to be run.
-     * @param etsVersion
-     *            A String specifying the desired test suite version.
-     * @param entityBody
-     *            A File containing the request entity body.
-     * @return An XML representation of the test results.
-     */
-    @POST
-    @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    public Source handlePost(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion,
-            File entityBody) {
-        if (!entityBody.exists() || entityBody.length() == 0) {
-            throw new WebApplicationException(400);
+        
+        String htmlOutput = results.getSystemId().toString();
+        int  count = htmlOutput.split(":", -1).length-1;
+		String zipFile = (count > 1) ? htmlOutput.split("file:/")[1] : htmlOutput.split("file:")[1];
+        File fileOut = new File(zipFile);
+        if (!fileOut.exists()) {
+            throw new WebApplicationException(404);
         }
-        Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
-        args.put("iut", Arrays.asList(entityBody.toURI().toString()));
-        Source results = executeTestRun(etsCode, etsVersion, args);
-        return results;
+        return Response
+                .ok(FileUtils.readFileToByteArray(fileOut))
+                .type("application/zip")
+                .header("Content-Disposition", "attachment; filename=\"result.zip\";").header("Cache-Control", "no-cache")
+                .build();
+        //return results;
     }
-
-    /**
-     * Processes a request containing a multipart (multipart/form-data) entity.
-     * The entity is expected to consist of two parts:
-     * <ol>
-     * <li>The (required) "iut" part represents the test subject or provides
-     * metadata about it; the entity body is written to a local file, the
-     * location of which is set as the value of the {@code iut } argument.</li>
-     * <li>The "sch" part defines supplementary constraints defined in a
-     * Schematron schema; it is also written to a local file, the location of
-     * which is set as the value of the {@code sch} argument.</li>
-     * </ol>
-     * 
-     * @param etsCode
-     *            A String that identifies the test suite to be run.
-     * @param etsVersion
-     *            A String specifying the desired test suite version.
-     * @param entityBody
-     *            A File containing a representation of the test subject.
-     * @param schBody
-     *            A File containing supplementary constraints (e.g. a Schematron
-     *            schema).
-     * @return An XML representation of the test results.
-     * 
-     * @see <a href="http://tools.ietf.org/html/rfc7578" target="_blank">RFC
-     *      7578: Returning Values from Forms: multipart/form-data</a>
-     * @see <a href=
-     *      "http://standards.iso.org/ittf/PubliclyAvailableStandards/c040833_ISO_IEC_19757-3_2006(E).zip"
-     *      target="_blank">ISO 19757-3: Schematron</a>
-     */
-    @POST
-    @Consumes({ MediaType.MULTIPART_FORM_DATA })
-    public Source handleMultipartFormData(@PathParam("etsCode") String etsCode,
-            @PathParam("etsVersion") String etsVersion, @FormDataParam("iut") File entityBody,
-            @FormDataParam("sch") File schBody) {
-        Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
-        if (!entityBody.exists() || entityBody.length() == 0) {
-            throw new WebApplicationException(400);
-        }
-        args.put("iut", Arrays.asList(entityBody.toURI().toString()));
-        if (null != schBody) {
-            if (!schBody.exists() || schBody.length() == 0) {
-                throw new WebApplicationException(400);
-            }
-            if (LOGR.isLoggable(Level.FINE)) {
-                StringBuilder msg = new StringBuilder("Test run arguments - ");
-                msg.append(etsCode).append("/").append(etsVersion).append("\n");
-                msg.append("Entity media type: " + this.headers.getMediaType());
-                msg.append("File location: " + schBody.getAbsolutePath());
-                LOGR.fine(msg.toString());
-            }
-            args.put("sch", Arrays.asList(schBody.toURI().toString()));
-        }
-        Source results = executeTestRun(etsCode, etsVersion, args);
-        return results;
-    }
-
-    /**
+	
+	/**
      * Executes a test run using the supplied arguments.
      * 
      * @param etsCode
