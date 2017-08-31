@@ -81,7 +81,8 @@ public class EarlReporter implements IReporter {
     }
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
+            String outputDirectory) {
         for (ISuite suite : suites) {
             Model model = initializeModel(suite);
             addTestRequirements(model, suite.getXmlSuite().getTests());
@@ -90,7 +91,8 @@ public class EarlReporter implements IReporter {
             this.testRun.addLiteral(CITE.testsPassed, new Integer(summary.getTotalPassed()));
             this.testRun.addLiteral(CITE.testsFailed, new Integer(summary.getTotalFailed()));
             this.testRun.addLiteral(CITE.testsSkipped, new Integer(summary.getTotalSkipped()));
-            Literal duration = model.createTypedLiteral(summary.getTotalDuration(), XSDDatatype.XSDduration);
+            Literal duration = model.createTypedLiteral(summary.getTotalDuration(),
+                    XSDDatatype.XSDduration);
             this.testRun.addLiteral(DCTerms.extent, duration);
             processSuiteResults(model, suite.getResults());
             this.earlModel.add(model);
@@ -102,7 +104,8 @@ public class EarlReporter implements IReporter {
         try {
             writeModel(this.earlModel, outputDir, true);
         } catch (IOException iox) {
-            throw new RuntimeException("Failed to serialize EARL results to " + outputDir.getAbsolutePath(), iox);
+            throw new RuntimeException(
+                    "Failed to serialize EARL results to " + outputDir.getAbsolutePath(), iox);
         }
     }
 
@@ -162,10 +165,12 @@ public class EarlReporter implements IReporter {
         this.testRun.addProperty(DCTerms.title, suite.getName());
         String nowUTC = ZonedDateTime.now(ZoneId.of("Z")).format(DateTimeFormatter.ISO_INSTANT);
         this.testRun.addProperty(DCTerms.created, nowUTC);
-        this.assertor = model.createResource("https://github.com/opengeospatial/teamengine", EARL.Assertor);
+        this.assertor = model.createResource("https://github.com/opengeospatial/teamengine",
+                EARL.Assertor);
         this.assertor.addProperty(DCTerms.title, "OGC TEAM Engine", this.langCode);
         this.assertor.addProperty(DCTerms.description,
-                "Official test harness of the OGC conformance testing program (CITE).", this.langCode);
+                "Official test harness of the OGC conformance testing program (CITE).",
+                this.langCode);
         Map<String, String> params = suite.getXmlSuite().getAllParameters();
         String iut = params.get("iut");
         if (null == iut) {
@@ -180,7 +185,8 @@ public class EarlReporter implements IReporter {
             }
         }
         if (null == iut) {
-            throw new NullPointerException("Unable to find URI reference for IUT in test run parameters.");
+            throw new NullPointerException(
+                    "Unable to find URI reference for IUT in test run parameters.");
         }
         this.testSubject = model.createResource(iut, EARL.TestSubject);
         return model;
@@ -206,8 +212,13 @@ public class EarlReporter implements IReporter {
         			key = ccEntry.getKey();	
         		}
         	}
-            Resource testReq = earl.createResource(testName.replaceAll("\\s", "-"), EARL.TestRequirement);
+            Resource testReq = earl.createResource(testName.replaceAll("\\s", "-"),
+                    EARL.TestRequirement);
             testReq.addProperty(DCTerms.title, testName);
+            String testOptionality = xmlTest.getParameter(CITE.CC_OPTIONALITY);
+            if (null != testOptionality && !testOptionality.isEmpty()) {
+                testReq.addProperty(CITE.optionality, testOptionality);
+            }
             if(null != key){
                 List<String> ConfClass = config.getConformanceClassMap().get(key);
                 for (String cClass : ConfClass) {
@@ -268,7 +279,8 @@ public class EarlReporter implements IReporter {
      */
     void writeModel(Model model, File outputDirectory, boolean abbreviated) throws IOException {
         if (!outputDirectory.isDirectory()) {
-            throw new IllegalArgumentException("Directory does not exist at " + outputDirectory.getAbsolutePath());
+            throw new IllegalArgumentException(
+                    "Directory does not exist at " + outputDirectory.getAbsolutePath());
         }
         File outputFile = new File(outputDirectory, "earl-results.rdf");
         if (!outputFile.createNewFile()) {
@@ -277,8 +289,8 @@ public class EarlReporter implements IReporter {
         }
         LOGR.log(Level.CONFIG, "Writing EARL results to" + outputFile.getAbsolutePath());
         String syntax = (abbreviated) ? "RDF/XML-ABBREV" : "RDF/XML";
-        String baseUri = new StringBuilder("http://example.org/earl/").append(outputDirectory.getName()).append('/')
-                .toString();
+        String baseUri = new StringBuilder("http://example.org/earl/")
+                .append(outputDirectory.getName()).append('/').toString();
         OutputStream outStream = new FileOutputStream(outputFile);
         try (Writer writer = new OutputStreamWriter(outStream, StandardCharsets.UTF_8)) {
             model.write(writer, syntax, baseUri);
@@ -324,12 +336,14 @@ public class EarlReporter implements IReporter {
             long endTime = tngResult.getEndMillis();
             GregorianCalendar calTime = new GregorianCalendar(TimeZone.getDefault());
             calTime.setTimeInMillis(endTime);
-            Resource assertion = earl.createResource("assert-" + ++this.resultCount, EARL.Assertion);
+            Resource assertion = earl.createResource("assert-" + ++this.resultCount,
+                    EARL.Assertion);
             assertion.addProperty(EARL.mode, EARL.AutomaticMode);
             assertion.addProperty(EARL.assertedBy, this.assertor);
             assertion.addProperty(EARL.subject, this.testSubject);
             // link earl:TestResult to earl:Assertion
-            Resource earlResult = earl.createResource("result-" + this.resultCount, EARL.TestResult);
+            Resource earlResult = earl.createResource("result-" + this.resultCount,
+                    EARL.TestResult);
             earlResult.addProperty(DCTerms.date, earl.createTypedLiteral(calTime));
             switch (tngResult.getStatus()) {
             case ITestResult.FAILURE:
