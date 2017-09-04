@@ -43,7 +43,8 @@ public void jspInit() {
 <%@page import="java.net.URLEncoder"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>			
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>			
 		<title>Test Session Results</title>
 		<script>
 		var checkStopSession="<%=request.getParameter("stop")%>";
@@ -94,6 +95,15 @@ public void jspInit() {
 				var testDetailsUrl = path.substring(path.lastIndexOf("/") + 1, path.length);
 				window.location.replace("<%=request.getContextPath()%>"+ "/reports/" + "<%=request.getRemoteUser()%>" + "/" + "<%=request.getParameter("session")%>" +"/result/"+ testDetailsUrl);
 			}
+			
+		    $( document ).ready(function() {
+		        console.log( "document loaded" );
+		       	var no_of_cc = $("#noConformanceClass").val();
+		       	if(no_of_cc == 0){
+		       		alert("This test suite does not support HTML reports and the old report must be used instead.");
+		       	}
+		    });
+			
 		</script>		
 	</head>
 	<body>
