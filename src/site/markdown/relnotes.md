@@ -2,6 +2,8 @@ Release Notes
 =============
 
 ## 4.11 (2017-09-04)
+- Merge [#211](https://github.com/opengeospatial/teamengine/pull/211): Earl reporting
+- Merge [#225](https://github.com/opengeospatial/teamengine/pull/225): Added Message in result page.
 - Merge [#153](https://github.com/opengeospatial/teamengine/pull/153): squid:CommentedOutCodeLine - Sections of code should not be commented out
 
 ## 4.10 (2016-11-23)
