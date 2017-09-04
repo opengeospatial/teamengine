@@ -61,6 +61,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -68,6 +69,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.XMLConstants; // Addition for Fortify modifications
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Comment;
@@ -217,6 +219,7 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
+  public static Document userInputs = null;
 
   public TECore() {
 
@@ -330,6 +333,32 @@ public class TECore implements Runnable {
         // Create xml execution report file
         LogUtils.createFullReportLog(opts.getLogDir().getAbsolutePath()
                 + File.separator + opts.getSessionId());
+        File resultsDir = new File(opts.getLogDir(),
+				opts.getSessionId());
+        Map<String, String> testInputMap = new HashMap<String, String>();
+        testInputMap = extractTestInputs(userInputs, opts);
+        
+         if (! new File(resultsDir, "testng").exists() && null != testInputMap)
+         {
+        /*
+         *  Transform CTL result into EARL result, 
+         *  when the CTL test is executed through the webapp.
+         */
+				try {
+					
+					File testLog = new File(resultsDir, "report_logs.xml");
+					CtlEarlReporter report = new CtlEarlReporter();
+
+					if (null != opts.getSourcesName()) {
+						report.generateEarlReport(resultsDir, testLog,
+								opts.getSourcesName(),
+								testInputMap);
+					}
+				} catch (IOException iox) {
+					throw new RuntimeException(
+							"Failed to serialize EARL results to " + iox);
+				}
+      }
       }
     }
   }
@@ -1320,6 +1349,9 @@ public class TECore implements Runnable {
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.transform(new DOMSource(doc), new StreamResult(sw));
+      if(userInputs == null){
+      userInputs = doc;
+      }
       LOGR.info("Setting form results:\n " + sw.toString());
     } catch(Exception e) {
       LOGR.log(Level.SEVERE, "Failed to log the form results", e);
@@ -2443,7 +2475,70 @@ public class TECore implements Runnable {
   public void setTestServletURL(String testServletURL) {
     this.testServletURL = testServletURL;
   }
+  	/**
+  	 * Transform CTL result into EARL report using XSLT.
+  	 * @param outputDir 
+  	 */
+	public void earlHtmlReport(String outputDir) {
 
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		String resourceDir = cl.getResource("com/occamlab/te/earl/lib").getPath();
+		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
+		File earlResult = null;
+		File htmlOutput = null;
+		File file = new File(outputDir + System.getProperty("file.separator") + "testng");
+		String[] dir = file.list();
+		String outDir = null;
+		if(!file.exists()){
+			htmlOutput = new File(outputDir,"result");
+			earlResult = new File(outputDir, "earl-results.rdf");
+		} else if (new File(file + System.getProperty("file.separator") + dir[0]).isDirectory()) {
+			earlResult = new File(file + System.getProperty("file.separator") + dir[0], "earl-results.rdf");
+			outDir = file + System.getProperty("file.separator") + dir[0];
+			htmlOutput = new File(outputDir, "result");
+		}
+		try {
+			Transformer transformer = TransformerFactory.newInstance()
+					.newTransformer(new StreamSource(earlXsl));
+			transformer.setParameter("outputDir", htmlOutput);
+			transformer.transform(new StreamSource(earlResult),
+					new StreamResult(new FileOutputStream("index.html")));
+			FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
+		} catch (Exception e) {
+			System.out.println(e.getMessage() + e.getCause());
+		}
+	}
+
+	/**
+	 * This method is used to extract the test input into
+	 * Map from the document element.
+	 * @param userInput Document node
+	 * @param runOpts 
+	 * @return User Input Map
+	 */
+	private Map<String, String> extractTestInputs(Document userInput,
+			RuntimeOptions runOpts) {
+		Map<String, String> inputMap = new HashMap<String, String>();
+		if (null != userInputs) {
+			NodeList values = userInputs.getDocumentElement()
+					.getElementsByTagName("value");
+			if (values.getLength() == 0) {
+				throw new IllegalArgumentException("No test inputs found.");
+			}
+			for (int i = 0; i < values.getLength(); i++) {
+				Element value = (Element) values.item(i);
+				inputMap.put(value.getAttribute("key"), value.getTextContent());
+			}
+		} else if (null != opts.getParams()) {
+			List<String> runParams = opts.getParams();
+			for (String param : runParams) {
+				String[] kvp = param.split("=");
+				inputMap.put(kvp[0], kvp[1]);
+			}
+		}
+		return inputMap;
+	}
+	
   /**
    * Builds a DOM Document representing a classpath resource.
    *

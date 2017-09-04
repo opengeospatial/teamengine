@@ -81,7 +81,7 @@
         <xsl:variable name="file" select="file:new(string(@file))"/>
         <xsl:variable name="pdir1" select="file:getName(file:getParentFile($file))"/>
         <xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/>
-        <!-- <xsl:variable name="dir">
+        <xsl:variable name="dir">
             <xsl:choose>
                 <xsl:when test="contains($pdir1, '.ctl')">
                     <xsl:value-of select="substring($pdir1, 1, string-length($pdir1) - 4)"/>
@@ -90,9 +90,9 @@
                     <xsl:value-of select="concat($pdir2, $pdir1)"/>
                 </xsl:otherwise>
             </xsl:choose>
-        </xsl:variable> -->
+        </xsl:variable>
         <!-- Create link to CTL script in web app context -->
-     <!--    <xsl:if test="not($TESTNAME='WMS Client Test Suite')">
+        <xsl:if test="not($TESTNAME='WMS Client Test Suite')">
             <xsl:text>&#xa;</xsl:text>
             <xsl:if test="test">
                 <img src="images/minus.png" name="image{$testnum}" onclick="toggle('{$testnum}', event)" title="Click to toggle.  Ctrl+Click for a deep toggle."/>
@@ -122,7 +122,7 @@
                     </xsl:for-each>
                 </div>
             </xsl:if>
-        </xsl:if>  -->
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="log">
@@ -151,7 +151,7 @@
             <xsl:call-template name="Client-Result"/>  
         </xsl:if>
         <xsl:if test="not($TESTNAME='WMS Client Test Suite')">
-           <!--  <xsl:if test="test">
+            <xsl:if test="test">
                 <br/>
                 <table id="summary" border="0" cellpadding="4">
                     <tr>
@@ -203,7 +203,7 @@
                         </td>
                     </tr>
                 </table>
-            </xsl:if>   -->
+            </xsl:if>
         </xsl:if>
     </xsl:template>
 </xsl:transform>

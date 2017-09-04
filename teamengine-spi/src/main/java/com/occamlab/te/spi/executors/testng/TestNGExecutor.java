@@ -24,6 +24,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.occamlab.te.spi.executors.TestRunExecutor;
+import com.occamlab.te.spi.util.HtmlReport;
 
 /**
  * 
@@ -147,16 +148,26 @@ public class TestNGExecutor implements TestRunExecutor {
      * @throws FileNotFoundException
      *             If no test results are found.
      */
-    File getResultsFile(String mediaType, String outputDirectory) throws FileNotFoundException {
-        // split out any media type parameters
-        String contentType = mediaType.split(";")[0];
-        String fileName = (contentType.endsWith("rdf+xml")) ? "earl.rdf" : "testng-results.xml";
-        File resultsFile = new File(outputDirectory, fileName);
-        if (!resultsFile.exists()) {
-            throw new FileNotFoundException("Test run results not found at " + resultsFile.getAbsolutePath());
-        }
-        return resultsFile;
-    }
+	File getResultsFile(String mediaType, String outputDirectory)
+			throws FileNotFoundException {
+		// split out any media type parameters
+		String contentType = mediaType.split(";")[0];
+		String fileName = null;
+		if (contentType.endsWith("rdf+xml")) {
+			fileName = "earl-results.rdf";
+		} else if (contentType.endsWith("zip")) {
+			File htmlResult = HtmlReport.getHtmlResultZip(outputDirectory);
+			fileName = "result.zip";
+		} else {
+			fileName = "testng-results.xml";
+		}
+		File resultsFile = new File(outputDirectory, fileName);
+		if (!resultsFile.exists()) {
+			throw new FileNotFoundException("Test run results not found at "
+					+ resultsFile.getAbsolutePath());
+		}
+		return resultsFile;
+	}
 
     /**
      * Gets the preferred media type for the test results as indicated by the
@@ -168,12 +179,16 @@ public class TestNGExecutor implements TestRunExecutor {
      * @return The preferred media type.
      */
     String getPreferredMediaType(Document testRunArgs) {
-        String mediaType = "application/xml";
+        String mediaType = "application/rdf+xml";
         NodeList entries = testRunArgs.getElementsByTagName("entry");
         for (int i = 0; i < entries.getLength(); i++) {
             Element entry = (Element) entries.item(i);
-            if (entry.getAttribute("key").equals("acceptMediaType")) {
-                mediaType = entry.getTextContent().trim();
+            if (entry.getAttribute("key").equals("format")) {
+            	if(entry.getTextContent().trim().equalsIgnoreCase("xml")){
+                mediaType = "application/xml";
+            	} else if(entry.getTextContent().trim().equalsIgnoreCase("html")){
+                    mediaType = "application/zip";
+                	}
             }
         }
         return mediaType;
@@ -212,4 +227,5 @@ public class TestNGExecutor implements TestRunExecutor {
             driver.setTestSuites(testSuites);
         }
     }
+
 }
