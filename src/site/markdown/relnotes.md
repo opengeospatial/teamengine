@@ -1,6 +1,9 @@
 Release Notes
 =============
 
+## 4.11 (2017-09-04)
+- Merge [#153](https://github.com/opengeospatial/teamengine/pull/153): squid:CommentedOutCodeLine - Sections of code should not be commented out
+
 ## 4.10 (2016-11-23)
 - [spi-ctl] Fix [#190](https://github.com/opengeospatial/teamengine/issues/190) : Invoke CTL test suite via RESTful API
 - [virtualization] Add Packer template for Amazon EC2 image (teamengine-aws)
