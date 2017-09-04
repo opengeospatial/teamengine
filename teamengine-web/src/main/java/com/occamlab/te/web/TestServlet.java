@@ -402,7 +402,6 @@ public class TestServlet extends HttpServlet {
                 }
                 out.println(">");
                 out.print("<![CDATA[");
-                // out.print(core.getOutput());
                 out.print(URLEncoder.encode(core.getOutput(), "UTF-8").replace(
                         '+', ' '));
                 out.println("]]>");

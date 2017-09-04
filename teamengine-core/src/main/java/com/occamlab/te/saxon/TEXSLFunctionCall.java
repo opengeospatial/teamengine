@@ -71,8 +71,6 @@ public class TEXSLFunctionCall extends TEFunctionCall {
             xml += " prefix=\"" + param.getPrefix() + "\"";
             ValueRepresentation vr = ExpressionTool.eagerEvaluate(
                     argExpressions[i], context);
-            // ValueRepresentation vr =
-            // ExpressionTool.lazyEvaluate(argExpressions[i], context, 1);
             Value v = Value.asValue(vr);
             try {
                 Node n = (Node) v.convertToJava(Node.class, context);
@@ -87,12 +85,6 @@ public class TEXSLFunctionCall extends TEFunctionCall {
                                 + attr.getNamespaceURI() + "\"";
                     }
                     xml += "/>\n";
-                    // } else if (type == Node.ELEMENT_NODE || type ==
-                    // Node.DOCUMENT_NODE) {
-                    // xml += ">\n";
-                    // xml += "<value>";
-                    // xml += DomUtils.serializeNode(n);
-                    // xml += "</value>\n";
                 } else if (type == Node.ELEMENT_NODE) {
                     xml += " type=\"node()\">\n";
                     xml += "<value>";
@@ -118,13 +110,9 @@ public class TEXSLFunctionCall extends TEFunctionCall {
             xml += "</param>\n";
         }
         xml += "</params>";
-        // System.out.println(xml);
         Source src = new StreamSource(new CharArrayReader(xml.toCharArray()));
-        // XdmValue result = null;
         NodeInfo result = null;
         try {
-            // result = core.executeTemplate(fe, Globals.builder.build(src),
-            // context);
             NodeInfo paramsNode = core.getEngine().getBuilder().build(src)
                     .getUnderlyingNode();
             result = core.executeXSLFunction(context, fe, paramsNode);
@@ -134,8 +122,6 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         if (result == null) {
             return EmptyIterator.getInstance();
         } else {
-            // Value v = Value.asValue(result);
-            // return v.iterate();
             return result.iterateAxis(Axis.CHILD);
         }
     }

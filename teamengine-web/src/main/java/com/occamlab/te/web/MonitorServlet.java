@@ -208,7 +208,6 @@ public class MonitorServlet extends HttpServlet {
             Map<String, List<String>> responseHeaders = uc.getHeaderFields();
             for (Entry<String, List<String>> entry : responseHeaders.entrySet()) {
                 String key = entry.getKey();
-                // System.out.println(key + ": " + entry.getValue());
                 if (key != null) {
                     if (key.length() == 0) {
                         // do nothing

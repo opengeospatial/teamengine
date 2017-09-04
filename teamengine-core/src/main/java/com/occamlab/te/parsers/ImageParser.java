@@ -598,7 +598,6 @@ public class ImageParser {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                // System.out.println(node.getLocalName());
                 if (node.getLocalName().equals("type")) {
                     node.setTextContent(formatName); // 2011-09-08 PwD was
                                                      // reader.getFormatName().toLowerCase()
@@ -757,7 +756,6 @@ public class ImageParser {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                // System.out.println(node.getLocalName());
                 if (node.getLocalName().equals("type")) {
                     node.setTextContent(reader.getFormatName().toLowerCase());
                 } else if (node.getLocalName().equals("frames")) {
@@ -818,7 +816,6 @@ public class ImageParser {
             framesRead = 1;
         }
 
-        // t.transform(new DOMSource(doc), new StreamResult(System.out));
         return doc;
     }
 
@@ -854,9 +851,6 @@ public class ImageParser {
         dbf.setExpandEntityReferences(false);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(xml_url.openStream());
-        // Element instruction = (Element)
-        // doc.getElementsByTagNameNS("http://www.occamlab.com/te/parsers",
-        // "ImageParser").item(0);
         Element instruction = (Element) doc.getDocumentElement();
 
         PrintWriter logger = new PrintWriter(System.out);

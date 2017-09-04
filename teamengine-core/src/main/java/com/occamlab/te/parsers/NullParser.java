@@ -32,10 +32,7 @@ import org.w3c.dom.Element;
  * 
  */
 public class NullParser {
-    /*
-     * public static String parse(HttpResponse resp, Element instruction,
-     * PrintWriter logger) throws Exception { return null; }
-     */
+
     public static String parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
         return null;

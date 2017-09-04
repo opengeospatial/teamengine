@@ -28,8 +28,6 @@ public class ReportLog {
      */
     public void generateLogs(ISuite suite) {
         Reporter.clear(); // clear output from previous test runs
-        // Reporter.log("Test suite parameters:");
-        // Reporter.log(suite.getXmlSuite().getAllParameters().toString());
         Reporter.log("The result of the test is-\n\n");
 
         //Following code gets the suite name
