@@ -174,7 +174,7 @@ public class ImageParser {
         int maxx = minx + raster.getWidth();
         int miny = raster.getMinY();
         int maxy = miny + raster.getHeight();
-        int bands[][] = new int[bandIndexes.length][raster.getWidth()];
+        int[][] bands = new int[bandIndexes.length][raster.getWidth()];
         for (int y = miny; y < maxy; y++) {
             for (int i = 0; i < bandIndexes.length; i++) {
                 raster.getSamples(minx, y, maxx, 1, bandIndexes[i], bands[i]);
@@ -242,11 +242,9 @@ public class ImageParser {
                     } else {
                         HashMap<Object, Object> sampleMap = (HashMap<Object, Object>) bandMap
                                 .get(band);
-                        if (sampleMap == null) {
-                            if (!bandMap.containsKey(band)) {
-                                sampleMap = new HashMap<Object, Object>();
-                                bandMap.put(band, sampleMap);
-                            }
+                        if (sampleMap == null && !bandMap.containsKey(band)) {
+                            sampleMap = new HashMap<Object, Object>();
+                            bandMap.put(band, sampleMap);
                         }
                         sampleMap.put(Integer.decode(sample), new Integer(0));
                     }
@@ -262,7 +260,7 @@ public class ImageParser {
         Iterator bandIt = bandMap.keySet().iterator();
         while (bandIt.hasNext()) {
             String band_str = (String) bandIt.next();
-            int band_indexes[];
+            int[] band_indexes;
             if (buffimage.getType() == BufferedImage.TYPE_BYTE_BINARY
                     || buffimage.getType() == BufferedImage.TYPE_BYTE_GRAY) {
                 band_indexes = new int[1];
@@ -294,7 +292,7 @@ public class ImageParser {
             int maxx = minx + raster.getWidth();
             int miny = raster.getMinY();
             int maxy = miny + raster.getHeight();
-            int bands[][] = new int[band_indexes.length][raster.getWidth()];
+            int[][] bands = new int[band_indexes.length][raster.getWidth()];
 
             for (int y = miny; y < maxy; y++) {
                 for (int i = 0; i < band_indexes.length; i++) {
@@ -327,64 +325,59 @@ public class ImageParser {
 
         Node node = nodes.item(0);
         while (node != null) {
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                if (node.getLocalName().equals("count")) {
-                    String band = ((Element) node).getAttribute("bands");
-                    String sample = ((Element) node).getAttribute("sample");
-                    HashMap sampleMap = (HashMap) bandMap.get(band);
-                    Document doc = node.getOwnerDocument();
-                    if (sample.equals("all")) {
-                        Node parent = node.getParentNode();
-                        Node prevSibling = node.getPreviousSibling();
-                        Iterator sampleIt = sampleMap.keySet().iterator();
-                        Element countnode = null;
-                        int digits;
-                        String prefix;
-                        switch (buffimage.getType()) {
-                        case BufferedImage.TYPE_BYTE_BINARY:
-                            digits = 1;
-                            prefix = "";
-                            break;
-                        case BufferedImage.TYPE_BYTE_GRAY:
-                            digits = 2;
-                            prefix = "0x";
-                            break;
-                        default:
-                            prefix = "0x";
-                            digits = band.length() * 2;
-                        }
-                        while (sampleIt.hasNext()) {
-                            countnode = doc.createElementNS(
-                                    node.getNamespaceURI(), "count");
-                            Integer sampleInt = (Integer) sampleIt.next();
-                            Integer count = (Integer) sampleMap.get(sampleInt);
-                            if (band.length() > 0) {
-                                countnode.setAttribute("bands", band);
-                            }
-                            countnode.setAttribute("sample", prefix
-                                    + HexString(sampleInt.intValue(), digits));
-                            Node textnode = doc
-                                    .createTextNode(count.toString());
-                            countnode.appendChild(textnode);
-                            parent.insertBefore(countnode, node);
-                            if (sampleIt.hasNext()) {
-                                if (prevSibling != null
-                                        && prevSibling.getNodeType() == Node.TEXT_NODE) {
-                                    parent.insertBefore(
-                                            prevSibling.cloneNode(false), node);
-                                }
-                            }
-                        }
-                        parent.removeChild(node);
-                        node = countnode;
-                    } else {
-                        Integer count = (Integer) sampleMap.get(Integer
-                                .decode(sample));
-                        if (count == null)
-                            count = new Integer(0);
-                        Node textnode = doc.createTextNode(count.toString());
-                        node.appendChild(textnode);
+            if (node.getNodeType() == Node.ELEMENT_NODE && node.getLocalName().equals("count")) {
+                String band = ((Element) node).getAttribute("bands");
+                String sample = ((Element) node).getAttribute("sample");
+                HashMap sampleMap = (HashMap) bandMap.get(band);
+                Document doc = node.getOwnerDocument();
+                if (sample.equals("all")) {
+                    Node parent = node.getParentNode();
+                    Node prevSibling = node.getPreviousSibling();
+                    Iterator sampleIt = sampleMap.keySet().iterator();
+                    Element countnode = null;
+                    int digits;
+                    String prefix;
+                    switch (buffimage.getType()) {
+                    case BufferedImage.TYPE_BYTE_BINARY:
+                        digits = 1;
+                        prefix = "";
+                        break;
+                    case BufferedImage.TYPE_BYTE_GRAY:
+                        digits = 2;
+                        prefix = "0x";
+                        break;
+                    default:
+                        prefix = "0x";
+                        digits = band.length() * 2;
                     }
+                    while (sampleIt.hasNext()) {
+                        countnode = doc.createElementNS(
+                                node.getNamespaceURI(), "count");
+                        Integer sampleInt = (Integer) sampleIt.next();
+                        Integer count = (Integer) sampleMap.get(sampleInt);
+                        if (band.length() > 0) {
+                            countnode.setAttribute("bands", band);
+                        }
+                        countnode.setAttribute("sample", prefix
+                                + HexString(sampleInt.intValue(), digits));
+                        Node textnode = doc
+                                .createTextNode(count.toString());
+                        countnode.appendChild(textnode);
+                        parent.insertBefore(countnode, node);
+                        if (sampleIt.hasNext() && prevSibling != null && prevSibling.getNodeType() == Node.TEXT_NODE) {
+                            parent.insertBefore(
+                                    prevSibling.cloneNode(false), node);
+                        }
+                    }
+                    parent.removeChild(node);
+                    node = countnode;
+                } else {
+                    Integer count = (Integer) sampleMap.get(Integer
+                            .decode(sample));
+                    if (count == null)
+                        count = new Integer(0);
+                    Node textnode = doc.createTextNode(count.toString());
+                    node.appendChild(textnode);
                 }
             }
             node = node.getNextSibling();
@@ -563,7 +556,7 @@ public class ImageParser {
             doc = parse(is, instruction, logger);
         } catch (Exception e) {
             String msg = String.format(
-                    "Failed to parse %s resource from %s \n %s",
+                    "Failed to parse %s resource from %s %n %s",
                     uc.getContentType(), uc.getURL(), e.getMessage());
             jlogger.warning(msg);
         } finally {

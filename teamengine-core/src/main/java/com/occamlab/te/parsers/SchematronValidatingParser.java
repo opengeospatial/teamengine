@@ -427,7 +427,7 @@ public class SchematronValidatingParser {
         NodeList errList = errHandler.toNodeList();
         if (LOGR.isLoggable(Level.FINER)) {
             LOGR.finer(String.format(
-                    "Found %d Schematron rule violation(s):\n %s",
+                    "Found %d Schematron rule violation(s):%n %s",
                     errList.getLength(), errHandler.toString()));
         }
         return errList;
