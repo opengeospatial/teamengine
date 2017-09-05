@@ -47,6 +47,9 @@ import com.sun.jersey.multipart.FormDataParam;
 public class TestRunResource {
 
     private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
+    public static final String TEST_RUN_ARGUMENTS = "Test run arguments - ";
+    public static final String ENTITY_MEDIA_TYPE = "Entity media type: ";
+    public static final String FILE_LOCATION = "File location: ";
     @Context
     private UriInfo reqUriInfo;
 
@@ -67,8 +70,13 @@ public class TestRunResource {
     @GET
     public Source handleGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion) {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        Source results = executeTestRun(etsCode, etsVersion, params);
-        return results;
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder(TEST_RUN_ARGUMENTS);
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append(params.toString());
+            LOGR.fine(msg.toString());
+        }
+        return executeTestRun(etsCode, etsVersion, params);
     }
 
     /**
@@ -92,10 +100,16 @@ public class TestRunResource {
         if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
         }
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder(TEST_RUN_ARGUMENTS);
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append(ENTITY_MEDIA_TYPE + this.headers.getMediaType());
+            msg.append(FILE_LOCATION + entityBody.getAbsolutePath());
+            LOGR.fine(msg.toString());
+        }
         Map<String, java.util.List<String>> args = new HashMap<String, List<String>>();
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
-        Source results = executeTestRun(etsCode, etsVersion, args);
-        return results;
+        return executeTestRun(etsCode, etsVersion, args);
     }
 
     /**
@@ -136,22 +150,28 @@ public class TestRunResource {
         if (!entityBody.exists() || entityBody.length() == 0) {
             throw new WebApplicationException(400);
         }
+        if (LOGR.isLoggable(Level.FINE)) {
+            StringBuilder msg = new StringBuilder(TEST_RUN_ARGUMENTS);
+            msg.append(etsCode).append("/").append(etsVersion).append("\n");
+            msg.append(ENTITY_MEDIA_TYPE + this.headers.getMediaType());
+            msg.append(FILE_LOCATION + entityBody.getAbsolutePath());
+            LOGR.fine(msg.toString());
+        }
         args.put("iut", Arrays.asList(entityBody.toURI().toString()));
         if (null != schBody) {
             if (!schBody.exists() || schBody.length() == 0) {
                 throw new WebApplicationException(400);
             }
             if (LOGR.isLoggable(Level.FINE)) {
-                StringBuilder msg = new StringBuilder("Test run arguments - ");
+                StringBuilder msg = new StringBuilder(TEST_RUN_ARGUMENTS);
                 msg.append(etsCode).append("/").append(etsVersion).append("\n");
-                msg.append("Entity media type: " + this.headers.getMediaType());
-                msg.append("File location: " + schBody.getAbsolutePath());
+                msg.append(ENTITY_MEDIA_TYPE + this.headers.getMediaType());
+                msg.append(FILE_LOCATION + schBody.getAbsolutePath());
                 LOGR.fine(msg.toString());
             }
             args.put("sch", Arrays.asList(schBody.toURI().toString()));
         }
-        Source results = executeTestRun(etsCode, etsVersion, args);
-        return results;
+        return executeTestRun(etsCode, etsVersion, args);
     }
 
     /**
