@@ -215,7 +215,7 @@ public class HTTPParser {
             Element status = doc.createElement("status");
             String status_line = uc.getHeaderField(0);
             if (status_line != null) {
-                String status_array[] = status_line.split("\\s");
+                String[] status_array = status_line.split("\\s");
                 if (status_array.length > 0) {
                     status.setAttribute("protocol", status_array[0]);
                 }
@@ -303,7 +303,7 @@ public class HTTPParser {
             // use TECore to invoke any chained (subsidiary) parsers
             if (LOGR.isLoggable(Level.FINER)) {
                 String msg = String.format(
-                        "Calling subsidiary parser for resource at %s:\n%s",
+                        "Calling subsidiary parser for resource at %s:%n%s",
                         uc.getURL(), DomUtils.serializeNode(parser));
                 LOGR.finer(msg);
             }

@@ -220,7 +220,7 @@ public class XMLValidatingParser {
 			doc = parse(inStream, instruction, logger);
 		} catch (Exception e) {
 			throw new RuntimeException(String.format(
-					"Failed to parse resource from %s \n %s", uc.getURL(),
+					"Failed to parse resource from %s %n %s", uc.getURL(),
 					e.getMessage()));
 		}
 		return doc;
