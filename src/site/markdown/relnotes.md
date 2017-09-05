@@ -5,6 +5,8 @@ Release Notes
 - Merge [#211](https://github.com/opengeospatial/teamengine/pull/211): Earl reporting
 - Merge [#225](https://github.com/opengeospatial/teamengine/pull/225): Added Message in result page.
 - Merge [#153](https://github.com/opengeospatial/teamengine/pull/153): squid:CommentedOutCodeLine - Sections of code should not be commented out
+- Merge [#155](https://github.com/opengeospatial/teamengine/pull/155): Multiple code improvements - squid:S2275, squid:S1197, squid:S1213, squid:S1066
+- Merge [#154](https://github.com/opengeospatial/teamengine/pull/154): Multiple code improvements - squid:S1192, squid:S1488, squid:S1213
 
 ## 4.10 (2016-11-23)
 - [spi-ctl] Fix [#190](https://github.com/opengeospatial/teamengine/issues/190) : Invoke CTL test suite via RESTful API
