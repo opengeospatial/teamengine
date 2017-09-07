@@ -408,13 +408,13 @@ public class SchematronValidatingParser {
         XmlErrorHandler errHandler = new XmlErrorHandler();
         builder.put(ValidateProperty.ERROR_HANDLER, errHandler);
         ValidationDriver driver = createDriver(builder.toPropertyMap());
-        InputStream schStream = this.getClass().getResourceAsStream(schemaRef);
+        InputStream schStream = this.getClass().getResourceAsStream(schemaRef.trim());
         try {
             InputSource input = new InputSource(schStream);
             try {
                 boolean loaded = driver.loadSchema(input);
                 if (!loaded) {
-                    throw new Exception("Failed to load schema at " + schemaRef
+                    throw new Exception("Failed to load schema at " + schemaRef.trim()
                             + "\nIs the schema valid? Is the phase defined?");
                 }
             } finally {
