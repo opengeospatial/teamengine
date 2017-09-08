@@ -34,7 +34,7 @@ import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
 
 @Path("suites/{etsCode}/{etsVersion}/html/run")
-@Produces("application/zip")
+@Produces("application/zip, text/html")
 public class TestResultLog {
 
 	private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());

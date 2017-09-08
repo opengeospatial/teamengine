@@ -155,7 +155,7 @@ public class TestNGExecutor implements TestRunExecutor {
 		String fileName = null;
 		if (contentType.endsWith("rdf+xml")) {
 			fileName = "earl-results.rdf";
-		} else if (contentType.endsWith("zip")) {
+		} else if (contentType.endsWith("html")) {
 			File htmlResult = HtmlReport.getHtmlResultZip(outputDirectory);
 			fileName = "result.zip";
 		} else {
@@ -183,11 +183,11 @@ public class TestNGExecutor implements TestRunExecutor {
         NodeList entries = testRunArgs.getElementsByTagName("entry");
         for (int i = 0; i < entries.getLength(); i++) {
             Element entry = (Element) entries.item(i);
-            if (entry.getAttribute("key").equals("format")) {
-            	if(entry.getTextContent().trim().equalsIgnoreCase("xml")){
+            if (entry.getAttribute("key").equals("acceptMediaType")) {
+            	if(entry.getTextContent().trim().equalsIgnoreCase("application/xml")){
                 mediaType = "application/xml";
-            	} else if(entry.getTextContent().trim().equalsIgnoreCase("html")){
-                    mediaType = "application/zip";
+            	} else if(entry.getTextContent().trim().equalsIgnoreCase("text/html")){
+                    mediaType = "text/html";
                 	}
             }
         }

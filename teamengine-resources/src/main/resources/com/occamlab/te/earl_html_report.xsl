@@ -99,7 +99,7 @@
 						Result: <br />
 					    <div style="text-indent:50px;"> Number of conformance classes tested: <xsl:value-of select="count(//earl:TestRequirement)"/> </div>
 					    <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
-					    <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{no_of_cc}" />
+					    <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
 						<xsl:variable name="status">
 							<xsl:choose>
 								<xsl:when test="//earl:TestRequirement/cite:isBasic[text() = 'true'] and //earl:TestRequirement/cite:testsFailed[text() ='0']">

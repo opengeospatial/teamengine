@@ -109,7 +109,7 @@ public class CtlExecutor implements TestRunExecutor {
         Source results = null;
         try {
             File resultsFile = getResultsFile(getPreferredMediaType(testRunArgs), resultsDir.toString());
-            if(getPreferredMediaType(testRunArgs).endsWith("zip")){
+            if(getPreferredMediaType(testRunArgs).endsWith("text/html")){
               InputStream inStream = new FileInputStream(resultsFile);
               InputSource inSource = new InputSource(new InputStreamReader(inStream, StandardCharsets.UTF_8));
               results = new SAXSource(inSource);
@@ -172,7 +172,7 @@ public class CtlExecutor implements TestRunExecutor {
         String fileName = null;
         if(contentType.endsWith("rdf+xml")){
         	fileName = "earl-results.rdf";
-        } else if(contentType.endsWith("zip")){
+        } else if(contentType.endsWith("html")){
         	
         File htmlResult = HtmlReport.getHtmlResultZip(outputDirectory);
         fileName = "result.zip";
@@ -200,11 +200,11 @@ public class CtlExecutor implements TestRunExecutor {
         NodeList entries = testRunArgs.getElementsByTagName("entry");
         for (int i = 0; i < entries.getLength(); i++) {
             Element entry = (Element) entries.item(i);
-            if (entry.getAttribute("key").equals("format")) {
-            	if(entry.getTextContent().trim().equalsIgnoreCase("xml")){
+            if (entry.getAttribute("key").equals("acceptMediaType")) {
+            	if(entry.getTextContent().trim().equalsIgnoreCase("application/xml")){
                 mediaType = "application/xml";
-            	} else if(entry.getTextContent().trim().equalsIgnoreCase("html")){
-                    mediaType = "application/zip";
+            	} else if(entry.getTextContent().trim().equalsIgnoreCase("text/html")){
+                    mediaType = "text/html";
                 	}
             }
         }
