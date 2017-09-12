@@ -162,8 +162,25 @@ suite regardless of its implementation. In effect, a test suite becomes a kind o
 
 |/rest/suites |List of available test suites |GET |XHTML
 |/rest/suites/{ets-code}/{ets-version} |Test suite summary |GET |XHTML
-|/rest/suites/{ets-code}/{ets-version}/run |Test run controller |GET, POST |XML, RDF/XML
+|/rest/suites/{ets-code}/{ets-version}/run |Test run controller |GET, POST |XML, RDF/XML, ZIP(HTML result)
 |==========
+
+TEAM-Engine have different types of result formats:
+
+1. XML
+2. EARL
+3. HTML
+
+To get Appropriate result we have to set "Content-Type" in request header.
+
+Following are the request header value to get the respective result:
+
+1. The default result is EARL report.
+2. XML:  `Accept: application/xml`
+3. EARL: `Accept: application/rdf+xml`
+4.  HTML: `Accept: application/zip`
+
+    Note: HTML report will return the zip file containing the bunch of HTML files.
 
 The URI parameters are delimited by curly brackets; these are explained below.
 

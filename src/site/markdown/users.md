@@ -164,7 +164,7 @@ end points:
 |--- | --- | --- |
 | /rest/suites | Test suite collection |  application/xhtml+xml |
 | /rest/suites/{etsCode}/{etsVersion} | Test suite documentation | application/xhtml+xml |
-| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | application/xml, application/rdf+xml |
+| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | application/xml, application/rdf+xml(EARL report), application/zip(HTML report) |
 
 In the request URIs the `{etsCode}` and `{etsVersion}` parameters denote the
 test suite code and version, respectively, for a particular test suite.
@@ -180,6 +180,23 @@ document can be viewed from the web application by selecting the _Test Suite Rev
 link displayed on the home page; the REST API will also present the document at the
 `/rest/suites/{etsCode}/{etsVersion}` endpoint. Each parameter is either mandatory, 
 conditional (required under certain circumstances), or optional.
+
+TEAM-Engine have different types of result formats:
+
+1. XML
+2. EARL
+3. HTML
+
+To get Appropriate result we have to set "Content-Type" in request header.
+
+Following are the request header value to get the respective result:
+
+1. The default result is EARL report.
+2. XML:  `Accept: application/xml`
+3. EARL: `Accept: application/rdf+xml`
+4.  HTML: `Accept: application/zip`
+
+    Note: HTML report will return the zip file containing the bunch of HTML files.
 
 If a test suite is being deployed manually, a couple of steps are required to set 
 up an executable test suite (ETS) that was implemented using the TestNG framework. 
