@@ -1,6 +1,7 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -43,7 +45,6 @@ import com.sun.jersey.multipart.FormDataParam;
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
 @Path("suites/{etsCode}/{etsVersion}/run")
-@Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/zip; charset='utf-8'", "application/rdf+earl; charset='utf-8'" })
 public class TestRunResource {
 
     private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
@@ -68,6 +69,7 @@ public class TestRunResource {
      * @return An XML representation of the test results.
      */
     @GET
+    @Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/rdf+earl; charset='utf-8'" })
     public Source handleGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion) {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
         if (LOGR.isLoggable(Level.FINE)) {
@@ -79,6 +81,27 @@ public class TestRunResource {
         return executeTestRun(etsCode, etsVersion, params);
     }
 
+    @GET
+    @Produces("application/zip; charset='utf-8'")
+    public Response handleHtmlGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) throws
+                            IOException {
+        MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
+        Source results = executeTestRun(etsCode, etsVersion, params);
+
+        String htmlOutput = results.getSystemId().toString();
+        int  count = htmlOutput.split(":", -1).length-1;
+        String zipFile = (count > 1) ? htmlOutput.split("file:/")[1] : htmlOutput.split("file:")[1];
+        File fileOut = new File(zipFile);
+        if (!fileOut.exists()) {
+            throw new WebApplicationException(404);
+        }
+        return Response
+                                .ok( FileUtils.readFileToByteArray( fileOut))
+                                .type("application/zip")
+                                .header("Content-Disposition", "attachment; filename=\"result.zip\";").header("Cache-Control", "no-cache")
+                                .build();
+        //return results;
+    }
     /**
      * Processes a request submitted using the POST method. The request entity
      * represents the test subject or provides metadata about it. The entity
@@ -95,6 +118,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
+    @Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/zip; charset='utf-8'", "application/rdf+earl; charset='utf-8'" })
     public Source handlePost(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion,
             File entityBody) {
         if (!entityBody.exists() || entityBody.length() == 0) {
@@ -143,6 +167,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
+    @Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/zip; charset='utf-8'", "application/rdf+earl; charset='utf-8'" })
     public Source handleMultipartFormData(@PathParam("etsCode") String etsCode,
             @PathParam("etsVersion") String etsVersion, @FormDataParam("iut") File entityBody,
             @FormDataParam("sch") File schBody) {
