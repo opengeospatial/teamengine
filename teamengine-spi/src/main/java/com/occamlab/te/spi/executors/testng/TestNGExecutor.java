@@ -153,9 +153,9 @@ public class TestNGExecutor implements TestRunExecutor {
 		// split out any media type parameters
 		String contentType = mediaType.split(";")[0];
 		String fileName = null;
-		if (contentType.endsWith("rdf+xml")) {
+		if (contentType.endsWith("rdf+xml") || contentType.endsWith("rdf+earl")) {
 			fileName = "earl-results.rdf";
-		} else if (contentType.endsWith("html")) {
+		} else if (contentType.endsWith("zip")) {
 			File htmlResult = HtmlReport.getHtmlResultZip(outputDirectory);
 			fileName = "result.zip";
 		} else {
@@ -186,9 +186,11 @@ public class TestNGExecutor implements TestRunExecutor {
             if (entry.getAttribute("key").equals("acceptMediaType")) {
             	if(entry.getTextContent().trim().equalsIgnoreCase("application/xml")){
                 mediaType = "application/xml";
-            	} else if(entry.getTextContent().trim().equalsIgnoreCase("text/html")){
-                    mediaType = "text/html";
-                	}
+            	} else if(entry.getTextContent().trim().equalsIgnoreCase("application/zip")){
+                    mediaType = "application/zip";
+                	} else if(entry.getTextContent().trim().equalsIgnoreCase("application/rdf+earl")){
+                        mediaType = "application/rdf+earl";
+                    	}
             }
         }
         return mediaType;
