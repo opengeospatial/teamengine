@@ -2,6 +2,7 @@ Release Notes
 =============
 
 ## 4.11 (2017-09-04)
+- [spi] Fix [#232](https://github.com/opengeospatial/teamengine/issues/232): REST API: Format should be passed via request header
 - Merge [#211](https://github.com/opengeospatial/teamengine/pull/211): Earl reporting
 - Merge [#225](https://github.com/opengeospatial/teamengine/pull/225): Added Message in result page.
 - Merge [#153](https://github.com/opengeospatial/teamengine/pull/153): squid:CommentedOutCodeLine - Sections of code should not be commented out
