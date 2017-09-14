@@ -609,22 +609,19 @@ RESTful API: Submit a request that includes the necessary arguments to the test 
 
 TEAM-Engine: Run the CTL script located in the /src/main/ctl/ directory.
 
-TEAM-Engine have different types of result formats:
+TEAM Engine provides three different types of result formats for test runs. The requested content type is set via HTTP request header:
 
-1. XML
-2. EARL
-3. HTML
++---------------------------+-----------------------------+
+| Format of resource        | HTTP request header         |
++---------------------------+-----------------------------+
+| EARL (RDF/XML)            | Accept: application/rdf+xml |
++---------------------------+-----------------------------+
+| XML                       | Accept: application/xml     |
++---------------------------+-----------------------------+
+| ZIP containing HTML files | Accept: application/zip     |
++---------------------------+-----------------------------+
 
-To get Appropriate result we have to set "Content-Type" in request header.
-
-Following are the request header value to get the respective result:
-
-1. The default result is EARL report.
-2. XML:  `Accept: application/xml`
-3. EARL: `Accept: application/rdf+xml`
-4.  HTML: `Accept: application/zip`
-
-    Note: HTML report will return the zip file containing the bunch of HTML files.
+If no or a not supported content type is set via HTTP request header, result format EARL (application/rdf+xml) is returned.
 
 The test run arguments are summarized in Table 2 - Test run arguments. 
 The Obligation column can have the following values:  M (mandatory), O (optional), or C (conditional). 
