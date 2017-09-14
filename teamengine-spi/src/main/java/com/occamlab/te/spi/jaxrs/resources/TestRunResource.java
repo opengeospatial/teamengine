@@ -43,7 +43,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
 @Path("suites/{etsCode}/{etsVersion}/run")
-@Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/zip; charset='utf-8'" })
+@Produces({ "application/xml; charset='utf-8'", "application/rdf+xml; charset='utf-8'", "application/zip; charset='utf-8'", "application/rdf+earl; charset='utf-8'" })
 public class TestRunResource {
 
     private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());

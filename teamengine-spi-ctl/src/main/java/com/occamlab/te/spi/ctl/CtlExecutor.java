@@ -170,7 +170,7 @@ public class CtlExecutor implements TestRunExecutor {
     	 // split out any media type parameters
         String contentType = mediaType.split(";")[0];
         String fileName = null;
-        if(contentType.endsWith("rdf+xml")){
+        if(contentType.endsWith("rdf+xml") || contentType.endsWith("rdf+earl")){
         	fileName = "earl-results.rdf";
         } else if(contentType.endsWith("zip")){
         	
@@ -200,12 +200,14 @@ public class CtlExecutor implements TestRunExecutor {
         NodeList entries = testRunArgs.getElementsByTagName("entry");
         for (int i = 0; i < entries.getLength(); i++) {
             Element entry = (Element) entries.item(i);
-            if (entry.getAttribute("key").equals("format")) {
-            	if(entry.getTextContent().trim().equalsIgnoreCase("xml")){
+            if (entry.getAttribute("key").equals("acceptMediaType")) {
+            	if(entry.getTextContent().trim().equalsIgnoreCase("application/xml")){
                 mediaType = "application/xml";
-            	} else if(entry.getTextContent().trim().equalsIgnoreCase("html")){
+            	} else if(entry.getTextContent().trim().equalsIgnoreCase("application/zip")){
                     mediaType = "application/zip";
-                	}
+                	} else if(entry.getTextContent().trim().equalsIgnoreCase("application/rdf+earl")){
+                        mediaType = "application/rdf+earl";
+                    	}
             }
         }
         return mediaType;

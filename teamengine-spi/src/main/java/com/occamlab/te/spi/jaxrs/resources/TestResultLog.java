@@ -34,7 +34,7 @@ import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
 
 @Path("suites/{etsCode}/{etsVersion}/html/run")
-@Produces("application/zip")
+@Produces("application/zip; charset='utf-8'")
 public class TestResultLog {
 
 	private static final Logger LOGR = Logger.getLogger(TestRunResource.class.getPackage().getName());
@@ -45,7 +45,6 @@ public class TestResultLog {
     private HttpHeaders headers;
 	
 	@GET
-   // @Consumes({"application/html"})
     public Response handleHtmlGet(@PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) throws IOException {
     	MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
         Source results = executeTestRun(etsCode, etsVersion, params);
