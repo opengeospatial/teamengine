@@ -238,8 +238,6 @@ TEAM Engine provides three different types of result formats for test runs. The 
 | XML | Accept: application/xml |
 | ZIP containing HTML files | Accept: application/zip |
 
-If no or a not supported content type is set via HTTP request header, result format EARL (application/rdf+xml) is returned.
-
 With TEAM Engine 4.9 or later it is also possible to invoke a CTL test suite in this manner.
 However, a controller must be available in order to do this. The https://github.com/opengeospatial/ets-wms13[WMS 1.3] 
 test suite contains a https://github.com/opengeospatial/ets-wms13/blob/master/src/main/java/org/opengis/cite/wms13/CtlController.java[CtlController class] 

@@ -621,8 +621,6 @@ TEAM Engine provides three different types of result formats for test runs. The 
 | ZIP containing HTML files | Accept: application/zip     |
 +---------------------------+-----------------------------+
 
-If no or a not supported content type is set via HTTP request header, result format EARL (application/rdf+xml) is returned.
-
 The test run arguments are summarized in Table 2 - Test run arguments. 
 The Obligation column can have the following values:  M (mandatory), O (optional), or C (conditional). 
 
