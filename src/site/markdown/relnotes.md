@@ -1,7 +1,8 @@
 Release Notes
 =============
 
-## 4.11 (2017-09-04)
+## 4.11 (2017-09-15)
+- Fix [#224](https://github.com/opengeospatial/teamengine/issues/224): Update documentation of REST API
 - [spi] Fix [#239](https://github.com/opengeospatial/teamengine/issues/239): REST API: remove 'html' from path to request resource in html format
 - [spi] Fix [#232](https://github.com/opengeospatial/teamengine/issues/232): REST API: Format should be passed via request header
 - Merge [#211](https://github.com/opengeospatial/teamengine/pull/211): Earl reporting
