@@ -160,14 +160,14 @@ A simple REST API (based on [JAX-RS 1.1](http://jcp.org/en/jsr/detail?id=311))
 enables programmatic execution of many test suites; it is comprised of the following 
 end points:
 
-| URI (relative to base) | Resource | Response media type |
-|--- | --- | --- |
-| /rest/suites | Test suite collection |  application/xhtml+xml |
-| /rest/suites/{etsCode}/{etsVersion} | Test suite documentation | application/xhtml+xml |
-| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | application/xml, application/rdf+xml |
+| URI (relative to base) | Resource | Method(s) | Response media type |
+|--- | --- | --- | --- |
+| /rest/suites | List of available test suites | GET |  application/xhtml+xml |
+| /rest/suites/{etsCode}/{etsVersion} | Test suite documentation | GET | application/xhtml+xml |
+| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | GET, POST | application/rdf+xml, application/xml, application/zip |
 
 In the request URIs the `{etsCode}` and `{etsVersion}` parameters denote the
-test suite code and version, respectively, for a particular test suite.
+test suite code (example: "wfs20") and version (example: "1.25"), respectively, for a particular test suite.
 
 ![warning](./images/warn-16px.png) **Warning:** When using the REST API, if any
 test run argument includes a URI value that contains an ampersand ('&')
@@ -175,11 +175,73 @@ character in the query component, it must be percent-encoded as %26 since
 it is a "data octet" in this context (see [RFC 3986, sec.
 2.1](http://tools.ietf.org/html/rfc3986#section-2.1)).
 
-The test run parameters are described in the test suite summary document. This 
-document can be viewed from the web application by selecting the _Test Suite Revision_
-link displayed on the home page; the REST API will also present the document at the
-`/rest/suites/{etsCode}/{etsVersion}` endpoint. Each parameter is either mandatory, 
-conditional (required under certain circumstances), or optional.
+The list of available test suites is presented as a brief HTML document (XHTML syntax) that contains 
+links to the deployed test suites. While the document can be displayed in a web browser for human 
+viewers, it can also be consumed and parsed by other software applications in order to facilitate 
+test execution. For example, a service description in a registry could be automatically annotated 
+with information about its conformance status by running a test suite and inspecting the results.
+
+List of deployed test suites (XHTML syntax):
+
+    <ul>
+      <li><a href="suites/wfs20/1.25/" id="wfs20-1.25" type="text/html">WFS 2.0 (ISO 19142:2010) Conformance Test Suite</a></li>       
+      <li><a href="suites/gml32/1.24/" id="gml32-1.24" type="text/html">GML (ISO 19136:2007) Conformance Test Suite, Version 3.2.1</a></li>
+      <!-- other available test suites -->
+    </ul>
+
+When the link for a particular test suite is dereferenced a summary document is obtained. This 
+document briefly describes the test suite and contains a table of test run arguments. Each 
+input argument is a separate entry in the body of an HTML table as shown in the listing below.
+
+Test run arguments for the WFS 2.0 test suite (raw HTML):
+
+    <tbody>
+      <tr id="wfs">
+        <td>wfs</td>
+        <td>URI</td>
+        <td>M</td>
+        <td>A URI that refers to a representation of the service capabilities document. 
+        This document does not need to be obtained from the service under test (SUT),
+        but it must describe the SUT. Ampersand ('&amp;') characters appearing within 
+        a query parameter value must be percent-encoded as %26.</td>
+      </tr>
+      <tr id="fid">
+        <td>fid</td>
+        <td>NCName</td>
+        <td>O</td>
+        <td>An identifier that matches the @gml:id attribute value of an available feature 
+        instance (may be omitted for "Basic WFS" implementations).</td>
+      </tr>
+    </tbody>
+
+Description of test run arguments presented in a web browser: 
+
+![Test run arguments in browser,align=center](.images/test-run-args.png)
+
+A test run is initiated by submitting a request to the test run controller. The summary 
+description lists the test run arguments (mandatory, conditional, optional) that are 
+recognized by the controller. A test suite can be invoked using a simple GET request in most cases. 
+For example, to test a WFS 2.0 implementation the target URI is constructed as follows (replace 
+localhost:8080 with the actual host name and port number of an available teamengine installation):
+
+    http://localhost:8080/teamengine/rest/suites/wfs20/1.25/run?wfs={wfs-capabilities-url}
+
+where `{wfs-capabilities-url}` is the URL to retrieve the capabilities document for the 
+implementation under test (IUT). Note that this need not be obtained directly from the IUT--it could be fetched from elsewhere (e.g. a service registry), as long as it describes the 
+same service.
+
+TEAM Engine provides three different types of result formats for test runs. The requested content type is set via HTTP request header:
+
+| Format of resource | HTTP request header |
+|--- | --- |
+| EARL (RDF/XML) | Accept: application/rdf+xml |
+| XML | Accept: application/xml |
+| ZIP containing HTML files | Accept: application/zip |
+
+With TEAM Engine 4.9 or later it is also possible to invoke a CTL test suite in this manner.
+However, a controller must be available in order to do this. The https://github.com/opengeospatial/ets-wms13[WMS 1.3] 
+test suite contains a https://github.com/opengeospatial/ets-wms13/blob/master/src/main/java/org/opengis/cite/wms13/CtlController.java[CtlController class] 
+that serves as an example of how to enable this capability in other CTL test suites.
 
 If a test suite is being deployed manually, a couple of steps are required to set 
 up an executable test suite (ETS) that was implemented using the TestNG framework. 

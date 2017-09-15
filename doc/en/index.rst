@@ -609,6 +609,17 @@ RESTful API: Submit a request that includes the necessary arguments to the test 
 
 TEAM-Engine: Run the CTL script located in the /src/main/ctl/ directory.
 
+TEAM Engine provides three different types of result formats for test runs. The requested content type is set via HTTP request header:
+
++---------------------------+-----------------------------+
+| Format of resource        | HTTP request header         |
++---------------------------+-----------------------------+
+| EARL (RDF/XML)            | Accept: application/rdf+xml |
++---------------------------+-----------------------------+
+| XML                       | Accept: application/xml     |
++---------------------------+-----------------------------+
+| ZIP containing HTML files | Accept: application/zip     |
++---------------------------+-----------------------------+
 
 The test run arguments are summarized in Table 2 - Test run arguments. 
 The Obligation column can have the following values:  M (mandatory), O (optional), or C (conditional). 
