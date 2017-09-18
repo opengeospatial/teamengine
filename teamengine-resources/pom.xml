@@ -34,6 +34,7 @@
             <include>**/*.xsd</include>
             <include>**/*.js</include>
             <include>**/*.css</include>
+            <include>**/*.html</include>
           </includes>
         </configuration>
       </plugin>
