@@ -220,6 +220,7 @@ public class TECore implements Runnable {
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
   public static Document userInputs = null;
+  public Boolean supportHtmlReport = false;
 
   public TECore() {
 
@@ -335,6 +336,7 @@ public class TECore implements Runnable {
                 + File.separator + opts.getSessionId());
         File resultsDir = new File(opts.getLogDir(),
 				opts.getSessionId());
+        if(supportHtmlReport == true){
         Map<String, String> testInputMap = new HashMap<String, String>();
         testInputMap = extractTestInputs(userInputs, opts);
         
@@ -358,6 +360,7 @@ public class TECore implements Runnable {
 					throw new RuntimeException(
 							"Failed to serialize EARL results to " + iox);
 				}
+      }
       }
       }
     }
@@ -865,6 +868,7 @@ public class TECore implements Runnable {
             
             if(test.getIsConformanceClass().equals("true")){
             	logger.println("<conformanceClass name=\"" + test.getLocalName() + "\"" + " isBasic=\"" + test.getIsBasic() + "\"" + " result=\"" + test.getResult() + "\" />");
+            	supportHtmlReport = true;
             }
       logger.println("</log>");
       logger.flush();
@@ -2476,7 +2480,7 @@ public class TECore implements Runnable {
     this.testServletURL = testServletURL;
   }
   	/**
-  	 * Transform CTL result into EARL report using XSLT.
+  	 * Transform EARL result into HTML report using XSLT.
   	 * @param outputDir 
   	 */
 	public void earlHtmlReport(String outputDir) {
@@ -2498,12 +2502,14 @@ public class TECore implements Runnable {
 			htmlOutput = new File(outputDir, "result");
 		}
 		try {
-			Transformer transformer = TransformerFactory.newInstance()
-					.newTransformer(new StreamSource(earlXsl));
-			transformer.setParameter("outputDir", htmlOutput);
-			transformer.transform(new StreamSource(earlResult),
-					new StreamResult(new FileOutputStream("index.html")));
-			FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
+			if (earlResult.exists()) {
+				Transformer transformer = TransformerFactory.newInstance()
+						.newTransformer(new StreamSource(earlXsl));
+				transformer.setParameter("outputDir", htmlOutput);
+				transformer.transform(new StreamSource(earlResult),
+						new StreamResult(new FileOutputStream("index.html")));
+				FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage() + e.getCause());
 		}

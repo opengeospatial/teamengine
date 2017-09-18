@@ -97,18 +97,22 @@ public void jspInit() {
 			}
 			
 		    $( document ).ready(function() {
-		        console.log( "document loaded" );
-		       	var no_of_cc = $("#noConformanceClass").val();
-		       	if(no_of_cc == 0){
-		       		alert("This test suite does not support HTML reports and the old report must be used instead.");
-		       	}
+		    	console.log( "document loaded" );
+		    	if(document.getElementById("sessionIdHtml")) {
+		    		$('#sessionIdHtml').append('<%=request.getParameter("session")%>');
+		    		$('#sessionId').hide();
+		    		} 
+		    	if(document.getElementById("oldResultUrl")) {
+		    		$('#oldResultUrl').attr('href', '<%=request.getContextPath()%>/viewOldSessionLog.jsp?session=<%=request.getParameter("session")%>');
+		    		$('#oldResultUrlPara').hide();
+		    		} 
 		    });
 			
 		</script>		
 	</head>
 	<body>
 		<%@ include file="header.jsp" %>
-		<h2>Results for session <%=request.getParameter("session")%></h2>
+		<span id ="sessionId"><h2>Results for session <%=request.getParameter("session")%></h2></span>
 <%
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
@@ -179,18 +183,25 @@ File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
 String resultdir = userLog.toString() + System.getProperty("file.separator") + sessionId;
 File resDir = new File(resultdir + System.getProperty("file.separator") + "testng");
+File earlHtml = null;
 if(!resDir.exists()){
 	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
 }
 if(resDir.exists()){
 core.earlHtmlReport(resultdir.toString());
-File earlHtml = new  File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
+earlHtml = new  File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
 
 }
 /* if ( htmlReportDir.isDirectory()) { */
 %>
 <%
-String testurl= "reports/" + request.getRemoteUser()+ "/" + request.getParameter("session") + "/result/index.html";
+String testurl;
+if(earlHtml.exists()){
+testurl = "reports/" + request.getRemoteUser()+ "/" + request.getParameter("session") + "/result/index.html";
+} else {
+	//This page will be displayed if test-suite is not supporting the new html report.
+	testurl = "/infoMessage.html";
+}
 %>
 
 <jsp:include page="<%= testurl %>"></jsp:include>
@@ -206,8 +217,8 @@ String testurl= "reports/" + request.getRemoteUser()+ "/" + request.getParameter
  	</p> --%>
 <% /* } */ %>
 
- <p>
-    See the <a href="<%=request.getContextPath()%>/viewOldSessionLog.jsp?session=<%=sessionId%>">detailed old test report</a>.
+ <p id="oldResultUrlPara">
+    See the <a id="oldResultUrlPara" href="<%=request.getContextPath()%>/viewOldSessionLog.jsp?session=<%=sessionId%>">detailed old test report</a>.
  </p> 
 
 <%--
