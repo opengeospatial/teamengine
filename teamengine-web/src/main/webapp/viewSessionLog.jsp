@@ -93,7 +93,7 @@ public void jspInit() {
 			
 			function viewTestDetails(path){
 				var testDetailsUrl = path.substring(path.lastIndexOf("/") + 1, path.length);
-				window.location.replace("<%=request.getContextPath()%>"+ "/reports/" + "<%=request.getRemoteUser()%>" + "/" + "<%=request.getParameter("session")%>" +"/result/"+ testDetailsUrl);
+				$("a").attr('href', "<%=request.getContextPath()%>"+ "/reports/" + "<%=request.getRemoteUser()%>" + "/" + "<%=request.getParameter("session")%>" +"/result/"+ testDetailsUrl);
 			}
 			
 		    $( document ).ready(function() {
