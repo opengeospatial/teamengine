@@ -1,7 +1,8 @@
 Release Notes
 =============
 
-## 4.11 (2017-09-18)
+## 4.11 (2017-09-19)
+- Fix [#231](https://github.com/opengeospatial/teamengine/issues/231): HTML report is not able to display test details page outside the teamengine.
 - [web] Fix [#230](https://github.com/opengeospatial/teamengine/issues/230): Improve message for users if HTML report cannot be created from CTL
 - Fix [#224](https://github.com/opengeospatial/teamengine/issues/224): Update documentation of REST API
 - [spi] Fix [#239](https://github.com/opengeospatial/teamengine/issues/239): REST API: remove 'html' from path to request resource in html format
