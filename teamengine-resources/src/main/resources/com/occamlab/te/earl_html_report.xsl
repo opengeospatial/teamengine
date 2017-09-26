@@ -26,18 +26,18 @@
    <xsl:function name="testng:absolutePath">
       <xsl:param name="fileName" />
       <xsl:value-of select="concat(
--              'file:',
--              replace(
--                iri-to-uri(
--                  replace(
--                    replace(
--                      replace(concat($htmlXslt.outputDir, '/', $fileName), '\\', '/'),
--                      '%',
--                      '%25'),
--                    '#',
--                    '%23')),
--                '^([A-Za-z]):',
--                '///$1:'))"/>
+              'file:',
+              replace(
+                iri-to-uri(
+                  replace(
+                    replace(
+                      replace(concat($htmlXslt.outputDir, '/', $fileName), '\\', '/'),
+                      '%',
+                      '%25'),
+                    '#',
+                    '%23')),
+                '^([A-Za-z]):',
+                '///$1:'))"/>
       <!-- <xsl:value-of select="concat('file:///',$htmlXslt.outputDir, '/', $fileName)"/> -->
       <!--<xsl:value-of select="concat('file:///', $testNgXslt.outputDir, '/', $fileName)"/>-->
    </xsl:function>
