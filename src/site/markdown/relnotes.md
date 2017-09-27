@@ -1,7 +1,9 @@
 Release Notes
 =============
 
-## 4.11 (2017-09-19)
+## 4.11 (2017-09-27)
+- [core] Fix [#212](https://github.com/opengeospatial/teamengine/issues/212): Cannot write more than one result document to the same URI.
+- [core] Fix [#245](https://github.com/opengeospatial/teamengine/issues/245): Failed to create testdetail html page of particular test
 - Fix [#231](https://github.com/opengeospatial/teamengine/issues/231): HTML report is not able to display test details page outside the teamengine.
 - [web] Fix [#230](https://github.com/opengeospatial/teamengine/issues/230): Improve message for users if HTML report cannot be created from CTL
 - Fix [#224](https://github.com/opengeospatial/teamengine/issues/224): Update documentation of REST API
