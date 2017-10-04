@@ -125,17 +125,24 @@
                      <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
                      <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      <xsl:variable name="status">
-                        <xsl:choose>
-                           <xsl:when test="//earl:TestRequirement/cite:isBasic[text() = 'true'] and //earl:TestRequirement/cite:testsFailed[text() ='0']">
-                              <xsl:value-of select="'Yes'" />
-                           </xsl:when>
-                           <xsl:otherwise>
-                              <xsl:value-of select="'No'" />
-                           </xsl:otherwise>
-                        </xsl:choose>
-                     </xsl:variable>
+						<xsl:variable name="core_count">
+							<xsl:for-each select="//earl:TestRequirement">
+								<xsl:if test="cite:isBasic[text() = 'true']" >
+									<xsl:choose>
+										<xsl:when test="cite:testsFailed[text() !='0']">
+											<xsl:value-of select="'No'"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="'Yes'" />
+										</xsl:otherwise>		
+									</xsl:choose>
+								</xsl:if>	
+							</xsl:for-each>
+						</xsl:variable>
+						<xsl:value-of select="if (contains($core_count,'No')) then 'No' else 'Yes'" />
+					</xsl:variable>
                      <div style="text-indent:50px;">
-                        Passed core(Can be certified):
+                        Passed core (Can be certified):
                         <xsl:value-of select="$status" />
                      </div>
                      <div style="text-indent:50px;">
