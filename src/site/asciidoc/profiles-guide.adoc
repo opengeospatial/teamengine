@@ -99,6 +99,7 @@ skipped since there is already evidence of non-conformance.
 
 * https://github.com/opengeospatial/ets-dgiwg-wfs20
 * https://github.com/opengeospatial/ets-dgiwg-wms13
+* https://github.com/opengeospatial/ets-wmts10-nsg
 
 [[developing-profile-ctl]]
 == CTL
