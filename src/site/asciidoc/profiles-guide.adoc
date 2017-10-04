@@ -3,59 +3,27 @@
 == Introduction
 
 This document offers guidance about how to develop and execute a test suite that verifies 
-an implementation of some OGC application profile that is based on one or more existing standards. 
+an implementation of some OGC application profile (<<definitions-profiles>>) that is based on one or more existing standards.
 It is primarily intended for developers and other technical professionals who seek to test 
 implementations that claim conformance to an OGC profile. For more general information about how to 
 develop OGC conformance tests, see the http://opengeospatial.github.io/teamengine/[TEAM Engine documentation site].
 
-In http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=26011[ISO 19106], 
-a profile is defined as a 
-
-[quote, ISO 19106:2004 cl. 4.5]
-__________
-set of one or more base standards or subsets of base standards, and, where applicable, 
-the identification of chosen clauses, classes, options and parameters of those base
-standards, that are necessary for accomplishing a particular function.
-__________
-
-In practice, a profile imposes additional constraints on an implementation such as mandating 
-support for an optional capability. Or it may define extensions where permitted by the base 
-standards. However, a profile can *never* contradict any base standard, such that conformance 
-to a profile implies conformance to _all_ of the base standards from which it is derived.
-
-Various user communities have developed profiles based on OGC or ISO standards. For example:
-
-* https://www.dgiwg.org/dgiwg/[DGIWG] - Web Feature Service Profile (DGIWG 122)
-* DGIWG - Web Map Service Profile (DGIWG 112)
-* NSG OGC Web Map Service 1.3 Interoperability Standard (Ed.)
-
-The DGIWG WMS profile is based on the OGC WMS 1.3 specification, and the NSG WMS profile is in 
-turn based on the DGIWG profile. A profile always has one or more dependencies that must be 
-heeded when developing an implementation or a conformance test suite. As indicated in <<wms-profiles>>, 
+A profile always has one or more dependencies that must be
+heeded when developing an implementation or a conformance test suite. As indicated in <<wms-profiles>>,
 a test suite for any WMS profile will include tests covering one or more conformance classes in 
 the https://github.com/opengeospatial/ets-wms13[OGC WMS conformance test suite]. The DGIWG profile 
 requires conformance at the "Queryable WMS" level; the associated test suite also includes 
 tests that cover the specific requirements of that profile.
 
-[[wms-profiles]]
-.WMS profile dependencies 
-image::images/wms-profiles.png[WMS profiles,align=center]
-
-A conformance class is essentially a container for a coherent set of requirements that 
-address some functional capability or area of concern. A conformance level is a kind of 
-conformance class in the which the requirements of a higher level contain all the requirements 
-of the lower levels (see <<conformance-classes>>).
-
-[[conformance-classes]]
-.Conformance classes 
-image::images/conformance-classes.png[Conformance classes,align=center]
-
-A test suite for a profile generally selects one or more conformance classes (or levels) 
+A test suite for a profile generally selects one or more conformance classes (or levels) (<<definitions-conformance-classes>>)
 from the relevant set of base specifications; these tests then implicitly become part of the 
 dependent test suite. The base tests are invoked in the course of running the profile-specific 
-tests. However, the manner in which this is done depends on how a test suite is implemented.
+tests. There are two methods how to include the dependent test suites:
 
-A test suite that covers the requirements of an application profile is accessed and executed 
+1. Including the source code directly. The manner in which this is done depends on how a test suite is implemented (<<developing-profile-testng>> or <<developing-profile-ctl>>).
+1. Invoking the dependent test suite remote via the REST API as described in <<developing-profile-restapi>>
+
+A test suite that covers the requirements of an application profile is accessed and executed
 just like any other test suite. It appears in the listing of available suites, and it can 
 be selected and run in the same manner. See the following figure: <<dgiwg-profile>>.
 
@@ -63,7 +31,7 @@ be selected and run in the same manner. See the following figure: <<dgiwg-profil
 .Profile-specific test suites 
 image::images/dgiwg-profile.png[Profile-specific test suites,align=center]
 
-
+[[developing-profile-testng]]
 == TestNG
 
 Most of the OGC conformance test suites developed in recent years are based on the 
@@ -117,6 +85,7 @@ The <test> sets are run in document order by default, which is usually the prefe
 If any tests fail in a base conformance class, this can cause profile-specific tests to be 
 skipped since there is already evidence of non-conformance.
 
+[[developing-profile-ctl]]
 == CTL
 
 The OGC Compliance Test Language (http://portal.opengeospatial.org/files/?artifact_id=33085[CTL]) 
@@ -148,7 +117,7 @@ The <base> element refers to the suite or profile (by name) that this profile de
 This establishes an implicit ordering, such that the root suite is run first and test 
 execution follows the dependency graph.
 
-
+[[developing-profile-restapi]]
 == Invoking test suites using a REST API
 
 A RESTful API was introduced in order to provide a common mechanism for invoking a test 
