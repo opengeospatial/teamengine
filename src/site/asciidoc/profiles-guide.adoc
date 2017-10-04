@@ -50,7 +50,9 @@ entry point for doing this (it is correlated with the top-level <suite> tag).
 The root <suite> element contains one or more child <test> elements that correspond 
 to conformance classes. These conformance classes may be drawn from other test suites.
 For example, the WFS 2.0 test suite uses two conformance classes from the GML 3.2 
-test suite. The following listing shows how this dependency is declared.
+test suite. The following listing shows how this dependency is declared. Precondition is
+that the base test suites are available in class path. If Maven is used the dependencies
+of the base test suites must be included in the pom.xml
 
 .Importing conformance classes from other test suites
 [source,xml]
@@ -84,6 +86,19 @@ test suite. The following listing shows how this dependency is declared.
 The <test> sets are run in document order by default, which is usually the preferred behavior.
 If any tests fail in a base conformance class, this can cause profile-specific tests to be 
 skipped since there is already evidence of non-conformance.
+
+=== How to
+
+1. Create a new maven project
+1. Include the dependencies of the base test suites
+1. Create a testng.xml file including all tests form the base test suites
+1. Implement the additional tests for the profile
+1. Add the additional tests to the existing testng.xml
+
+=== Examples
+
+* https://github.com/opengeospatial/ets-dgiwg-wfs20
+* https://github.com/opengeospatial/ets-dgiwg-wms13
 
 [[developing-profile-ctl]]
 == CTL
