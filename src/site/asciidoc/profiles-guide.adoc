@@ -132,6 +132,20 @@ The <base> element refers to the suite or profile (by name) that this profile de
 This establishes an implicit ordering, such that the root suite is run first and test 
 execution follows the dependency graph.
 
+It is required to include the required resources of the base test suites in the profile
+test suite.
+
+=== How To
+
+1. Create a new maven project
+1. Create a new CTL script as base entry point for the test suite
+1. Include the required resources of the base test suites
+1. Implement the additional tests for the profile
+
+=== Example
+
+No example available yet.
+
 [[developing-profile-restapi]]
 == Invoking test suites using a REST API
 
