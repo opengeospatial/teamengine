@@ -216,7 +216,7 @@ Test run arguments for the WFS 2.0 test suite (raw HTML):
 
 Description of test run arguments presented in a web browser: 
 
-![Test run arguments in browser,align=center](.images/test-run-args.png)
+![Test run arguments in browser](images/test-run-args.png)
 
 A test run is initiated by submitting a request to the test run controller. The summary 
 description lists the test run arguments (mandatory, conditional, optional) that are 
