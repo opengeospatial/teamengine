@@ -180,3 +180,9 @@ in the report of the profile test suite.
 === Example
 
 No example available yet.
+
+== Reporting
+
+Test suites of application profiles support the same output formats as a non profile test suites (see link:users.html[User Guide]).
+
+To define the mandatory tests of the profile, conformance classes have to be encoded as described in link:encoding-conformance-classes.html[Encoding Conformance Classes]. Several report formats (e.g. EARL, HTML) consider this configuration.
