@@ -20,7 +20,7 @@ from the relevant set of base specifications; these tests then implicitly become
 dependent test suite. The base tests are invoked in the course of running the profile-specific 
 tests. There are two methods how to include the dependent test suites:
 
-1. Including the source code directly. The manner in which this is done depends on how a test suite is implemented (<<developing-profile-testng>> or <<developing-profile-ctl>>).
+1. Including the source code directly. The manner in which this is done depends on how a test suite is implemented (<<developing-profile-testng>> or <<developing-profile-ctl>>). The type of the base test suites determines the type of the profile test suite: if the base test suite is implemented in TestNG the profile test suite must also be implemented in TestNG. The same applies to CTL.
 1. Invoking the dependent test suite remote via the REST API as described in <<developing-profile-restapi>>
 
 A test suite that covers the requirements of an application profile is accessed and executed
