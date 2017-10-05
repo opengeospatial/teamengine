@@ -1,7 +1,8 @@
 Release Notes
 =============
 
-## 4.11 (2017-09-27)
+## 4.11 (2017-10-05)
+- Fix [#248](https://github.com/opengeospatial/teamengine/issues/248): HTML report: Fix 'Passed core (Can be certified)' result
 - [core] Fix [#212](https://github.com/opengeospatial/teamengine/issues/212): Cannot write more than one result document to the same URI.
 - [core] Fix [#245](https://github.com/opengeospatial/teamengine/issues/245): Failed to create testdetail html page of particular test
 - Fix [#231](https://github.com/opengeospatial/teamengine/issues/231): HTML report is not able to display test details page outside the teamengine.
