@@ -1,7 +1,8 @@
 Release Notes
 =============
 
-## 4.11 (2017-10-05)
+## 4.11 (2017-10-06)
+- Merge [#250](https://github.com/opengeospatial/teamengine/pull/250): Rework documentation of profiles
 - Fix [#248](https://github.com/opengeospatial/teamengine/issues/248): HTML report: Fix 'Passed core (Can be certified)' result
 - [core] Fix [#212](https://github.com/opengeospatial/teamengine/issues/212): Cannot write more than one result document to the same URI.
 - [core] Fix [#245](https://github.com/opengeospatial/teamengine/issues/245): Failed to create testdetail html page of particular test
