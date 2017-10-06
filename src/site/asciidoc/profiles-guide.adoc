@@ -3,59 +3,27 @@
 == Introduction
 
 This document offers guidance about how to develop and execute a test suite that verifies 
-an implementation of some OGC application profile that is based on one or more existing standards. 
+an implementation of some OGC application profile (<<definitions-profiles>>) that is based on one or more existing standards.
 It is primarily intended for developers and other technical professionals who seek to test 
 implementations that claim conformance to an OGC profile. For more general information about how to 
 develop OGC conformance tests, see the http://opengeospatial.github.io/teamengine/[TEAM Engine documentation site].
 
-In http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=26011[ISO 19106], 
-a profile is defined as a 
-
-[quote, ISO 19106:2004 cl. 4.5]
-__________
-set of one or more base standards or subsets of base standards, and, where applicable, 
-the identification of chosen clauses, classes, options and parameters of those base
-standards, that are necessary for accomplishing a particular function.
-__________
-
-In practice, a profile imposes additional constraints on an implementation such as mandating 
-support for an optional capability. Or it may define extensions where permitted by the base 
-standards. However, a profile can *never* contradict any base standard, such that conformance 
-to a profile implies conformance to _all_ of the base standards from which it is derived.
-
-Various user communities have developed profiles based on OGC or ISO standards. For example:
-
-* https://www.dgiwg.org/dgiwg/[DGIWG] - Web Feature Service Profile (DGIWG 122)
-* DGIWG - Web Map Service Profile (DGIWG 112)
-* NSG OGC Web Map Service 1.3 Interoperability Standard (Ed.)
-
-The DGIWG WMS profile is based on the OGC WMS 1.3 specification, and the NSG WMS profile is in 
-turn based on the DGIWG profile. A profile always has one or more dependencies that must be 
-heeded when developing an implementation or a conformance test suite. As indicated in <<wms-profiles>>, 
+A profile always has one or more dependencies that must be
+heeded when developing an implementation or a conformance test suite. As indicated in <<wms-profiles>>,
 a test suite for any WMS profile will include tests covering one or more conformance classes in 
 the https://github.com/opengeospatial/ets-wms13[OGC WMS conformance test suite]. The DGIWG profile 
 requires conformance at the "Queryable WMS" level; the associated test suite also includes 
 tests that cover the specific requirements of that profile.
 
-[[wms-profiles]]
-.WMS profile dependencies 
-image::images/wms-profiles.png[WMS profiles,align=center]
-
-A conformance class is essentially a container for a coherent set of requirements that 
-address some functional capability or area of concern. A conformance level is a kind of 
-conformance class in the which the requirements of a higher level contain all the requirements 
-of the lower levels (see <<conformance-classes>>).
-
-[[conformance-classes]]
-.Conformance classes 
-image::images/conformance-classes.png[Conformance classes,align=center]
-
-A test suite for a profile generally selects one or more conformance classes (or levels) 
+A test suite for a profile generally selects one or more conformance classes (or levels) (<<definitions-conformance-classes>>)
 from the relevant set of base specifications; these tests then implicitly become part of the 
 dependent test suite. The base tests are invoked in the course of running the profile-specific 
-tests. However, the manner in which this is done depends on how a test suite is implemented.
+tests. There are two methods how to include the dependent test suites:
 
-A test suite that covers the requirements of an application profile is accessed and executed 
+1. Including the source code directly. The manner in which this is done depends on how a test suite is implemented (<<developing-profile-testng>> or <<developing-profile-ctl>>). The type of the base test suites determines the type of the profile test suite: if the base test suite is implemented in TestNG the profile test suite must also be implemented in TestNG. The same applies to CTL.
+1. Invoking the dependent test suite remote via the REST API as described in <<developing-profile-restapi>>
+
+A test suite that covers the requirements of an application profile is accessed and executed
 just like any other test suite. It appears in the listing of available suites, and it can 
 be selected and run in the same manner. See the following figure: <<dgiwg-profile>>.
 
@@ -63,7 +31,7 @@ be selected and run in the same manner. See the following figure: <<dgiwg-profil
 .Profile-specific test suites 
 image::images/dgiwg-profile.png[Profile-specific test suites,align=center]
 
-
+[[developing-profile-testng]]
 == TestNG
 
 Most of the OGC conformance test suites developed in recent years are based on the 
@@ -82,7 +50,9 @@ entry point for doing this (it is correlated with the top-level <suite> tag).
 The root <suite> element contains one or more child <test> elements that correspond 
 to conformance classes. These conformance classes may be drawn from other test suites.
 For example, the WFS 2.0 test suite uses two conformance classes from the GML 3.2 
-test suite. The following listing shows how this dependency is declared.
+test suite. The following listing shows how this dependency is declared. Precondition is
+that the base test suites are available in class path. If Maven is used the dependencies
+of the base test suites must be included in the pom.xml
 
 .Importing conformance classes from other test suites
 [source,xml]
@@ -117,6 +87,21 @@ The <test> sets are run in document order by default, which is usually the prefe
 If any tests fail in a base conformance class, this can cause profile-specific tests to be 
 skipped since there is already evidence of non-conformance.
 
+=== How to
+
+1. Create a new maven project
+1. Include the dependencies of the base test suites
+1. Create a testng.xml file including all tests form the base test suites
+1. Implement the additional tests for the profile
+1. Add the additional tests to the existing testng.xml
+
+=== Examples
+
+* https://github.com/opengeospatial/ets-dgiwg-wfs20
+* https://github.com/opengeospatial/ets-dgiwg-wms13
+* https://github.com/opengeospatial/ets-wmts10-nsg
+
+[[developing-profile-ctl]]
 == CTL
 
 The OGC Compliance Test Language (http://portal.opengeospatial.org/files/?artifact_id=33085[CTL]) 
@@ -148,7 +133,21 @@ The <base> element refers to the suite or profile (by name) that this profile de
 This establishes an implicit ordering, such that the root suite is run first and test 
 execution follows the dependency graph.
 
+It is required to include the required resources of the base test suites in the profile
+test suite.
 
+=== How To
+
+1. Create a new maven project
+1. Create a new CTL script as base entry point for the test suite
+1. Include the required resources of the base test suites
+1. Implement the additional tests for the profile
+
+=== Example
+
+No example available yet.
+
+[[developing-profile-restapi]]
 == Invoking test suites using a REST API
 
 A RESTful API was introduced in order to provide a common mechanism for invoking a test 
@@ -166,112 +165,24 @@ component):
 
     /rest/suites/wms/1.19/run?capabilities-url={wms-capabilities-url}&queryable=queryable
 
-A successful response contains an XML entity that represents the test results. The root 
-element contains a <log> child element for each test that was run. The first log entry
-indicates the overall verdict; the value of the endtest/@result attribute is an integer 
-code that signifies a test verdict (see table below).
+The format of the response depends on the requested output format and in case of XML of the
+implementation of the requested test suite. The response must be parsed and the results integrated
+in the report of the profile test suite.
 
-.CTL test verdicts
-[width="45%",frame="topbot",options="header,footer"]
-|======================
-|Code |Result
-|1    |Passed
-|2    |Not Tested
-|3    |Skipped
-|4    |Warning
-|5    |Inherited Failure 
-|6    |Failed
-|======================
+=== How To
 
-If a constituent test failed, the overall verdict is set as *Inherited Failure* (5).
-In general, a failed subtest will "taint" all of its ancestor tests in this manner.
+1. Create a new maven project
+1. Implement a test invoking the REST API with the service under test
+ a. Parse the response
+ b. Integrate the results in the results of the new tests
+1. Implement the additional tests for the profile
 
+=== Example
 
-== Using the W3C EARL vocabulary
+No example available yet.
 
-The default format of the test results is framework-specific: for TestNG, this is an XML 
-representation having <testng-results> as the document element. The results of running a 
-CTL test suite also produce XML output, with <execution> as the document element. Support 
-for the W3C Evaluation and Report Language (EARL) 1.0 Schema has been introduced. The 
-specification (currently a late stage working draft) defines an RDF vocabulary for 
-describing test results:
+== Reporting
 
-* http://www.w3.org/TR/EARL10-Schema/[Evaluation and Report Language (EARL) 1.0 Schema]
-* http://www.w3.org/TR/EARL10-Guide/[Developer Guide for EARL 1.0]
-* https://www.w3.org/TR/HTTP-in-RDF10/[HTTP Vocabulary in RDF 1.0]
-* https://www.w3.org/TR/Content-in-RDF10/[Representing Content in RDF 1.0]
+Test suites of application profiles support the same output formats as a non profile test suites (see link:users.html[User Guide]).
 
-The following listing shows how conformance classes are described using the EARL vocabulary.
-An `earl:TestRequirement` instance represents a conformance class; it has one or more 
-constituent tests (`earl:TestCase`). Furthermore, a dependency may be expressed using 
-the _dct:requires_ property. In this example, *Conformance level 2* is based on 
-*Conformance level 1* and thus establishes a higher level of conformance.
-
-.Conformance classes in EARL results (RDF/XML)
-[source,xml]
-----
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:earl="http://www.w3.org/ns/earl#"      
-         xmlns:dct="http://purl.org/dc/terms/">
-
-  <earl:TestRequirement rdf:about="http://www.opengis.net/spec/KML/2.3/conf/level-1">
-    <dct:title xml:lang="en">KML 2.3 - Conformance Level 1</dct:title>
-    <dct:description xml:lang="en">Conformance Level 1 includes test cases that address 
-    absolute requirements. A KML document must satisfy all assertions at this level to 
-    achieve minimal conformance</dct:description>
-    <dct:isPartOf rdf:resource="http://docs.opengeospatial.org/ts/14-068r2/14-068r2.html"/>
-    <dct:hasPart>
-      <earl:TestCase rdf:about="http://www.opengis.net/spec/KML/2.3/conf/level-1/atc-101">
-        <dct:description>Verify that the root element of the document has [local name] = "kml" 
-        and [namespace name] = "http://www.opengis.net/kml/2.3".</dct:description>
-        <dct:title>Document element</dct:title>
-      </earl:TestCase>
-    </dct:hasPart>
-    <!-- other constituent test cases omitted -->
-  </earl:TestRequirement>
-
-  <earl:TestRequirement rdf:about="http://www.opengis.net/spec/KML/2.3/conf/level-2">
-    <dct:title xml:lang="en">KML 2.3 - Conformance Level 2</dct:title>
-    <dct:description xml:lang="en">Includes all tests in Level 1, plus test cases covering 
-    requirements that should be satisfied by a KML document. Non-conformance at this 
-    level may hinder the utility, portability, or interoperability of the document.</dct:description>
-    <dct:requires rdf:resource="http://www.opengis.net/spec/KML/2.3/conf/level-1"/>
-    <!-- constituent test cases omitted -->
-  </earl:TestRequirement>
-
-</rd:RDF>
-----
-
-The EARL vocabulary does not define any terms that pertain to a test run by itself. A custom 
-vocabulary was introduced for this purpose. A `cite:TestRun` resource provides basic summary 
-information about a test run, including the input arguments and an overall tally of test 
-verdicts. Standard http://dublincore.org/documents/dcmi-terms/[Dublin Core metadata terms] 
-are employed where appropriate. For example, the dct:extent property reports the temporal 
-extent of the test run; that is, its total duration represented using the XML Schema
-https://www.w3.org/TR/xmlschema-2/#duration[duration datatype].
-
-.A TestRun resource
-[source,xml]
-----
-<cite:TestRun xmlns:cite="http://cite.opengeospatial.org/">
-  <dct:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT6M30.204S</dct:extent>
-  <dct:title>wfs20-1.25</dct:title>
-  <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</cite:testsSkipped>
-  <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int">298</cite:testsPassed>
-  <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int">46</cite:testsFailed>
-  <dct:created>2016-10-25T17:33:31.290Z</dct:created>
-  <cite:inputs>
-    <rdf:Bag>
-      <rdf:li rdf:parseType="Resource">
-        <dct:title>wfs</dct:title>
-        <dct:description>http://example.org/services/wfs?service=WFS&amp;request=GetCapabilities</dct:description>
-      </rdf:li>
-      <rdf:li rdf:parseType="Resource">
-        <dct:title>xsd</dct:title>
-        <dct:description>http://example.org/services/wfs?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType</dct:description>
-      </rdf:li>
-    </rdf:Bag>
-  </cite:inputs>
-  <dct:identifier>8ed93bd8-b366-4d4f-b868-c8e5aeccfbaa</dct:identifier>
-</cite:TestRun>
-----
+To define the mandatory tests of the profile, conformance classes have to be encoded as described in link:encoding-conformance-classes.html[Encoding Conformance Classes]. Several report formats (e.g. EARL, HTML) consider this configuration.

@@ -35,6 +35,7 @@
     </links>
     <menu name="Getting Started">
       <item href="index.html" name="Overview" />
+      <item href="definitions.html" name="Definitions" />
       <item href="installation.html" name="Installation" />
       <item href="users.html" name="User's Guide" />
       <item href="virt-guide.html" name="Virtualization Guide" />
@@ -43,6 +44,7 @@
       <item href="testng-essentials.html" name="Using TestNG, Part 1: Essentials" />
       <item href="testng-cookbook.html" name="Using TestNG, Part 2: Cookbook" />
       <item href="ctl.html" name="Using CTL Scripts" />
+      <item href="encoding-conformance-classes.html" name="Encoding Conformance Classes" />
       <item href="profiles-guide.html" name="Application Profiles" />
     </menu>
     <menu ref="reports" />

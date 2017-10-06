@@ -216,7 +216,7 @@ Test run arguments for the WFS 2.0 test suite (raw HTML):
 
 Description of test run arguments presented in a web browser: 
 
-![Test run arguments in browser,align=center](.images/test-run-args.png)
+![Test run arguments in browser](images/test-run-args.png)
 
 A test run is initiated by submitting a request to the test run controller. The summary 
 description lists the test run arguments (mandatory, conditional, optional) that are 
@@ -257,3 +257,109 @@ The `*-deps` archive assembles the ETS and its dependencies into a single bundle
 is unpacked into the lib directory in the last step. In some cases it may be necessary 
 to add other (transitive) dependencies. The Tomcat instance does not need to be restarted 
 to enable the test suite--it should be available immediately.
+
+#### Output formats
+
+##### EARL (RDF/XML)
+
+The REST API supports the W3C Evaluation and Report Language (EARL, 1.0 Schema) as output format. The 
+specification (currently a late stage working draft) defines an RDF vocabulary for 
+describing test results:
+
+* http://www.w3.org/TR/EARL10-Schema/[Evaluation and Report Language (EARL) 1.0 Schema]
+* http://www.w3.org/TR/EARL10-Guide/[Developer Guide for EARL 1.0]
+* https://www.w3.org/TR/HTTP-in-RDF10/[HTTP Vocabulary in RDF 1.0]
+* https://www.w3.org/TR/Content-in-RDF10/[Representing Content in RDF 1.0]
+
+The following listing shows how conformance classes are described using the EARL vocabulary.
+An `earl:TestRequirement` instance represents a conformance class; it has one or more 
+constituent tests (`earl:TestCase`). Furthermore, a dependency may be expressed using 
+the _dct:requires_ property. In this example, *Conformance level 2* is based on 
+*Conformance level 1* and thus establishes a higher level of conformance.
+
+Conformance classes in EARL results (RDF/XML):
+
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:earl="http://www.w3.org/ns/earl#"      
+         xmlns:dct="http://purl.org/dc/terms/">
+      <earl:TestRequirement rdf:about="http://www.opengis.net/spec/KML/2.3/conf/level-1">
+        <dct:title xml:lang="en">KML 2.3 - Conformance Level 1</dct:title>
+        <dct:description xml:lang="en">Conformance Level 1 includes test cases that address 
+          absolute requirements. A KML document must satisfy all assertions at this level to 
+          achieve minimal conformance</dct:description>
+        <dct:isPartOf rdf:resource="http://docs.opengeospatial.org/ts/14-068r2/14-068r2.html"/>
+        <dct:hasPart>
+          <earl:TestCase rdf:about="http://www.opengis.net/spec/KML/2.3/conf/level-1/atc-101">
+          <dct:description>Verify that the root element of the document has [local name] = "kml" 
+            and [namespace name] = "http://www.opengis.net/kml/2.3".</dct:description>
+          <dct:title>Document element</dct:title>
+          </earl:TestCase>
+        </dct:hasPart>
+      <!-- other constituent test cases omitted -->
+      </earl:TestRequirement>
+      <earl:TestRequirement rdf:about="http://www.opengis.net/spec/KML/2.3/conf/level-2">
+        <dct:title xml:lang="en">KML 2.3 - Conformance Level 2</dct:title>
+        <dct:description xml:lang="en">Includes all tests in Level 1, plus test cases covering 
+          requirements that should be satisfied by a KML document. Non-conformance at this 
+          level may hinder the utility, portability, or interoperability of the document.</dct:description>
+        <dct:requires rdf:resource="http://www.opengis.net/spec/KML/2.3/conf/level-1"/>
+        <!-- constituent test cases omitted -->
+      </earl:TestRequirement>
+    </rd:RDF>
+
+
+The EARL vocabulary does not define any terms that pertain to a test run by itself. A custom 
+vocabulary was introduced for this purpose. A `cite:TestRun` resource provides basic summary 
+information about a test run, including the input arguments and an overall tally of test 
+verdicts. Standard http://dublincore.org/documents/dcmi-terms/[Dublin Core metadata terms] 
+are employed where appropriate. For example, the dct:extent property reports the temporal 
+extent of the test run; that is, its total duration represented using the XML Schema
+https://www.w3.org/TR/xmlschema-2/#duration[duration datatype].
+
+A TestRun resource:
+
+    <cite:TestRun xmlns:cite="http://cite.opengeospatial.org/">
+      <dct:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT6M30.204S</dct:extent>
+      <dct:title>wfs20-1.25</dct:title>
+      <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</cite:testsSkipped>
+      <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int">298</cite:testsPassed>
+      <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int">46</cite:testsFailed>
+      <dct:created>2016-10-25T17:33:31.290Z</dct:created>
+      <cite:inputs>
+        <rdf:Bag>
+          <rdf:li rdf:parseType="Resource">
+            <dct:title>wfs</dct:title>
+            <dct:description>http://example.org/services/wfs?service=WFS&amp;request=GetCapabilities</dct:description>
+          </rdf:li>
+          <rdf:li rdf:parseType="Resource">
+            <dct:title>xsd</dct:title>
+            <dct:description>http://example.org/services/wfs?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType</dct:description>
+          </rdf:li>
+        </rdf:Bag>
+      </cite:inputs>
+      <dct:identifier>8ed93bd8-b366-4d4f-b868-c8e5aeccfbaa</dct:identifier>
+    </cite:TestRun>
+
+##### XML
+
+The output format XML of the test results is framework-specific: for TestNG, this is an XML
+representation having _testng-results_ as the document element. The results of running a
+CTL test suite also produce XML output, with _execution_ as the document element. 
+
+###### CTL XML
+A successful response contains an XML entity that represents the test results. The root 
+element contains a _log_ child element for each test that was run. The first log entry
+indicates the overall verdict; the value of the endtest/@result attribute is an integer 
+code that signifies a test verdict (see table below).
+
+|Code |Result |
+|--- | --- |
+|1    |Passed | 
+|2    |Not Tested | 
+|3    |Skipped | 
+|4    |Warning | 
+|5    |Inherited Failure |  
+|6    |Failed | 
+
+If a constituent test failed, the overall verdict is set as *Inherited Failure* (5).
+In general, a failed subtest will "taint" all of its ancestor tests in this manner.
