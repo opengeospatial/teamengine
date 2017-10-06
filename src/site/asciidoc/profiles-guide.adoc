@@ -18,10 +18,9 @@ tests that cover the specific requirements of that profile.
 A test suite for a profile generally selects one or more conformance classes (or levels) (<<definitions-conformance-classes>>)
 from the relevant set of base specifications; these tests then implicitly become part of the 
 dependent test suite. The base tests are invoked in the course of running the profile-specific 
-tests. There are two methods how to include the dependent test suites:
+tests.
 
-1. Including the source code directly. The manner in which this is done depends on how a test suite is implemented (<<developing-profile-testng>> or <<developing-profile-ctl>>). The type of the base test suites determines the type of the profile test suite: if the base test suite is implemented in TestNG the profile test suite must also be implemented in TestNG. The same applies to CTL.
-1. Invoking the dependent test suite remote via the REST API as described in <<developing-profile-restapi>>
+The source code can be included directly. The manner in which this is done depends on how a test suite is implemented (<<developing-profile-testng>> or <<developing-profile-ctl>>). The type of the base test suites determines the type of the profile test suite: if the base test suite is implemented in TestNG the profile test suite must also be implemented in TestNG. The same applies to CTL.
 
 A test suite that covers the requirements of an application profile is accessed and executed
 just like any other test suite. It appears in the listing of available suites, and it can 
@@ -141,40 +140,6 @@ test suite.
 1. Create a new maven project
 1. Create a new CTL script as base entry point for the test suite
 1. Include the required resources of the base test suites
-1. Implement the additional tests for the profile
-
-=== Example
-
-No example available yet.
-
-[[developing-profile-restapi]]
-== Invoking test suites using a REST API
-
-A RESTful API was introduced in order to provide a common mechanism for invoking a test 
-suite regardless of its implementation. In effect, a test suite becomes a kind of 
-"microservice".
-
-Please see chapter *User's Guide* for a documentation of the interface and a full manual how to use the REST API.
-
-As a concrete example, consider the https://portal.dgiwg.org/files/?artifact_id=11514&format=pdf[DGIWG WMS profile]
-which is based on the OGC WMS 1.3 standard (also published as ISO 19128:2005). The profile requires 
-implementation of the *Queryable WMS* conformance class as defined in the base standard. To verify 
-this, the OGC test suite can be invoked using the REST API by submitting a GET request with 
-the following query parameters (the target URI has been abbreviated to emphasize the query 
-component):
-
-    /rest/suites/wms/1.19/run?capabilities-url={wms-capabilities-url}&queryable=queryable
-
-The format of the response depends on the requested output format and in case of XML of the
-implementation of the requested test suite. The response must be parsed and the results integrated
-in the report of the profile test suite.
-
-=== How To
-
-1. Create a new maven project
-1. Implement a test invoking the REST API with the service under test
- a. Parse the response
- b. Integrate the results in the results of the new tests
 1. Implement the additional tests for the profile
 
 === Example
