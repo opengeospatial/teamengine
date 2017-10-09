@@ -64,14 +64,19 @@ public class HtmlReport {
 		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
 
 		File htmlOutput = new File(outputDir,"result");
+		htmlOutput.mkdir();
+		LOGR.fine( "HTML output is written to directory " + htmlOutput );
 		File earlResult = new File(outputDir, "earl-results.rdf");
 
 		try {
 			Transformer transformer = TransformerFactory.newInstance()
 					.newTransformer(new StreamSource(earlXsl));
 			transformer.setParameter("outputDir", htmlOutput);
-			transformer.transform(new StreamSource(earlResult),
-					new StreamResult(new FileOutputStream("index.html")));
+            File indexHtml = new File(htmlOutput, "index.html" );
+            indexHtml.createNewFile();
+
+            FileOutputStream outputStream = new FileOutputStream( indexHtml );
+            transformer.transform( new StreamSource( earlResult), new StreamResult( outputStream ));
 			FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
 		} catch (Exception e) {
 			LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
