@@ -23,7 +23,6 @@
  */
 package com.occamlab.te;
 
-
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,46 +56,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.XMLConstants; // Addition for Fortify modifications
-
-import org.apache.commons.io.FileUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.ErrorHandler;
-
-import com.occamlab.te.index.FunctionEntry;
-import com.occamlab.te.index.Index;
-import com.occamlab.te.index.ParserEntry;
-import com.occamlab.te.index.ProfileEntry;
-import com.occamlab.te.index.SuiteEntry;
-import com.occamlab.te.index.TemplateEntry;
-import com.occamlab.te.index.TestEntry;
-import com.occamlab.te.saxon.ObjValue;
-import com.occamlab.te.util.Constants;
-import com.occamlab.te.util.DomUtils;
-import com.occamlab.te.util.IOUtils;
-import com.occamlab.te.util.LogUtils;
-import com.occamlab.te.util.Misc;
-import com.occamlab.te.util.SoapUtils;
-import com.occamlab.te.util.StringUtils;
-import com.occamlab.te.util.URLConnectionUtils;
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
@@ -117,6 +86,35 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 import net.sf.saxon.trans.XPathException;
+
+import org.apache.commons.io.FileUtils;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+
+import com.occamlab.te.index.FunctionEntry;
+import com.occamlab.te.index.Index;
+import com.occamlab.te.index.ParserEntry;
+import com.occamlab.te.index.ProfileEntry;
+import com.occamlab.te.index.SuiteEntry;
+import com.occamlab.te.index.TemplateEntry;
+import com.occamlab.te.index.TestEntry;
+import com.occamlab.te.saxon.ObjValue;
+import com.occamlab.te.util.Constants;
+import com.occamlab.te.util.DomUtils;
+import com.occamlab.te.util.IOUtils;
+import com.occamlab.te.util.LogUtils;
+import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.SoapUtils;
+import com.occamlab.te.util.StringUtils;
+import com.occamlab.te.util.URLConnectionUtils;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Provides various utility methods to support test execution and logging.
@@ -818,7 +816,7 @@ public class TECore implements Runnable {
     try {
       executeTemplate(test, params, context);
     } catch (SaxonApiException e) {
-      jlogger.log(Level.SEVERE, e.getMessage());
+      jlogger.log( SEVERE, e.getMessage());
       DateFormat dateFormat = new SimpleDateFormat(Constants.YYYY_M_MDD_H_HMMSS);
       Date date = new Date();
       try {
@@ -1259,8 +1257,8 @@ public class TECore implements Runnable {
             if (cause.getMessage() != null) {
               msg += ": " + cause.getMessage();
             }
-            jlogger.log(Level.SEVERE, "InvocationTargetException",
-                    e);
+            jlogger.log( SEVERE, "InvocationTargetException",
+                         e);
 
             throw new Exception(msg, cause);
           }
@@ -1358,7 +1356,7 @@ public class TECore implements Runnable {
       }
       LOGR.info("Setting form results:\n " + sw.toString());
     } catch(Exception e) {
-      LOGR.log(Level.SEVERE, "Failed to log the form results", e);
+      LOGR.log( SEVERE, "Failed to log the form results", e);
     }
     this.formResults = doc;
   }
@@ -1401,7 +1399,7 @@ public class TECore implements Runnable {
       } catch (Exception exception) {
         System.err.println("Error getting file. "
                 + exception.getMessage());
-        jlogger.log(Level.SEVERE,
+        jlogger.log( SEVERE,
                 "Error getting file. " + exception.getMessage(), e);
 
         return null;
@@ -2160,7 +2158,7 @@ public class TECore implements Runnable {
         if (cause.getMessage() != null) {
           msg += ": " + cause.getMessage();
         }
-        jlogger.log(Level.SEVERE, msg, e);
+        jlogger.log( SEVERE, msg, e);
         throw e;
       }
       pwLogger.close();
@@ -2407,7 +2405,7 @@ public class TECore implements Runnable {
       execute();
       out.close();
     } catch (Exception e) {
-      jlogger.log(Level.SEVERE, "", e);
+      jlogger.log( SEVERE, "", e);
     }
     // activeThread = null;
     threadComplete = true;
@@ -2479,43 +2477,55 @@ public class TECore implements Runnable {
   public void setTestServletURL(String testServletURL) {
     this.testServletURL = testServletURL;
   }
-  	/**
-  	 * Transform EARL result into HTML report using XSLT.
-  	 * @param outputDir 
-  	 */
-	public void earlHtmlReport(String outputDir) {
 
-		ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		String resourceDir = cl.getResource("com/occamlab/te/earl/lib").getPath();
-		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
-		File earlResult = null;
-		File htmlOutput = null;
-		File file = new File(outputDir + System.getProperty("file.separator") + "testng");
-		String[] dir = file.list();
-		String outDir = null;
-		if(!file.exists()){
-			htmlOutput = new File(outputDir,"result");
-			earlResult = new File(outputDir, "earl-results.rdf");
-		} else if (new File(file + System.getProperty("file.separator") + dir[0]).isDirectory()) {
-			earlResult = new File(file + System.getProperty("file.separator") + dir[0], "earl-results.rdf");
-			outDir = file + System.getProperty("file.separator") + dir[0];
-			htmlOutput = new File(outputDir, "result");
-		}
-		try {
-			if (earlResult.exists()) {
-				Transformer transformer = TransformerFactory.newInstance()
-						.newTransformer(new StreamSource(earlXsl));
-				transformer.setParameter("outputDir", htmlOutput);
-				transformer.transform(new StreamSource(earlResult),
-						new StreamResult(new FileOutputStream("index.html")));
-				FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
-			}
-		} catch (Exception e) {
-			System.out.println(e.getMessage() + e.getCause());
-		}
-	}
+    /**
+     * Transform EARL result into HTML report using XSLT.
+     * 
+     * @param outputDir
+     */
+    public void earlHtmlReport( String outputDir ) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        String resourceDir = cl.getResource( "com/occamlab/te/earl/lib" ).getPath();
+        String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
+        File htmlOutput = new File( outputDir, "result" );
+        htmlOutput.mkdir();
+        
+        File earlResult = findEarlResultFile( outputDir );
+        LOGR.log( SEVERE, "Try to transform earl result file '" + earlResult + "' to directory " + htmlOutput );
+        
+        try {
+            if ( earlResult != null && earlResult.exists() ) {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer( new StreamSource( earlXsl ) );
+                transformer.setParameter( "outputDir", htmlOutput );
+                File indexHtml = new File( htmlOutput, "index.html" );
+                indexHtml.createNewFile();
 
-	/**
+                transformer.transform( new StreamSource( earlResult ),
+                                       new StreamResult( new FileOutputStream( indexHtml ) ) );
+                FileUtils.copyDirectory( new File( resourceDir ), htmlOutput );
+            }
+        } catch ( Exception e ) {
+          LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
+          throw new RuntimeException( e );
+        }
+    }
+
+    private File findEarlResultFile( String outputDir ) {
+        File testngDir = new File( outputDir, "testng" );
+        if ( !testngDir.exists() ) {
+            return new File( outputDir, "earl-results.rdf" );
+        } else {
+
+            String[] dir = testngDir.list();
+            File testngUuidDirectory = new File( testngDir, dir[0] );
+            if ( testngUuidDirectory.isDirectory() ) {
+                return new File( testngUuidDirectory, "earl-results.rdf" );
+            }
+        }
+        return null;
+    }
+
+  /**
 	 * This method is used to extract the test input into
 	 * Map from the document element.
 	 * @param userInput Document node
