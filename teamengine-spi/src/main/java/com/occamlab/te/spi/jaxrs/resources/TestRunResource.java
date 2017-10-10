@@ -2,10 +2,12 @@ package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +53,8 @@ public class TestRunResource {
     public static final String TEST_RUN_ARGUMENTS = "Test run arguments - ";
     public static final String ENTITY_MEDIA_TYPE = "Entity media type: ";
     public static final String FILE_LOCATION = "File location: ";
+    public static final List<String> defAcceptedMediaType = Arrays.asList("application/rdf+xml", "application/xml", "application/zip");
+    
     @Context
     private UriInfo reqUriInfo;
 
@@ -213,8 +217,9 @@ public class TestRunResource {
      *             If an error occurs while executing a test run.
      */
     Source executeTestRun(String etsCode, String etsVersion, Map<String, java.util.List<String>> testRunArgs) {
-        MediaType preferredMediaType = this.headers.getAcceptableMediaTypes().get(0);
-        testRunArgs.put("acceptMediaType", Arrays.asList(preferredMediaType.toString()));
+        List<MediaType> acceptedMediaType = this.headers.getAcceptableMediaTypes();
+        String preferredMediaType = getPreferredMediaType(acceptedMediaType);
+        testRunArgs.put("acceptMediaType", Arrays.asList(preferredMediaType));
         if (LOGR.isLoggable(Level.FINE)) {
             StringBuilder msg = new StringBuilder("Test run arguments - ");
             msg.append(etsCode).append("/").append(etsVersion).append("\n");
@@ -302,4 +307,44 @@ public class TestRunResource {
         propsDoc.appendChild(docElem);
         return propsDoc;
     }
+    
+    /**
+     * This method is used to iterate the list of content-type
+     * and return the highest weighted content-type.
+     * If default content-type will be "application/rdf+xml". 
+     * 
+     * @param acceptedMediaType
+     * 			The List of media type provided in request header. 
+     * @return Preferred MediaType.
+     */
+	String getPreferredMediaType(List<MediaType> acceptedMediaType) {
+		List<String> acceptMediaList = new ArrayList<String>();
+        for(MediaType mediaType : acceptedMediaType){
+        	acceptMediaList.add(mediaType.toString());
+        }
+		String preferredMediaType = null;
+		if (acceptedMediaType.size() > 1) {
+			for (int i = 0; i < defAcceptedMediaType.size(); i++) {
+				for (ListIterator<String> mediaType = acceptMediaList.listIterator(); mediaType.hasNext();) {
+					String acceptedMedia = mediaType.next();
+					if (acceptedMedia.toString().contains(defAcceptedMediaType.get(i))) {
+						if (acceptedMedia.toString().contains(";")) {
+							preferredMediaType = acceptedMedia.substring(0, acceptedMedia.indexOf(";"));
+						} else {
+							preferredMediaType = acceptedMedia;
+						}
+					}
+				}
+				if(null != preferredMediaType){
+					break;
+				}
+			}
+			if (null == preferredMediaType) {
+				preferredMediaType = "application/rdf+xml";
+			}
+		} else {
+			preferredMediaType = acceptedMediaType.get(0).toString();
+		}
+		return preferredMediaType;
+	}
 }
