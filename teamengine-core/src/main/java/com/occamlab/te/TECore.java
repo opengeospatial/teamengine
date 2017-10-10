@@ -114,6 +114,7 @@ import com.occamlab.te.util.SoapUtils;
 import com.occamlab.te.util.StringUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
+import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.SEVERE;
 
 /**
@@ -402,7 +403,7 @@ public class TECore implements Runnable {
 
   public int execute_test(String testName, List<String> params,
           XdmNode contextNode) throws Exception {
-    if (LOGR.isLoggable(Level.FINE)) {
+    if (LOGR.isLoggable( FINE)) {
       String logMsg = String.format(
               "Preparing test %s for execution, using params:%n %s",
               testName, params);
@@ -599,14 +600,14 @@ public class TECore implements Runnable {
             xt.setParameter(TEPARAMS_QNAME, params);
     }
     // test may set global verdict, e.g. by calling ctl:fail
-    if (LOGR.isLoggable(Level.FINE)) {
-      LOGR.log(Level.FINE,
+    if (LOGR.isLoggable( FINE)) {
+      LOGR.log( FINE,
               "Executing TemplateEntry {0}" + template.getQName());
     }
     xt.transform();
     XdmNode ret = dest.getXdmNode();
-        if (ret != null && LOGR.isLoggable(Level.FINE)) {
-            LOGR.log(Level.FINE, "Output:\n" + ret.toString());
+        if (ret != null && LOGR.isLoggable( FINE)) {
+            LOGR.log( FINE, "Output:\n" + ret.toString());
         }
     return ret;
   }
@@ -893,12 +894,12 @@ public class TECore implements Runnable {
     out.println(indent + "Test " + test.getName() + " "
                 + getResultDescription(test.getResult()));
     recordTestResult.storeFinalTestDetail(test, verdict, dateFormat, cal, dirPath);
-    if (LOGR.isLoggable(Level.FINE)) {
+    if (LOGR.isLoggable( FINE)) {
             String msg = String
                     .format("Executed test %s - Verdict: %s",
                             test.getLocalName(),
                             getResultDescription(test.getResult()));
-      LOGR.log(Level.FINE, msg);
+      LOGR.log( FINE, msg);
     }
 
         //restore previous verdict if the result isn't worse
@@ -1043,13 +1044,13 @@ public class TECore implements Runnable {
     TestEntry parentTest = getParentTest();
         if (null == parentTest)
       return;
-    if (LOGR.isLoggable(Level.FINE)) {
+    if (LOGR.isLoggable( FINE)) {
       LOGR.log(
-              Level.FINE,
+              FINE,
               "Entered setParentTestResult with TestEntry {0} (result={1})",
                     new Object[] { currTest.getQName(), currTest.getResult() });
       LOGR.log(
-              Level.FINE,
+              FINE,
               "Parent TestEntry is {0} (result={1})",
                     new Object[] { parentTest.getQName(),
                             parentTest.getResult() });
@@ -1477,7 +1478,7 @@ public class TECore implements Runnable {
       }
 
       logTag += DomUtils.serializeNode(response) + "\n";
-      jlogger.log(Level.FINE, DomUtils.serializeNode(response));
+      jlogger.log( FINE, DomUtils.serializeNode( response));
     } catch (Exception e) {
       ex = e;
     }
@@ -2330,7 +2331,7 @@ public class TECore implements Runnable {
     formTransformer.setDestination(serializer);
     formTransformer.transform();
     this.formHtml = sw.toString();
-        if (LOGR.isLoggable(Level.FINE))
+        if (LOGR.isLoggable( FINE))
       LOGR.fine(this.formHtml);
 
     if (!recordedForms.isEmpty()) {
@@ -2358,7 +2359,7 @@ public class TECore implements Runnable {
     }
 
     Document doc = formResults;
-        if (LOGR.isLoggable(Level.FINE))
+        if (LOGR.isLoggable( FINE))
       LOGR.fine(DomUtils.serializeNode(doc));
     formResults = null;
     formParsers.clear();
@@ -2489,9 +2490,9 @@ public class TECore implements Runnable {
         String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
         File htmlOutput = new File( outputDir, "result" );
         htmlOutput.mkdir();
-        
+
         File earlResult = findEarlResultFile( outputDir );
-        LOGR.log( SEVERE, "Try to transform earl result file '" + earlResult + "' to directory " + htmlOutput );
+        LOGR.log( FINE, "Try to transform earl result file '" + earlResult + "' to directory " + htmlOutput );
         
         try {
             if ( earlResult != null && earlResult.exists() ) {
@@ -2505,8 +2506,7 @@ public class TECore implements Runnable {
                 FileUtils.copyDirectory( new File( resourceDir ), htmlOutput );
             }
         } catch ( Exception e ) {
-          LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
-          throw new RuntimeException( e );
+          LOGR.log( SEVERE, "Transformation of EARL to HTML failed.", e );
         }
     }
 
