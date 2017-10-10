@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parsers:ImageParser xmlns:parsers="http://www.occamlab.com/te/parsers">
-	<parsers:model value="ARGB">
-		<parsers:count bands="A" sample="0x00" />
-	</parsers:model>
-</parsers:ImageParser>

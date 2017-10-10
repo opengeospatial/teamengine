@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows" 
-  language="en-US"
-  version="2.0.2">
-  <ows:Exception exceptionCode="VersionNegotiationFailed" locator="acceptversions">
-    <ows:ExceptionText>Invalid parameter value in acceptversions: 2006.10.29.
-      Value MUST be 2.0.2</ows:ExceptionText>
-  </ows:Exception>
-</ows:ExceptionReport>

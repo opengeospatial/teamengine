@@ -1,1 +1,0 @@
-This folder has no tests in it

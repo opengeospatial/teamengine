@@ -1,8 +1,0 @@
-<mbean name="PBKDF2Realm"
- className="org.apache.catalina.mbeans.ClassNameMBean"
- description="Authentication realm that verifies password hashes generated using the PBKDF2 function"
- domain="Catalina"
- group="Realm"
- type="com.occamlab.te.realm.PBKDF2Realm">
-	<attribute name="root" description="Fully qualified path name for user directories" type="java.lang.String"/>
-</mbean>

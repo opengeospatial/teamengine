@@ -1,6 +1,0 @@
-[WANdisco-Git]
-name=WANdisco Git - $basearch
-baseurl=http://opensource.wandisco.com/centos/7/git/$basearch/
-enabled=1
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-WANdisco

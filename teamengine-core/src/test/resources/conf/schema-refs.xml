@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers"
-	ignoreErrors="false" ignoreWarnings="true">
-	<ctlp:schemas>
-		<ctlp:schema type="resource">xsd/ogc/csw/2.0.2/csw-2.0.2.2.xsd</ctlp:schema>
-	</ctlp:schemas>
-</ctlp:XMLValidatingParser>

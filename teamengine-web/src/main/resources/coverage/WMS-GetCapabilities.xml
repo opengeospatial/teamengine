@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<request name="GetCapabilities">
-  <param name="format">
-    <value>text/xml</value>
-  </param>
-  <param name="updatesequence">
-    <value>0</value>
-  </param>
-</request>
