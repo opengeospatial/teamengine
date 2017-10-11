@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -24,6 +26,8 @@ import org.apache.commons.io.FileUtils;
  */
 public class HtmlReport {
 
+	private static final Logger LOGR = Logger.getLogger( HtmlReport.class.getPackage().getName());
+
 	/**
 	 * This method will return the HTML result with zip file.
 	 * @param outputDirectory
@@ -32,14 +36,12 @@ public class HtmlReport {
 	 * @throws FileNotFoundException
 	 */
 	public static File getHtmlResultZip (String outputDirectory) throws FileNotFoundException{
-		File htmlResultFile = null;
 		File htmlResult = earlHtmlReport(outputDirectory);
-		htmlResultFile = new File(outputDirectory, "result.zip");
-//        File resultDir = new File(outputDirectory, "result");
+		File htmlResultFile = new File(outputDirectory, "result.zip");
         try {
 			zipDir(htmlResultFile, htmlResult);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+            LOGR.log( Level.SEVERE, "Could not create zip file with html results.", e );
 		}
 		return htmlResultFile;
 		
@@ -60,21 +62,25 @@ public class HtmlReport {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		String resourceDir = cl.getResource("com/occamlab/te/earl/lib").getPath();
 		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
-		File earlResult = null;
-		File htmlOutput = null;
-	
-			htmlOutput = new File(outputDir,"result");
-			earlResult = new File(outputDir, "earl-results.rdf");
+
+		File htmlOutput = new File(outputDir,"result");
+		htmlOutput.mkdir();
+		LOGR.fine( "HTML output is written to directory " + htmlOutput );
+		File earlResult = new File(outputDir, "earl-results.rdf");
 
 		try {
 			Transformer transformer = TransformerFactory.newInstance()
 					.newTransformer(new StreamSource(earlXsl));
 			transformer.setParameter("outputDir", htmlOutput);
-			transformer.transform(new StreamSource(earlResult),
-					new StreamResult(new FileOutputStream("index.html")));
+            File indexHtml = new File(htmlOutput, "index.html" );
+            indexHtml.createNewFile();
+
+            FileOutputStream outputStream = new FileOutputStream( indexHtml );
+            transformer.transform( new StreamSource( earlResult), new StreamResult( outputStream ));
 			FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
 		} catch (Exception e) {
-			System.out.println(e.getMessage() + e.getCause());
+			LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
+			throw new RuntimeException( e );
 		}
 		if(!htmlOutput.exists()){
 			throw new FileNotFoundException("HTML results not found at " + htmlOutput.getAbsolutePath());
