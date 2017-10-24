@@ -91,10 +91,13 @@ public void jspInit() {
 				}
 			}
 			
-			function viewTestDetails(path){
-				var testDetailsUrl = path.substring(path.lastIndexOf("/") + 1, path.length);
-				$("a").attr('href', "<%=request.getContextPath()%>"+ "/reports/" + "<%=request.getRemoteUser()%>" + "/" + "<%=request.getParameter("session")%>" +"/result/"+ testDetailsUrl);
-			}
+			$( document ).ready(function() {
+				$("a.testDetailsLink").each(function() {
+					   var $this = $(this);       
+					   var _href = $this.attr("href"); 
+					   $this.attr("href", "<%=request.getContextPath()%>"+ "/reports/" + "<%=request.getRemoteUser()%>" + "/" + "<%=request.getParameter("session")%>" +"/result/"+ _href);
+					});
+			});
 			
 		    $( document ).ready(function() {
 		    	console.log( "document loaded" );
