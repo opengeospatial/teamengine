@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -33,8 +34,13 @@ import com.occamlab.te.spi.util.HtmlReport;
 public class TestNGExecutor implements TestRunExecutor {
 
     private static final Logger LOGR = Logger.getLogger(TestNGExecutor.class.getPackage().getName());
+
+    private static final List<String> SUPPORTED_MEDIA_TYPES = Arrays.asList( "application/xml", "application/zip", "application/rdf+xml" );
+    
     private boolean useDefaultListeners;
+    
     private File outputDir;
+    
     private URI testngConfig;
 
     /**
@@ -170,30 +176,18 @@ public class TestNGExecutor implements TestRunExecutor {
 	}
 
     /**
-     * Gets the preferred media type for the test results as indicated by the
-     * value of the "acceptMediaType" key in the given properties file. The
-     * default value is "application/xml".
+     * Gets the preferred media type for the test results as indicated by the value of the "acceptMediaType" key in the
+     * given properties file. The default value is "application/xml".
      * 
      * @param testRunArgs
      *            An XML properties file containing test run arguments.
      * @return The preferred media type.
      */
-    String getPreferredMediaType(Document testRunArgs) {
-        String mediaType = "application/rdf+xml";
-        NodeList entries = testRunArgs.getElementsByTagName("entry");
-        for (int i = 0; i < entries.getLength(); i++) {
-            Element entry = (Element) entries.item(i);
-            if (entry.getAttribute("key").equals("acceptMediaType")) {
-            	if(entry.getTextContent().trim().equalsIgnoreCase("application/xml")){
-                mediaType = "application/xml";
-            	} else if(entry.getTextContent().trim().equalsIgnoreCase("application/zip")){
-                    mediaType = "application/zip";
-                	} else if(entry.getTextContent().trim().equalsIgnoreCase("application/rdf+earl")){
-                        mediaType = "application/rdf+earl";
-                    	}
-            }
-        }
-        return mediaType;
+    String getPreferredMediaType( Document testRunArgs ) {
+        String mediaTypeFromTestRunArg = parseMediaTypeFromTestRunArgs( testRunArgs );
+        if ( mediaTypeFromTestRunArg != null && SUPPORTED_MEDIA_TYPES.contains( mediaTypeFromTestRunArg ) )
+            return mediaTypeFromTestRunArg;
+        return "application/xml";
     }
 
     /**
@@ -228,6 +222,17 @@ public class TestNGExecutor implements TestRunExecutor {
             }
             driver.setTestSuites(testSuites);
         }
+    }
+
+    private String parseMediaTypeFromTestRunArgs( Document testRunArgs ) {
+        NodeList entries = testRunArgs.getElementsByTagName( "entry" );
+        for ( int i = 0; i < entries.getLength(); i++ ) {
+            Element entry = (Element) entries.item( i );
+            if ( entry.getAttribute( "key" ).equals( "acceptMediaType" ) ) {
+                return entry.getTextContent().trim();
+            }
+        }
+        return null;
     }
 
 }

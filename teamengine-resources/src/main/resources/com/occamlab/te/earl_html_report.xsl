@@ -353,7 +353,7 @@
             <xsl:if test="substring-after($result, '#')='passed'">
                <tr bgcolor="#B2F0D1">
                   <td>
-                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" onClick="viewTestDetails(this.id)">
+                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" >
                         <xsl:value-of select="$testTitle" />
                      </a>
                   </td>
@@ -363,7 +363,7 @@
             <xsl:if test="substring-after($result, '#')='failed' or substring-after($result, '#')='cantTell'">
                <tr bgcolor="#FFB2B2">
                   <td>
-                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" onClick="viewTestDetails(this.id)">
+                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" >
                         <xsl:value-of select="$testTitle" />
                      </a>
                   </td>
@@ -394,7 +394,7 @@
             <xsl:if test="substring-after($result, '#')='untested'">
                <tr bgcolor="#CCCCCE">
                   <td>
-                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" onClick="viewTestDetails(this.id)">
+                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" >
                         <xsl:value-of select="$testTitle" />
                      </a>
                   </td>
