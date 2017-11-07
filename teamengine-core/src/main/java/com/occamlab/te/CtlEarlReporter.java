@@ -480,6 +480,7 @@ public class CtlEarlReporter {
 							reqVal = method.getTextContent();
 						}
 						// Check request method is GET or POST.
+                        httpReq = earl.createResource(HTTP.Request);
 						if (httpMethod.equalsIgnoreCase("GET")) {
 							if (null != method
 									&& method.getLocalName().equalsIgnoreCase(
@@ -496,7 +497,6 @@ public class CtlEarlReporter {
 										+ method.getTextContent();
 							}
 
-							httpReq = earl.createResource(HTTP.Request);
 							httpReq.addProperty(HTTP.methodName, httpMethod);
 							httpReq.addProperty(HTTP.requestURI, reqVal);
 
@@ -528,7 +528,7 @@ public class CtlEarlReporter {
 						}
 					}
 				}
-				if (null != str && str.equalsIgnoreCase("response")) {
+				if (httpReq != null && "response".equalsIgnoreCase(str)) {
 					Resource httpRsp = earl.createResource(HTTP.Response);
 					// safe assumption, but need more response info to know for
 					// sure
