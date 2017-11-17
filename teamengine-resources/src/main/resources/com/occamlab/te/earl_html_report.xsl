@@ -398,6 +398,28 @@
                         <xsl:value-of select="$testTitle" />
                      </a>
                   </td>
+                  <td>
+                     <xsl:variable name="message">
+                        <xsl:variable name="msg">
+                           <xsl:call-template name="string-replace-all">
+                              <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
+                              <xsl:with-param name="replace" select="'['" />
+                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                           </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:choose>
+                           <xsl:when test="substring-before($msg,'expected [')">
+                              <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                           </xsl:when>
+                           <xsl:otherwise>
+                              <xsl:value-of select="$msg" />
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </xsl:variable>
+                     <p>
+                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                     </p>
+                  </td>
                   <td />
                </tr>
             </xsl:if>
