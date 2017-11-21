@@ -24,14 +24,21 @@ package com.occamlab.te.web;
 
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.StringUtils;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.text.DateFormat;
+import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -45,6 +52,7 @@ public class TestSession {
     String suiteName;
     String currentDate;
     ArrayList<String> profiles;
+
 
     /**
      * Creates a new test session.
@@ -105,7 +113,41 @@ public class TestSession {
                 .getElementsByTagName("description").item(0));
         this.description = description.getTextContent();
     }
+    /**
+     * This will return the sorted list
+     * of TestSession data according to date.
+     * 
+     * @param testData 
+     * 			List of all TestSessions. 
+     * @return
+     * 			Return the sorted list of testData.
+     */
+	public List<TestSession> getSortedMap(List<TestSession> testData) {
 
+		Collections.sort(testData, new Comparator<TestSession>() {
+
+			@Override
+			public int compare(TestSession o1, TestSession o2) {
+
+				try {
+					return convertStringToDate(o2.getCurrentDate()).compareTo(
+							convertStringToDate(o1.getCurrentDate()));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				return 0;
+			}
+		});
+		return testData;
+	}
+    
+	public static Date convertStringToDate(String dateString)
+			throws ParseException {
+		Format formatter = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
+		Date date = ((DateFormat) formatter).parse(dateString);
+		return date;
+	}
+    
     public String getDescription() {
         return description;
     }
