@@ -386,8 +386,8 @@ public class TestRunResource {
         } catch ( Exception ex ) {
             LOGR.log( Level.WARNING, ex.getMessage(), ex );
             ErrorResponseBuilder builder = new ErrorResponseBuilder();
-            Response rsp = builder.buildErrorResponse( 500, String.format( "Error executing test suite (%s-%s)",
-                                                                           etsCode, etsVersion ) );
+            String error_msg = "Error executing test suite ("+ etsCode +"-" + etsVersion + "): " + "Error message: " + ex.getMessage();
+            Response rsp = builder.buildErrorResponse(500,error_msg);
             throw new WebApplicationException( rsp );
         }
         LOGR.fine( String.format( "Test results for suite %s-%s: %s", etsCode, etsVersion, testResults.getSystemId() ) );
