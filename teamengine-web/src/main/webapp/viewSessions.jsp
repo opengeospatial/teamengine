@@ -40,6 +40,22 @@
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       <title>Test Sessions</title>
+	  <style>
+		   .session-table td {
+		   border: 1px solid black;
+		   height: 30px;
+		   }
+		   .session-table th {
+		   border: 1px solid black;
+		   height: 30px;
+		   }
+		   td.trash-noBorder {
+		   border: none;
+		   }
+		   .session-table {
+		   border-collapse: collapse;
+		   }
+	   </style>
       <script>
         function deleteSession(sessionID) {
           var sessionid = sessionID;
@@ -57,7 +73,7 @@
       <%@ include file="header.jsp" %>
       <h2>Test Sessions</h2>
       <p>
-        <table border="0"><tr><td><table border="1">
+        <table border="0"><tr><td><table class="session-table">
                 <%  File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
                   String[] dirs = userdir.list();
                   Arrays.sort(dirs);
@@ -80,6 +96,7 @@
                       out.println("<td>" + s.getSourcesName().split("_")[2] + "</td>");
                       out.println("<td>" + s.getCurrentDate() + "</td>");
                       out.println("<td>" + s.getDescription() + "</td>");
+                      out.println("<td class='trash-noBorder' ><img src='images/trash.png' style='height:17px;' id='" + s.getSessionId() + "' onclick='deleteSession(this.id)'/></td>");
                       out.println("</tr>");
                     }
                   }
@@ -88,8 +105,8 @@
             </td>
             <td>
               <table border="0">
-                <%  out.println("<tr style='height:22px;'>");
-                  out.println("<td></td>");
+                <% // out.println("<tr style='height:22px;'>");
+                 /* out.println("<td></td>");
                   out.println("</tr>");
 
                   for (int i = 0; i < dirs.length; i++) {
@@ -101,6 +118,7 @@
                       out.println("</tr>");
                     }
                   }
+                  */
                 %>
               </table>
             </td>
