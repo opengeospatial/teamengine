@@ -1161,9 +1161,9 @@
       <xsl:sort order="ascending" select="if (compare($testNgXslt.sortTestCaseLinks, 'true') = 0) then @name else ''"/>
       <div class="testCaseLink"
                  onclick="javscript:selectTestCaseLink(this); parent.content.location='{testng:testCaseContentFileName(.)}'">
-        <div class="{if (count(./class/test-method[@status='FAIL']) > 0)
+        <div class="{if (count(./class/test-method[@status='FAIL' and not(@is-config)]) > 0)
                                 then 'testCaseFail'
-                                else if ((count(./class/test-method[@status='FAIL']) = 0) and (count(./class/test-method[@status='PASS']) > 0))
+                                else if ((count(./class/test-method[@status='FAIL' and not(@is-config)]) = 0) and (count(./class/test-method[@status='PASS' and not(@is-config)]) > 0))
                                     then 'testCasePass'
                                     else 'testCaseSkip'}">
         </div>
