@@ -713,24 +713,26 @@
                               <xsl:value-of select="translate($requestMethod, $smallcase, $uppercase)" />
                            </td>
                         </tr>
+                        <xsl:variable name="input_url">
+							<xsl:call-template name="testInputs">
+									  
+							</xsl:call-template>
+						</xsl:variable>
+						<xsl:variable name="requestURI" select="earl:result/earl:TestResult/cite:message/http:Request/http:requestURI" />
+						
 						<xsl:choose>
 							<xsl:when test="(($requestMethod='POST') or ($requestMethod='post'))">
 								<tr>
 									<td>URL:</td>
 									<td>
-									<xsl:variable name="input_url">
-									<xsl:call-template name="testInputs">
-									  
-									</xsl:call-template>
-									</xsl:variable>
-									<xsl:value-of select="$input_url" />
+									<xsl:value-of select="substring-before($input_url, '?')" />
 									</td>
 								</tr>
 								<tr>
 									<td>Body:</td>
 									<td>
 										<pre class="brush: xml;">
-											<xsl:value-of select="earl:result/earl:TestResult/cite:message/http:Request/http:requestURI" />
+											<xsl:value-of select="$requestURI" />
 										</pre>	
 									</td>
 								</tr>
@@ -739,17 +741,8 @@
 								<tr>
 									<td>URL:</td>
 									<td>
-										<xsl:variable name="input_url">
-										<xsl:call-template name="testInputs">
-										  
-										</xsl:call-template>
-										</xsl:variable>
-										<xsl:value-of select="$input_url" />
+										<xsl:value-of select="concat(substring-before($input_url, '?'), '?' ,$requestURI)" />
 									</td>
-								</tr>
-								<tr>
-									<td>URI:</td>
-									<td><xsl:value-of select="earl:result/earl:TestResult/cite:message/http:Request/http:requestURI" /></td>
 								</tr>
 							</xsl:otherwise>
 						</xsl:choose>
