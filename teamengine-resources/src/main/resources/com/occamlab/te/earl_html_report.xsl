@@ -420,7 +420,6 @@
                         <xsl:value-of select="$message" disable-output-escaping="yes" />
                      </p>
                   </td>
-                  <td />
                </tr>
             </xsl:if>
          </xsl:if>
