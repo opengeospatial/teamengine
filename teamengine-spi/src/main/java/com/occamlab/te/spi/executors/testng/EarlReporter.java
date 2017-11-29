@@ -409,6 +409,7 @@ public class EarlReporter implements IReporter {
         if (httpMethod.equals(HttpMethod.GET)) {
             httpReq.addProperty(HTTP.requestURI, reqVal);
         } else {
+        	httpReq.addProperty(HTTP.requestURI, reqVal);
             Resource reqContent = this.earlModel.createResource(CONTENT.ContentAsXML);
             // XML content may be truncated and hence not well-formed
             reqContent.addProperty(CONTENT.rest, reqVal);

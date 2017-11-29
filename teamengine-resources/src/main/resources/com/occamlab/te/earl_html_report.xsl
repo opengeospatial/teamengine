@@ -41,10 +41,26 @@
       <!-- <xsl:value-of select="concat('file:///',$htmlXslt.outputDir, '/', $fileName)"/> -->
       <!--<xsl:value-of select="concat('file:///', $testNgXslt.outputDir, '/', $fileName)"/>-->
    </xsl:function>
+   
    <xsl:function name="testng:htmlContentFileName">
       <xsl:param name="testName" />
       <xsl:value-of select="concat($testName, '.html')" />
    </xsl:function>
+   
+   <!-- Get URL from the test input for testDetails page. -->
+	<xsl:template name="testInputs">
+		<xsl:choose>
+			<xsl:when test="//rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
+				<xsl:for-each select="//rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li[1]">
+						<xsl:value-of select="dct:description" />
+				</xsl:for-each>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="NULL" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+      
    <xsl:template match="/">
       <xsl:result-document href="{testng:absolutePath('index.html')}" format="xhtml">
          <html>
@@ -708,22 +724,50 @@
                         </td>
                      </tr>
                      <xsl:if test="earl:result/earl:TestResult/cite:message/http:Request">
+                     <xsl:variable name="requestMethod" select="earl:result/earl:TestResult/cite:message/http:Request/http:methodName" />
                         <tr>
                            <td colspan="5">Inputs :</td>
                         </tr>
                         <tr>
                            <td>Method:</td>
                            <td>
-                              <xsl:variable name="requestMethod" select="earl:result/earl:TestResult/cite:message/http:Request/http:methodName" />
                               <xsl:value-of select="translate($requestMethod, $smallcase, $uppercase)" />
                            </td>
                         </tr>
-                        <tr>
-                           <td>URI:</td>
-                           <td>
-                              <xsl:value-of select="earl:result/earl:TestResult/cite:message/http:Request/http:requestURI" />
-                           </td>
-                        </tr>
+                        <xsl:variable name="input_url">
+							<xsl:call-template name="testInputs">
+									  
+							</xsl:call-template>
+						</xsl:variable>
+						<xsl:variable name="requestURI" select="earl:result/earl:TestResult/cite:message/http:Request/http:requestURI" />
+						
+						<xsl:choose>
+							<xsl:when test="(($requestMethod='POST') or ($requestMethod='post'))">
+								<tr>
+									<td>URL:</td>
+									<td>
+									<xsl:value-of select="substring-before($input_url, '?')" />
+									</td>
+								</tr>
+								<tr>
+									<td>Body:</td>
+									<td>
+										<pre class="brush: xml;">
+											<xsl:value-of select="$requestURI" />
+										</pre>	
+									</td>
+								</tr>
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<td>URL:</td>
+									<td>
+										<xsl:value-of select="concat(substring-before($input_url, '?'), '?' ,$requestURI)" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
+                        
                         <tr>
                            <td>Outputs :</td>
                            <td>
