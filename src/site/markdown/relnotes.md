@@ -1,6 +1,20 @@
 Release Notes
 =============
 
+## 5.1 (2017-11-30)
+- Fix [#272](https://github.com/opengeospatial/teamengine/issues/272): Failing tests do not report performed requests
+- Fix [#273](https://github.com/opengeospatial/teamengine/issues/273): HTML report: Report has additional empty column if test is skipped
+- Fix [#263](https://github.com/opengeospatial/teamengine/issues/263): NPE during execution of WFS 1.1 test suite
+- Fix [#215](https://github.com/opengeospatial/teamengine/issues/215): View session is not sorted correctly
+- Fix [#268](https://github.com/opengeospatial/teamengine/issues/268): messages of skipped tests are empty in new HTML report
+- Fix [#266](https://github.com/opengeospatial/teamengine/issues/266): Colors in detailed test report are confusing or not correct
+- Fix [#209](https://github.com/opengeospatial/teamengine/issues/209): View Session delete icons are not align
+- Fix [#237](https://github.com/opengeospatial/teamengine/issues/237): REST API: Improve response if a test run fails
+- Fix [#235](https://github.com/opengeospatial/teamengine/issues/235): REST API: Set all required request and response HTTP header
+- Fix [#257](https://github.com/opengeospatial/teamengine/issues/257): HTML report via Web Browser Interface: Buttons for old test report and session list navigate to wrong pages in some cases
+- Fix [#251](https://github.com/opengeospatial/teamengine/issues/251): Detailed old test report of TestNG test suites is erroneous
+- Fix [#242](https://github.com/opengeospatial/teamengine/issues/242): REST API: Setting of multiple content types in request header leads to unexpected behaviour
+
 ## 5.0 (2017-10-10)
 - Fix [#252](https://github.com/opengeospatial/teamengine/issues/252): HTML report is erroneous on beta environment
 - Merge [#250](https://github.com/opengeospatial/teamengine/pull/250): Rework documentation of profiles
