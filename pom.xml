@@ -149,6 +149,7 @@
         <configuration>
           <relativizeDecorationLinks>false</relativizeDecorationLinks>
           <generateReports>false</generateReports>
+          <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
       <plugin>
@@ -185,9 +186,27 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.5.3</version>
         <configuration>
-          <tagNameFormat>@{project.version}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
+          <tagNameFormat>@{project.version}</tagNameFormat>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <content>${project.reporting.outputDirectory}</content>
+          <scmBranch>gh-pages</scmBranch>
+        </configuration>
+        <executions>
+          <execution>
+            <id>scm-publish</id>
+            <phase>site-deploy</phase>
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
@@ -367,4 +386,11 @@
       </build>
     </profile>
   </profiles>
+
+  <distributionManagement>
+    <site>
+      <id>site</id>
+      <url>git@github.com:opengeospatial/teamengine.git</url>
+    </site>
+  </distributionManagement>
 </project>
