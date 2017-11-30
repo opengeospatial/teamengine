@@ -390,7 +390,7 @@
   <distributionManagement>
     <site>
       <id>site</id>
-      <url>git@github.com:opengeospatial/teamengine.git</url>
+      <url>scm:git:git@github.com:opengeospatial/teamengine.git</url>
     </site>
   </distributionManagement>
 </project>
