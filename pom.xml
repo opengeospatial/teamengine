@@ -173,7 +173,7 @@
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
-            <version>1.7</version>
+            <version>1.6</version>
           </dependency>
           <dependency>
             <groupId>org.asciidoctor</groupId>
@@ -195,18 +195,8 @@
         <artifactId>maven-scm-publish-plugin</artifactId>
         <version>1.1</version>
         <configuration>
-          <content>${project.reporting.outputDirectory}</content>
           <scmBranch>gh-pages</scmBranch>
         </configuration>
-        <executions>
-          <execution>
-            <id>scm-publish</id>
-            <phase>site-deploy</phase>
-            <goals>
-              <goal>publish-scm</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
 
