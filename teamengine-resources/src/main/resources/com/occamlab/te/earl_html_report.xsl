@@ -389,7 +389,7 @@
                            <xsl:call-template name="string-replace-all">
                               <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                               <xsl:with-param name="replace" select="'['" />
-                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                              <xsl:with-param name="by" select="'&lt;br&gt;['" />
                            </xsl:call-template>
                         </xsl:variable>
                         <xsl:choose>
@@ -402,7 +402,7 @@
                         </xsl:choose>
                      </xsl:variable>
                      <p>
-                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                       <xsl:value-of select="$message" />
                      </p>
                   </td>
                </tr>
@@ -420,7 +420,7 @@
                            <xsl:call-template name="string-replace-all">
                               <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                               <xsl:with-param name="replace" select="'['" />
-                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                              <xsl:with-param name="by" select="'&lt;br&gt;['" />
                            </xsl:call-template>
                         </xsl:variable>
                         <xsl:choose>
@@ -433,7 +433,7 @@
                         </xsl:choose>
                      </xsl:variable>
                      <p>
-                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                        <xsl:value-of select="$message" />
                      </p>
                   </td>
                </tr>
@@ -616,7 +616,7 @@
                                              <xsl:call-template name="string-replace-all">
                                                 <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                                                 <xsl:with-param name="replace" select="'['" />
-                                                <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                                                <xsl:with-param name="by" select="'&lt;br&gt;['" />
                                              </xsl:call-template>
                                           </xsl:variable>
                                           <xsl:choose>
@@ -629,7 +629,7 @@
                                           </xsl:choose>
                                        </xsl:variable>
                                        <p>
-                                          <xsl:value-of select="$message" disable-output-escaping="yes" />
+                                          <xsl:value-of select="$message" />
                                        </p>
                                     </td>
                                  </tr>
@@ -786,7 +786,7 @@
                                  <xsl:call-template name="string-replace-all">
                                     <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                                     <xsl:with-param name="replace" select="'['" />
-                                    <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                                    <xsl:with-param name="by" select="'&lt;br&gt;['" />
                                  </xsl:call-template>
                               </xsl:variable>
                               <xsl:choose>
@@ -799,7 +799,7 @@
                               </xsl:choose>
                            </xsl:variable>
                            <p>
-                              <xsl:value-of select="$message" disable-output-escaping="yes" />
+                              <xsl:value-of select="$message" />
                            </p>
                         </td>
                      </tr>
