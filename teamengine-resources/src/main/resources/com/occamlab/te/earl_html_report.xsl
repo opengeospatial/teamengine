@@ -735,6 +735,8 @@
                               <xsl:value-of select="$testDescription" />
                               
                               <xsl:if test="substring-after($result, '#')='failed' or substring-after($result, '#')='cantTell'">
+                              	<xsl:variable name="testSuiteType" select="//rdf:RDF/cite:TestRun/cite:testSuiteType" />
+                              	<xsl:if test=" $testSuiteType = 'testng'" >
 	                              <xsl:variable name="testName" select="testng:testSuiteName(//rdf:RDF/cite:TestRun/dct:title, 'title')" />
 	                              <xsl:call-template name="link-javadoc">
 	                                 <xsl:with-param name="ets-code" select="$testName" />
@@ -752,6 +754,7 @@
 									<b>Class Name:</b> <xsl:value-of select="$testClassName" /> <br />
 									<b>Method Name:</b> <xsl:value-of select="$testCaseName" /> <br />
 									<b>Path:</b> <xsl:value-of select="substring-before($test_uris, '#')" />
+								</xsl:if>	
 							</xsl:if>
                            </td>
                         </tr>
