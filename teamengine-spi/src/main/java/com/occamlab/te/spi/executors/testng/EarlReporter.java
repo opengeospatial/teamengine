@@ -94,6 +94,7 @@ public class EarlReporter implements IReporter {
             Literal duration = model.createTypedLiteral(summary.getTotalDuration(),
                     XSDDatatype.XSDduration);
             this.testRun.addLiteral(DCTerms.extent, duration);
+            this.testRun.addLiteral(CITE.testSuiteType, "testng");
             processSuiteResults(model, suite.getResults());
             this.earlModel.add(model);
         }
