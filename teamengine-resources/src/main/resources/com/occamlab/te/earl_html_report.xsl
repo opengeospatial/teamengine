@@ -105,6 +105,7 @@
                      Time:
                      <xsl:value-of select="rdf:RDF/cite:TestRun/dct:created" />
                      <br />
+                     <xsl:if test="count(/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement/cite:isBasic[text() = 'true']) &gt; 0 ">
                      Basic Conformance Classes:
                      <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                         <xsl:if test="cite:isBasic = 'true'">
@@ -113,6 +114,7 @@
                            </div>
                         </xsl:if>
                      </xsl:for-each>
+                     </xsl:if>
                      <br />
                      Test INPUT:
                      <xsl:choose>
@@ -141,6 +143,8 @@
                      <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
                      <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      <xsl:variable name="status">
+                     <xsl:choose>
+                        <xsl:when test="count(/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement/cite:isBasic[text() = 'true']) &gt; 0 ">
 						<xsl:variable name="core_count">
 							<xsl:for-each select="//earl:TestRequirement">
 								<xsl:if test="cite:isBasic[text() = 'true']" >
@@ -156,10 +160,16 @@
 							</xsl:for-each>
 						</xsl:variable>
 						<xsl:value-of select="if (contains($core_count,'No')) then 'No' else 'Yes'" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>This test suite does not support evaluation of core conformance classes. 
+									  Please contact the CITE team if you have any questions regarding the core conformance classes.</xsl:text>
+						</xsl:otherwise>
+						</xsl:choose>
 					</xsl:variable>
                      <div style="text-indent:50px;">
-                        Passed core (Can be certified):
-                        <xsl:value-of select="$status" />
+                        <div style="float: left;width: 23%;"><label>Passed core (Can be certified)::</label></div>
+                        <div style="float: left;width: 77%;text-indent: 0;"><xsl:value-of select="$status" /></div>
                      </div>
                      <div style="text-indent:50px;">
                         Number of conformance class passed:
