@@ -78,9 +78,9 @@
 
     <xsl:template name="test" match="test">
         <xsl:param name="testnum" select="$testnum"/>
-        <xsl:variable name="file" select="file:new(string(@file))"/>
+        <!-- <xsl:variable name="file" select="file:new(string(@file))"/>
         <xsl:variable name="pdir1" select="file:getName(file:getParentFile($file))"/>
-        <xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/>
+        <xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/> -->
         <!-- <xsl:variable name="dir">
             <xsl:choose>
                 <xsl:when test="contains($pdir1, '.ctl')">
