@@ -919,6 +919,9 @@ public class TECore implements Runnable {
 		File logfile = new File(logdir);
 		try {
 			dbf = DocumentBuilderFactory.newInstance();
+			// Fortify Mod: Disable entity expansion to foil External Entity Injections
+                        dbf.setExpandEntityReferences(false);
+                        // End Fortify Mod
 			docBuilder = dbf.newDocumentBuilder();
 			docBuilder.setErrorHandler(null);
 			doc = docBuilder.parse(logfile);
@@ -956,6 +959,9 @@ public class TECore implements Runnable {
 
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
+                                // Fortify Mod: prevent external entity injection
+                                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                                // END Fortify Mod
 				Transformer transformer = transformerFactory.newTransformer();
 				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 				StreamResult result = new StreamResult(logfile);
@@ -2496,7 +2502,12 @@ public class TECore implements Runnable {
         
         try {
             if ( earlResult != null && earlResult.exists() ) {
-                Transformer transformer = TransformerFactory.newInstance().newTransformer( new StreamSource( earlXsl ) );
+                // Fortify Mod: prevent external entity injections
+                // Transformer transformer = TransformerFactory.newInstance().newTransformer( new StreamSource( earlXsl ) );
+                TransformerFactory tf = TransformerFactory.newInstance();
+                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                Transformer transformer = tf.newTransformer( new StreamSource( earlXsl ) );
+                // End Fortify Mod
                 transformer.setParameter( "outputDir", htmlOutput );
                 File indexHtml = new File( htmlOutput, "index.html" );
                 indexHtml.createNewFile();

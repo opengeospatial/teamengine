@@ -1,3 +1,14 @@
+/**
+ * ******************************************************************************************
+ *
+ * Version Date: January 2, 2018
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC): Fortify adjudications
+ *
+ * ******************************************************************************************
+ */
+
 package com.occamlab.te.web.listeners;
 
 import java.io.File;
@@ -57,7 +68,12 @@ public class CleartextPasswordContextListener implements ServletContextListener 
         }
         DocumentBuilder domBuilder = null;
         try {
-            domBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            // Fortify Mod: Disable entity expansion to foil External Entity Injections
+            // domBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setExpandEntityReferences(false);
+            domBuilder = dbf.newDocumentBuilder();
+            // End Fortify Mod
         } catch (ParserConfigurationException e) {
             LOGR.warning(e.getMessage());
             return;

@@ -1,3 +1,14 @@
+/**
+ * ***********************************************************************************
+ *
+ *  Version Date: January 2, 2018
+ *
+ *  Contributor(s):
+ *     C. Heazel (WiSC): Fortify adjudications
+ *
+ * ***********************************************************************************
+ */
+
 package com.occamlab.te.spi.ctl;
 
 import com.occamlab.te.CtlEarlReporter;
@@ -104,6 +115,9 @@ public class CtlExecutor implements TestRunExecutor {
         // NOTE: Final result should be transformed to EARL report (RDF/XML)
         // resolve xinclude directives in CTL results
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        // Fortify Mod: Disable entity expansion to foil External Entity Injection
+        docFactory.setExpandEntityReferences(false);
+        // End Fortify Mod
         docFactory.setNamespaceAware(true);
         docFactory.setXIncludeAware(true);
         Source results = null;
