@@ -2501,8 +2501,12 @@ public class TECore implements Runnable {
                 File indexHtml = new File( htmlOutput, "index.html" );
                 indexHtml.createNewFile();
 
-                transformer.transform( new StreamSource( earlResult ),
-                                       new StreamResult( new FileOutputStream( indexHtml ) ) );
+                // Fortify Mod: Make sure the FileOutputStream is closed when we are done with it.
+                // transformer.transform( new StreamSource( earlResult ),
+                //                       new StreamResult( new FileOutputStream( indexHtml ) ) );
+                FileOutputStream fo = new FileOutputStream( indexHtml );
+                transformer.transform( new StreamSource( earlResult ), new StreamResult( fo ));
+                fo.close();
                 FileUtils.copyDirectory( new File( resourceDir ), htmlOutput );
             }
         } catch ( Exception e ) {

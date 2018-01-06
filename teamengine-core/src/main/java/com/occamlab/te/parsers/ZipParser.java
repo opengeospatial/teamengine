@@ -1,3 +1,14 @@
+/**
+ * ********************************************************************
+ *
+ * Version Date: January 5, 2018
+ *
+ * Contributor(s):
+ *    C. Heazel (WiSC) Modifications to address Fortify issues
+ *
+ * ********************************************************************
+ */
+
 package com.occamlab.te.parsers;
 
 import java.io.File;
@@ -149,6 +160,8 @@ public class ZipParser {
             while ((len = zis.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
+            // Fortify Mod: Close the OutputStream and release its resources
+            out.close();
 
             // Add the file information to the document
             Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
@@ -242,6 +255,8 @@ public class ZipParser {
             while ((len = zis.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
+            // Fortify Mod: close the OutputStream and release its resources
+            out.close();
 
             // Add the file information to the document
             Element fileEntry = doc.createElementNS(CTL_NS, "file-entry");
@@ -251,6 +266,8 @@ public class ZipParser {
             fileEntry.setAttribute("size", String.valueOf(size));
             root.appendChild(fileEntry);
         }
+        // Fortify Mod: Close the ZipInputStream and release resources
+        zis.close();
 
         doc.appendChild(root);
 

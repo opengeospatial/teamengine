@@ -1,3 +1,14 @@
+/**
+ * ***********************************************************************************
+ *
+ * Version Date: January 5, 2018
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC): Mods to address Fortify issues.
+ *
+ * ***********************************************************************************
+ */
+
 package com.occamlab.te;
 
 import java.io.File;
@@ -514,6 +525,8 @@ public class CtlEarlReporter {
 								transformer.transform(source, result);
 
 								xmlString = result.getWriter().toString();
+                                                                // Fortify Mod: Close the Writer.  This flushes the content and frees resources which could be exhausted by the do-loop.
+                                                                result.getWriter().close();
 
 								Resource reqContent = earl
 										.createResource(CONTENT.ContentAsXML);

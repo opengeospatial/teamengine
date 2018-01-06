@@ -15,7 +15,9 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+    C. Heazel (WiSC): Applied mods to address Fortify issues
+
  */
 
 package com.occamlab.te;
@@ -112,6 +114,8 @@ public class Engine {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream is = cl.getResourceAsStream("com/occamlab/te/formfn.xsl");
         formExecutable = compiler.compile(new StreamSource(is));
+        // Fortify Mod: We are done with the InputStream.  Release the resource
+        is.close();
     }
 
     public void addFunctionLibrary(Collection<Index> indexes) {

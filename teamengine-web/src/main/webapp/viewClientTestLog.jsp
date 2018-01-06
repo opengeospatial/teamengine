@@ -266,7 +266,11 @@
           Document docClause = dBuilderClause.parse(fXmlFileClause);
           docClause.getDocumentElement().normalize();
           NodeList nListClause = docClause.getElementsByTagName("Request");
-          Object obj = parser.parse(new FileReader(userlog + "/" + sessionId + "/test_data/finalResult.txt"));
+          // Fortify Mod: Close the FileReader once we are done with it.
+          // Object obj = parser.parse(new FileReader(userlog + "/" + sessionId + "/test_data/finalResult.txt"));
+          FileReader fr = new FileReader(userlog + "/" + sessionId + "/test_data/finalResult.txt");
+          Object obj = parser.parse(fd);
+          fr.close();
           JSONObject jsonObject = (JSONObject) obj;
           JSONArray resultMsg = (JSONArray) jsonObject.get("Result");
           String reqNo = request.getParameter("reqNo");

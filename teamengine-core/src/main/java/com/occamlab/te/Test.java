@@ -17,6 +17,7 @@
 
  Contributor(s): 
  2009         F. Vitale     vitale@imaa.cnr.it
+ 2018         C. Heazel (WiSC) Mofidifications to address Fortify issues.
            
  */
 
@@ -229,9 +230,13 @@ public class Test {
                         "Error: Documentation file already exists, check the file "
                                 + html_output_documentation_file
                                         .getAbsolutePath() + " ");
-            docCode.generateDocumentation(setupOpts.getSources().get(0)
-                    .getAbsolutePath(), new FileOutputStream(
-                    html_output_documentation_file));
+            // Fortify Mod: Close the FileOutputStream and release its resources
+            // docCode.generateDocumentation(setupOpts.getSources().get(0)
+            //        .getAbsolutePath(), new FileOutputStream(
+            //        html_output_documentation_file));
+            FileOutputStream fos = new FileOutputStream(html_output_documentation_file);
+            docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(), fos);
+            fos.close();
             System.out.println("Test documentation file \""
                     + html_output_documentation_file.getAbsolutePath()
                     + "\" created!");

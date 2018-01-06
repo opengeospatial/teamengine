@@ -81,6 +81,8 @@ public class TestSession {
         
         out.println("<description>" + description_data + "</description>");
         out.println("</session>");
+        // Fortify Mod: flush and close the PrintStream
+        out.close();
     }
 
     /**

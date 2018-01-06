@@ -109,6 +109,8 @@ public class Misc {
 	       // End Fortify Mod
             Document doc = db.newDocument();
             t.transform(new StreamSource(is), new DOMResult(doc));
+            // Fortify Mod: Close the InputStream and release its resources
+            is.close();
             return doc;
         } else {
             return null;

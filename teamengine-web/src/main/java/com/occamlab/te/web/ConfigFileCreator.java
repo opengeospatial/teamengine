@@ -216,6 +216,8 @@ public class ConfigFileCreator {
 					mainconfig));
 			LOGR.info("SUCCESSFULLY created config.xml at " + mainconfig);
 			transformer.transform(source, result);
+                        // Fortify Mod: Close the OutputStream associated with the StreamResult
+                        result.getOutputStream().close();
 		} catch (Exception e) {
 			LOGR.warning("The main config file was not created at "
 					+ mainconfig);

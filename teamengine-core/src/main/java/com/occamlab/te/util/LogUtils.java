@@ -482,6 +482,8 @@ public class LogUtils {
         Source input = new DOMSource(doc);
         Result output = new StreamResult(report_logs);
         idTransform.transform(input, output);
+        // Fortify Mod: Close report_logs and release its resources
+        report_logs.close();
         result = doc; // actually we do not needs results
     }
 
