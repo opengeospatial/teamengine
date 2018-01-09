@@ -78,6 +78,8 @@ public class DomUtils {
             newDoc = db.newDocument();
         } catch (Exception e) {
             e.printStackTrace();
+            // Fortify Mod: If we got here there is no point going any further
+            return null;
         }
 
         Transformer identity = null;

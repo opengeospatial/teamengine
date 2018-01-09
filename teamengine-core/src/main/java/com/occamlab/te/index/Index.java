@@ -17,6 +17,7 @@
 
  Contributor(s): 
  	C. Heazel (WiSC): Added Fortify adjudication changes
+        C. Heazel (WiSC): Modified setElements() to correctly handle a null argumet
  */
 
 package com.occamlab.te.index;
@@ -257,7 +258,11 @@ public class Index {
     }
 
     public void setElements(List<Element> elements) {
-        this.elements = elements;
+        // Mod to handle a null argument
+        if( elements != null )
+            this.elements = elements;
+        else
+            this.elements = new ArrayList<Element>();
     }
 
     public List<File> getDependencies() {
