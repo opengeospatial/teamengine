@@ -47,7 +47,7 @@
 		    var divid = $(divID).attr("id");
 		    var value = divid.split("__");
 		    var path = $(divID).attr("src");
-		    var result_url = url.split("viewSessionLog");
+		    var result_url = url.split("viewOldSessionLog");
 		    var expend = "images/plus.png";
 		    var merge = "images/minus.png";
 		    var other = result_url[0] + "images/abc.png";
@@ -79,7 +79,7 @@
       <xsl:comment><![CDATA[ 
             $(document).ready(function() {
                 var url = location.href;
-                var result_url = url.split("viewSessionLog");
+                var result_url = url.split("viewOldSessionLog");
                 var c_name_value = getUser();
                 c_name_value = c_name_value.replace(/\//g, '');
                 var c_sessionID_value = getSession();
