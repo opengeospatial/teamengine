@@ -105,7 +105,7 @@
                      Time:
                      <xsl:value-of select="rdf:RDF/cite:TestRun/dct:created" />
                      <br />
-                     Basic Conformance Classes:
+                     Core Conformance Classes (Implementation passing these classes can be certified):
                      <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                         <xsl:if test="cite:isBasic = 'true'">
                            <div style="text-indent:50px;">
@@ -134,12 +134,6 @@
                      </xsl:choose>
                      Result:
                      <br />
-                     <div style="text-indent:50px;">
-                        Number of conformance classes tested:
-                        <xsl:value-of select="count(//earl:TestRequirement)" />
-                     </div>
-                     <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
-                     <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      <xsl:variable name="status">
 						<xsl:variable name="core_count">
 							<xsl:for-each select="//earl:TestRequirement">
@@ -161,6 +155,14 @@
                         Passed core (Can be certified):
                         <xsl:value-of select="$status" />
                      </div>
+                     
+                     <div style="text-indent:50px;">
+                        Number of conformance classes tested:
+                        <xsl:value-of select="count(//earl:TestRequirement)" />
+                     </div>
+                     <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
+                     <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
+                     
                      <div style="text-indent:50px;">
                         Number of conformance class passed:
                         <xsl:value-of select="count(//earl:TestRequirement[cite:testsPassed[text() &gt; '0']]/cite:testsFailed[text() = '0'])" />
