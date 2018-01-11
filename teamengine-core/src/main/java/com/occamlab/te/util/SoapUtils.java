@@ -187,7 +187,12 @@ public class SoapUtils {
         NodeList children = body.getChildNodes();
         // Loop in order to remove dummy nodes (spaces, CR)
         for (int i = 0; i < children.getLength(); i++) {
-            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            if (children.item(i).getNodeType() != Node.ELEMENT_NODE && children.item(i).getNodeType() == Node.TEXT_NODE) {
+            	Document bodyDoc = DomUtils.convertToElementNode(body.getTextContent().trim());
+				if(bodyDoc.getFirstChild().getNodeType() == Node.ELEMENT_NODE){
+					body = (Element) bodyDoc.getFirstChild();
+				}
+            }
                 if (version.equals(SOAP_V_1_1)) {
                     message = Soap11MessageBuilder.getSoapMessage(headerBlocks,
                             body);
@@ -195,7 +200,6 @@ public class SoapUtils {
                     message = Soap12MessageBuilder.getSoapMessage(headerBlocks,
                             body);
                 }
-            }
             break;
         }
         return message;
