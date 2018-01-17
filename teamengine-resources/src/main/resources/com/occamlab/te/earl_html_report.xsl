@@ -105,8 +105,7 @@
                      Time:
                      <xsl:value-of select="rdf:RDF/cite:TestRun/dct:created" />
                      <br />
-                     <xsl:if test="count(/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement/cite:isBasic[text() = 'true']) &gt; 0 ">
-                     Basic Conformance Classes:
+                     Core Conformance Classes (Implementation passing these classes can be certified):
                      <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                         <xsl:if test="cite:isBasic = 'true'">
                            <div style="text-indent:50px;">
@@ -114,7 +113,6 @@
                            </div>
                         </xsl:if>
                      </xsl:for-each>
-                     </xsl:if>
                      <br />
                      Test INPUT:
                      <xsl:choose>
@@ -136,12 +134,6 @@
                      </xsl:choose>
                      Result:
                      <br />
-                     <div style="text-indent:50px;">
-                        Number of conformance classes tested:
-                        <xsl:value-of select="count(//earl:TestRequirement)" />
-                     </div>
-                     <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
-                     <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      <xsl:variable name="status">
                      <xsl:choose>
                         <xsl:when test="count(/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement/cite:isBasic[text() = 'true']) &gt; 0 ">
@@ -171,6 +163,14 @@
                         <div style="float: left;width: 23%;"><label>Passed core (Can be certified)::</label></div>
                         <div style="float: left;width: 77%;text-indent: 0;"><xsl:value-of select="$status" /></div>
                      </div>
+                     
+                     <div style="text-indent:50px;">
+                        Number of conformance classes tested:
+                        <xsl:value-of select="count(//earl:TestRequirement)" />
+                     </div>
+                     <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
+                     <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
+                     
                      <div style="text-indent:50px;">
                         Number of conformance class passed:
                         <xsl:value-of select="count(//earl:TestRequirement[cite:testsPassed[text() &gt; '0']]/cite:testsFailed[text() = '0'])" />
@@ -399,7 +399,7 @@
                            <xsl:call-template name="string-replace-all">
                               <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                               <xsl:with-param name="replace" select="'['" />
-                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                              <xsl:with-param name="by" select="'&lt;br&gt;['" />
                            </xsl:call-template>
                         </xsl:variable>
                         <xsl:choose>
@@ -412,7 +412,7 @@
                         </xsl:choose>
                      </xsl:variable>
                      <p>
-                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                       <xsl:value-of select="$message" />
                      </p>
                   </td>
                </tr>
@@ -430,7 +430,7 @@
                            <xsl:call-template name="string-replace-all">
                               <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                               <xsl:with-param name="replace" select="'['" />
-                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                              <xsl:with-param name="by" select="'&lt;br&gt;['" />
                            </xsl:call-template>
                         </xsl:variable>
                         <xsl:choose>
@@ -443,7 +443,7 @@
                         </xsl:choose>
                      </xsl:variable>
                      <p>
-                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                        <xsl:value-of select="$message" />
                      </p>
                   </td>
                </tr>
@@ -626,7 +626,7 @@
                                              <xsl:call-template name="string-replace-all">
                                                 <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                                                 <xsl:with-param name="replace" select="'['" />
-                                                <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                                                <xsl:with-param name="by" select="'&lt;br&gt;['" />
                                              </xsl:call-template>
                                           </xsl:variable>
                                           <xsl:choose>
@@ -639,7 +639,7 @@
                                           </xsl:choose>
                                        </xsl:variable>
                                        <p>
-                                          <xsl:value-of select="$message" disable-output-escaping="yes" />
+                                          <xsl:value-of select="$message" />
                                        </p>
                                     </td>
                                  </tr>
@@ -796,7 +796,7 @@
                                  <xsl:call-template name="string-replace-all">
                                     <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                                     <xsl:with-param name="replace" select="'['" />
-                                    <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                                    <xsl:with-param name="by" select="'&lt;br&gt;['" />
                                  </xsl:call-template>
                               </xsl:variable>
                               <xsl:choose>
@@ -809,7 +809,7 @@
                               </xsl:choose>
                            </xsl:variable>
                            <p>
-                              <xsl:value-of select="$message" disable-output-escaping="yes" />
+                              <xsl:value-of select="$message" />
                            </p>
                         </td>
                      </tr>
