@@ -159,23 +159,23 @@
 						</xsl:otherwise>
 						</xsl:choose>
 					</xsl:variable>
-                     <div style="text-indent:50px;">
-                        <div style="float: left;width: 23%;"><label>Passed core (Can be certified)::</label></div>
-                        <div style="float: left;width: 77%;text-indent: 0;"><xsl:value-of select="$status" /></div>
+                     <div style="text-indent:0px; float: left;width: 95%;margin-left:3.7%">
+                        <span><label>Passed core (Can be certified):</label></span>
+                        <span style="text-intent:0px"><xsl:value-of select="$status" /></span>
                      </div>
                      
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance classes tested:
                         <xsl:value-of select="count(//earl:TestRequirement)" />
                      </div>
                      <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
                      <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance class passed:
                         <xsl:value-of select="count(//earl:TestRequirement[cite:testsPassed[text() &gt; '0']]/cite:testsFailed[text() = '0'])" />
                      </div>
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance class failed:
                         <xsl:value-of select="count(//earl:TestRequirement/cite:testsFailed[text() &gt;'0'])" />
                      </div>
