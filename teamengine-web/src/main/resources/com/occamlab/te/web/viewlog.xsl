@@ -31,7 +31,7 @@
     exclude-result-prefixes="viewlog encoder file te ctl"
     version="2.0">
     <xsl:import href="../logstyles/default.xsl"/>
-    <xsl:import href="../logstyles/result-log.xsl"/>
+    <!--  <xsl:import href="../logstyles/result-log.xsl"/> -->
     
     <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
     <xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
@@ -147,9 +147,9 @@
         <xsl:param name="inheritedFailure">5</xsl:param>
         <xsl:param name="fail">6</xsl:param>
         <xsl:apply-templates/>
-        <xsl:if test="$TESTNAME='WMS Client Test Suite'">
+        <!-- <xsl:if test="$TESTNAME='WMS Client Test Suite'">
             <xsl:call-template name="Client-Result"/>  
-        </xsl:if>
+        </xsl:if>  -->
         <xsl:if test="not($TESTNAME='WMS Client Test Suite')">
            <!--  <xsl:if test="test">
                 <br/>
