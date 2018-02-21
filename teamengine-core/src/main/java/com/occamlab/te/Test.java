@@ -17,6 +17,12 @@
 
  Contributor(s): 
  2009         F. Vitale     vitale@imaa.cnr.it
+ 2018         C. Heazel     cheazel@wiscenterprisesl.com
+
+ MOdifications: 
+ 2/14/18
+    - Addressed path manipulation vulnerabilities and general cleanup.
+    - Identified Issues which need further discussion.
            
  */
 
@@ -71,10 +77,29 @@ public class Test {
         this.runOpts = new RuntimeOptions();
     }
 
-    void setSetupOptions(SetupOptions setupOpts) {
-        this.setupOpts = setupOpts;
-    }
+    /**
+     * Replace the SetupOptions with a new copy
+     *
+     * @param	setupOpts
+     *              The new copy of the setup options
+     *
+     * ISSUE: SetupOptions are established when the Teamengin is initialized.  they should be the same for all tests.  Why do we allow them to be modified?
+     * ISSUE: when and how are the setup options validated?
+     * ANSWER: Delete this method since it is never called.
+     */
+    // void setSetupOptions(SetupOptions setupOpts) {
+    //    this.setupOpts = setupOpts;
+    // }
 
+    /**
+     * Replace the RuntimeOptions with a new copy
+     *
+     * @param	runOpts
+     *              The new copy of the runtime options
+     *
+     * ISSUE: when and how are the runtime options validated?
+     * ANSWER: make RuntimeOptions self-validating.
+     */
     void setRuntimeOptions(RuntimeOptions runOpts) {
         this.runOpts = runOpts;
     }
@@ -86,6 +111,13 @@ public class Test {
         execute(arguments);
     }
 
+    /**
+    * Entry point from the command line.  Creates a new test object then executes it.
+    * 
+    * @param args
+    *             An array of command line arguments
+    * @throws Exception
+    */
     public static void main(String[] args) throws Exception {
         Test test = new Test();
         test.execute(args);
@@ -99,9 +131,13 @@ public class Test {
      * @throws Exception
      */
     public void execute(String[] args) throws Exception {
-        String cmd = "java com.occamlab.te.Test";
+
+        // Copy work directory from setup options to runtime
         File workDir = setupOpts.getWorkDir();
-        runOpts.setWorkDir(workDir);
+        boolean rslt = runOpts.setWorkDir(workDir);
+
+        // Initialize the rest of the test context
+        String cmd = "java com.occamlab.te.Test";
         File logDir = runOpts.getLogDir();
         String session = null;
         int mode = TEST_MODE;
@@ -112,7 +148,11 @@ public class Test {
             String arg = args[i];
             if (arg.startsWith("-cmd=")) {
                 cmd = arg.substring(5);
-            } else if (arg.startsWith("-source=")) {
+                }
+            // The path to the test script.  If the file name is not an absolute
+            // path then it must be under the Scripts directory.
+            // Issue: should we restrict the range of valid paths for source files? 
+            else if (arg.startsWith("-source=")) {
                 String sourcePath = arg.substring(8);
                 sourceFile = new File(sourcePath);
                 if (!sourceFile.isAbsolute()) {
@@ -121,24 +161,28 @@ public class Test {
                     sourceFile = new File(scriptsDir, sourcePath);
                 }
                 if (sourceFile.exists()) {
+                    // Note that this only adds sourceFile to a list of file 
+                    // names.  It does not overwrite any existing values.
                     setupOpts.addSource(sourceFile);
                 } else {
                     System.out.println("Error: Cannot find CTL script(s) at "
                             + sourceFile.getAbsolutePath());
                     return;
                 }
+            // runtimeOptions mod
             } else if (arg.startsWith("-session=")) {
+                // Issue: session is not validated but it is used as part of a file path.
                 session = arg.substring(9);
             } else if (arg.startsWith("-base=")) {
-                runOpts.setBaseURI(arg.substring(6));
+                rslt = runOpts.setBaseURI(arg.substring(6));
             } else if (arg.startsWith("-test=")) {
-                runOpts.setTestName(arg.substring(6));
+                rslt = runOpts.setTestName(arg.substring(6));
             } else if (arg.startsWith("-suite=")) {
-                runOpts.setSuiteName(arg.substring(7));
+                rslt = runOpts.setSuiteName(arg.substring(7));
             } else if (arg.startsWith("-profile=")) {
-                runOpts.addProfile(arg.substring(9));
+                rslt = runOpts.addProfile(arg.substring(9));
             } else if (arg.startsWith("@")) {
-                runOpts.addParam(arg.substring(1));
+                rslt = runOpts.addParam(arg.substring(1));
             } else if (arg.equals("-mode=test")) {
                 mode = TEST_MODE;
             } else if (arg.equals("-mode=retest")) {
@@ -159,10 +203,10 @@ public class Test {
             } else if (arg.equals("-validate=no")) {
                 setupOpts.setValidate(false);
             } else if ((arg.startsWith("-form="))) {
-              runOpts.addRecordedForm(arg.substring(6));
+              rslt = runOpts.addRecordedForm(arg.substring(6));
             } else if (!arg.startsWith("-")) {
                 if (mode == RETEST_MODE) {
-                    runOpts.addTestPath(arg);
+                    rslt = runOpts.addTestPath(arg);
                 } else {
                     System.out.println("Unrecognized parameter \"" + arg
                             + "\"");
@@ -174,7 +218,7 @@ public class Test {
         }
 
         // Set mode
-        runOpts.setMode(mode);
+        rslt = runOpts.setMode(mode);
 
         // Syntax checks
         if ((mode == RETEST_MODE && (logDir == null || session == null))
@@ -208,7 +252,8 @@ public class Test {
                 session = LogUtils.generateSessionId(logDir);
             }
         }
-        runOpts.setSessionId(session);
+        // runtimeOptions mod
+        rslt = runOpts.setSessionId(session);
         Thread.currentThread().setName("TEAM Engine");
         Index masterIndex = null;
         File indexFile = null;

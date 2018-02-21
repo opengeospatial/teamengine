@@ -738,6 +738,8 @@ public class TECore implements Runnable {
     String testName = test.getName() + " type " + test.getType();
     System.setProperty("TestName", testName);
     out.println("(" + testPath + ")...");
+// DEBUG - both testPath and dirPath are not always created.
+if(testPath == null) testPath = new String();
     if(opts.getLogDir()!=null){
       String logDir = opts.getLogDir() + "/" + testPath.split("/")[0];
       //create log directory

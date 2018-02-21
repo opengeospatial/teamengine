@@ -12,6 +12,7 @@ import static com.occamlab.te.TECore.getResultDescription;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.util.Constants;
+import com.occamlab.te.util.TEPath; // Addition for Fortify modifications
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -125,7 +126,15 @@ public class RecordTestResult {
    */
 
   public void saveRecordingData(SuiteEntry suite, File dirPath) throws Exception {
+    // Fortify Mod: make sure that dirPath is a legal path
+    // Note that a null dirPath is tolerated.
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("Invalid argument to saveRecordingData: dirPath = " + dirPath.getAbsolutePath());
+        }
     if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+
       try {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.doc);
@@ -173,6 +182,13 @@ public class RecordTestResult {
   }
   
   public void saveRecordingClause(SuiteEntry suite, File dirPath) throws Exception {
+    // Fortify Mod: make sure that dirPath is a legal path
+    // Note that a null dirPath is tolerated.
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
+    }
     if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
       try {
         //Create a Source for saving the data.
@@ -253,7 +269,7 @@ public class RecordTestResult {
    * @param element
    * @param name
    * @param value
-   * @return 
+   * @return Node
    */
   
   public static Node getMethodElements(Document doc, Element element, String name, String value) {
@@ -269,6 +285,13 @@ public class RecordTestResult {
    * @throws java.lang.Exception
    */
   public void storeStartTestDetail(TestEntry test, File dirPath) throws Exception {
+    // Fortify Mod: make sure that dirPath is a legal path
+    // Note: a null dirPath is tolerated
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
+    }
     // Check recording enable
     if (A_TRUE.equals(System.getProperty(RECORD))) {
       //Check test No
@@ -303,6 +326,14 @@ public class RecordTestResult {
    * @throws java.lang.Exception
    */
   public void storeFinalTestDetail(TestEntry test, int verdict, DateFormat dateFormat, Calendar cal, File dirPath) throws Exception {
+    // Fortify Mod: make sure that dirPath is a legal path
+    // Note: a null dirPath is tolerated
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
+}
+    // Check recording enable
     // Check recording is enable
     if (A_TRUE.equals(System.getProperty(RECORD))) {
       // match test name

@@ -15,7 +15,14 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ January 2018 - Modified all set operations to validate the input prior
+ to updating the runtime properties.  This included converting these 
+ operations to return a boolean vs. a void.
+
+ Contributor(s): 
+     C. Heazel (WiSC): 
+        - Modifications to address Fortify issues
+        - Modifications to validate parameters on set operations
  */
 
 package com.occamlab.te;
@@ -25,11 +32,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.occamlab.te.util.TEPath;  // Fortify addition
 
 import net.sf.saxon.s9api.XdmNode;
 
 /**
- * Provides runtime configuration settings.
+ * The RuntimeOptions class provides runtime configuration settings for use
+ * by a test.  It is not enough for this class to hold the settings. It also
+ * must assure that the settings are correct and valid.  A bad configuration
+ * value will result in incorrect behavior for the test and may even crash
+ * the Engine.  Therefor, this class implements the following requirements:
+ * 1) A RuntimeOptions object may be used without setting any of the settings.
+ *    Therefore, the constructor shall initialize all settings to valid values.
+ * 2) Users may overwrite the RuntimeOption settings  Therefore, each "set" 
+ *    operation shall validate its argument prior to modifying the setting.
+ * 3) Users must know the state of the runtime settings.  Therefors, all
+ *    operations shall return a value. 
+ * <p>
+ * The configuration settings are:
+ *   testLogDir: This is the directory where the log file will be written.  
+ *     -- Constraint: Must be a valid TE directory path.
+ *     -- Constraint: Null is not allowed.
+ *   workDir:
+ *     -- Constraint: Must be a valid TE directory path.
+ *     -- Constraint: Null is not allowed.
+ *   sessionId: 
+ *     -- Constraint: Required format "s"<0..9>
+ *     -- Constraint: Null is not allowed.
+ *   testName: 
+ *     -- Constraint:
+ *   suiteName:
+ *     -- Constraint:
+ *   sourcesName: 
+ *     -- Constraint:
+ *   baseURI: 
+ *     -- Constraint:
+ *   profiles: 
+ *     -- Constraint:
+ *   testPaths:
+ *     -- Constraint:
+ *   params:
+ *     -- Constraint:
+ *   recordedForms: 
+ *     -- Constraint:
  */
 public class RuntimeOptions {
     int mode = Test.TEST_MODE;
@@ -44,6 +89,7 @@ public class RuntimeOptions {
     ArrayList<String> testPaths = new ArrayList<String>();
     ArrayList<String> params = new ArrayList<String>();
     List<File> recordedForms = new ArrayList<>();
+    private static Logger jLogger = Logger.getLogger("com.occamlab.te.RuntimeOptions");
 
     /**
      * Default constructor sets the location of the test log directory to
@@ -57,24 +103,29 @@ public class RuntimeOptions {
             userDir.mkdirs();
         }
         this.testLogDir = userDir;
+        jLogger.setLevel(Level.INFO);
     }
 
     public String getBaseURI() {
         return baseURI;
     }
 
-    public void setBaseURI(String baseURI) {
+    // Validate the baseURI argument then update the runtime parameter
+    public boolean setBaseURI(String baseURI) {
         Logger.getLogger(RuntimeOptions.class.getName()).log(Level.CONFIG,
                 "Setting baseURI = " + baseURI);
         this.baseURI = baseURI;
+        return true;
     }
 
     public String getSourcesName() {
         return sourcesName;
     }
 
-    public void setSourcesName(String sourcesName) {
+    // Validate the sourcesName argument then update the runtime parameter
+    public boolean setSourcesName(String sourcesName) {
         this.sourcesName = sourcesName;
+        return true;
     }
 
     /**
@@ -86,64 +137,102 @@ public class RuntimeOptions {
         return testLogDir;
     }
 
-    public void setLogDir(File logDir) {
-        this.testLogDir = logDir;
+    // Validate the logDir argument then update the runtime parameter
+    public boolean setLogDir(File logDir) {
+        // Fortify Mod: validate that this is a legal path
+        if( logDir == null ) return false;
+        TEPath tpath = new TEPath( logDir.getAbsolutePath() );
+        if( tpath.isValid() ) {
+            this.testLogDir = logDir;
+            return true;
+            }
+        return false;
     }
 
     public File getWorkDir() {
         return workDir;
     }
 
-    public void setWorkDir(File workDir) {
-        this.workDir = workDir;
+    // Validate the workDir argument then update the runtime parameter
+    public boolean setWorkDir(File workDir) {
+        // Fortify Mod: validate that this is a legal path
+        // null is considered a legal path in this case
+        jLogger.log(Level.INFO, "RuntimeOptions: Setting Work Dir to " + workDir.getAbsolutePath() );
+        if( workDir == null ) return false;
+        TEPath tpath = new TEPath( workDir.getAbsolutePath() );
+        if( tpath.isValid() ) {
+            this.workDir = workDir;
+            return true;
+            }
+        return false;
     }
 
     public int getMode() {
         return mode;
     }
 
-    public void setMode(int mode) {
+    // Validate the mode argument then update the runtime parameter
+    public boolean setMode(int mode) {
         this.mode = mode;
+        return true;
     }
 
     public String getSessionId() {
+        jLogger.log(Level.INFO, "RuntimeOptions: Getting sessionId " + sessionId);
+        if(sessionId == null) sessionId = new String("null_session");
         return sessionId;
     }
 
-    public void setSessionId(String sessionId) {
+    // Validate the sessionId argument then update the runtime parameter
+    public boolean setSessionId(String sessionId) {
+        jLogger.log(Level.INFO, "RuntimeOptions: Setting session to " + sessionId);
+        if( sessionId == null ) return false;
         this.sessionId = sessionId;
+        return true;
     }
 
     public String getSuiteName() {
         return suiteName;
     }
 
-    public void setSuiteName(String suiteName) {
+    // Validate the suiteName argument then update the runtime parameter
+    public boolean setSuiteName(String suiteName) {
+        if( suiteName == null ) return false;
         this.suiteName = suiteName;
+        return true;
     }
 
     public ArrayList<String> getProfiles() {
         return profiles;
     }
 
-    public void addProfile(String profile) {
+    // Validate the profile argument then update the runtime parameter
+    public boolean addProfile(String profile) {
+        if( profile == null ) return false;
         this.profiles.add(profile);
+        return true;
     }
 
     public ArrayList<String> getTestPaths() {
         return testPaths;
     }
 
-    public void addTestPath(String testPath) {
+    // Validate the testPath argument then update the runtime parameter
+    public boolean addTestPath(String testPath) {
+        if( testPath == null ) return false;
         this.testPaths.add(testPath);
+        return true;
     }
 
     public ArrayList<String> getParams() {
         return params;
     }
 
-    public void addParam(String param) {
+    // Validate the param argument then update the runtime parameter
+    public boolean addParam(String param) {
+        if( param == null ) return false;
         this.params.add(param);
+        return true;
     }
 
     public XdmNode getContextNode() {
@@ -154,12 +243,18 @@ public class RuntimeOptions {
         return testName;
     }
 
-    public void setTestName(String testName) {
+    // Validate the testName argument then update the runtime parameter
+    public boolean setTestName(String testName) {
+        if( testName == null ) return false;
         this.testName = testName;
+        return true;
     }
     
-    public void addRecordedForm(String recordedForm) {
-      recordedForms.add(new File(recordedForm));
+    // Validate the recordedForm argument then update the runtime parameter
+    public boolean addRecordedForm(String recordedForm) {
+        if( recordedForm == null ) return false;
+        recordedForms.add(new File(recordedForm));
+        return true;
     }
 
     @Override

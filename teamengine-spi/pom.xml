@@ -27,6 +27,11 @@
       <url>https://github.com/keshav-nangare</url>
       <timezone>Asia/Kolkata</timezone>
     </developer> 
+    <developer>
+      <name>Chuck Heazel</name>
+      <url>https://github.com/cmheazel</url>
+      <timezone>US/Eastern</timezone>
+    </developer> 
   </developers>
 
   <dependencies>

@@ -97,7 +97,7 @@ public class SetupOptions {
   /**
    * Determine the test recording is on or off.
    * @param testName
-   * @return 
+   * @return boolean
    * @throws javax.xml.parsers.ParserConfigurationException
    * @throws org.xml.sax.SAXException
    * @throws java.io.IOException

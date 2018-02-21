@@ -1,6 +1,8 @@
 /**
  * **************************************************************************
  *
+ * Version Date: January 24, 2018
+ *
  * Contributor(s): 
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
@@ -50,6 +52,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
+import com.occamlab.te.util.TEPath;    // Fortify Mod
+
 
 public class LogUtils {
 
@@ -71,6 +75,11 @@ public class LogUtils {
             throws Exception {
         if (logDir != null) {
             File dir = new File(logDir, callpath);
+            // Fortify Mod: use TEPath to validate the path to the log file
+            TEPath tpath = new TEPath(dir.getAbsolutePath());
+            if( ! tpath.isValid() ) {
+                return null;
+                } 
             String path=logDir.toString() + "/" + callpath.split("/")[0];
             System.setProperty("PATH", path);
             dir.mkdir();
@@ -281,6 +290,13 @@ public class LogUtils {
      */
     public static Document makeTestList(File logdir, String path,
             List<List<QName>> excludes) throws Exception {
+        // Fortify Mod: validate logdir and path
+        // If they don't form a valid path, throw an error
+        File tfile = new File(logdir, path);
+        TEPath tpath = new TEPath(tfile.getAbsolutePath());
+        if(! tpath.isValid()) {
+            throw new IllegalArgumentException("Illegal path = " + tfile.getAbsolutePath());
+            }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
 	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
@@ -440,6 +456,11 @@ public class LogUtils {
      */
     public static void createFullReportLog(String sessionLogDir)
             throws Exception {
+        // Fortify Mod: validate sessionLogDir argument
+        TEPath tpath = new TEPath(sessionLogDir);
+        if( ! tpath.isValid() ) {
+            throw new IllegalArgumentException("Illegal path = " + tpath.toString());
+            }
         File xml_logs_report_file = new File(sessionLogDir + File.separator
                 + "report_logs.xml");
         if (xml_logs_report_file.exists()) {

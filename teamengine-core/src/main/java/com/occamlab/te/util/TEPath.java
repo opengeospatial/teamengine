@@ -1,5 +1,6 @@
 package com.occamlab.te.util;
 
+import java.io.IOError;
 import java.io.IOException;
 import java.io.File;
 import java.nio.file.Path;
@@ -30,7 +31,7 @@ import java.net.URI;
  *        c) /bin 
  *        d) /usr/bin  
  * 
- * @version January 18, 2018
+ * @version January 23, 2018
  * @author Charles Heazel
  */
 public class TEPath implements Path {
@@ -49,6 +50,7 @@ public class TEPath implements Path {
     // Constructor - take a string as input
 
     public TEPath( String arg ) {
+        jlogger.setLevel(Level.INFO);
 
         // Make every effort to populate the valid root Paths with something 
         // even if it is made up.
@@ -79,7 +81,7 @@ public class TEPath implements Path {
             te_install = Paths.get( stmp );
             }
 
-        // Team Engine Build directory (needed for unit testing
+        // Team Engine Build directory (needed for unit testing)
         if( te_build == null ) {
             stmp = System.getenv("TE_BUILD");
             if(stmp == null) stmp = te_base.toString();
@@ -99,8 +101,8 @@ public class TEPath implements Path {
         Path path2 = path1.normalize();
 
         // Next get the absolute path
-        // IOErrors are ignored since we don't need the file to exist at this point.
         // Security exceptions are logged, then we continue with an empty path
+        // IOErrors are ignored since we don't need the file to exist at this point.
 
         Path path3 = null;
         try { path3 = path2.toAbsolutePath(); }
@@ -108,26 +110,18 @@ public class TEPath implements Path {
             jlogger.log(Level.WARNING, e.getMessage(), e.getCause());
             path3 = Paths.get( new String() );
         }
-
-        // Then get the real path (resolving symbolic links)
-        // IOExceptions are ignored since we don't need the file to exist at this point.
-        // Security exceptions are logged, then we continue with an empty path
-
-        Path path4 = null;
-        try { path4 = path3.toRealPath(); }
-        catch (SecurityException e) {
+        catch (IOError e) {
             jlogger.log(Level.WARNING, e.getMessage(), e.getCause());
-            path4 = Paths.get( new String() );
+            path3 = path2;
         }
-        catch (IOException e) {}
 
         // Now perform validation on the resulting path
         // If the Path object is not valid, then create an empty Path
-        if(this.validate(path4)) {
-            vpath = path4;
+        if(this.validate(path3)) {
+            vpath = path3;
             }
         else {
-            jlogger.log(Level.WARNING, "Invalid path name: " + arg + " Empty Path created");
+            // jlogger.log(Level.WARNING, "Invalid path name: " + arg + " Empty Path created");
             vpath = Paths.get( new String() );
             }
     }
@@ -203,14 +197,16 @@ public class TEPath implements Path {
         return i;
         }
 
-    // We don't implement register() at this time.  Just a stub to keep the interface happy.
+    // We don't implement register() at this time.  
+    // Just a stub to keep the interface happy.
     public WatchKey register (WatchService service, WatchEvent.Kind<?>[] events, WatchEvent.Modifier... modifiers ) throws IOException {
-        return null;
+        throw new UnsupportedOperationException("Register operation is not supported by TEPath.");
         }
 
-    // We don't implement register() at this time.  Just a stub to keep the interface happy.
+    // We don't implement register() at this time.  
+    // Just a stub to keep the interface happy.
     public WatchKey register (WatchService service, WatchEvent.Kind<?>... events ) throws IOException {
-        return null;
+        throw new UnsupportedOperationException("Register operation is not supported by TEPath.");
         }
 
     public Path relativize( Path arg ){
@@ -283,7 +279,10 @@ public class TEPath implements Path {
     //    - returns an empty String for all methods which return Strings
     //    - returns false to an isValid() request.
     public boolean isValid() {
-    	if(this.validate(vpath)) return(true);
+        if(this.vpath != null) 
+    	    if(this.validate(this.vpath)) 
+                return(true);
+        jlogger.log(Level.WARNING, "TEPath: Invalid path = " + this.vpath);
     	return(false);
     }
     
@@ -294,11 +293,31 @@ public class TEPath implements Path {
     	// to these rules.
 
         // a null or empty path is not valid
-        if(arg1 == null) return(false);
-        if(arg1.toString().isEmpty()) return(false);
+        if(arg1 == null) {
+            jlogger.warning("TEPATH Invalid Path: <null>");
+            return(false);
+            }
+        if(arg1.toString().isEmpty()) {
+            jlogger.warning("TEPATH Invalid Path: <empty>");
+            return(false);
+            }
 
-        Path tpath = arg1;
-        
+        // Normalize the supplied path
+        Path tpath = arg1.normalize();
+
+        // Next get the absolute path
+        // Security exceptions are logged, then we continue with an empty path
+        // IOErrors are ignored since we don't need the file to exist at this point.
+        try { tpath = tpath.toAbsolutePath(); }
+        catch (SecurityException e) {
+            jlogger.warning("TEPATH Invalid Path - file system error: " + tpath);
+            return(false);
+        }
+        catch (IOError e) {
+            jlogger.log(Level.WARNING, e.getMessage(), e.getCause());
+            tpath = arg1.normalize();
+        }
+
     	// Restrict the path to one of the valid root directories
     	boolean valid = false;
     	if(tpath.startsWith(te_base)) valid = true; 
@@ -314,7 +333,7 @@ public class TEPath implements Path {
     	if(tpath.startsWith("/usr/bin")) valid = false; 
     	
     	if(valid == false){
-           jlogger.warning("TEPATH Invalid Path: " + arg1);
+           jlogger.warning("TEPATH Invalid Path: " + arg1.toString());
     	}
     	return(valid);
     }
