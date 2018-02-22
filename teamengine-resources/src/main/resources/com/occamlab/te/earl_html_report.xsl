@@ -135,6 +135,8 @@
                      Result:
                      <br />
                      <xsl:variable name="status">
+                     <xsl:choose>
+                        <xsl:when test="count(/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement/cite:isBasic[text() = 'true']) &gt; 0 ">
 						<xsl:variable name="core_count">
 							<xsl:for-each select="//earl:TestRequirement">
 								<xsl:if test="cite:isBasic[text() = 'true']" >
@@ -150,24 +152,30 @@
 							</xsl:for-each>
 						</xsl:variable>
 						<xsl:value-of select="if (contains($core_count,'No')) then 'No' else 'Yes'" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>This test suite does not support evaluation of core conformance classes. 
+									  Please contact the CITE team if you have any questions regarding the core conformance classes.</xsl:text>
+						</xsl:otherwise>
+						</xsl:choose>
 					</xsl:variable>
-                     <div style="text-indent:50px;">
-                        Passed core (Can be certified):
-                        <xsl:value-of select="$status" />
+                     <div style="text-indent:0px; float: left;width: 95%;margin-left:3.7%">
+                        <span><label>Passed core (Can be certified):</label></span>
+                        <span style="text-intent:0px"><xsl:value-of select="$status" /></span>
                      </div>
                      
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance classes tested:
                         <xsl:value-of select="count(//earl:TestRequirement)" />
                      </div>
                      <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
                      <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance class passed:
                         <xsl:value-of select="count(//earl:TestRequirement[cite:testsPassed[text() &gt; '0']]/cite:testsFailed[text() = '0'])" />
                      </div>
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance class failed:
                         <xsl:value-of select="count(//earl:TestRequirement/cite:testsFailed[text() &gt;'0'])" />
                      </div>
