@@ -370,6 +370,13 @@ public class ImageParser {
                         }
                     }
                     parent.removeChild(node);
+                    // Fortify Mod: If the Iterator sampleIt is empty, then countnode will never be set.
+                    // This will result in a null derefernce of node at the end of the loop.  Test for this
+                    // case and mitigate the damage.
+                    if( countnode == null ) {
+                        countnode = (Element) node;
+                        jlogger.log(Level.SEVERE, "Error processing image node");
+                    }
                     node = countnode;
                 } else {
                     Integer count = (Integer) sampleMap.get(Integer
