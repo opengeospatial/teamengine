@@ -153,6 +153,7 @@ public class CtlEarlReporter {
         this.testRun.addLiteral(CITE.testsNotTested, new Integer(this.totalNotTestedCount));
         this.testRun.addLiteral(CITE.testsWarning, new Integer(this.totalWarningCount));
         this.testRun.addLiteral(CITE.testsInheritedFailure, new Integer(this.totalInheritedFailureCount));
+        this.testRun.addLiteral(CITE.testSuiteType, "ctl");
         
         this.earlModel.add(model);
 
