@@ -160,7 +160,7 @@
 						</xsl:choose>
 					</xsl:variable>
                      <div style="text-indent:0px; float: left;width: 95%;margin-left:3.7%">
-                        <span><label>Passed core (Can be certified):</label></span>
+                        <span><label>Passed core (Can be certified): </label></span>
                         <span style="text-intent:0px"><xsl:value-of select="$status" /></span>
                      </div>
                      
