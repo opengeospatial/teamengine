@@ -154,8 +154,8 @@
 						<xsl:value-of select="if (contains($core_count,'No')) then 'No' else 'Yes'" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:text>This test suite does not support evaluation of core conformance classes. 
-									  Please contact the CITE team if you have any questions regarding the core conformance classes.</xsl:text>
+							<xsl:text>This test suite does not support evaluation of basic conformance classes. 
+									  Please contact the CITE team if you have any questions regarding the basic conformance classes.</xsl:text>
 						</xsl:otherwise>
 						</xsl:choose>
 					</xsl:variable>
