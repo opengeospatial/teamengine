@@ -203,9 +203,16 @@ public class CoverageMonitor {
         } catch (FileNotFoundException e) {
         } finally {
             try {
-                fos.close();
-                LOGR.config("Wrote coverage results to "
+                // Fortify Mod: If fos is null, then nothing was written
+                if( fos != null) {
+                    fos.close();
+                    LOGR.config("Wrote coverage results to "
                         + coverageFile.getCanonicalPath());
+                    }
+                else {
+                    // If nothing was written, then there should be an exception message.  
+                    // If an additional message is desired, then add it here.
+                    }
             } catch (IOException ioe) {
                 LOGR.warning(ioe.getMessage());
             }
@@ -226,9 +233,10 @@ public class CoverageMonitor {
         DOMImplementationRegistry domRegistry = null;
         try {
             domRegistry = DOMImplementationRegistry.newInstance();
-        } catch (Exception e) {
-            LOGR.warning(e.getMessage());
-        }
+        // Fortify Mod: Broaden try block to capture all potential exceptions
+        // } catch (Exception e) {
+        //    LOGR.warning(e.getMessage());
+        // }
         DOMImplementationLS impl = (DOMImplementationLS) domRegistry
                 .getDOMImplementation("LS");
         LSSerializer writer = impl.createLSSerializer();
@@ -238,5 +246,8 @@ public class CoverageMonitor {
         output.setEncoding("UTF-8");
         output.setByteStream(outStream);
         writer.write(doc, output);
+        } catch (Exception e) {
+            LOGR.warning(e.getMessage());
+        }
     }
 }

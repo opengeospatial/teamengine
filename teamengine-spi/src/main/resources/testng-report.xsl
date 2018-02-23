@@ -2,6 +2,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:math="http://exslt.org/math"
                 xmlns:testng="http://testng.org"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:dc="http://purl.org/dc/terms/">
 
   <dc:description>Based on TestNG-XSLT (see https://github.com/prashanth-sams/testng-xslt-1.1.2)</dc:description>
@@ -468,10 +469,10 @@
                             then document(document(suite/@url)/suite/test/@url)/test 
                             else document(suite/@url)/suite/test
                         else suite/test"/>
-          <xsl:variable name="failedCount" select="testng:suiteMethodsCount($testCaseElements, 'FAIL')"/>
+          <xsl:variable name="failedCount" select="xs:integer(testng:suiteMethodsCount($testCaseElements, 'FAIL'))"/>
           <xsl:variable name="passedCount" select="testng:suiteMethodsCount($testCaseElements, 'PASS')"/>
           <xsl:variable name="skippedCount" select="testng:suiteMethodsCount($testCaseElements, 'SKIP')"/>
-          <xsl:variable name="totalCount" select="testng:suiteMethodsCount($testCaseElements, '*')"/>
+          <xsl:variable name="totalCount" select="xs:integer(testng:suiteMethodsCount($testCaseElements, '*'))"/>
 
           <xsl:variable name="pi" select="3.141592"/>
           <xsl:variable name="radius" select="130"/>

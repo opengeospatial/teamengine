@@ -8,6 +8,7 @@
 package com.occamlab.te.util;
 
 import java.io.File;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -20,7 +21,6 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -78,6 +78,8 @@ public class DomUtils {
             newDoc = db.newDocument();
         } catch (Exception e) {
             e.printStackTrace();
+            // Fortify Mod: If we got here there is no point going any further
+            return null;
         }
 
         Transformer identity = null;
@@ -404,5 +406,28 @@ public class DomUtils {
         }
         return list;
     }
+    
+    /**
+     * Convert text node to element.
+     * @param xmlString
+     * @return Return the document object.
+     * @throws Exception
+     */
+    public static Document convertToElementNode(String xmlString) throws Exception {
+           DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+           dbf.setNamespaceAware(true);
+    	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
+    	   dbf.setExpandEntityReferences(false);
+           Document doc = dbf.newDocumentBuilder().newDocument();
+           if (xmlString != null) {
+           	    // Fortify Mod: disable external entity injection
+              TransformerFactory tf = TransformerFactory.newInstance();
+              tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+              Transformer t = tf.newTransformer();
+    		    // End Fortify Mod
+              t.transform(new StreamSource(new StringReader(xmlString)), new DOMResult(doc));
+           }
+           return doc;
+       }
 
 }
