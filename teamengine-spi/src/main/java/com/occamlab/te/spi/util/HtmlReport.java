@@ -1,3 +1,14 @@
+/**
+ * ********************************************************************
+ *
+ * Version Date: January 2, 2018
+ *
+ * Contributor(s):
+ *    C. Heazel (WiSC): Added Fortify adjudication changes
+ *
+ * ********************************************************************
+ */
+
 package com.occamlab.te.spi.util;
 
 import java.io.File;
@@ -10,6 +21,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -69,8 +81,12 @@ public class HtmlReport {
 		File earlResult = new File(outputDir, "earl-results.rdf");
 
 		try {
-			Transformer transformer = TransformerFactory.newInstance()
-					.newTransformer(new StreamSource(earlXsl));
+                        // Fortify Mod: Prevent external entity injections
+			// Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(earlXsl));
+			TransformerFactory tf = TransformerFactory.newInstance();
+                        tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		        Transformer transformer = tf.newTransformer(new StreamSource(earlXsl));
+                        // End Fortify Mod
 			transformer.setParameter("outputDir", htmlOutput);
             File indexHtml = new File(htmlOutput, "index.html" );
             indexHtml.createNewFile();

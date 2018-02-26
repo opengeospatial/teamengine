@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -100,6 +101,9 @@ public class CtlEarlReporter {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         docFactory.setXIncludeAware(true);
+        // Fortify Mod: Disable entity expansion to foil External Entity Injections
+        docFactory.setExpandEntityReferences(false);
+        // End Fortify Mod
         // Source results = null;
         Document document;
         try {
@@ -516,8 +520,11 @@ public class CtlEarlReporter {
 						} else if (httpMethod.equalsIgnoreCase("POST")) {
 							// Post method content
 							try {
-								Transformer transformer = TransformerFactory
-										.newInstance().newTransformer();
+                                                                // Fortify Mod: Prevent external entity injections
+								// Transformer transformer = TransformerFactory.newInstance().newTransformer();
+								TransformerFactory tf = TransformerFactory.newInstance();
+                                                                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+								Transformer transformer = tf.newTransformer();
 								transformer.setOutputProperty(
 										OutputKeys.INDENT, "yes");
 
