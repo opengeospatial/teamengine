@@ -160,12 +160,7 @@ public class PBKDF2Realm extends RealmBase {
         Document userInfo = null;
         try {
             if (DB == null) {
-                // Fortify Mod: Disable external expansion to foil External Entity Injections
-                // DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setExpandEntityReferences(false);
-                DB = dbf.newDocumentBuilder();
-                // End Fortify Mod
+                DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             }
             userInfo = DB.parse(userfile);
         } catch (Exception e) {
