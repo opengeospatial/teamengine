@@ -1,13 +1,14 @@
 /**
- * ***********************************************************************************
+ * ***********************************************************************
  *
- *  Version Date: January 2, 2018
+ * Version Date: January 8, 2018
  *
- *  Contributor(s):
- *     C. Heazel (WiSC): Added Fortify adjudication changes
+ * Contributor(s):
+ *     C. Heazel (WiSC): Applied modifications to address Fortify issues
  *
- * ***********************************************************************************
+ * ***********************************************************************
  */
+
 package com.occamlab.te.realm;
 
 import java.io.File;
@@ -169,6 +170,8 @@ public class PBKDF2Realm extends RealmBase {
             userInfo = DB.parse(userfile);
         } catch (Exception e) {
             LOGR.log(Level.WARNING, "Failed to read user info at " + userfile.getAbsolutePath(), e);
+            // fortify Mod: If the user info was not read, then there is no point in continuing
+            return null;
         }
         Element userElement = (Element) (userInfo.getElementsByTagName("user").item(0));
         Element passwordElement = (Element) (userElement.getElementsByTagName("password").item(0));
@@ -202,6 +205,8 @@ public class PBKDF2Realm extends RealmBase {
             klass = Class.forName("org.apache.catalina.realm.GenericPrincipal");
         } catch (ClassNotFoundException ex) {
             LOGR.log(Level.SEVERE, ex.getMessage());
+            // Fortify Mod: If klass is not populated, then there is no point in continuing
+            return null;
         }
         Constructor[] ctors = klass.getConstructors();
         Class firstParamType = ctors[0].getParameterTypes()[0];

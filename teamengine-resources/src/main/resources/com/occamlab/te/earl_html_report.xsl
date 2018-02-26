@@ -60,6 +60,51 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+
+	<xsl:function name="testng:testSuiteName">
+		<xsl:param name="testTitle" />
+		<xsl:param name="testName-Version" />
+		
+		<xsl:variable name="delimiters">
+			<xsl:choose>
+				<xsl:when test="contains($testTitle, '_')">
+					<xsl:value-of select="'_'" />
+				</xsl:when>
+				<xsl:when
+					test="contains($testTitle, '-') and not(contains($testTitle, '_'))">
+					<xsl:value-of select="'-'" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="'_'" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:choose>
+        <xsl:when test="$testName-Version = 'title'">
+		<xsl:variable name="testName">
+			<xsl:call-template name="substring-before-after">
+				<xsl:with-param name="getString" select="'before'" />
+				<xsl:with-param name="string" select="$testTitle" />
+				<xsl:with-param name="delimiter" select="$delimiters" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:value-of select="$testName" />
+		 </xsl:when>
+		 <xsl:when test="$testName-Version = 'version'">
+		<xsl:variable name="testVersion">
+			<xsl:call-template name="substring-before-after">
+				<xsl:with-param name="getString" select="'after'" />
+				<xsl:with-param name="string" select="$testTitle" />
+				<xsl:with-param name="delimiter" select="$delimiters" />
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:value-of select="$testVersion" />
+		</xsl:when>
+		<xsl:otherwise>
+           <xsl:value-of select="'NULL'" />
+        </xsl:otherwise>
+		</xsl:choose>
+	</xsl:function>
       
    <xsl:template match="/">
       <xsl:result-document href="{testng:absolutePath('index.html')}" format="xhtml">
@@ -69,43 +114,17 @@
                <h3>
                   <font color="black">
                      <xsl:variable name="testTitle" select="rdf:RDF/cite:TestRun/dct:title" />
-                     <xsl:variable name="delimiters">
-                        <xsl:choose>
-                           <xsl:when test="contains($testTitle, '_')">
-                              <xsl:value-of select="'_'" />
-                           </xsl:when>
-                           <xsl:when test="contains($testTitle, '-') and not(contains($testTitle, '_'))">
-                              <xsl:value-of select="'-'" />
-                           </xsl:when>
-                           <xsl:otherwise>
-                              <xsl:value-of select="'_'" />
-                           </xsl:otherwise>
-                        </xsl:choose>
-                     </xsl:variable>
-                     <xsl:variable name="testVersion">
-                        <xsl:call-template name="substring-before-after">
-                           <xsl:with-param name="getString" select="'after'" />
-                           <xsl:with-param name="string" select="$testTitle" />
-                           <xsl:with-param name="delimiter" select="$delimiters" />
-                        </xsl:call-template>
-                     </xsl:variable>
-                     <xsl:variable name="testName">
-                        <xsl:call-template name="substring-before-after">
-                           <xsl:with-param name="getString" select="'before'" />
-                           <xsl:with-param name="string" select="$testTitle" />
-                           <xsl:with-param name="delimiter" select="$delimiters" />
-                        </xsl:call-template>
-                     </xsl:variable>
+
                      Test Name:
-                     <xsl:value-of select="$testName" />
+                     <xsl:value-of select="testng:testSuiteName($testTitle, 'title')" />
                      <br />
                      Test version:
-                     <xsl:value-of select="$testVersion" />
+                     <xsl:value-of select="testng:testSuiteName($testTitle, 'version')" />
                      <br />
                      Time:
                      <xsl:value-of select="rdf:RDF/cite:TestRun/dct:created" />
                      <br />
-                     Basic Conformance Classes:
+                     Core Conformance Classes (Implementation passing these classes can be certified):
                      <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                         <xsl:if test="cite:isBasic = 'true'">
                            <div style="text-indent:50px;">
@@ -134,13 +153,9 @@
                      </xsl:choose>
                      Result:
                      <br />
-                     <div style="text-indent:50px;">
-                        Number of conformance classes tested:
-                        <xsl:value-of select="count(//earl:TestRequirement)" />
-                     </div>
-                     <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
-                     <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
                      <xsl:variable name="status">
+                     <xsl:choose>
+                        <xsl:when test="count(/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement/cite:isBasic[text() = 'true']) &gt; 0 ">
 						<xsl:variable name="core_count">
 							<xsl:for-each select="//earl:TestRequirement">
 								<xsl:if test="cite:isBasic[text() = 'true']" >
@@ -156,16 +171,30 @@
 							</xsl:for-each>
 						</xsl:variable>
 						<xsl:value-of select="if (contains($core_count,'No')) then 'No' else 'Yes'" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:text>This test suite does not support evaluation of basic conformance classes. 
+									  Please contact the CITE team if you have any questions regarding the basic conformance classes.</xsl:text>
+						</xsl:otherwise>
+						</xsl:choose>
 					</xsl:variable>
-                     <div style="text-indent:50px;">
-                        Passed core (Can be certified):
-                        <xsl:value-of select="$status" />
+                     <div style="text-indent:0px; float: left;width: 95%;margin-left:3.7%">
+                        <span><label>Passed core (Can be certified): </label></span>
+                        <span style="text-intent:0px"><xsl:value-of select="$status" /></span>
                      </div>
-                     <div style="text-indent:50px;">
+                     
+                     <div style="margin-left:3.7%">
+                        Number of conformance classes tested:
+                        <xsl:value-of select="count(//earl:TestRequirement)" />
+                     </div>
+                     <xsl:variable name="no_of_cc" select="count(//earl:TestRequirement)" />
+                     <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
+                     
+                     <div style="margin-left:3.7%">
                         Number of conformance class passed:
                         <xsl:value-of select="count(//earl:TestRequirement[cite:testsPassed[text() &gt; '0']]/cite:testsFailed[text() = '0'])" />
                      </div>
-                     <div style="text-indent:50px;">
+                     <div style="margin-left:3.7%">
                         Number of conformance class failed:
                         <xsl:value-of select="count(//earl:TestRequirement/cite:testsFailed[text() &gt;'0'])" />
                      </div>
@@ -389,7 +418,7 @@
                            <xsl:call-template name="string-replace-all">
                               <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                               <xsl:with-param name="replace" select="'['" />
-                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                              <xsl:with-param name="by" select="'&lt;br&gt;['" />
                            </xsl:call-template>
                         </xsl:variable>
                         <xsl:choose>
@@ -402,7 +431,7 @@
                         </xsl:choose>
                      </xsl:variable>
                      <p>
-                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                       <xsl:value-of select="$message" />
                      </p>
                   </td>
                </tr>
@@ -420,7 +449,7 @@
                            <xsl:call-template name="string-replace-all">
                               <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                               <xsl:with-param name="replace" select="'['" />
-                              <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                              <xsl:with-param name="by" select="'&lt;br&gt;['" />
                            </xsl:call-template>
                         </xsl:variable>
                         <xsl:choose>
@@ -433,7 +462,7 @@
                         </xsl:choose>
                      </xsl:variable>
                      <p>
-                        <xsl:value-of select="$message" disable-output-escaping="yes" />
+                        <xsl:value-of select="$message" />
                      </p>
                   </td>
                </tr>
@@ -616,7 +645,7 @@
                                              <xsl:call-template name="string-replace-all">
                                                 <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                                                 <xsl:with-param name="replace" select="'['" />
-                                                <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                                                <xsl:with-param name="by" select="'&lt;br&gt;['" />
                                              </xsl:call-template>
                                           </xsl:variable>
                                           <xsl:choose>
@@ -629,7 +658,7 @@
                                           </xsl:choose>
                                        </xsl:variable>
                                        <p>
-                                          <xsl:value-of select="$message" disable-output-escaping="yes" />
+                                          <xsl:value-of select="$message" />
                                        </p>
                                     </td>
                                  </tr>
@@ -714,6 +743,29 @@
                            <td>Test Description:</td>
                            <td>
                               <xsl:value-of select="$testDescription" />
+                              
+                              <xsl:if test="substring-after($result, '#')='failed' or substring-after($result, '#')='cantTell'">
+                              	<xsl:variable name="testSuiteType" select="//rdf:RDF/cite:TestRun/cite:testSuiteType" />
+                              	<xsl:if test=" $testSuiteType = 'testng'" >
+	                              <xsl:variable name="testName" select="testng:testSuiteName(//rdf:RDF/cite:TestRun/dct:title, 'title')" />
+	                              <xsl:call-template name="link-javadoc">
+	                                 <xsl:with-param name="ets-code" select="$testName" />
+	                                 <xsl:with-param name="testClassPath" select="$test_uris" />
+	                              </xsl:call-template>
+	                              <hr />
+									<xsl:variable name="testClassName">
+										<xsl:call-template name="substring-before-after">
+											<xsl:with-param name="getString" select="'after'" />
+											<xsl:with-param name="string"
+												select="substring-before($test_uris, '#')" />
+											<xsl:with-param name="delimiter" select="'/'" />
+										</xsl:call-template>
+									</xsl:variable>
+									<b>Class Name:</b> <xsl:value-of select="$testClassName" /> <br />
+									<b>Method Name:</b> <xsl:value-of select="$testCaseName" /> <br />
+									<b>Path:</b> <xsl:value-of select="substring-before($test_uris, '#')" />
+								</xsl:if>	
+							</xsl:if>
                            </td>
                         </tr>
                      </xsl:if>
@@ -786,7 +838,7 @@
                                  <xsl:call-template name="string-replace-all">
                                     <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
                                     <xsl:with-param name="replace" select="'['" />
-                                    <xsl:with-param name="by" select="'&amp;lt;br&amp;gt;&amp;lt;br&amp;gt;['" />
+                                    <xsl:with-param name="by" select="'&lt;br&gt;['" />
                                  </xsl:call-template>
                               </xsl:variable>
                               <xsl:choose>
@@ -799,7 +851,7 @@
                               </xsl:choose>
                            </xsl:variable>
                            <p>
-                              <xsl:value-of select="$message" disable-output-escaping="yes" />
+                              <xsl:value-of select="$message" />
                            </p>
                         </td>
                      </tr>
@@ -833,4 +885,13 @@
       <xsl:variable name="absolute-uri" select="resolve-uri($file, $base-uri)" as="xs:anyURI" />
       <xsl:sequence select="file:exists(file:new($absolute-uri))" />
    </xsl:function>
+
+   <xsl:template name="link-javadoc">
+    <xsl:param name="ets-code"/>
+    <xsl:param name="testClassPath"/>
+    <xsl:variable name="apidocs" select="concat('http://opengeospatial.github.io/ets-',$ets-code,'/apidocs/')" />
+    <xsl:variable name="url" select="concat($apidocs, $testClassPath)" />
+    <xsl:text> | </xsl:text>
+    <a target="_blank" href="{$url}">Details &#8599;</a>
+  </xsl:template>
 </xsl:stylesheet>

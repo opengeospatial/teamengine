@@ -1,3 +1,14 @@
+/**
+ * ********************************************************************************
+ *
+ * Version Date: January 8, 2018
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC): Applied mofications to address Fortify issues
+ *
+ * ********************************************************************************
+ */
+
 package com.occamlab.te.parsers;
 
 import java.io.PrintWriter;
@@ -175,6 +186,8 @@ public class XmlErrorHandler implements ErrorHandler {
         } catch (Exception e) {
             jlogger.log(Level.SEVERE, "validate", e);
             e.printStackTrace();
+            // Fortify Mod: if we get here then there is no point in going further
+            return null;
         }
         Element root = doc.createElement("errors");
         doc.appendChild(root);

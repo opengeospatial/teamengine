@@ -1,12 +1,12 @@
 /**
- * *******************************************************************************
+ * ********************************************************************************
  *
- * Version Data: January 2, 2018
+ * Version Date: January 8, 2018
  *
  * Contributor(s):
- *    C. Heazel (WiSC): Fortify adjudictions
+ *     C. Heazel (WiSC): Modifications to address Fortify issues
  *
- * *******************************************************************************
+ * ********************************************************************************
  */
 
 package com.occamlab.te;
@@ -157,6 +157,7 @@ public class CtlEarlReporter {
         this.testRun.addLiteral(CITE.testsNotTested, new Integer(this.totalNotTestedCount));
         this.testRun.addLiteral(CITE.testsWarning, new Integer(this.totalWarningCount));
         this.testRun.addLiteral(CITE.testsInheritedFailure, new Integer(this.totalInheritedFailureCount));
+        this.testRun.addLiteral(CITE.testSuiteType, "ctl");
         
         this.earlModel.add(model);
 
@@ -376,7 +377,8 @@ public class CtlEarlReporter {
                     break;
                 }
             }
-            if (!childlogElements.equals(null)) {
+            // Fortify Mod: Check for the case where the loop is never executed (childlogElements == null)
+            if (childlogElements != null && !childlogElements.equals(null)) {
                 testDetails = getTestinfo(childlogElements);
             } else {
                 throw new NullPointerException("Failed to get Test-Info due to null log element.");
