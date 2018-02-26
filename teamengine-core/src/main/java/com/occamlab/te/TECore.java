@@ -1,13 +1,6 @@
 /**
  * **************************************************************************
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at http://www.mozilla.org/MPL/
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- * the specific language governing rights and limitations under the License.
- *
  * The Original Code is TEAM Engine.
  *
  * The Initial Developer of the Original Code is Northrop Grumman Corporation
@@ -1779,7 +1772,9 @@ public class TECore implements Runnable {
     }
 
     // Complete GET KVP syntax
-    if (method.equals("GET") && sParams.length() > 0) {
+    // Fortify Mod: Added check for null sUrl.  Shouldn't happen but ----
+    // if (method.equals("GET") && sParams.length() > 0) {
+    if (method.equals("GET") && sParams.length() > 0 && sUrl != null) {
       if (sUrl.indexOf("?") == -1) {
         sUrl += "?";
       } else if (!sUrl.endsWith("?") && !sUrl.endsWith("&")) {
@@ -2031,7 +2026,9 @@ public class TECore implements Runnable {
       t = tf.newTransformer();
     }
     File temp = File.createTempFile("$te_", ".xml");
-    if (content.getNodeType() == Node.TEXT_NODE) {
+    // Fortify Mod: It is possible to get here without assigning a value to content.  
+    // if (content.getNodeType() == Node.TEXT_NODE) {
+    if (content != null && content.getNodeType() == Node.TEXT_NODE) {
       RandomAccessFile raf = new RandomAccessFile(temp, "rw");
       raf.writeBytes(((Text) content).getTextContent());
       raf.close();

@@ -63,4 +63,6 @@ public class CITE {
             .addProperty(RDF.type, EARL.OutcomeValue);
     public static final Resource Inherited_Failure = model
             .createResource(NS_URI + "inheritedFailure").addProperty(RDF.type, EARL.OutcomeValue);
+    // Indicate the test suite type i.e. CTL or TestNG based.
+    public static final Property testSuiteType = model.createProperty(NS_URI + "testSuiteType");
 }

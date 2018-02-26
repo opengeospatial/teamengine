@@ -1,12 +1,4 @@
 /*
- The contents of this file are subject to the Mozilla Public License
- Version 1.1 (the "License"); you may not use this file except in
- compliance with the License. You may obtain a copy of the License at
- http://www.mozilla.org/MPL/
-
- Software distributed under the License is distributed on an "AS IS" basis,
- WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- the specific language governing rights and limitations under the License.
 
  The Original Code is TEAM Engine.
 
@@ -17,8 +9,7 @@
 
  Contributor(s): 
  2009         F. Vitale     vitale@imaa.cnr.it
- 2018         C. Heazel (WiSC) Mofidifications to address Fortify issues.
-           
+ 2018         C. Heazel (WiSC) Applied modifications to address Fortify issues
  */
 
 package com.occamlab.te;
@@ -257,7 +248,9 @@ public class Test {
             }
         } else if (mode == REDO_FROM_CACHE_MODE) {
             boolean regenerate = false;
-            if (indexFile.canRead()) {
+            // Fortify Mod: indexFile may be null.  Check for it
+            // if (indexFile.canRead()) {
+            if (indexFile != null && indexFile.canRead()) {
                 masterIndex = new Index(indexFile);
                 if (masterIndex.outOfDate()) {
                     System.out
@@ -277,6 +270,11 @@ public class Test {
                 }
             }
         } else {
+            // Fortify Mod: indexFile may be null.  Check for it.
+            if (indexFile == null) {
+                System.out.println("Error: Can't read index file.");
+                return;
+            }
             if (!indexFile.canRead()) {
                 System.out.println("Error: Can't read index file.");
                 return;
@@ -306,7 +304,10 @@ public class Test {
             }
         }
 
-        masterIndex.setElements(null);
+        // Fortify Mod: Make sure masterIndex is not null
+        // masterIndex.setElements(null);
+        if( masterIndex != null) masterIndex.setElements(null);
+        else masterIndex = new Index();
         TEClassLoader cl = new TEClassLoader(findResourcesDirectory(sourceFile));
         Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
 

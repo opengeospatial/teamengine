@@ -92,6 +92,8 @@ public class UserFilesRealm extends RealmBase {
             userInfo = DB.parse(userfile);
         } catch (Exception e) {
             LOGR.log(Level.WARNING, "Failed to read user info at " + userfile.getAbsolutePath(), e);
+            // Fortify Mod: If we failed to read user info then there is no point in continuing
+            return null;
         }
         Element userElement = (Element) (userInfo.getElementsByTagName("user").item(0));
         Element passwordElement = (Element) (userElement.getElementsByTagName("password").item(0));
@@ -125,6 +127,8 @@ public class UserFilesRealm extends RealmBase {
             klass = Class.forName("org.apache.catalina.realm.GenericPrincipal");
         } catch (ClassNotFoundException ex) {
             LOGR.log(Level.SEVERE, ex.getMessage());
+            // Fortify Mod: if klass is not populated, then there is no point in going forward
+            return null;
         }
         Constructor[] ctors = klass.getConstructors();
         Class firstParamType = ctors[0].getParameterTypes()[0];

@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  The contents of this file are subject to the Mozilla Public License
-  Version 1.1 (the "License"); you may not use this file except in
-  compliance with the License. You may obtain a copy of the License at
-  http://www.mozilla.org/MPL/ 
-
-  Software distributed under the License is distributed on an "AS IS" basis,
-  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-  the specific language governing rights and limitations under the License. 
-
   The Original Code is TEAM Engine.
 
   The Initial Developer of the Original Code is Northrop Grumman Corporation
@@ -31,7 +22,7 @@
     exclude-result-prefixes="viewlog encoder file te ctl"
     version="2.0">
     <xsl:import href="../logstyles/default.xsl"/>
-    <xsl:import href="../logstyles/result-log.xsl"/>
+    <!--  <xsl:import href="../logstyles/result-log.xsl"/> -->
     
     <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
     <xsl:output name="xml" omit-xml-declaration="yes" indent="yes"/>
@@ -78,9 +69,9 @@
 
     <xsl:template name="test" match="test">
         <xsl:param name="testnum" select="$testnum"/>
-        <xsl:variable name="file" select="file:new(string(@file))"/>
+        <!-- <xsl:variable name="file" select="file:new(string(@file))"/>
         <xsl:variable name="pdir1" select="file:getName(file:getParentFile($file))"/>
-        <xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/>
+        <xsl:variable name="pdir2" select="file:getName(file:getParentFile(file:getParentFile($file)))"/> -->
         <!-- <xsl:variable name="dir">
             <xsl:choose>
                 <xsl:when test="contains($pdir1, '.ctl')">
@@ -147,9 +138,9 @@
         <xsl:param name="inheritedFailure">5</xsl:param>
         <xsl:param name="fail">6</xsl:param>
         <xsl:apply-templates/>
-        <xsl:if test="$TESTNAME='WMS Client Test Suite'">
+        <!-- <xsl:if test="$TESTNAME='WMS Client Test Suite'">
             <xsl:call-template name="Client-Result"/>  
-        </xsl:if>
+        </xsl:if>  -->
         <xsl:if test="not($TESTNAME='WMS Client Test Suite')">
            <!--  <xsl:if test="test">
                 <br/>
