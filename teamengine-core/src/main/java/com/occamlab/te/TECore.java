@@ -113,6 +113,7 @@ import com.occamlab.te.util.Misc;
 import com.occamlab.te.util.SoapUtils;
 import com.occamlab.te.util.StringUtils;
 import com.occamlab.te.util.URLConnectionUtils;
+import com.occamlab.te.util.TEPath;
 
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.SEVERE;
@@ -142,7 +143,7 @@ public class TECore implements Runnable {
   boolean web = false; // True when running as a servlet
 
   RecordedForms recordedForms;
-  String testPath; // Uniquely identifies a test instance
+  private String testPath; // Uniquely identifies a test instance
   String fnPath = ""; // Uniquely identifies an XSL function instance within a
   // test instance
   String indent = ""; // Contains the appropriate number of spaces for the
@@ -293,13 +294,14 @@ public class TECore implements Runnable {
         }
       } else if (mode == Test.TEST_MODE) {
         String testName = opts.getTestName();
-        if (testName != null) {
+        if (! testName.isEmpty() ) {
+          // NOTE: getContextNode() always returns null
           XdmNode contextNode = opts.getContextNode();
           execute_test(testName, params, contextNode);
         } else {
           String suiteName = opts.getSuiteName();
           List<String> profiles = opts.getProfiles();
-          if (suiteName != null || profiles.size() == 0) {
+          if ( ! suiteName.isEmpty() || profiles.size() == 0) {
             execute_suite(suiteName, params);
           }
           if (profiles.contains("*")) {
@@ -429,7 +431,7 @@ public class TECore implements Runnable {
   public void execute_suite(String suiteName, List<String> params)
           throws Exception {
     SuiteEntry suite = null;
-    if (suiteName == null) {
+    if (suiteName == null || suiteName.isEmpty()) {
       Iterator<String> it = index.getSuiteKeys().iterator();
       if (!it.hasNext()) {
         throw new Exception("Error: No suites in sources.");
@@ -705,6 +707,8 @@ public class TECore implements Runnable {
           throws Exception {
     testStack.push(test);
     testType = test.getType();
+    // It is possible to get here without setting testPath.  Make sure it is set.
+    if(testPath == null) testPath = opts.getSessionId();
     defaultResult = test.getDefaultResult();
         defaultResultName = (defaultResult == BEST_PRACTICE) ? "BestPractice"
             : "Pass";
@@ -738,12 +742,12 @@ public class TECore implements Runnable {
     String testName = test.getName() + " type " + test.getType();
     System.setProperty("TestName", testName);
     out.println("(" + testPath + ")...");
-// DEBUG - both testPath and dirPath are not always created.
-if(testPath == null) testPath = new String();
     if(opts.getLogDir()!=null){
       String logDir = opts.getLogDir() + "/" + testPath.split("/")[0];
+      // Fortify Mod: Add TEPath validation of the log directory path
+      TEPath tpath = new TEPath(logDir);
       //create log directory
-      if ("True".equals(System.getProperty("Record"))) {
+      if (tpath.isValid() && "True".equals(System.getProperty("Record"))) {
         dirPath = new File(logDir + "/test_data");
         if (!dirPath.exists()) {
           if (!dirPath.mkdir()) {
@@ -912,7 +916,8 @@ if(testPath == null) testPath = new String();
         return test.getResult();
     }
 
-	public void addMissingInfo(String dir, int testResult) {
+    // Fortify Mod: Make addMissingInfo private to assure validity of arguments.
+	private void addMissingInfo(String dir, int testResult) {
 
 		String logdir = dir + File.separator + "log.xml";
 		DocumentBuilderFactory dbf = null;
@@ -2118,9 +2123,9 @@ if(testPath == null) testPath = new String();
         if (instance == null) {
           try {
             TEClassLoader cl = engine.getClassLoader(opts
-                    .getSourcesName());
+                   .getSourcesName());
             instance = Misc.makeInstance(pe.getClassName(),
-                    pe.getClassParams(), cl);
+                   pe.getClassParams(), cl);
           } catch (Exception e) {
             throw new Exception("Can't instantiate parser "
                     + pe.getName(), e);
@@ -2402,7 +2407,7 @@ if(testPath == null) testPath = new String();
     threadComplete = false;
     // activeThread = Thread.currentThread();
     try {
-      opts.testLogDir.mkdir();
+      opts.getLogDir().mkdir();
       threadOutput = new ByteArrayOutputStream();
       out = new PrintStream(threadOutput);
       execute();
@@ -2441,7 +2446,13 @@ if(testPath == null) testPath = new String();
     return logDirURI + opts.getSessionId();
   }
 
-  public void setTestPath(String testPath) {
+  /**
+   * Updates the local testPath value.
+   * C. Heazel made private since it is never called by an external object
+   *       Could be removed since local classes can set it directly.
+   *       Or augmented by value validation.
+   */
+  private void setTestPath(String testPath) {
     this.testPath = testPath;
   }
 
@@ -2486,7 +2497,10 @@ if(testPath == null) testPath = new String();
      * 
      * @param outputDir
      */
-    public void earlHtmlReport( String outputDir ) {
+    // Fortify Mod: Changed to a private method so that the value of the
+    // outputDir parameter can be managed.  
+    // Note: that there is no indication that this method is ever called.
+    private void earlHtmlReport( String outputDir ) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String resourceDir = cl.getResource( "com/occamlab/te/earl/lib" ).getPath();
         String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();

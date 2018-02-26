@@ -23,6 +23,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.occamlab.te.util.TEPath;    // Fortify addition
+
 /**
  * Provides static configuration settings. The {@code TE_BASE} system property
  * or environment variable specifies the location of the main configuration
@@ -52,6 +54,7 @@ public class SetupOptions {
   File workDir = null;
   String sourcesName = "default";
   ArrayList<File> sources = new ArrayList<File>();
+  private static Logger jLogger = Logger.getLogger("com.occamlab.te.SetupOptions");
 
   /**
    * Default constructor. Creates the TE_BASE/scripts directory if it does not
@@ -153,12 +156,12 @@ public class SetupOptions {
    */
   public File getWorkDir() {
     if (null == this.workDir) {
-      File dir = new File(teBaseDir, "work");
-      if (!dir.exists() && !dir.mkdir()) {
-        throw new RuntimeException("Failed to create directory at "
+        File dir = new File(teBaseDir, "work");
+        if (!dir.exists() && !dir.mkdir()) {
+            throw new RuntimeException("Failed to create directory at "
                 + dir.getAbsolutePath());
-      }
-      this.workDir = dir;
+        }
+        this.workDir = dir;
     }
     return workDir;
   }
@@ -176,12 +179,24 @@ public class SetupOptions {
 
   /**
    * Adds a file system resource to the collection of known scripts.
+   * Fortify Mod: validate the argument and return success or failure
    *
      * @param source
      *            A File object representing a file or directory.
    */
-  public void addSource(File source) {
-    this.sources.add(source);
+  public boolean addSource(File source) {
+    // Fortify Mod: validate that source is on a valid path
+    if(source != null) {
+        TEPath tpath = new TEPath( source.getAbsolutePath());
+        if( tpath.isValid() ) {
+            this.sources.add(source);
+            return true;
+        } 
+        else {
+            jLogger.log(Level.INFO, "SetupOptions: Attempt to set invalid source " + source);
+        }
+    }
+    return false;
   }
 
   public Element getParamsElement() {

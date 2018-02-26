@@ -45,11 +45,18 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
  * 
  * @see <a href="https://github.com/defuse/password-hashing">Secure Password
  *      Storage v2.0</a>
+ *
+ * <p>
+ * Modified to address Fortity path manipulation errors by C. Heazel
+ * February 26, 2018
+ * </p>
  */
 public class PBKDF2Realm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
-    private String rootPath = null;
+    // Fortify Mod: initialize rootPath
+    // private String rootPath = null;
+    private String rootPath = System.getProperty("TE_BASE");
     private DocumentBuilder DB = null;
     private HashMap<String, Principal> principals = new HashMap<String, Principal>();
 
@@ -132,12 +139,15 @@ public class PBKDF2Realm extends RealmBase {
      * @param root
      *            A String specifying a directory location (TE_BASE/users).
      */
-    public void setRoot(String root) {
+     // Fortify Mod: make private since it does not appear to be used
+     // Also is dangerous to allow canges to rootPath without validation.
+    private void setRoot(String root) {
         rootPath = root;
     }
 
     private GenericPrincipal readPrincipal(String username) {
         List<String> roles = new ArrayList<String>();
+        // NOTE: rootPath was always null prior to change in initialization
         File usersdir = new File(rootPath);
         if (!usersdir.isDirectory()) {
             usersdir = new File(System.getProperty("TE_BASE"), "users");

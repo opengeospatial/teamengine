@@ -4,7 +4,9 @@
  * Version Date: January 24, 2018
  *
  * Contributor(s): 
- *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *	C. Heazel (WiSC): 
+ *          Added Fortify adjudication changes
+ *          Changed session id format to UUID
  *
  ***************************************************************************
  */
@@ -27,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.UUID;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -431,16 +434,10 @@ public class LogUtils {
      * Generates a session identifier. The value corresponds to the name of a
      * sub-directory (session) in the root test log directory.
      * 
-     * @return a session id string ("s0001" by default, unless the session
-     *         sub-directory already exists).
+     * @return a session id string
      */
     public static String generateSessionId(File logDir) {
-        int i = 1;
-        String session = "s0001";
-        while (new File(logDir, session).exists() && i < 10000) {
-            i++;
-            session = "s" + Integer.toString(10000 + i).substring(1);
-        }
+        String session = UUID.randomUUID().toString();
         return session;
     }
 
@@ -456,11 +453,19 @@ public class LogUtils {
      */
     public static void createFullReportLog(String sessionLogDir)
             throws Exception {
+        LOGR.log(Level.WARNING, "Creating report log for " + sessionLogDir);
         // Fortify Mod: validate sessionLogDir argument
         TEPath tpath = new TEPath(sessionLogDir);
         if( ! tpath.isValid() ) {
             throw new IllegalArgumentException("Illegal path = " + tpath.toString());
             }
+        // Make sure the session log directory exits 
+        File dir = new File(sessionLogDir);
+        if( ! dir.exists() ) {
+            if( ! dir.mkdir() ) {
+                throw new RuntimeException("Unable to create report log directory " + sessionLogDir);
+            }
+        }
         File xml_logs_report_file = new File(sessionLogDir + File.separator
                 + "report_logs.xml");
         if (xml_logs_report_file.exists()) {
@@ -469,6 +474,7 @@ public class LogUtils {
         }
         xml_logs_report_file = new File(sessionLogDir + File.separator
                 + "report_logs.xml");
+        // xml_logs_report_file = new File("C:\\TE_BASE\\users\\cheazel\\dummy\\report_logs.xml");
         OutputStream report_logs = new FileOutputStream(xml_logs_report_file);
         List<File> files = null;
         Document result = null;

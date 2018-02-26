@@ -25,11 +25,8 @@ public class ListSuites {
                 File f = new File(scriptsDir, args[i].substring(8));
                 // Fortify Mod: make sure that the -source argument 
                 //              is not pointing to an illegal location
-                TEPath tpath = new TEPath(f.getAbsolutePath());
                 // if (f.exists()) {
-                if (tpath.isValid() && f.exists()) {
-                    setupOpts.addSource(f);
-                } else {
+                if (! f.exists() || ! setupOpts.addSource(f)) {
                     System.out.println("Error: Can't find CTL script(s) at "
                             + f.getAbsolutePath());
                     return;

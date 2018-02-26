@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.UUID;
 
 import javax.xml.transform.Templates;
 import javax.xml.transform.stream.StreamSource;
@@ -104,7 +105,10 @@ public class Test {
         this.runOpts = runOpts;
     }
 
-    public void executeTest(String relativePathToMainCtl) throws Exception {
+    // This method does not appear to be used.  Consider deleting it.
+    // Changed from public to private until we validate that is can be removed.
+    
+    private void executeTest(String relativePathToMainCtl) throws Exception {
         // File file =Misc.getResourceAsFile(relativePathToMainCtl);
         String[] arguments = new String[1];
         arguments[0] = "-source=" + relativePathToMainCtl;
@@ -160,11 +164,9 @@ public class Test {
                             SetupOptions.getBaseConfigDirectory(), "scripts");
                     sourceFile = new File(scriptsDir, sourcePath);
                 }
-                if (sourceFile.exists()) {
-                    // Note that this only adds sourceFile to a list of file 
-                    // names.  It does not overwrite any existing values.
-                    setupOpts.addSource(sourceFile);
-                } else {
+                // Fortify Mod: Validate the sourceFile.  It must both exist
+                // and pass validation by setupOptions
+                if (! sourceFile.exists() || ! setupOpts.addSource(sourceFile)){
                     System.out.println("Error: Cannot find CTL script(s) at "
                             + sourceFile.getAbsolutePath());
                     return;
@@ -245,12 +247,9 @@ public class Test {
         if (session == null) {
             session = System.getProperty("team.session");
         }
+        // CMH - changed session format to UUID.
         if (session == null) {
-            if (logDir == null) {
-                session = "s0001";
-            } else {
-                session = LogUtils.generateSessionId(logDir);
-            }
+            session = UUID.randomUUID().toString();
         }
         // runtimeOptions mod
         rslt = runOpts.setSessionId(session);

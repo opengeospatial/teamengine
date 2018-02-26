@@ -1,3 +1,10 @@
+/**
+ *
+ *  Contributor(s):
+ *     Charles Heazel (WiSC): Modified to address Fortify issues
+ *     Mods deferred until dependency on core is resolved.
+ *         February 26, 2018
+ */
 package com.occamlab.te.spi.executors.testng;
 
 import java.io.File;

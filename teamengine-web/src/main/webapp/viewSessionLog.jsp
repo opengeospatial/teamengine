@@ -1,10 +1,11 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, java.io.BufferedReader, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, java.io.BufferedReader, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration, com.occamlab.te.util.TEPath"
 %><%!
 Config Conf;
 TECore core;
+TEPath tpath;
 DocumentBuilderImpl DB;
 Templates ViewLogTemplates;
 
@@ -37,7 +38,8 @@ public void jspInit() {
   Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
   Grumman Corporation. All Rights Reserved.
 
-  Contributor(s): No additional contributors to date
+  Contributor(s): 
+     Chuck Heazel (WiSC): Modified to address Fortify path manipulation issues.
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
@@ -181,16 +183,23 @@ public void jspInit() {
 %>
 
 <%-- Insert link to TestNG report if it exists.  --%>
+<%-- Fortify Mod: added path name validation through TEPath --%>
+<%-- Note that htmlReportDir is not used. --%>
 <%
 File userLog = new File(Conf.getUsersDir(), request.getRemoteUser());
 File htmlReportDir = new File(userLog, sessionId + System.getProperty("file.separator") + "html");
+tpath = new TEPath(htmlReportDir.getAbsolutePath());
+if( ! tpath.isValid() ) htmlReportDir = null;
 String resultdir = userLog.toString() + System.getProperty("file.separator") + sessionId;
 File resDir = new File(resultdir + System.getProperty("file.separator") + "testng");
 File earlHtml = null;
 if(!resDir.exists()){
 	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
 }
-if(resDir.exists()){
+<%-- Fortify Mod: validate resultdir.--%>
+<%-- Note that resDir will always be within the resultdir directory --%>
+tpath = new TEPath(resultdir);
+if(resDir.exists() && tpath.isValid()) {
 core.earlHtmlReport(resultdir.toString());
 earlHtml = new  File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
 
