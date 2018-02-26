@@ -1,6 +1,21 @@
 Release Notes
 =============
 
+## 5.2 (2018-02-26)
+- Fix [#298](https://github.com/opengeospatial/teamengine/issues/298): Fortify Issue: Unreleased Resource
+- Fix [#286](https://github.com/opengeospatial/teamengine/issues/286): HTML 5.0 Report: Add method and class of the failing test
+- Fix [#287](https://github.com/opengeospatial/teamengine/issues/287): Add cite:testSuiteType earl property to identify the test-suite is implemented using ctl or testng.
+- Fix [#308](https://github.com/opengeospatial/teamengine/issues/308): Status color of tests in left frame
+- Fix [#284](https://github.com/opengeospatial/teamengine/issues/284): Enhance TEAM Engine to evaluate if core conformance classes are configured
+- Fix [#179](https://github.com/opengeospatial/teamengine/issues/179): Clean header of source code files
+- Fix [#300](https://github.com/opengeospatial/teamengine/issues/300): Fortify Issue: Null Dereference
+- Fix [#304](https://github.com/opengeospatial/teamengine/issues/304): Result view (tree) is missing of wms-client test
+- Fix [#276](https://github.com/opengeospatial/teamengine/issues/276): Enhance impementation of SOAP request to be able to handle elements in CDATA
+- Fix [#280](https://github.com/opengeospatial/teamengine/issues/280): Improve report text for core conformance classes
+- Fix [#278](https://github.com/opengeospatial/teamengine/issues/278): Detailed test messages with XML special characters are incomplete
+- Fix [#277](https://github.com/opengeospatial/teamengine/issues/277): Incomplete test result (new html report) with ETS NSG WMTS 1.0
+- Fix [#265](https://github.com/opengeospatial/teamengine/issues/265): Warning in viewlog.xsl
+
 ## 5.1 (2017-11-30)
 - Fix [#272](https://github.com/opengeospatial/teamengine/issues/272): Failing tests do not report performed requests
 - Fix [#273](https://github.com/opengeospatial/teamengine/issues/273): HTML report: Report has additional empty column if test is skipped
