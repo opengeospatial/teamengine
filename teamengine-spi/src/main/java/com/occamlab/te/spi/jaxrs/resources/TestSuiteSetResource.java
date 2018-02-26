@@ -1,3 +1,14 @@
+/**
+ * *********************************************************************************
+ *
+ * Version Date January 6, 2018
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC) MOdifications to address Fortify issues
+ *
+ * *********************************************************************************
+ */
+
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.InputStream;
@@ -100,6 +111,8 @@ public class TestSuiteSetResource {
         Document doc = null;
         try {
             doc = this.docBuilder.parse(inStream);
+            // Fortify Mod: Close the InputStream and release its resources
+            inStream.close();
         } catch (Exception ex) {
             Logger.getLogger(TestSuiteSetResource.class.getName()).log(
                     Level.WARNING, "Failed to parse test-suites.html", ex);

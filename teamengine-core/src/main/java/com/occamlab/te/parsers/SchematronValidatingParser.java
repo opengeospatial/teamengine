@@ -221,8 +221,11 @@ public class SchematronValidatingParser {
         ValidationDriver driver = createSchematronDriver(phase);
         assert null != driver : "Unable to create Schematron ValidationDriver";
         InputSource is = null;
+        // Fortify Mod: move fis out so it can be closed on exit
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(schemaFile);
+            // FileInputStream fis = new FileInputStream(schemaFile);
+            fis = new FileInputStream(schemaFile);
             is = new InputSource(fis);
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,6 +233,7 @@ public class SchematronValidatingParser {
         try {
             if (driver.loadSchema(is)) {
                 isValid = driver.validate(inputDoc);
+                fis.close(); // Fortify addition
             } else {
                 assert false : ("Failed to load Schematron schema: "
                         + schemaFile + "\nIs the schema valid? Is the phase defined?");

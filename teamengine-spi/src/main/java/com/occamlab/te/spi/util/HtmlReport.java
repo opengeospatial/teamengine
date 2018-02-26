@@ -35,6 +35,9 @@ import org.apache.commons.io.FileUtils;
  * It will transform EARL result into HTML report 
  * and return the HTML result with zip file.
  *
+ * Contributor(s):
+ *     C. Heazel (WiSC) Modifications to address Fortify issues
+ *
  */
 public class HtmlReport {
 
@@ -93,6 +96,8 @@ public class HtmlReport {
 
             FileOutputStream outputStream = new FileOutputStream( indexHtml );
             transformer.transform( new StreamSource( earlResult), new StreamResult( outputStream ));
+            // Foritfy Mod: Close the outputStream releasing its resources
+            outputStream.close();
 			FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
 		} catch (Exception e) {
 			LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );

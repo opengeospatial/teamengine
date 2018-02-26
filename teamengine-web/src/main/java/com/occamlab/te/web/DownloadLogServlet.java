@@ -1,3 +1,14 @@
+/**
+ * **************************************************************************
+ *
+ * Version Date: January 5, 2018
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC): Changes to address Fortity issues
+ *
+ * **************************************************************************
+ */
+
 package com.occamlab.te.web;
 
 import java.io.BufferedInputStream;
@@ -45,6 +56,8 @@ public class DownloadLogServlet extends javax.servlet.http.HttpServlet
             OutputStream out = response.getOutputStream();
             while ((length = fileInBuf.read(buf)) > 0) {
                 out.write(buf, 0, length);
+            // Fortify Mod: close the input stream
+            fileInBuf.close();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
