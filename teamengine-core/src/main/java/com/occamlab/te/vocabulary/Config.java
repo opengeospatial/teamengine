@@ -9,9 +9,10 @@
  
  Contributor(s): 
  	C. Heazel (WiSC): Added Fortify adjudication changes
+        C. Heazel (WiSC): Moved vocabulary package from spi to core
  
  ****************************************************************************/
-package com.occamlab.te.spi.vocabulary;
+package com.occamlab.te.vocabulary;
 
 import java.io.File;
 import java.util.ArrayList;
