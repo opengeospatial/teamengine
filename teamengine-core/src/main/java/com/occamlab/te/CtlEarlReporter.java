@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -28,9 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -49,7 +46,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.occamlab.te.spi.vocabulary.CITE;
@@ -99,7 +95,6 @@ public class CtlEarlReporter {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         docFactory.setXIncludeAware(true);
-        // Source results = null;
         Document document;
         try {
             document = docFactory.newDocumentBuilder().parse(reportFile);
@@ -107,12 +102,9 @@ public class CtlEarlReporter {
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
-        String iut = "";
         document.getDocumentElement().normalize();
 
-        // Here comes the root node
-        Element root = document.getDocumentElement();
-        Model model = initializeModel(suiteName, iut);
+        Model model = initializeModel(suiteName);
         addTestInputs(model, params);
         this.reqs = model.createSeq();
 
@@ -139,7 +131,7 @@ public class CtlEarlReporter {
         this.testRun.addLiteral(CITE.testsWarning, new Integer(this.totalWarningCount));
         this.testRun.addLiteral(CITE.testsInheritedFailure, new Integer(this.totalInheritedFailureCount));
         this.testRun.addLiteral(CITE.testSuiteType, "ctl");
-        
+
         this.earlModel.add(model);
 
         try {
@@ -152,46 +144,25 @@ public class CtlEarlReporter {
 
     private void getSubtestResult(Model model, NodeList testcallList, NodeList logList, String fTestname)
             throws UnsupportedEncodingException {
-
         String conformanceClass = "";
         for (int k = 0; k < testcallList.getLength(); k++) {
 
             // Get current testcall element path attribute
-            String testcallPath = "";
             Element testcallElement = (Element) testcallList.item(k);
-            testcallPath = testcallElement.getAttribute("path");
+            String testcallPath = testcallElement.getAttribute("path");
 
             // Iterate the log element list.
 
             for (int j = 0; j < logList.getLength(); j++) {
-
                 Element logElements = (Element) logList.item(j);
-        		String baseUrl= "";
         		String logtestcall = "";
         		String decodedBaseURL = java.net.URLDecoder.decode(logElements.getAttribute("xml:base"), "UTF-8");
 
-        		if (decodedBaseURL.contains("users")) {
-        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
-        			int first = baseUrl.indexOf(System.getProperty("file.separator"));
-        			int second = baseUrl.indexOf(System.getProperty("file.separator"),
-        					first + 1);
-        			logtestcall = baseUrl.substring(second + 1,
-        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
-        		} else if (decodedBaseURL.contains("temp")) {
-        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("temp"));
-        			logtestcall = baseUrl.substring(
-        					baseUrl.indexOf(System.getProperty("file.separator")) + 1,
-        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
-        		}
-
-        		if(logtestcall.contains("\\")){
-        			logtestcall = logtestcall.replace("\\", "/");
-        		}
+                logtestcall = parseLogTestCall( logtestcall, decodedBaseURL );
 
                 // Check sub-testcall is matching with the <log baseURL="">
 
                 if (testcallPath.equals(logtestcall)) {
-
                     Map<String, String> testinfo = getTestinfo(logElements);
 
                     if (testinfo.get("isConformanceClass").equals("true")) {
@@ -230,12 +201,13 @@ public class CtlEarlReporter {
                     this.totalWarningCount += cWarningCount;
                     this.totalInheritedFailureCount += cInheritedFailureCount;
                     break;
-                } // end of sub-testcall
+                }
             }
 
         }
 
     }
+
 
     private Map<String, String> getTestinfo(Element logElements) {
         Map<String, String> attr = new HashMap<String, String>();
@@ -258,11 +230,10 @@ public class CtlEarlReporter {
 				attr.put("isBasic", cClass.getAttribute("isBasic"));
 			}
 		}
-		
         return attr;
     }
 
-    private Model initializeModel(String suiteName, String iut) {
+    private Model initializeModel(String suiteName) {
         Model model = ModelFactory.createDefaultModel();
         Map<String, String> nsBindings = new HashMap<>();
         nsBindings.put("earl", EARL.NS_URI);
@@ -290,8 +261,8 @@ public class CtlEarlReporter {
          * NullPointerException("Unable to find URI reference for IUT in test run parameters."
          * ); }
          */
-       
-        this.testSubject = model.createResource(iut, EARL.TestSubject);
+
+        this.testSubject = model.createResource("", EARL.TestSubject);
         return model;
     }
 
@@ -307,7 +278,7 @@ public class CtlEarlReporter {
     /*
      * Process child tests of Conformance Class and call same method recursively
      * if it has the child tests.
-     * 
+     *
      */
     private void processTestResults(Model earl, Element logElements, NodeList logList, String logtestcallPath,
             String conformanceClass) throws UnsupportedEncodingException {
@@ -325,24 +296,7 @@ public class CtlEarlReporter {
                 childlogElements = (Element) logList.item(m);
                 String decodedBaseURL = java.net.URLDecoder.decode(childlogElements.getAttribute("xml:base"), "UTF-8");
 
-            	String baseUrl= "";
-        		if (decodedBaseURL.contains("users")) {
-        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
-        			int first = baseUrl.indexOf(System.getProperty("file.separator"));
-        			int second = baseUrl.indexOf(System.getProperty("file.separator"),
-        					first + 1);
-        			childLogtestcall = baseUrl.substring(second + 1,
-        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
-        		} else if (decodedBaseURL.contains("temp")) {
-        			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("temp"));
-        			childLogtestcall = baseUrl.substring(
-        					baseUrl.indexOf(System.getProperty("file.separator")) + 1,
-        					baseUrl.lastIndexOf(System.getProperty("file.separator")));
-        		}
-
-        		if(childLogtestcall.contains("\\")){
-        			childLogtestcall = childLogtestcall.replace("\\", "/");
-        		}
+                childLogtestcall = parseLogTestCall( childLogtestcall, decodedBaseURL );
                 if (testcallPath.equals(childLogtestcall)) {
                     break;
                 }
@@ -398,9 +352,9 @@ public class CtlEarlReporter {
                 earlResult.addProperty(EARL.outcome, EARL.Pass);
                 break;
             }
-            
+
             processResultAttributes(earlResult, childlogElements, earl);
-            
+
             assertion.addProperty(EARL.result, earlResult);
             // link earl:TestCase to earl:Assertion and earl:TestRequirement
             String testName = testDetails.get("testName");
@@ -419,6 +373,7 @@ public class CtlEarlReporter {
         }
     }
 
+
     private Element getErrorMessage(Element childlogElements) {
     	Element exceptionElement = null;
     	NodeList exceptionList = childlogElements.getElementsByTagName("exception");
@@ -429,7 +384,7 @@ public class CtlEarlReporter {
 	}
 
     private void processResultAttributes(Resource earlResult, Element childlogElements, Model earl) {
-    	
+
 		String httpMethod;
 		String reqVal;
 		Resource httpReq = null;
@@ -537,7 +492,7 @@ public class CtlEarlReporter {
     /**
      * This method is used to add test inputs in to earl report.
      * @param earl Model object to add the result into it.
-     * @param params 
+     * @param params
      * 			The variable is type of Map with all the user input.
      */
 	private void addTestInputs(Model earl, Map<String, String> params) {
@@ -554,7 +509,7 @@ public class CtlEarlReporter {
 		}
 		this.testRun.addProperty(CITE.inputs, inputs);
 	}
-    
+
     /*
      * Write CTL result into EARL report.
      */
@@ -575,4 +530,23 @@ public class CtlEarlReporter {
 
     }
 
+    private String parseLogTestCall( String logtestcall, String decodedBaseURL ) {
+        if (decodedBaseURL.contains( "users")) {
+            String baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
+            int first = baseUrl.indexOf(System.getProperty("file.separator"));
+            int second = baseUrl.indexOf(System.getProperty("file.separator"),
+                                         first + 1);
+            logtestcall = baseUrl.substring(second + 1,
+                                            baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        } else if (decodedBaseURL.contains("temp")) {
+            String baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("temp"));
+            logtestcall = baseUrl.substring(
+                                    baseUrl.indexOf(System.getProperty("file.separator")) + 1,
+                                    baseUrl.lastIndexOf(System.getProperty("file.separator")));
+        }
+        if(logtestcall.contains("\\")){
+            logtestcall = logtestcall.replace("\\", "/");
+        }
+        return logtestcall;
+    }
 }
