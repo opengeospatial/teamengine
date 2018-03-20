@@ -96,7 +96,6 @@ public class CtlEarlReporter {
     }
 
     public void generateEarlReport(File outputDirectory, File reportFile, String suiteName, Map params) throws UnsupportedEncodingException {
-
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         docFactory.setXIncludeAware(true);
@@ -121,27 +120,13 @@ public class CtlEarlReporter {
 
         for (int temp = 0; temp < executionList.getLength(); temp++) {
             Node executionNode = executionList.item(temp);
-
             Element executionElement = (Element) executionNode;
-
             NodeList logList = executionElement.getElementsByTagName("log");
-
             Element logElement = (Element) logList.item(0);
-
             NodeList starttestList = logElement.getElementsByTagName("starttest");
-
             Element starttestElement = (Element) starttestList.item(0);
-
-            /*
-             * Get list of the <testcall> element.
-             */
-
             NodeList testcallList = logElement.getElementsByTagName("testcall");
-            /*
-             * Get the subtest result recursively.
-             */
             getSubtestResult(model, testcallList, logList, starttestElement.getAttribute("local-name"));
-
         }
 
         this.testRun.addProperty(CITE.requirements, this.reqs);
@@ -165,7 +150,7 @@ public class CtlEarlReporter {
 
     }
 
-    public void getSubtestResult(Model model, NodeList testcallList, NodeList logList, String fTestname)
+    private void getSubtestResult(Model model, NodeList testcallList, NodeList logList, String fTestname)
             throws UnsupportedEncodingException {
 
         String conformanceClass = "";
@@ -252,14 +237,10 @@ public class CtlEarlReporter {
 
     }
 
-    public Map<String, String> getTestinfo(Element logElements) {
-
+    private Map<String, String> getTestinfo(Element logElements) {
         Map<String, String> attr = new HashMap<String, String>();
-
         NodeList starttestLists = logElements.getElementsByTagName("starttest");
-
         Element starttestElements = (Element) starttestLists.item(0);
-
         Element endtestElements = (Element) logElements.getElementsByTagName("endtest").item(0);
         NodeList assertionElements = logElements.getElementsByTagName("assertion");
         if(assertionElements.getLength() > 0){
@@ -281,7 +262,7 @@ public class CtlEarlReporter {
         return attr;
     }
 
-    Model initializeModel(String suiteName, String iut) {
+    private Model initializeModel(String suiteName, String iut) {
         Model model = ModelFactory.createDefaultModel();
         Map<String, String> nsBindings = new HashMap<>();
         nsBindings.put("earl", EARL.NS_URI);
@@ -314,10 +295,7 @@ public class CtlEarlReporter {
         return model;
     }
 
-    /*
-     * Add TestRequirements
-     */
-    void addTestRequirements(Model earl, Map<String, String> testinfo) {
+    private void addTestRequirements(Model earl, Map<String, String> testinfo) {
         Resource testReq = earl.createResource(testinfo.get("testName").replaceAll("\\s", "-"), EARL.TestRequirement);
         testReq.addProperty(DCTerms.title, testinfo.get("testName"));
         if(null != testinfo.get("isBasic")){
@@ -331,9 +309,8 @@ public class CtlEarlReporter {
      * if it has the child tests.
      * 
      */
-    public void processTestResults(Model earl, Element logElements, NodeList logList, String logtestcallPath,
+    private void processTestResults(Model earl, Element logElements, NodeList logList, String logtestcallPath,
             String conformanceClass) throws UnsupportedEncodingException {
-
         NodeList childtestcallList = logElements.getElementsByTagName("testcall");
         String testcallPath;
         Element childlogElements = null;
@@ -341,17 +318,14 @@ public class CtlEarlReporter {
         String childLogtestcall = "";
 
         for (int l = 0; l < childtestcallList.getLength(); l++) {
-
             Element childtestcallElement = (Element) childtestcallList.item(l);
             testcallPath = childtestcallElement.getAttribute("path");
 
             for (int m = 0; m < logList.getLength(); m++) {
-
                 childlogElements = (Element) logList.item(m);
                 String decodedBaseURL = java.net.URLDecoder.decode(childlogElements.getAttribute("xml:base"), "UTF-8");
 
             	String baseUrl= "";
-
         		if (decodedBaseURL.contains("users")) {
         			baseUrl = decodedBaseURL.substring(decodedBaseURL.indexOf("users"));
         			int first = baseUrl.indexOf(System.getProperty("file.separator"));
@@ -453,8 +427,8 @@ public class CtlEarlReporter {
 		}
 		return exceptionElement;
 	}
-    
-    void processResultAttributes(Resource earlResult, Element childlogElements, Model earl) {
+
+    private void processResultAttributes(Resource earlResult, Element childlogElements, Model earl) {
     	
 		String httpMethod;
 		String reqVal;
