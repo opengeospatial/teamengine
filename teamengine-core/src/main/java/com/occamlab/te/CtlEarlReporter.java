@@ -373,6 +373,7 @@ public class CtlEarlReporter {
             break;
         default:
             earlResult.addProperty( EARL.outcome, EARL.Pass );
+            this.cPassCount++;
             break;
         }
     }
