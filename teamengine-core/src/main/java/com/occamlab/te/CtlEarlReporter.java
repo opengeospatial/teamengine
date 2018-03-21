@@ -189,7 +189,7 @@ public class CtlEarlReporter {
                     addTestRequirements( model, testInfo );
                 }
 
-                processTestResults( model, logElements, logList, conformanceClass );
+                processTestResults( model, logElements, logList, conformanceClass, null );
 
                 Resource testReq = model.createResource( conformanceClass );
                 testReq.addLiteral( CITE.testsPassed, new Integer( this.cPassCount ) );
@@ -295,7 +295,8 @@ public class CtlEarlReporter {
     /*
      * Process child tests of Conformance Class and call same method recursively if it has the child tests.
      */
-    private void processTestResults( Model earl, Element logElement, NodeList logList, String conformanceClass )
+    private void processTestResults( Model earl, Element logElement, NodeList logList, String conformanceClass,
+                                     Resource parentTestCase )
                             throws UnsupportedEncodingException {
         NodeList childtestcallList = logElement.getElementsByTagName( "testcall" );
 
@@ -332,13 +333,12 @@ public class CtlEarlReporter {
             testCase.addProperty( DCTerms.title, testName );
             testCase.addProperty( DCTerms.description, testDetails.assertion );
             assertion.addProperty( EARL.test, testCase );
-            earl.createResource( conformanceClass ).addProperty( DCTerms.hasPart, testCase );
-
-            NodeList testcallLists = childtestcallElement.getElementsByTagName( "testcall" );
-
-            if ( testcallLists.getLength() > 0 ) {
-                processTestResults( earl, childtestcallElement, logList, conformanceClass );
-            }
+            
+            if ( parentTestCase != null )
+                parentTestCase.addProperty( DCTerms.hasPart, testCase );
+            else
+                earl.createResource( conformanceClass ).addProperty( DCTerms.hasPart, testCase );
+            processTestResults( earl, childlogElement, logList, conformanceClass, testCase );
         }
     }
 
