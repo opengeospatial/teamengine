@@ -27,11 +27,13 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -54,6 +56,8 @@ import com.occamlab.te.spi.vocabulary.EARL;
 import com.occamlab.te.spi.vocabulary.HTTP;
 
 public class CtlEarlReporter {
+
+    private static final Logger LOG = Logger.getLogger( CtlEarlReporter.class.getName() );
 
     private String langCode = "en";
 
@@ -230,23 +234,19 @@ public class CtlEarlReporter {
     }
 
     private TestInfo getTestinfo( Element logElements ) {
-        NodeList starttestLists = logElements.getElementsByTagName( "starttest" );
-        Element starttestElements = (Element) starttestLists.item( 0 );
-        Element endtestElements = (Element) logElements.getElementsByTagName( "endtest" ).item( 0 );
-        NodeList assertionElements = logElements.getElementsByTagName( "assertion" );
-        String assertion = "Null";
-        if ( assertionElements.getLength() > 0 ) {
-            Element assertionElement = (Element) assertionElements.item( 0 );
-            assertion = assertionElement.getTextContent();
+        Element starttestElements = getElementByTagName( logElements, "starttest" );
+        Element endtestElements = getElementByTagName( logElements, "endtest" );
+        String assertion = parseTextContent( logElements, "assertion" );
+        if ( assertion == null ) {
+            assertion = "Null";
         }
         String testName = starttestElements.getAttribute( "local-name" );
         int result = Integer.parseInt( endtestElements.getAttribute( "result" ) );
-        NodeList isConformanceClassList = logElements.getElementsByTagName( "conformanceClass" );
-        boolean isCC = ( isConformanceClassList.getLength() > 0 ) ? true : false;
+        Element ccElement = getElementByTagName( logElements, "conformanceClass" );
+        boolean isCC = ( ccElement != null ) ? true : false;
         boolean isBasic = false;
-        Element cClass = (Element) isConformanceClassList.item( 0 );
-        if ( null != cClass ) {
-            if ( cClass.hasAttribute( "isBasic" ) ) {
+        if ( null != ccElement ) {
+            if ( ccElement.hasAttribute( "isBasic" ) ) {
                 isBasic = true;
             }
         }
@@ -320,9 +320,8 @@ public class CtlEarlReporter {
             Resource earlResult = earl.createResource( "result-" + this.resultCount, EARL.TestResult );
             earlResult.addProperty( DCTerms.date, earl.createTypedLiteral( calTime ) );
 
-            handleTestResult( childlogElement, testDetails, earlResult );
-
-            processResultAttributes( earlResult, childlogElement, earl );
+            processTestResult( childlogElement, testDetails, earlResult );
+            processRequests( earlResult, childlogElement, earl );
 
             assertion.addProperty( EARL.result, earlResult );
             // link earl:TestCase to earl:Assertion and earl:TestRequirement
@@ -333,7 +332,7 @@ public class CtlEarlReporter {
             testCase.addProperty( DCTerms.title, testName );
             testCase.addProperty( DCTerms.description, testDetails.assertion );
             assertion.addProperty( EARL.test, testCase );
-            
+
             if ( parentTestCase != null )
                 parentTestCase.addProperty( DCTerms.hasPart, testCase );
             else
@@ -342,7 +341,7 @@ public class CtlEarlReporter {
         }
     }
 
-    private void handleTestResult( Element childlogElement, TestInfo testDetails, Resource earlResult ) {
+    private void processTestResult( Element childlogElement, TestInfo testDetails, Resource earlResult ) {
         switch ( testDetails.result ) {
         case 0:
             earlResult.addProperty( EARL.outcome, CITE.Continue );
@@ -354,9 +353,9 @@ public class CtlEarlReporter {
             break;
         case 6: // Fail
             earlResult.addProperty( EARL.outcome, EARL.Fail );
-            Element errorMessage = getErrorMessage( childlogElement );
+            String errorMessage = parseTextContent( childlogElement, "exception" );
             if ( errorMessage != null ) {
-                earlResult.addProperty( DCTerms.description, errorMessage.getTextContent() );
+                earlResult.addProperty( DCTerms.description, errorMessage );
             }
             this.cFailCount++;
             break;
@@ -378,104 +377,141 @@ public class CtlEarlReporter {
         }
     }
 
-    private Element getErrorMessage( Element childlogElements ) {
-        Element exceptionElement = null;
-        NodeList exceptionList = childlogElements.getElementsByTagName( "exception" );
-        if ( exceptionList.getLength() > 0 ) {
-            exceptionElement = (Element) childlogElements.getElementsByTagName( "exception" ).item( 0 );
+    private void processRequests( Resource earlResult, Element childlogElements, Model earl ) {
+        NodeList requestList = childlogElements.getElementsByTagName( "request" );
+        for ( int i = 0; i < requestList.getLength(); i++ ) {
+            Element reqElement = (Element) requestList.item( i );
+            processRequest( earlResult, earl, reqElement );
         }
-        return exceptionElement;
     }
 
-    private void processResultAttributes( Resource earlResult, Element childlogElements, Model earl ) {
-
-        String httpMethod;
-        String reqVal;
-        Resource httpReq = null;
-
-        if ( null == childlogElements )
+    private void processRequest( Resource earlResult, Model earl, Element reqElement ) {
+        Resource httpReq = createEarlRequest( earl, reqElement );
+        if ( httpReq == null )
             return;
-        NodeList requestList = childlogElements.getElementsByTagName( "request" );
-        Element reqElement;
+        String response = parseNodeAsString( reqElement, "response" );
+        if ( response != null ) {
+            Resource httpRsp = earl.createResource( HTTP.Response );
+            Resource rspContent = earl.createResource( CONTENT.ContentAsXML );
+            rspContent.addProperty( CONTENT.rest, response );
+            httpRsp.addProperty( HTTP.body, rspContent );
+            httpReq.addProperty( HTTP.resp, httpRsp );
+        }
+        earlResult.addProperty( CITE.message, httpReq );
+    }
 
-        for ( int i = 0; i < requestList.getLength(); i++ ) {
-            httpMethod = "";
-            reqVal = "";
+    private Resource createEarlRequest( Model earl, Element reqElement ) {
+        Element requestNode = getElementByTagName( reqElement, "http://www.occamlab.com/ctl", "request" );
+        if ( requestNode != null ) {
+            String httpMethod = parseTextContent( requestNode, "http://www.occamlab.com/ctl", "method" );
+            String url = parseTextContent( requestNode, "http://www.occamlab.com/ctl", "url" );
+            Resource earlRequest = earl.createResource( HTTP.Request );
+            if ( "GET".equalsIgnoreCase( httpMethod ) ) {
+                Map<String, String> parameters = parseParameters( requestNode );
+                String urlWithQueryString = createUrlWithQueryString( url, parameters );
+                earlRequest.addProperty( HTTP.methodName, httpMethod );
+                earlRequest.addProperty( HTTP.requestURI, urlWithQueryString );
+                return earlRequest;
+            }
+            if ( "POST".equalsIgnoreCase( httpMethod ) ) {
+                try {
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                    transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
 
-            reqElement = (Element) requestList.item( i );
+                    StreamResult result = new StreamResult( new StringWriter() );
+                    DOMSource source = new DOMSource( requestNode );
+                    transformer.transform( source, result );
 
-            NodeList nl = reqElement.getChildNodes();
-            for ( int j = 0; j < nl.getLength(); j++ ) {
-                String str = nl.item( j ).getLocalName();
-                if ( null != str && str.equalsIgnoreCase( "request" ) ) {
-                    Element currentItem = (Element) nl.item( j );
-                    NodeList methodList = currentItem.getChildNodes();
-                    for ( int k = 0; k < methodList.getLength(); k++ ) {
-                        Element method = (Element) methodList.item( k );
+                    String xmlString = result.getWriter().toString();
+                    result.getWriter().close();
 
-                        if ( null != method && method.getLocalName().equalsIgnoreCase( "method" ) ) {
-                            httpMethod = method.getTextContent();
-                        }
+                    Resource reqContent = earl.createResource( CONTENT.ContentAsXML );
 
-                        if ( null != method && method.getLocalName().equalsIgnoreCase( "url" ) ) {
-                            reqVal = method.getTextContent();
-                        }
-                        // Check request method is GET or POST.
-                        httpReq = earl.createResource( HTTP.Request );
-                        if ( httpMethod.equalsIgnoreCase( "GET" ) ) {
-                            if ( null != method && method.getLocalName().equalsIgnoreCase( "param" ) ) {
-
-                                if ( reqVal.indexOf( "?" ) == -1 ) {
-                                    reqVal += "?";
-                                } else if ( !reqVal.endsWith( "?" ) && !reqVal.endsWith( "&" ) ) {
-                                    reqVal += "&";
-                                }
-
-                                reqVal += method.getAttribute( "name" ) + "=" + method.getTextContent();
-                            }
-
-                            httpReq.addProperty( HTTP.methodName, httpMethod );
-                            httpReq.addProperty( HTTP.requestURI, reqVal );
-
-                        } else if ( httpMethod.equalsIgnoreCase( "POST" ) ) {
-                            // Post method content
-                            try {
-                                Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                                transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-
-                                StreamResult result = new StreamResult( new StringWriter() );
-                                DOMSource source = new DOMSource( currentItem );
-                                transformer.transform( source, result );
-
-                                String xmlString = result.getWriter().toString();
-                                // Fortify Mod: Close the Writer. This flushes the content and frees resources which
-                                // could be exhausted by the do-loop.
-                                result.getWriter().close();
-
-                                Resource reqContent = earl.createResource( CONTENT.ContentAsXML );
-
-                                reqContent.addProperty( CONTENT.rest, xmlString );
-                                httpReq.addProperty( HTTP.body, reqContent );
-                            } catch ( Exception e ) {
-                                new RuntimeException( "Request content is not well-formatted. " + e.getMessage() );
-                            }
-                        }
-                    }
-                }
-                if ( httpReq != null && "response".equalsIgnoreCase( str ) ) {
-                    Resource httpRsp = earl.createResource( HTTP.Response );
-                    // safe assumption, but need more response info to know for
-                    // sure
-                    Resource rspContent = earl.createResource( CONTENT.ContentAsXML );
-                    rspContent.addProperty( CONTENT.rest, nl.item( j ).getTextContent() );
-                    httpRsp.addProperty( HTTP.body, rspContent );
-                    httpReq.addProperty( HTTP.resp, httpRsp );
+                    reqContent.addProperty( CONTENT.rest, xmlString );
+                    earlRequest.addProperty( HTTP.body, reqContent );
+                    return earlRequest;
+                } catch ( Exception e ) {
+                    new RuntimeException( "Request content is not well-formatted. " + e.getMessage() );
                 }
             }
         }
-        if ( null != httpReq ) {
-            earlResult.addProperty( CITE.message, httpReq );
+        return null;
+    }
+
+    private String createUrlWithQueryString( String url, Map<String, String> parameters ) {
+        if ( parameters.isEmpty() )
+            return url;
+        StringBuilder urlWithQueryString = new StringBuilder( url );
+        if ( !url.contains( "?" ) )
+            urlWithQueryString.append( "?" );
+        if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) )
+            urlWithQueryString.append( "&" );
+        boolean isFirst = true;
+        for ( Map.Entry<String, String> parameter : parameters.entrySet() ) {
+            if ( !isFirst )
+                urlWithQueryString.append( "&" );
+            urlWithQueryString.append( parameter.getKey() );
+            urlWithQueryString.append( "=" );
+            urlWithQueryString.append( parameter.getValue() );
+            isFirst = false;
         }
+        return urlWithQueryString.toString();
+    }
+
+    private Map<String, String> parseParameters( Element requestNode ) {
+        Map<String, String> parameters = new HashMap<>();
+        NodeList paramNodes = requestNode.getElementsByTagNameNS( "http://www.occamlab.com/ctl", "param" );
+        for ( int paramNodeIndex = 0; paramNodeIndex < paramNodes.getLength(); paramNodeIndex++ ) {
+            Element paramNode = (Element) paramNodes.item( paramNodeIndex );
+            String paramName = paramNode.getAttribute( "name" );
+            String paramValue = paramNode.getTextContent();
+            parameters.put( paramName, paramValue );
+        }
+        return parameters;
+    }
+
+    private Element getElementByTagName( Element element, String tagName ) {
+        return getElementByTagName( element, null, tagName );
+    }
+
+    private Element getElementByTagName( Element element, String tagNamespaceUri, String tagName ) {
+        NodeList elementsByTagName;
+        if ( tagNamespaceUri != null )
+            elementsByTagName = element.getElementsByTagNameNS( tagNamespaceUri, tagName );
+        else
+            elementsByTagName = element.getElementsByTagName( tagName );
+
+        if ( elementsByTagName.getLength() > 0 )
+            return (Element) elementsByTagName.item( 0 );
+        return null;
+    }
+
+    private String parseTextContent( Element element, String tagName ) {
+        return parseTextContent( element, null, tagName );
+    }
+
+    private String parseTextContent( Element element, String tagNamespaceUri, String tagName ) {
+        Element elementByTagName = getElementByTagName( element, tagNamespaceUri, tagName );
+        if ( elementByTagName != null )
+            return elementByTagName.getTextContent();
+        return null;
+    }
+
+    private String parseNodeAsString( Element element, String tagName ) {
+        Element elementByTagName = getElementByTagName( element, tagName );
+        if ( elementByTagName != null ) {
+            try {
+                TransformerFactory transFactory = TransformerFactory.newInstance();
+                Transformer transformer = transFactory.newTransformer();
+                StringWriter buffer = new StringWriter();
+                transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes" );
+                transformer.transform( new DOMSource( elementByTagName ), new StreamResult( buffer ) );
+                return buffer.toString();
+            } catch ( TransformerException e ) {
+                LOG.warning( "Could not parse node as string: " + e.getMessage() );
+            }
+        }
+        return null;
     }
 
     /**
