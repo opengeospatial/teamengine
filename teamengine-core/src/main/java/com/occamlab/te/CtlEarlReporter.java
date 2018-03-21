@@ -138,10 +138,8 @@ public class CtlEarlReporter {
             Element executionElement = (Element) executionNode;
             NodeList logList = executionElement.getElementsByTagName( "log" );
             Element logElement = (Element) logList.item( 0 );
-            NodeList starttestList = logElement.getElementsByTagName( "starttest" );
-            Element starttestElement = (Element) starttestList.item( 0 );
             NodeList testcallList = logElement.getElementsByTagName( "testcall" );
-            getSubtestResult( model, testcallList, logList, starttestElement.getAttribute( "local-name" ) );
+            getSubtestResult( model, testcallList, logList );
         }
 
         this.testRun.addProperty( CITE.requirements, this.reqs );
@@ -165,95 +163,94 @@ public class CtlEarlReporter {
 
     }
 
-    private void getSubtestResult( Model model, NodeList testcallList, NodeList logList, String fTestname )
+    private void getSubtestResult( Model model, NodeList testcallList, NodeList logList )
                             throws UnsupportedEncodingException {
         String conformanceClass = "";
         for ( int k = 0; k < testcallList.getLength(); k++ ) {
 
-            // Get current testcall element path attribute
             Element testcallElement = (Element) testcallList.item( k );
             String testcallPath = testcallElement.getAttribute( "path" );
 
-            // Iterate the log element list.
+            Element logElements = findMatchingLogElement( logList, testcallPath );
 
-            for ( int j = 0; j < logList.getLength(); j++ ) {
-                Element logElements = (Element) logList.item( j );
-                String logtestcall = "";
-                String decodedBaseURL = java.net.URLDecoder.decode( logElements.getAttribute( "xml:base" ), "UTF-8" );
+            if ( logElements != null ) {
+                TestInfo testInfo = getTestinfo( logElements );
 
-                logtestcall = parseLogTestCall( logtestcall, decodedBaseURL );
-
-                // Check sub-testcall is matching with the <log baseURL="">
-
-                if ( testcallPath.equals( logtestcall ) ) {
-                    Map<String, String> testinfo = getTestinfo( logElements );
-
-                    if ( testinfo.get( "isConformanceClass" ).equals( "true" ) ) {
-                        conformanceClass = testinfo.get( "testName" );
-                        this.cPassCount = 0;
-                        this.cFailCount = 0;
-                        this.cSkipCount = 0;
-                        this.cContinueCount = 0;
-                        this.cBestPracticeCount = 0;
-                        this.cNotTestedCount = 0;
-                        this.cWarningCount = 0;
-                        this.cInheritedFailureCount = 0;
-                        addTestRequirements( model, testinfo );
-                    }
-
-                    /*
-                     * Process Test Result
-                     */
-                    processTestResults( model, logElements, logList, logtestcall, conformanceClass );
-
-                    Resource testReq = model.createResource( conformanceClass );
-                    testReq.addLiteral( CITE.testsPassed, new Integer( this.cPassCount ) );
-                    testReq.addLiteral( CITE.testsFailed, new Integer( this.cFailCount ) );
-                    testReq.addLiteral( CITE.testsSkipped, new Integer( this.cSkipCount ) );
-                    testReq.addLiteral( CITE.testsContinue, new Integer( this.cContinueCount ) );
-                    testReq.addLiteral( CITE.testsBestPractice, new Integer( this.cBestPracticeCount ) );
-                    testReq.addLiteral( CITE.testsNotTested, new Integer( this.cNotTestedCount ) );
-                    testReq.addLiteral( CITE.testsWarning, new Integer( this.cWarningCount ) );
-                    testReq.addLiteral( CITE.testsInheritedFailure, new Integer( this.cInheritedFailureCount ) );
-                    this.totalPassCount += cPassCount;
-                    this.totalFailCount += cFailCount;
-                    this.totalSkipCount += cSkipCount;
-                    this.totalContinueCount += cContinueCount;
-                    this.totalBestPracticeCount += cBestPracticeCount;
-                    this.totalNotTestedCount += cNotTestedCount;
-                    this.totalWarningCount += cWarningCount;
-                    this.totalInheritedFailureCount += cInheritedFailureCount;
-                    break;
+                if ( testInfo.isConformanceClass ) {
+                    conformanceClass = testInfo.testName;
+                    this.cPassCount = 0;
+                    this.cFailCount = 0;
+                    this.cSkipCount = 0;
+                    this.cContinueCount = 0;
+                    this.cBestPracticeCount = 0;
+                    this.cNotTestedCount = 0;
+                    this.cWarningCount = 0;
+                    this.cInheritedFailureCount = 0;
+                    addTestRequirements( model, testInfo );
                 }
-            }
 
+                processTestResults( model, logElements, logList, conformanceClass );
+
+                Resource testReq = model.createResource( conformanceClass );
+                testReq.addLiteral( CITE.testsPassed, new Integer( this.cPassCount ) );
+                testReq.addLiteral( CITE.testsFailed, new Integer( this.cFailCount ) );
+                testReq.addLiteral( CITE.testsSkipped, new Integer( this.cSkipCount ) );
+                testReq.addLiteral( CITE.testsContinue, new Integer( this.cContinueCount ) );
+                testReq.addLiteral( CITE.testsBestPractice, new Integer( this.cBestPracticeCount ) );
+                testReq.addLiteral( CITE.testsNotTested, new Integer( this.cNotTestedCount ) );
+                testReq.addLiteral( CITE.testsWarning, new Integer( this.cWarningCount ) );
+                testReq.addLiteral( CITE.testsInheritedFailure, new Integer( this.cInheritedFailureCount ) );
+                this.totalPassCount += cPassCount;
+                this.totalFailCount += cFailCount;
+                this.totalSkipCount += cSkipCount;
+                this.totalContinueCount += cContinueCount;
+                this.totalBestPracticeCount += cBestPracticeCount;
+                this.totalNotTestedCount += cNotTestedCount;
+                this.totalWarningCount += cWarningCount;
+                this.totalInheritedFailureCount += cInheritedFailureCount;
+                break;
+            }
         }
 
     }
 
-    private Map<String, String> getTestinfo( Element logElements ) {
-        Map<String, String> attr = new HashMap<String, String>();
+    private Element findMatchingLogElement( NodeList logList, String testcallPath )
+                            throws UnsupportedEncodingException {
+        for ( int j = 0; j < logList.getLength(); j++ ) {
+            Element logElement = (Element) logList.item( j );
+            String decodedBaseURL = java.net.URLDecoder.decode( logElement.getAttribute( "xml:base" ), "UTF-8" );
+            String logtestcall = parseLogTestCall( "", decodedBaseURL );
+            // Check sub-testcall is matching with the <log baseURL="">
+            if ( testcallPath.equals( logtestcall ) ) {
+                return logElement;
+            }
+
+        }
+        return null;
+    }
+
+    private TestInfo getTestinfo( Element logElements ) {
         NodeList starttestLists = logElements.getElementsByTagName( "starttest" );
         Element starttestElements = (Element) starttestLists.item( 0 );
         Element endtestElements = (Element) logElements.getElementsByTagName( "endtest" ).item( 0 );
         NodeList assertionElements = logElements.getElementsByTagName( "assertion" );
+        String assertion = "Null";
         if ( assertionElements.getLength() > 0 ) {
             Element assertionElement = (Element) assertionElements.item( 0 );
-            attr.put( "assertion", assertionElement.getTextContent() );
-        } else
-            attr.put( "assertion", "Null" );
-        attr.put( "testName", starttestElements.getAttribute( "local-name" ) );
-        attr.put( "result", endtestElements.getAttribute( "result" ) );
+            assertion = assertionElement.getTextContent();
+        }
+        String testName = starttestElements.getAttribute( "local-name" );
+        int result = Integer.parseInt( endtestElements.getAttribute( "result" ) );
         NodeList isConformanceClassList = logElements.getElementsByTagName( "conformanceClass" );
-        String isCC = ( isConformanceClassList.getLength() > 0 ) ? "true" : "false";
-        attr.put( "isConformanceClass", isCC );
+        boolean isCC = ( isConformanceClassList.getLength() > 0 ) ? true : false;
+        boolean isBasic = false;
         Element cClass = (Element) isConformanceClassList.item( 0 );
         if ( null != cClass ) {
             if ( cClass.hasAttribute( "isBasic" ) ) {
-                attr.put( "isBasic", cClass.getAttribute( "isBasic" ) );
+                isBasic = true;
             }
         }
-        return attr;
+        return new TestInfo( assertion, testName, result, isCC, isBasic );
     }
 
     private Model initializeModel( String suiteName ) {
@@ -286,12 +283,11 @@ public class CtlEarlReporter {
         return model;
     }
 
-    private void addTestRequirements( Model earl, Map<String, String> testinfo ) {
-        Resource testReq = earl.createResource( testinfo.get( "testName" ).replaceAll( "\\s", "-" ),
-                                                EARL.TestRequirement );
-        testReq.addProperty( DCTerms.title, testinfo.get( "testName" ) );
-        if ( null != testinfo.get( "isBasic" ) ) {
-            testReq.addProperty( CITE.isBasic, testinfo.get( "isBasic" ) );
+    private void addTestRequirements( Model earl, TestInfo testInfo ) {
+        Resource testReq = earl.createResource( testInfo.testName.replaceAll( "\\s", "-" ), EARL.TestRequirement );
+        testReq.addProperty( DCTerms.title, testInfo.testName );
+        if ( testInfo.isBasic ) {
+            testReq.addProperty( CITE.isBasic, "isBasic" );
         }
         this.reqs.add( testReq );
     }
@@ -299,35 +295,19 @@ public class CtlEarlReporter {
     /*
      * Process child tests of Conformance Class and call same method recursively if it has the child tests.
      */
-    private void processTestResults( Model earl, Element logElements, NodeList logList, String logtestcallPath,
-                                     String conformanceClass )
+    private void processTestResults( Model earl, Element logElement, NodeList logList, String conformanceClass )
                             throws UnsupportedEncodingException {
-        NodeList childtestcallList = logElements.getElementsByTagName( "testcall" );
-        String testcallPath;
-        Element childlogElements = null;
-        Map<String, String> testDetails;
-        String childLogtestcall = "";
+        NodeList childtestcallList = logElement.getElementsByTagName( "testcall" );
 
         for ( int l = 0; l < childtestcallList.getLength(); l++ ) {
             Element childtestcallElement = (Element) childtestcallList.item( l );
-            testcallPath = childtestcallElement.getAttribute( "path" );
+            String testcallPath = childtestcallElement.getAttribute( "path" );
 
-            for ( int m = 0; m < logList.getLength(); m++ ) {
-                childlogElements = (Element) logList.item( m );
-                String decodedBaseURL = java.net.URLDecoder.decode( childlogElements.getAttribute( "xml:base" ),
-                                                                    "UTF-8" );
+            Element childlogElement = findMatchingLogElement( logList, testcallPath );
 
-                childLogtestcall = parseLogTestCall( childLogtestcall, decodedBaseURL );
-                if ( testcallPath.equals( childLogtestcall ) ) {
-                    break;
-                }
-            }
-            // Fortify Mod: Check for the case where the loop is never executed (childlogElements == null)
-            if ( childlogElements != null && !childlogElements.equals( null ) ) {
-                testDetails = getTestinfo( childlogElements );
-            } else {
+            if ( childlogElement == null )
                 throw new NullPointerException( "Failed to get Test-Info due to null log element." );
-            }
+            TestInfo testDetails = getTestinfo( childlogElement );
 
             // create earl:Assertion
             GregorianCalendar calTime = new GregorianCalendar( TimeZone.getDefault() );
@@ -338,59 +318,63 @@ public class CtlEarlReporter {
             // link earl:TestResult to earl:Assertion
             Resource earlResult = earl.createResource( "result-" + this.resultCount, EARL.TestResult );
             earlResult.addProperty( DCTerms.date, earl.createTypedLiteral( calTime ) );
-            int res = Integer.parseInt( testDetails.get( "result" ) );
 
-            switch ( res ) {
-            case 0:
-                earlResult.addProperty( EARL.outcome, CITE.Continue );
-                this.cContinueCount++;
-                break;
-            case 2:
-                earlResult.addProperty( EARL.outcome, CITE.Not_Tested );
-                this.cNotTestedCount++;
-                break;
-            case 6: // Fail
-                earlResult.addProperty( EARL.outcome, EARL.Fail );
-                Element errorMessage = getErrorMessage( childlogElements );
-                if ( errorMessage != null ) {
-                    earlResult.addProperty( DCTerms.description, errorMessage.getTextContent() );
-                }
-                this.cFailCount++;
-                break;
-            case 3:
-                earlResult.addProperty( EARL.outcome, EARL.NotTested );
-                this.cSkipCount++;
-                break;
-            case 4:
-                earlResult.addProperty( EARL.outcome, CITE.Warning );
-                this.cWarningCount++;
-                break;
-            case 5:
-                earlResult.addProperty( EARL.outcome, CITE.Inherited_Failure );
-                this.cInheritedFailureCount++;
-                break;
-            default:
-                earlResult.addProperty( EARL.outcome, EARL.Pass );
-                break;
-            }
+            handleTestResult( childlogElement, testDetails, earlResult );
 
-            processResultAttributes( earlResult, childlogElements, earl );
+            processResultAttributes( earlResult, childlogElement, earl );
 
             assertion.addProperty( EARL.result, earlResult );
             // link earl:TestCase to earl:Assertion and earl:TestRequirement
-            String testName = testDetails.get( "testName" );
-            StringBuilder testCaseId = new StringBuilder( childLogtestcall );
+            String testName = testDetails.testName;
+            StringBuilder testCaseId = new StringBuilder( testcallPath );
             testCaseId.append( '#' ).append( testName );
             Resource testCase = earl.createResource( testCaseId.toString(), EARL.TestCase );
             testCase.addProperty( DCTerms.title, testName );
-            testCase.addProperty( DCTerms.description, testDetails.get( "assertion" ) );
+            testCase.addProperty( DCTerms.description, testDetails.assertion );
             assertion.addProperty( EARL.test, testCase );
             earl.createResource( conformanceClass ).addProperty( DCTerms.hasPart, testCase );
+
             NodeList testcallLists = childtestcallElement.getElementsByTagName( "testcall" );
 
             if ( testcallLists.getLength() > 0 ) {
-                processTestResults( earl, childtestcallElement, logList, childLogtestcall, conformanceClass );
+                processTestResults( earl, childtestcallElement, logList, conformanceClass );
             }
+        }
+    }
+
+    private void handleTestResult( Element childlogElement, TestInfo testDetails, Resource earlResult ) {
+        switch ( testDetails.result ) {
+        case 0:
+            earlResult.addProperty( EARL.outcome, CITE.Continue );
+            this.cContinueCount++;
+            break;
+        case 2:
+            earlResult.addProperty( EARL.outcome, CITE.Not_Tested );
+            this.cNotTestedCount++;
+            break;
+        case 6: // Fail
+            earlResult.addProperty( EARL.outcome, EARL.Fail );
+            Element errorMessage = getErrorMessage( childlogElement );
+            if ( errorMessage != null ) {
+                earlResult.addProperty( DCTerms.description, errorMessage.getTextContent() );
+            }
+            this.cFailCount++;
+            break;
+        case 3:
+            earlResult.addProperty( EARL.outcome, EARL.NotTested );
+            this.cSkipCount++;
+            break;
+        case 4:
+            earlResult.addProperty( EARL.outcome, CITE.Warning );
+            this.cWarningCount++;
+            break;
+        case 5:
+            earlResult.addProperty( EARL.outcome, CITE.Inherited_Failure );
+            this.cInheritedFailureCount++;
+            break;
+        default:
+            earlResult.addProperty( EARL.outcome, EARL.Pass );
+            break;
         }
     }
 
@@ -417,7 +401,6 @@ public class CtlEarlReporter {
         for ( int i = 0; i < requestList.getLength(); i++ ) {
             httpMethod = "";
             reqVal = "";
-            String xmlString = "";
 
             reqElement = (Element) requestList.item( i );
 
@@ -464,7 +447,7 @@ public class CtlEarlReporter {
                                 DOMSource source = new DOMSource( currentItem );
                                 transformer.transform( source, result );
 
-                                xmlString = result.getWriter().toString();
+                                String xmlString = result.getWriter().toString();
                                 // Fortify Mod: Close the Writer. This flushes the content and frees resources which
                                 // could be exhausted by the do-loop.
                                 result.getWriter().close();
@@ -497,7 +480,7 @@ public class CtlEarlReporter {
 
     /**
      * This method is used to add test inputs in to earl report.
-     * 
+     *
      * @param earl
      *            Model object to add the result into it.
      * @param params
@@ -553,5 +536,25 @@ public class CtlEarlReporter {
             logtestcall = logtestcall.replace( "\\", "/" );
         }
         return logtestcall;
+    }
+
+    private class TestInfo {
+        private String assertion;
+
+        private String testName;
+
+        private int result;
+
+        private boolean isConformanceClass;
+
+        private boolean isBasic;
+
+        public TestInfo( String assertion, String testName, int result, boolean isConformanceClass, boolean isBasic ) {
+            this.assertion = assertion;
+            this.testName = testName;
+            this.result = result;
+            this.isConformanceClass = isConformanceClass;
+            this.isBasic = isBasic;
+        }
     }
 }
