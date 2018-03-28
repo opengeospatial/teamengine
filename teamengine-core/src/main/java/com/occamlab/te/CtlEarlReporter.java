@@ -275,10 +275,9 @@ public class CtlEarlReporter {
         Element ccElement = getElementByTagName( logElements, "conformanceClass" );
         boolean isCC = ( ccElement != null ) ? true : false;
         boolean isBasic = false;
-        if ( null != ccElement ) {
-            if ( ccElement.hasAttribute( "isBasic" ) ) {
-                isBasic = true;
-            }
+        if ( ccElement != null && ccElement.hasAttribute( "isBasic" )
+             && Boolean.valueOf( ccElement.getAttribute( "isBasic" ) ) ) {
+            isBasic = true;
         }
         return new TestInfo( assertion, testName, result, isCC, isBasic );
     }
@@ -316,9 +315,7 @@ public class CtlEarlReporter {
     private void addTestRequirements( Model earl, TestInfo testInfo ) {
         Resource testReq = earl.createResource( testInfo.testName.replaceAll( "\\s", "-" ), EARL.TestRequirement );
         testReq.addProperty( DCTerms.title, testInfo.testName );
-        if ( testInfo.isBasic ) {
-            testReq.addProperty( CITE.isBasic, "isBasic" );
-        }
+        testReq.addProperty( CITE.isBasic, Boolean.toString( testInfo.isBasic ) );
         this.reqs.add( testReq );
     }
 
@@ -607,7 +604,7 @@ public class CtlEarlReporter {
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "temp" ) );
             logtestcall = baseUrl.substring( baseUrl.indexOf( System.getProperty( "file.separator" ) ) + 1,
                                              baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
-        } else if (decodedBaseURL.contains( "unittest" ) ) {
+        } else if ( decodedBaseURL.contains( "unittest" ) ) {
             // for Unit test only
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "unittest" ) );
             logtestcall = baseUrl.substring( baseUrl.indexOf( System.getProperty( "file.separator" ) ) + 1,

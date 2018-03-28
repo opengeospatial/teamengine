@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.xml.namespace.NamespaceContext;
 
 import org.junit.Test;
+import org.xmlmatchers.XmlMatchers;
 import org.xmlmatchers.namespace.SimpleNamespaceContext;
 
 /**
@@ -44,12 +45,17 @@ public class CtlEarlReporterTest {
         assertThat( the( earlReport.toString() ), hasXPath( "/rdf:RDF", nsContext() ) );
         assertThat( the( earlReport.toString() ),
                     hasXPath( "count(//earl:TestRequirement)", equalTo( "4" ), nsContext() ) );
+        assertThat( the( earlReport.toString() ),
+                    hasXPath( "//earl:TestRequirement[@rdf:about='queryable']/cite:isBasic", equalTo( "false" ), nsContext() ) );
+        assertThat( the( earlReport.toString() ),
+                    hasXPath( "//earl:TestRequirement[@rdf:about='basic']/cite:isBasic", equalTo( "true" ), nsContext() ) );
     }
 
     private NamespaceContext nsContext() {
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
         nsContext = nsContext.withBinding( "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#" );
         nsContext = nsContext.withBinding( "earl", "http://www.w3.org/ns/earl#" );
+        nsContext = nsContext.withBinding( "cite", "http://cite.opengeospatial.org/" );
         return nsContext;
     }
 
