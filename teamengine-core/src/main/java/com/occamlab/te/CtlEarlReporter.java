@@ -243,7 +243,6 @@ public class CtlEarlReporter {
                 this.totalNotTestedCount += cNotTestedCount;
                 this.totalWarningCount += cWarningCount;
                 this.totalInheritedFailureCount += cInheritedFailureCount;
-                break;
             }
         }
 

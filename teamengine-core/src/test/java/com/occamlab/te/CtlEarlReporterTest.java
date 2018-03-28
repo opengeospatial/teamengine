@@ -1,5 +1,6 @@
 package com.occamlab.te;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.xmlmatchers.XmlMatchers.hasXPath;
 import static org.xmlmatchers.transform.XmlConverters.the;
@@ -41,11 +42,14 @@ public class CtlEarlReporterTest {
         ctlEarlReporter.generateEarlReport( earlReport, reportStream, testSuiteName, parames );
 
         assertThat( the( earlReport.toString() ), hasXPath( "/rdf:RDF", nsContext() ) );
+        assertThat( the( earlReport.toString() ),
+                    hasXPath( "count(//earl:TestRequirement)", equalTo( "4" ), nsContext() ) );
     }
 
     private NamespaceContext nsContext() {
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
         nsContext = nsContext.withBinding( "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#" );
+        nsContext = nsContext.withBinding( "earl", "http://www.w3.org/ns/earl#" );
         return nsContext;
     }
 
