@@ -14,6 +14,7 @@ package com.occamlab.te;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -119,18 +120,53 @@ public class CtlEarlReporter {
 
     public void generateEarlReport( File outputDirectory, File reportFile, String suiteName, Map params )
                             throws UnsupportedEncodingException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        docFactory.setNamespaceAware( true );
-        docFactory.setXIncludeAware( true );
+        DocumentBuilderFactory docFactory = createDcumentBuilder();
         Document document;
         try {
             document = docFactory.newDocumentBuilder().parse( reportFile );
-
         } catch ( IOException | SAXException | ParserConfigurationException e ) {
             throw new RuntimeException( e );
         }
         document.getDocumentElement().normalize();
 
+        Model earlReport = generateEarlReport( suiteName, params, document );
+
+        try {
+            writeModel( earlReport, outputDirectory, true );
+        } catch ( IOException iox ) {
+            throw new RuntimeException( "Failed to serialize EARL results", iox );
+        }
+    }
+
+    public void generateEarlReport( OutputStream targetEarlReport, InputStream report, String suiteName, Map params )
+                            throws UnsupportedEncodingException {
+        DocumentBuilderFactory docFactory = createDcumentBuilder();
+        Document document;
+        try {
+            document = docFactory.newDocumentBuilder().parse( report );
+        } catch ( IOException | SAXException | ParserConfigurationException e ) {
+            throw new RuntimeException( e );
+        }
+        document.getDocumentElement().normalize();
+
+        Model earlReport = generateEarlReport( suiteName, params, document );
+
+        try {
+            writeModel( earlReport, targetEarlReport, true );
+        } catch ( IOException iox ) {
+            throw new RuntimeException( "Failed to serialize EARL results", iox );
+        }
+    }
+
+    private DocumentBuilderFactory createDcumentBuilder() {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware( true );
+        docFactory.setXIncludeAware( true );
+        return docFactory;
+    }
+
+    private Model generateEarlReport( String suiteName, Map params, Document document )
+                            throws UnsupportedEncodingException {
         Model model = initializeModel( suiteName );
         addTestInputs( model, params );
         this.reqs = model.createSeq();
@@ -159,12 +195,7 @@ public class CtlEarlReporter {
 
         this.earlModel.add( model );
 
-        try {
-            writeModel( this.earlModel, outputDirectory, true );
-        } catch ( IOException iox ) {
-            throw new RuntimeException( "Failed to serialize EARL results to " + outputDirectory.getAbsolutePath(), iox );
-        }
-
+        return this.earlModel;
     }
 
     private void getSubtestResult( Model model, NodeList testcallList, NodeList logList )
@@ -538,10 +569,7 @@ public class CtlEarlReporter {
         this.testRun.addProperty( CITE.inputs, inputs );
     }
 
-    /*
-     * Write CTL result into EARL report.
-     */
-    private void writeModel( Model earlModel2, File outputDirectory, boolean abbreviated )
+    private void writeModel( Model earlModel, File outputDirectory, boolean abbreviated )
                             throws IOException {
 
         File outputFile = new File( outputDirectory, "earl-results.rdf" );
@@ -549,13 +577,25 @@ public class CtlEarlReporter {
             outputFile.delete();
             outputFile.createNewFile();
         }
-        String syntax = ( abbreviated ) ? "RDF/XML-ABBREV" : "RDF/XML";
-        String baseUri = new StringBuilder( "http://example.org/earl/" ).append( outputDirectory.getName() ).append( '/' ).toString();
+        String baseUri = "http://example.org/earl/" + outputDirectory.getName() + '/';
         OutputStream outStream = new FileOutputStream( outputFile );
-        try (Writer writer = new OutputStreamWriter( outStream, StandardCharsets.UTF_8 )) {
-            earlModel2.write( writer, syntax, baseUri );
-        }
+        writeModel( earlModel, outStream, abbreviated, baseUri );
 
+    }
+
+    private void writeModel( Model earlModel, OutputStream targetEarlReport, boolean abbreviated )
+                            throws IOException {
+        String baseUri = "http://example.org/earl/";
+        writeModel( earlModel, targetEarlReport, abbreviated, baseUri );
+
+    }
+
+    private void writeModel( Model earlModel, OutputStream outStream, boolean abbreviated, String baseUri )
+                            throws IOException {
+        String syntax = ( abbreviated ) ? "RDF/XML-ABBREV" : "RDF/XML";
+        try (Writer writer = new OutputStreamWriter( outStream, StandardCharsets.UTF_8 )) {
+            earlModel.write( writer, syntax, baseUri );
+        }
     }
 
     private String parseLogTestCall( String logtestcall, String decodedBaseURL ) {

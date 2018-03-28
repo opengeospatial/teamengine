@@ -1,0 +1,76 @@
+<log>
+<starttest local-name="feature_count-default" prefix="queryable" namespace-uri="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/queryable.xml" type="Mandatory" defaultResult="1" path="s0028/d68e18054_1/d68e13329_1/d68e13383_1/d68e13401_1" file="/root/te_base/work/_root_te_base_scripts_wms_1.3.0_ctl_main.xml/queryable$feature_count-default.test">
+<assertion>When the FEATURE_COUNT parameter is not specified, then less data is returned than when FEATURE_COUNT is 2.</assertion>
+<params xmlns:ccf="http://www.opengis.net/cite/complex"
+        xmlns:wms="http://www.opengis.net/wms"
+        xmlns:basic="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic.xml"
+        xmlns:gml="http://www.opengis.net/gml"
+        xmlns:raster_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/raster_elevation.xml"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:interactive="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/interactive.xml"
+        xmlns:cdf="http://www.opengis.net/cite/data"
+        xmlns:tec="java:com.occamlab.te.TECore"
+        xmlns:saxon="http://saxon.sf.net/"
+        xmlns:parsers="http://www.occamlab.com/te/parsers"
+        xmlns:wms-1.3.0="https://cite.opengeospatial.org/wms-1.3.0/src/ctl"
+        xmlns:tems="java:com.occamlab.te.web.MonitorServlet"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:main="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/main.xml"
+        xmlns:vector_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/vector_elevation.xml"
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml"
+        xmlns:citef="http://www.opengis.net/cite/functions"
+        xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml"
+        xmlns:ctl="http://www.occamlab.com/ctl"
+        xmlns:recommendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recommendations.xml"
+        xmlns:queryable="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/queryable.xml"
+        xmlns:cgf="http://www.opengis.net/cite/geometry"
+        xmlns:getmap="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml"
+        xmlns:te="http://www.occamlab.com/te"
+        xmlns:dims="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/dimensions.xml"
+        xmlns:gen="java:com.occamlab.te.Generator"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+        xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+        xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml"
+        xmlns:time="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/time.xml"/>
+<context label=""><value>WMS_Capabilities element</value></context>
+</starttest>
+<request id="d68e13428_1">
+<ctl:request xmlns:ctl="http://www.occamlab.com/ctl" xmlns:ccf="http://www.opengis.net/cite/complex" xmlns:wms="http://www.opengis.net/wms" xmlns:basic="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic.xml" xmlns:gml="http://www.opengis.net/gml" xmlns:raster_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/raster_elevation.xml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:interactive="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/interactive.xml" xmlns:cdf="http://www.opengis.net/cite/data" xmlns:tec="java:com.occamlab.te.TECore" xmlns:saxon="http://saxon.sf.net/" xmlns:parsers="http://www.occamlab.com/te/parsers" xmlns:wms-1.3.0="https://cite.opengeospatial.org/wms-1.3.0/src/ctl" xmlns:tems="java:com.occamlab.te.web.MonitorServlet" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:main="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/main.xml" xmlns:vector_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/vector_elevation.xml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml" xmlns:citef="http://www.opengis.net/cite/functions" xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml" xmlns:recommendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recommendations.xml" xmlns:queryable="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/queryable.xml" xmlns:cgf="http://www.opengis.net/cite/geometry" xmlns:getmap="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml" xmlns:te="http://www.occamlab.com/te" xmlns:dims="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/dimensions.xml" xmlns:gen="java:com.occamlab.te.Generator" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml" xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml" xmlns:time="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/time.xml"><ctl:url>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?</ctl:url><ctl:method>get</ctl:method><ctl:param name="QuErY_LaYeRs">cite:BasicPolygons</ctl:param><ctl:param name="I">50</ctl:param><ctl:param name="LaYeRs">cite:BasicPolygons</ctl:param><ctl:param name="StYlEs"/><ctl:param name="WiDtH">100</ctl:param><ctl:param name="CrS">CRS:84</ctl:param><ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param><ctl:param name="InFo_fOrMaT">application%2Fvnd.ogc.gml</ctl:param><ctl:param name="BbOx">-2,2,2,6</ctl:param><ctl:param name="HeIgHt">100</ctl:param><ctl:param name="J">50</ctl:param><ctl:param name="VeRsIoN">1.3.0</ctl:param><ctl:param name="FoRmAt">image%2Fpng</ctl:param><parsers:CDataParser/></ctl:request>
+<response><parser local-name="CDataParser" namespace-uri="http://www.occamlab.com/te/parsers" prefix="parsers"/><content>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.deegree.org/app http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetFeatureInfoSchema&amp;amp;layers=cite:BasicPolygons http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd"&gt;
+  &lt;gml:boundedBy&gt;
+    &lt;gml:Box srsName="CRS:84"&gt;
+      &lt;gml:coordinates decimal="." cs="," ts=" "&gt;-2.000000,3.000000 1.000000,6.000000&lt;/gml:coordinates&gt;
+    &lt;/gml:Box&gt;
+  &lt;/gml:boundedBy&gt;
+  &lt;gml:featureMember&gt;
+    &lt;app:BasicPolygons xmlns:app="http://www.deegree.org/app" fid="BASICPOLYGONS_1"&gt;
+      &lt;app:ID&gt;&lt;/app:ID&gt;
+    &lt;/app:BasicPolygons&gt;
+  &lt;/gml:featureMember&gt;
+&lt;/FeatureCollection&gt;</content></response>
+</request>
+<request id="d68e13494_1">
+<ctl:request xmlns:ctl="http://www.occamlab.com/ctl" xmlns:ccf="http://www.opengis.net/cite/complex" xmlns:wms="http://www.opengis.net/wms" xmlns:basic="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic.xml" xmlns:gml="http://www.opengis.net/gml" xmlns:raster_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/raster_elevation.xml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:interactive="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/interactive.xml" xmlns:cdf="http://www.opengis.net/cite/data" xmlns:tec="java:com.occamlab.te.TECore" xmlns:saxon="http://saxon.sf.net/" xmlns:parsers="http://www.occamlab.com/te/parsers" xmlns:wms-1.3.0="https://cite.opengeospatial.org/wms-1.3.0/src/ctl" xmlns:tems="java:com.occamlab.te.web.MonitorServlet" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:main="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/main.xml" xmlns:vector_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/vector_elevation.xml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml" xmlns:citef="http://www.opengis.net/cite/functions" xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml" xmlns:recommendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recommendations.xml" xmlns:queryable="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/queryable.xml" xmlns:cgf="http://www.opengis.net/cite/geometry" xmlns:getmap="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml" xmlns:te="http://www.occamlab.com/te" xmlns:dims="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/dimensions.xml" xmlns:gen="java:com.occamlab.te.Generator" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml" xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml" xmlns:time="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/time.xml"><ctl:url>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?</ctl:url><ctl:method>get</ctl:method><ctl:param name="FoRmAt">image%2Fpng</ctl:param><ctl:param name="BbOx">-2,2,2,6</ctl:param><ctl:param name="FeAtUrE_CoUnT">2</ctl:param><ctl:param name="StYlEs"/><ctl:param name="J">50</ctl:param><ctl:param name="LaYeRs">cite:BasicPolygons</ctl:param><ctl:param name="QuErY_LaYeRs">cite:BasicPolygons</ctl:param><ctl:param name="CrS">CRS:84</ctl:param><ctl:param name="HeIgHt">100</ctl:param><ctl:param name="WiDtH">100</ctl:param><ctl:param name="InFo_fOrMaT">application%2Fvnd.ogc.gml</ctl:param><ctl:param name="VeRsIoN">1.3.0</ctl:param><ctl:param name="I">50</ctl:param><ctl:param name="ReQuEsT">GetFeatureInfo</ctl:param><parsers:CDataParser/></ctl:request>
+<response><parser local-name="CDataParser" namespace-uri="http://www.occamlab.com/te/parsers" prefix="parsers"/><content>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xsi:schemaLocation="http://www.deegree.org/app http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetFeatureInfoSchema&amp;amp;layers=cite:BasicPolygons http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd"&gt;
+  &lt;gml:boundedBy&gt;
+    &lt;gml:Box srsName="CRS:84"&gt;
+      &lt;gml:coordinates decimal="." cs="," ts=" "&gt;-2.000000,2.000000 2.000000,6.000000&lt;/gml:coordinates&gt;
+    &lt;/gml:Box&gt;
+  &lt;/gml:boundedBy&gt;
+  &lt;gml:featureMember&gt;
+    &lt;app:BasicPolygons xmlns:app="http://www.deegree.org/app" fid="BASICPOLYGONS_1"&gt;
+      &lt;app:ID&gt;&lt;/app:ID&gt;
+    &lt;/app:BasicPolygons&gt;
+  &lt;/gml:featureMember&gt;
+  &lt;gml:featureMember&gt;
+    &lt;app:BasicPolygons xmlns:app="http://www.deegree.org/app" fid="BASICPOLYGONS_2"&gt;
+      &lt;app:ID&gt;&lt;/app:ID&gt;
+    &lt;/app:BasicPolygons&gt;
+  &lt;/gml:featureMember&gt;
+&lt;/FeatureCollection&gt;</content></response>
+</request>
+<endtest result="1"/>
+</log>

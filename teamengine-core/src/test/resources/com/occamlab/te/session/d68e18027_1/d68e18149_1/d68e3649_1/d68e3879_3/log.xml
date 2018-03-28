@@ -1,0 +1,541 @@
+<log>
+<starttest local-name="each-style" prefix="getmap" namespace-uri="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml" type="Mandatory" defaultResult="1" path="s0028/d68e18027_1/d68e18149_1/d68e3649_1/d68e3879_3" file="/root/te_base/work/_root_te_base_scripts_wms_1.3.0_ctl_main.xml/getmap$each-style.test">
+<assertion>For style &amp;quot;terrain2&amp;quot;, when the STYLES parameter is set to that style name, the MIME type of the response is valid.</assertion>
+<params xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:ccf="http://www.opengis.net/cite/complex"
+        xmlns:wms="http://www.opengis.net/wms"
+        xmlns:basic="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic.xml"
+        xmlns:gml="http://www.opengis.net/gml"
+        xmlns:raster_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/raster_elevation.xml"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:interactive="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/interactive.xml"
+        xmlns:cdf="http://www.opengis.net/cite/data"
+        xmlns:tec="java:com.occamlab.te.TECore"
+        xmlns:saxon="http://saxon.sf.net/"
+        xmlns:parsers="http://www.occamlab.com/te/parsers"
+        xmlns:wms-1.3.0="https://cite.opengeospatial.org/wms-1.3.0/src/ctl"
+        xmlns:tems="java:com.occamlab.te.web.MonitorServlet"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:main="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/main.xml"
+        xmlns:vector_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/vector_elevation.xml"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ogc="http://www.opengis.net/ogc"
+        xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml"
+        xmlns:citef="http://www.opengis.net/cite/functions"
+        xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml"
+        xmlns:ctl="http://www.occamlab.com/ctl"
+        xmlns:recommendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recommendations.xml"
+        xmlns:queryable="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/queryable.xml"
+        xmlns:cgf="http://www.opengis.net/cite/geometry"
+        xmlns:getmap="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml"
+        xmlns:te="http://www.occamlab.com/te"
+        xmlns:dims="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/dimensions.xml"
+        xmlns:gen="java:com.occamlab.te.Generator"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+        xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml"
+        xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml"
+        xmlns:time="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/time.xml">
+   <param local-name="capabilities" namespace-uri="" prefix=""
+          type="element({http://www.opengis.net/wms}WMS_Capabilities, xs:anyType)">
+      <value>
+         <WMS_Capabilities xmlns="http://www.opengis.net/wms" xmlns:sld="http://www.opengis.net/sld"
+                           updateSequence="0"
+                           version="1.3.0"
+                           xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd">
+            <Service>
+               <Name>WMS</Name>
+               <Title>My own OGC service</Title>
+               <Abstract>An OGC service with unconfigured metadata (needs configuration)</Abstract>
+               <OnlineResource xlink:href="http://www.deegree.org" xlink:type="simple"/>
+               <ContactInformation>
+                  <ContactPersonPrimary>
+                     <ContactPerson>Dirk Stenger</ContactPerson>
+                     <ContactOrganization>lat/lon GmbH</ContactOrganization>
+                  </ContactPersonPrimary>
+                  <ContactPosition>Software developer</ContactPosition>
+                  <ContactAddress>
+                     <AddressType>postal</AddressType>
+                     <Address>Aennchenstr. 19</Address>
+                     <City>Bonn</City>
+                     <StateOrProvince>NRW</StateOrProvince>
+                     <PostCode>53177</PostCode>
+                     <Country>Germany</Country>
+                  </ContactAddress>
+                  <ContactVoiceTelephone>0228/18496-0</ContactVoiceTelephone>
+                  <ContactFacsimileTelephone>0228/18496-29</ContactFacsimileTelephone>
+                  <ContactElectronicMailAddress>info@lat-lon.de</ContactElectronicMailAddress>
+               </ContactInformation>
+            </Service>
+            <Capability>
+               <Request>
+                  <GetCapabilities>
+                     <Format>text/xml</Format>
+                     <DCPType>
+                        <HTTP>
+                           <Get>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?"
+                                              xlink:type="simple"/>
+                           </Get>
+                           <Post>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130"
+                                              xlink:type="simple"/>
+                           </Post>
+                        </HTTP>
+                     </DCPType>
+                  </GetCapabilities>
+                  <GetMap>
+                     <Format>image/png</Format>
+                     <Format>image/png; subtype=8bit</Format>
+                     <Format>image/png; mode=8bit</Format>
+                     <Format>image/gif</Format>
+                     <Format>image/jpeg</Format>
+                     <Format>image/tiff</Format>
+                     <Format>image/x-ms-bmp</Format>
+                     <Format>image/svg+xml</Format>
+                     <DCPType>
+                        <HTTP>
+                           <Get>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?"
+                                              xlink:type="simple"/>
+                           </Get>
+                           <Post>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130"
+                                              xlink:type="simple"/>
+                           </Post>
+                        </HTTP>
+                     </DCPType>
+                  </GetMap>
+                  <GetFeatureInfo>
+                     <Format>application/vnd.ogc.gml</Format>
+                     <Format>text/xml</Format>
+                     <Format>text/plain</Format>
+                     <Format>text/html</Format>
+                     <Format>application/gml+xml; version=2.1</Format>
+                     <Format>application/gml+xml; version=3.0</Format>
+                     <Format>application/gml+xml; version=3.1</Format>
+                     <Format>application/gml+xml; version=3.2</Format>
+                     <Format>text/xml; subtype=gml/2.1.2</Format>
+                     <Format>text/xml; subtype=gml/3.0.1</Format>
+                     <Format>text/xml; subtype=gml/3.1.1</Format>
+                     <Format>text/xml; subtype=gml/3.2.1</Format>
+                     <DCPType>
+                        <HTTP>
+                           <Get>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?"
+                                              xlink:type="simple"/>
+                           </Get>
+                           <Post>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130"
+                                              xlink:type="simple"/>
+                           </Post>
+                        </HTTP>
+                     </DCPType>
+                  </GetFeatureInfo>
+                  <sld:GetLegendGraphic>
+                     <Format>image/png</Format>
+                     <Format>image/png; subtype=8bit</Format>
+                     <Format>image/png; mode=8bit</Format>
+                     <Format>image/gif</Format>
+                     <Format>image/jpeg</Format>
+                     <Format>image/tiff</Format>
+                     <Format>image/x-ms-bmp</Format>
+                     <Format>image/svg+xml</Format>
+                     <DCPType>
+                        <HTTP>
+                           <Get>
+                              <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?"
+                                              xlink:type="simple"/>
+                           </Get>
+                        </HTTP>
+                     </DCPType>
+                  </sld:GetLegendGraphic>
+               </Request>
+               <Exception>
+                  <Format>INIMAGE</Format>
+                  <Format>XML</Format>
+                  <Format>BLANK</Format>
+               </Exception>
+               <soapwms:ExtendedCapabilities xmlns:soapwms="http://schemas.deegree.org/extensions/services/wms/1.3.0"
+                                             xsi:schemaLocation="http://schemas.deegree.org/extensions/services/wms/1.3.0 http://schemas.deegree.org/extensions/services/wms/1.3.0/soapwms.xsd">
+                  <soapwms:SOAP>
+                     <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130"
+                                     xlink:type="simple"/>
+                     <soapwms:Constraint name="SOAPVersion">
+                        <soapwms:Value>1.1</soapwms:Value>
+                        <soapwms:Value>1.2</soapwms:Value>
+                     </soapwms:Constraint>
+                     <soapwms:SupportedOperations>
+                        <soapwms:Operation name="GetCapabilities"/>
+                        <soapwms:Operation name="GetMap"/>
+                        <soapwms:Operation name="GetFeatureInfo"/>
+                     </soapwms:SupportedOperations>
+                  </soapwms:SOAP>
+               </soapwms:ExtendedCapabilities>
+               <Layer>
+                  <Title>CITE layers</Title>
+                  <CRS>CRS:84</CRS>
+                  <CRS>EPSG:4326</CRS>
+                  <CRS>urn:ogc:def:crs:EPSG::4326</CRS>
+                  <EX_GeographicBoundingBox>
+                     <westBoundLongitude>-2.00000000</westBoundLongitude>
+                     <eastBoundLongitude>2.00000000</eastBoundLongitude>
+                     <southBoundLatitude>-1.00000000</southBoundLatitude>
+                     <northBoundLatitude>6.00000000</northBoundLatitude>
+                  </EX_GeographicBoundingBox>
+                  <BoundingBox CRS="CRS:84" maxx="2.00000000" maxy="6.00000000" minx="-2.00000000"
+                               miny="-1.00000000"/>
+                  <BoundingBox CRS="EPSG:4326" maxx="6.00000000" maxy="2.00000000" minx="-1.00000000"
+                               miny="-2.00000000"/>
+                  <BoundingBox CRS="urn:ogc:def:crs:EPSG::4326" maxx="6.00000000" maxy="2.00000000"
+                               minx="-1.00000000"
+                               miny="-2.00000000"/>
+                  <Layer queryable="1">
+                     <Name>cite:Autos</Name>
+                     <Title>cite:Autos</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00320000</westBoundLongitude>
+                        <eastBoundLongitude>0.00290000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00220000</southBoundLatitude>
+                        <northBoundLatitude>0.00220000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00290000" maxy="0.00220000" minx="-0.00320000"
+                                  miny="-0.00220000"/>
+                     <Dimension current="1" default="2000-01-01T00:00:00Z" multipleValues="1" name="time"
+                                nearestValue="1"
+                                unitSymbol=""
+                                units="ISO8601">2000-01-01T00:00:00Z/2000-01-01T00:01:00Z/PT5S</Dimension>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Autos&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:BasicPolygons</Name>
+                     <Title>cite:BasicPolygons</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-2.00000000</westBoundLongitude>
+                        <eastBoundLongitude>2.00000000</eastBoundLongitude>
+                        <southBoundLatitude>-1.00000000</southBoundLatitude>
+                        <northBoundLatitude>6.00000000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="2.00000000" maxy="6.00000000" minx="-2.00000000"
+                                  miny="-1.00000000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:BasicPolygons&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Bridges</Name>
+                     <Title>cite:Bridges</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>0.00010000</westBoundLongitude>
+                        <eastBoundLongitude>0.00020000</eastBoundLongitude>
+                        <southBoundLatitude>0.00060000</southBoundLatitude>
+                        <northBoundLatitude>0.00070000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00020000" maxy="0.00070000" minx="0.00010000"
+                                  miny="0.00060000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Bridges&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:BuildingCenters</Name>
+                     <Title>cite:BuildingCenters</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>0.00100000</westBoundLongitude>
+                        <eastBoundLongitude>0.00220000</eastBoundLongitude>
+                        <southBoundLatitude>0.00060000</southBoundLatitude>
+                        <northBoundLatitude>0.00090000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00220000" maxy="0.00090000" minx="0.00100000"
+                                  miny="0.00060000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:BuildingCenters&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Buildings</Name>
+                     <Title>cite:Buildings</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>0.00080000</westBoundLongitude>
+                        <eastBoundLongitude>0.00240000</eastBoundLongitude>
+                        <southBoundLatitude>0.00050000</southBoundLatitude>
+                        <northBoundLatitude>0.00100000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00240000" maxy="0.00100000" minx="0.00080000"
+                                  miny="0.00050000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Buildings&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:DividedRoutes</Name>
+                     <Title>cite:DividedRoutes</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00320000</westBoundLongitude>
+                        <eastBoundLongitude>-0.00260000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00240000</southBoundLatitude>
+                        <northBoundLatitude>0.00240000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="-0.00260000" maxy="0.00240000" minx="-0.00320000"
+                                  miny="-0.00240000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:DividedRoutes&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Forests</Name>
+                     <Title>cite:Forests</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00140000</westBoundLongitude>
+                        <eastBoundLongitude>0.00420000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00240000</southBoundLatitude>
+                        <northBoundLatitude>0.00180000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00420000" maxy="0.00180000" minx="-0.00140000"
+                                  miny="-0.00240000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Forests&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Lakes</Name>
+                     <Title>cite:Lakes</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>0.00060000</westBoundLongitude>
+                        <eastBoundLongitude>0.00310000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00180000</southBoundLatitude>
+                        <northBoundLatitude>-0.00010000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00310000" maxy="-0.00010000" minx="0.00060000"
+                                  miny="-0.00180000"/>
+                     <Dimension default="500" name="elevation" nearestValue="1" unitSymbol="m" units="CRS:88">500,490,480</Dimension>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Lakes&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:MapNeatline</Name>
+                     <Title>cite:MapNeatline</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00420000</westBoundLongitude>
+                        <eastBoundLongitude>0.00420000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00240000</southBoundLatitude>
+                        <northBoundLatitude>0.00240000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00420000" maxy="0.00240000" minx="-0.00420000"
+                                  miny="-0.00240000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:MapNeatline&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:NamedPlaces</Name>
+                     <Title>cite:NamedPlaces</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>0.00140000</westBoundLongitude>
+                        <eastBoundLongitude>0.00420000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00110000</southBoundLatitude>
+                        <northBoundLatitude>0.00240000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00420000" maxy="0.00240000" minx="0.00140000"
+                                  miny="-0.00110000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:NamedPlaces&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Ponds</Name>
+                     <Title>cite:Ponds</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00200000</westBoundLongitude>
+                        <eastBoundLongitude>-0.00140000</eastBoundLongitude>
+                        <southBoundLatitude>0.00160000</southBoundLatitude>
+                        <northBoundLatitude>0.00200000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="-0.00140000" maxy="0.00200000" minx="-0.00200000"
+                                  miny="0.00160000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Ponds&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:RoadSegments</Name>
+                     <Title>cite:RoadSegments</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00420000</westBoundLongitude>
+                        <eastBoundLongitude>0.00420000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00240000</southBoundLatitude>
+                        <northBoundLatitude>0.00240000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00420000" maxy="0.00240000" minx="-0.00420000"
+                                  miny="-0.00240000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:RoadSegments&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Streams</Name>
+                     <Title>cite:Streams</Title>
+                     <CRS>CRS:84</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.00040000</westBoundLongitude>
+                        <eastBoundLongitude>0.00360000</eastBoundLongitude>
+                        <southBoundLatitude>-0.00240000</southBoundLatitude>
+                        <northBoundLatitude>0.00240000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="CRS:84" maxx="0.00360000" maxy="0.00240000" minx="-0.00040000"
+                                  miny="-0.00240000"/>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="27" width="32">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Streams&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+                  <Layer queryable="1">
+                     <Name>cite:Terrain</Name>
+                     <Title>cite:Terrain</Title>
+                     <CRS>EPSG:4326</CRS>
+                     <EX_GeographicBoundingBox>
+                        <westBoundLongitude>-0.50000000</westBoundLongitude>
+                        <eastBoundLongitude>0.50000000</eastBoundLongitude>
+                        <southBoundLatitude>-0.50000000</southBoundLatitude>
+                        <northBoundLatitude>0.50000000</northBoundLatitude>
+                     </EX_GeographicBoundingBox>
+                     <BoundingBox CRS="EPSG:4326" maxx="0.50000000" maxy="0.50000000" minx="-0.50000000"
+                                  miny="-0.50000000"/>
+                     <Dimension default="0/425/0" multipleValues="1" name="elevation" unitSymbol="m"
+                                units="CRS:88">0/425/1</Dimension>
+                     <Style>
+                        <Name>terrain1</Name>
+                        <Title>terrain1</Title>
+                        <LegendURL height="162" width="121">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Terrain&amp;style=terrain1&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                     <Style>
+                        <Name>terrain2</Name>
+                        <Title>terrain2</Title>
+                        <LegendURL height="54" width="69">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Terrain&amp;style=terrain2&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                     <Style>
+                        <Name>default</Name>
+                        <Title>default</Title>
+                        <LegendURL height="162" width="121">
+                           <Format>image/png</Format>
+                           <OnlineResource xlink:href="http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetLegendGraphic&amp;version=1.3.0&amp;service=WMS&amp;layer=cite:Terrain&amp;style=terrain1&amp;format=image/png"
+                                           xlink:type="simple"/>
+                        </LegendURL>
+                     </Style>
+                  </Layer>
+               </Layer>
+            </Capability>
+            <!--Response received in [266] milliseconds--></WMS_Capabilities>
+      </value>
+   </param>
+   <param local-name="style" namespace-uri="" prefix="" type="xs:string"
+          label="style &#34;terrain2&#34;">
+      <value>terrain2</value>
+   </param>
+</params>
+</starttest>
+<request id="d68e9034_1">
+<ctl:request xmlns:ctl="http://www.occamlab.com/ctl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ccf="http://www.opengis.net/cite/complex" xmlns:wms="http://www.opengis.net/wms" xmlns:basic="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic.xml" xmlns:gml="http://www.opengis.net/gml" xmlns:raster_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/raster_elevation.xml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:interactive="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/interactive.xml" xmlns:cdf="http://www.opengis.net/cite/data" xmlns:tec="java:com.occamlab.te.TECore" xmlns:saxon="http://saxon.sf.net/" xmlns:parsers="http://www.occamlab.com/te/parsers" xmlns:wms-1.3.0="https://cite.opengeospatial.org/wms-1.3.0/src/ctl" xmlns:tems="java:com.occamlab.te.web.MonitorServlet" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:main="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/main.xml" xmlns:vector_elevation="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/vector_elevation.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:getcapabilities="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getcapabilities.xml" xmlns:citef="http://www.opengis.net/cite/functions" xmlns:getfeatureinfo="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getfeatureinfo.xml" xmlns:recommendations="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/recommendations.xml" xmlns:queryable="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/queryable.xml" xmlns:cgf="http://www.opengis.net/cite/geometry" xmlns:getmap="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/getmap.xml" xmlns:te="http://www.occamlab.com/te" xmlns:dims="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/dimensions.xml" xmlns:gen="java:com.occamlab.te.Generator" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:functions="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/functions.xml" xmlns:basic_elements="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/basic_elements.xml" xmlns:time="https://cite.opengeospatial.org/wms-1.3.0/src/ctl/time.xml"><ctl:url>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?</ctl:url><ctl:method>get</ctl:method><ctl:param name="StYlEs">terrain2</ctl:param><ctl:param name="BbOx">-0.0025%2C-0.0025%2C0.0025%2C0.0025</ctl:param><ctl:param name="CrS">CRS%3A84</ctl:param><ctl:param name="LaYeRs">cite%3ATerrain</ctl:param><ctl:param name="WiDtH">100</ctl:param><ctl:param name="VeRsIoN">1.3.0</ctl:param><ctl:param name="FoRmAt">image%2Fpng</ctl:param><ctl:param name="HeIgHt">100</ctl:param><ctl:param name="ReQuEsT">GetMap</ctl:param><parsers:HTTPParser><parsers:parse><parsers:NullParser/></parsers:parse></parsers:HTTPParser></ctl:request>
+<response><parser local-name="HTTPParser" namespace-uri="http://www.occamlab.com/te/parsers" prefix="parsers"/><content><response><status code="200" protocol="HTTP/1.1">OK</status><headers><header name="Date">Wed, 28 Mar 2018 08:35:22 GMT</header><header name="Server">Apache/2.4</header><header name="Cache-Control">no-cache, no-store</header><header name="deegree-version">3.4-RC3</header><header name="Warning">99 Default value used: elevation=0/425/0 m</header><header name="Content-Type">image/png</header><header name="Keep-Alive">timeout=5, max=100</header><header name="Connection">Keep-Alive</header><header name="Transfer-Encoding">chunked</header></headers><content/><!--Response received in [80] milliseconds--></response></content></response>
+</request>
+<endtest result="1"/>
+</log>
