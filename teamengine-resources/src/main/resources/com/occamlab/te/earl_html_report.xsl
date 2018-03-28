@@ -321,30 +321,40 @@
                <th>Name</th>
                <th>Reason</th>
             </tr>
-            <xsl:for-each select="dct:hasPart">
-               <xsl:choose>
-                  <xsl:when test="earl:TestCase">
-                     <xsl:variable name="test_uri" select="earl:TestCase/@rdf:about" />
-                     <xsl:call-template name="Assertion">
-                        <xsl:with-param name="test_uris" select="earl:TestCase/@rdf:about" />
-                        <xsl:with-param name="testCase" select="earl:TestCase" />
-                     </xsl:call-template>
-                  </xsl:when>
-                  <xsl:otherwise>
-                     <xsl:call-template name="Assertion">
-                        <xsl:with-param name="test_uris" select="@rdf:resource" />
-                     </xsl:call-template>
-                  </xsl:otherwise>
-               </xsl:choose>
-            </xsl:for-each>
+            <xsl:call-template name="assertion_content" >
+               <xsl:with-param name="context"  select="." />
+               <xsl:with-param name="level" >0</xsl:with-param>
+            </xsl:call-template>
          </tbody>
       </table>
+   </xsl:template>
+   <xsl:template name="assertion_content">
+      <xsl:param name="context" />
+      <xsl:param name="level" />
+      <xsl:for-each select="$context/dct:hasPart">
+         <xsl:choose>
+            <xsl:when test="earl:TestCase">
+               <xsl:call-template name="Assertion">
+                  <xsl:with-param name="test_uris" select="earl:TestCase/@rdf:about" />
+                  <xsl:with-param name="testCase" select="earl:TestCase" />
+                  <xsl:with-param name="level" select="$level"/>
+               </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:call-template name="Assertion">
+                  <xsl:with-param name="test_uris" select="@rdf:resource" />
+                  <xsl:with-param name="level" select="$level"/>
+               </xsl:call-template>
+            </xsl:otherwise>
+         </xsl:choose>
+      </xsl:for-each>
    </xsl:template>
    <!-- The Assertion template returns status of the result in HTML format with specific color. 'Pass: Fail: Skip:' -->
    <xsl:template name="Assertion">
       <xsl:param name="test_uris" />
       <xsl:param name="testCase" />
-      <xsl:for-each select="../../../../../..//earl:Assertion">
+      <xsl:param name="level" />
+      <xsl:for-each select="//earl:Assertion">
          <xsl:variable name="assertion_test_uri">
             <xsl:choose>
                <xsl:when test="earl:test/earl:TestCase">
@@ -398,9 +408,13 @@
             <xsl:if test="substring-after($result, '#')='passed'">
                <tr bgcolor="#B2F0D1">
                   <td>
-                     <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" >
-                        <xsl:value-of select="$testTitle" />
-                     </a>
+                     <xsl:variable name="indention" select="$level * 15" />
+                     <xsl:element name="div">
+                        <xsl:attribute name="style"><xsl:value-of select="concat('text-indent:', $indention, 'px;')"/></xsl:attribute>
+                        <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink" id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" >
+                           <xsl:value-of select="$testTitle" />
+                        </a>
+                     </xsl:element>
                   </td>
                   <td />
                </tr>
@@ -466,6 +480,12 @@
                      </p>
                   </td>
                </tr>
+            </xsl:if>
+            <xsl:if test="$testCase">
+               <xsl:call-template name="assertion_content" >
+                  <xsl:with-param name="context"  select="$testCase" />
+                  <xsl:with-param name="level"  select="$level + 1" />
+               </xsl:call-template>
             </xsl:if>
          </xsl:if>
       </xsl:for-each>

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -18,9 +19,20 @@ import org.junit.Test;
 public class EarlToHtmlTransformationTest {
 
     @Test
-    public void testEarlHtmlReport()
+    public void testEarlHtmlReport_TestNG()
                             throws Exception {
         String outputDirectory = createTempDirectroryAndCopyResources( "earl-results_testng.rdf" );
+
+        EarlToHtmlTransformation earlToHtmlTransformation = new EarlToHtmlTransformation();
+        earlToHtmlTransformation.earlHtmlReport( outputDirectory );
+
+        assertThat( new File( outputDirectory, "result/index.html" ).exists(), is( true ) );
+    }
+
+    @Test
+    public void testEarlHtmlReport_Ctl_WithHierarchy()
+                            throws Exception {
+        String outputDirectory = createTempDirectroryAndCopyResources( "earl-results_ctl_withHierarchy.rdf" );
 
         EarlToHtmlTransformation earlToHtmlTransformation = new EarlToHtmlTransformation();
         earlToHtmlTransformation.earlHtmlReport( outputDirectory );
@@ -31,6 +43,9 @@ public class EarlToHtmlTransformationTest {
     private String createTempDirectroryAndCopyResources( String earlReport )
                             throws IOException {
         File outputDirectory = Files.createTempDirectory( "EarlToHtmlTransformationTest" ).toFile();
+        if ( outputDirectory.exists() )
+            FileUtils.deleteDirectory( outputDirectory );
+        outputDirectory.mkdir();
 
         InputStream rdfResource = EarlToHtmlTransformationTest.class.getResourceAsStream( earlReport );
         File earlResultToTransform = new File( outputDirectory, "earl-results.rdf" );
