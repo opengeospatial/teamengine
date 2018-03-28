@@ -60,6 +60,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import com.occamlab.te.html.EarlToHtmlTransformation;
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
@@ -80,7 +81,6 @@ import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 import net.sf.saxon.trans.XPathException;
 
-import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -2482,48 +2482,8 @@ public class TECore implements Runnable {
      * @param outputDir
      */
     public void earlHtmlReport( String outputDir ) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        String resourceDir = cl.getResource( "com/occamlab/te/earl/lib" ).getPath();
-        String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
-        File htmlOutput = new File( outputDir, "result" );
-        htmlOutput.mkdir();
-
-        File earlResult = findEarlResultFile( outputDir );
-        LOGR.log( FINE, "Try to transform earl result file '" + earlResult + "' to directory " + htmlOutput );
-        
-        try {
-            if ( earlResult != null && earlResult.exists() ) {
-                Transformer transformer = TransformerFactory.newInstance().newTransformer( new StreamSource( earlXsl ) );
-                transformer.setParameter( "outputDir", htmlOutput );
-                File indexHtml = new File( htmlOutput, "index.html" );
-                indexHtml.createNewFile();
-
-                // Fortify Mod: Make sure the FileOutputStream is closed when we are done with it.
-                // transformer.transform( new StreamSource( earlResult ),
-                //                       new StreamResult( new FileOutputStream( indexHtml ) ) );
-                FileOutputStream fo = new FileOutputStream( indexHtml );
-                transformer.transform( new StreamSource( earlResult ), new StreamResult( fo ));
-                fo.close();
-                FileUtils.copyDirectory( new File( resourceDir ), htmlOutput );
-            }
-        } catch ( Exception e ) {
-          LOGR.log( SEVERE, "Transformation of EARL to HTML failed.", e );
-        }
-    }
-
-    private File findEarlResultFile( String outputDir ) {
-        File testngDir = new File( outputDir, "testng" );
-        if ( !testngDir.exists() ) {
-            return new File( outputDir, "earl-results.rdf" );
-        } else {
-
-            String[] dir = testngDir.list();
-            File testngUuidDirectory = new File( testngDir, dir[0] );
-            if ( testngUuidDirectory.isDirectory() ) {
-                return new File( testngUuidDirectory, "earl-results.rdf" );
-            }
-        }
-        return null;
+      EarlToHtmlTransformation earlToHtml = new EarlToHtmlTransformation();
+      earlToHtml.earlHtmlReport( outputDir );
     }
 
   /**
