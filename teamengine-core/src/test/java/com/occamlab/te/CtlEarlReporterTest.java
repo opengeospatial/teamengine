@@ -25,7 +25,7 @@ public class CtlEarlReporterTest {
         CtlEarlReporter ctlEarlReporter = new CtlEarlReporter();
 
         ByteArrayOutputStream earlReport = new ByteArrayOutputStream();
-        InputStream reportStream = CtlEarlReporterTest.class.getResourceAsStream( "session/report_logs.xml" );
+        InputStream reportStream = CtlEarlReporterTest.class.getResourceAsStream( "unittest/session/report_logs.xml" );
 
         String testSuiteName = "OGC_Web Map Service (WMS)_1.3.0_1.23-SNAPSHOT";
 

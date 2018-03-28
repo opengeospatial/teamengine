@@ -608,6 +608,11 @@ public class CtlEarlReporter {
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "temp" ) );
             logtestcall = baseUrl.substring( baseUrl.indexOf( System.getProperty( "file.separator" ) ) + 1,
                                              baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
+        } else if (decodedBaseURL.contains( "unittest" ) ) {
+            // for Unit test only
+            String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "unittest" ) );
+            logtestcall = baseUrl.substring( baseUrl.indexOf( System.getProperty( "file.separator" ) ) + 1,
+                                             baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
         }
         if ( logtestcall.contains( "\\" ) ) {
             logtestcall = logtestcall.replace( "\\", "/" );
