@@ -245,79 +245,47 @@
         <tr>
           <td bgcolor="#B2F0D1">
             Pass:
-            <!-- <xsl:variable name="passCount">
-        <xsl:call-template name="resultCount">
-          <xsl:with-param name="result_status" select="'passed'" />
-          <xsl:with-param name="count" select="0" />
-        </xsl:call-template>
-      </xsl:variable> -->
-            <xsl:value-of select="cite:testsPassed" />
+            <xsl:element name="span">
+              <xsl:attribute name="id">
+                <xsl:value-of select="concat('testsPassed_',replace(dct:title, ' ', '_') )" />
+              </xsl:attribute>
+              <xsl:value-of select="cite:testsPassed" />
+            </xsl:element>
           </td>
           <td bgcolor="#FFB2B2">
             Fail:
-            <!-- <xsl:variable name="failCount">
-        <xsl:call-template name="resultCount">
-          <xsl:with-param name="result_status" select="'failed'" />
-          <xsl:with-param name="count" select="0" />
-        </xsl:call-template>
-      </xsl:variable> -->
-            <xsl:value-of select="cite:testsFailed" />
+            <xsl:element name="span">
+              <xsl:attribute name="id">
+                <xsl:value-of select="concat('testsFailed_',replace(dct:title, ' ', '_') )" />
+              </xsl:attribute>
+              <xsl:value-of select="cite:testsFailed" />
+            </xsl:element>
           </td>
           <td bgcolor="#CCCCCE">
             Skip:
-            <!-- <xsl:variable name="skipCount">
-        <xsl:call-template name="resultCount">
-          <xsl:with-param name="result_status" select="'untested'" />
-          <xsl:with-param name="count" select="0" />
-        </xsl:call-template>
-      </xsl:variable> -->
-            <xsl:value-of select="cite:testsSkipped" />
+            <xsl:element name="span">
+              <xsl:attribute name="id">
+                <xsl:value-of select="concat('testsSkipped_',replace(dct:title, ' ', '_') )" />
+              </xsl:attribute>
+              <xsl:value-of select="cite:testsSkipped" />
+            </xsl:element>
           </td>
           <td>
             Total tests:
-            <xsl:variable name="totalTestCount">
-              <xsl:call-template name="testCount">
-                <xsl:with-param name="count" select="0" />
-              </xsl:call-template>
+            <xsl:variable name="testsInTotal">
+              <xsl:value-of select="cite:testsPassed + cite:testsFailed + cite:testsSkipped" />
             </xsl:variable>
-            <xsl:value-of select="string-length($totalTestCount)" />
+            <xsl:element name="span">
+              <xsl:attribute name="id">
+                <xsl:value-of select="concat('testsInTotal_',replace(dct:title, ' ', '_') )" />
+              </xsl:attribute>
+              <xsl:value-of select="$testsInTotal" />
+            </xsl:element>
           </td>
         </tr>
       </table>
     </p>
     <xsl:call-template name="assertion_info" />
-  </xsl:template>
-  <!-- Get the count of the test result according to conformace class E.g. Pass: Fail: Skip:   -->
-  <xsl:template name="testCount">
-    <xsl:param name="count" />
-    <xsl:for-each select="dct:hasPart">
-      <xsl:variable name="test_uri">
-        <xsl:choose>
-          <xsl:when test="earl:TestCase">
-            <xsl:value-of select="earl:TestCase/@rdf:about" />
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="@rdf:resource" />
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-      <xsl:for-each select="../../../../../..//earl:Assertion">
-        <xsl:variable name="assertion_test_uri">
-          <xsl:choose>
-            <xsl:when test="earl:test/earl:TestCase">
-              <xsl:value-of select="earl:test/earl:TestCase/@rdf:about" />
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="earl:test/@rdf:resource" />
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
-        <xsl:if test="$test_uri = $assertion_test_uri">
-          <xsl:variable name="count" select="$count+1" />
-          <xsl:value-of select="$count" />
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:for-each>
   </xsl:template>
   <!-- The assertion_info template get all the test information e.g. TestName, Reason -->
   <xsl:template name="assertion_info">

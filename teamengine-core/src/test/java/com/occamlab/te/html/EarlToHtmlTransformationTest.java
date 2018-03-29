@@ -31,7 +31,7 @@ public class EarlToHtmlTransformationTest {
     @Test
     public void testEarlHtmlReport_TestNG()
                             throws Exception {
-        String outputDirectory = createTempDirectroryAndCopyResources( "earl-results_testng.rdf" );
+        String outputDirectory = createTempDirectoryAndCopyResources( "earl-results_testng.rdf" );
 
         EarlToHtmlTransformation earlToHtmlTransformation = new EarlToHtmlTransformation();
         earlToHtmlTransformation.earlHtmlReport( outputDirectory );
@@ -42,7 +42,7 @@ public class EarlToHtmlTransformationTest {
     @Test
     public void testEarlHtmlReport_Ctl_WithHierarchy()
                             throws Exception {
-        String outputDirectory = createTempDirectroryAndCopyResources( "earl-results_ctl_withHierarchy.rdf" );
+        String outputDirectory = createTempDirectoryAndCopyResources( "earl-results_ctl_withHierarchy.rdf" );
 
         EarlToHtmlTransformation earlToHtmlTransformation = new EarlToHtmlTransformation();
         earlToHtmlTransformation.earlHtmlReport( outputDirectory );
@@ -53,7 +53,7 @@ public class EarlToHtmlTransformationTest {
     @Test
     public void testEarlHtmlReport_Ctl_WithHierarchy_MissingElements()
                             throws Exception {
-        String outputDirectory = createTempDirectroryAndCopyResources( "earl-results_ctl_withHierarchy_MissingElements.rdf" );
+        String outputDirectory = createTempDirectoryAndCopyResources( "earl-results_ctl_withHierarchy_MissingElements.rdf" );
 
         EarlToHtmlTransformation earlToHtmlTransformation = new EarlToHtmlTransformation();
         earlToHtmlTransformation.earlHtmlReport( outputDirectory );
@@ -65,6 +65,11 @@ public class EarlToHtmlTransformationTest {
         // 7 rows plus the header row
         assertThat( indexHtml,
                     hasXPath( "count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo( "8" ), nsContext() ) );
+
+        assertThat( indexHtml, hasXPath( "//html:span[@id='testsPassed_queryable']", equalTo( "7" ), nsContext() ) );
+        assertThat( indexHtml, hasXPath( "//html:span[@id='testsFailed_queryable']", equalTo( "0" ), nsContext() ) );
+        assertThat( indexHtml, hasXPath( "//html:span[@id='testsSkipped_queryable']", equalTo( "0" ), nsContext() ) );
+        assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_queryable']", equalTo( "7" ), nsContext() ) );
     }
 
     private Source the( File indexHtmlFile )
@@ -75,7 +80,7 @@ public class EarlToHtmlTransformationTest {
         return XmlConverters.the( indexHtml.toString() );
     }
 
-    private String createTempDirectroryAndCopyResources( String earlReport )
+    private String createTempDirectoryAndCopyResources( String earlReport )
                             throws IOException {
         File outputDirectory = Files.createTempDirectory( "EarlToHtmlTransformationTest" ).toFile();
         if ( outputDirectory.exists() )
