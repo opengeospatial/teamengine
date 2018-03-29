@@ -322,6 +322,9 @@
   <!-- The assertion_info template get all the test information e.g. TestName, Reason -->
   <xsl:template name="assertion_info">
     <table border="1">
+      <xsl:attribute name="id">
+        <xsl:value-of select="replace(dct:title, ' ', '_')"/>
+      </xsl:attribute>
       <tbody>
         <tr>
           <th>Name</th>
