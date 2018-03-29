@@ -323,7 +323,7 @@
   <xsl:template name="assertion_info">
     <table border="1">
       <xsl:attribute name="id">
-        <xsl:value-of select="replace(dct:title, ' ', '_')"/>
+        <xsl:value-of select="replace(dct:title, ' ', '_')" />
       </xsl:attribute>
       <tbody>
         <tr>
@@ -344,14 +344,16 @@
       <xsl:choose>
         <xsl:when test="earl:TestCase">
           <xsl:call-template name="Assertion">
-            <xsl:with-param name="test_uris" select="earl:TestCase/@rdf:about" />
+            <xsl:with-param name="testUri" select="earl:TestCase/@rdf:about" />
             <xsl:with-param name="testCase" select="earl:TestCase" />
             <xsl:with-param name="level" select="$level" />
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:variable name="testUri" select="@rdf:resource" />
           <xsl:call-template name="Assertion">
-            <xsl:with-param name="test_uris" select="@rdf:resource" />
+            <xsl:with-param name="testUri" select="$testUri" />
+            <xsl:with-param name="testCase" select="//earl:TestCase[@rdf:about =$testUri]" />
             <xsl:with-param name="level" select="$level" />
           </xsl:call-template>
         </xsl:otherwise>
@@ -360,7 +362,7 @@
   </xsl:template>
   <!-- The Assertion template returns status of the result in HTML format with specific color. 'Pass: Fail: Skip:' -->
   <xsl:template name="Assertion">
-    <xsl:param name="test_uris" />
+    <xsl:param name="testUri" />
     <xsl:param name="testCase" />
     <xsl:param name="level" />
     <xsl:for-each select="//earl:Assertion">
@@ -401,17 +403,17 @@
         </xsl:choose>
       </xsl:variable>
       <!-- get Test description -->
-      <xsl:if test="$test_uris = $assertion_test_uri">
+      <xsl:if test="$testUri = $assertion_test_uri">
         <xsl:variable name="testCaseName">
           <xsl:call-template name="existHtmlPage">
-            <xsl:with-param name="testCaseName" select="substring-after($test_uris, '#')" />
+            <xsl:with-param name="testCaseName" select="substring-after($testUri, '#')" />
           </xsl:call-template>
         </xsl:variable>
         <!-- Create test-details html page -->
         <xsl:call-template name="createHtmlPage">
           <xsl:with-param name="testCaseName" select="$testCaseName" />
           <xsl:with-param name="testTitle" select="$testTitle" />
-          <xsl:with-param name="test_uris" select="$test_uris" />
+          <xsl:with-param name="test_uris" select="$testUri" />
           <xsl:with-param name="testDescription" select="$testDescription" />
           <xsl:with-param name="result" select="$result" />
         </xsl:call-template>
@@ -509,7 +511,7 @@
           </xsl:when>
           <xsl:otherwise>
             <xsl:message>Could not handle assertion with result '<xsl:value-of select="$result" />'. Name is
-              '<xsl:value-of select="$test_uris" />'.
+              '<xsl:value-of select="$testUri" />'.
             </xsl:message>
           </xsl:otherwise>
         </xsl:choose>
