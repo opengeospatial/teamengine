@@ -371,7 +371,8 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
-      <xsl:variable name="result" select="earl:result/earl:TestResult/earl:outcome/@rdf:resource" />
+      <xsl:variable name="result"
+                    select="translate(substring-after(earl:result/earl:TestResult/earl:outcome/@rdf:resource, '#'), $smallcase, $uppercase)" />
       <xsl:variable name="testTitle">
         <xsl:choose>
           <xsl:when test="$testCase">
@@ -411,87 +412,104 @@
           <xsl:with-param name="testDescription" select="$testDescription" />
           <xsl:with-param name="result" select="$result" />
         </xsl:call-template>
-        <xsl:if test="substring-after($result, '#')='passed'">
-          <tr bgcolor="#B2F0D1">
-            <td>
-              <xsl:variable name="indention" select="$level * 15" />
-              <xsl:element name="div">
-                <xsl:attribute name="style">
-                  <xsl:value-of select="concat('text-indent:', $indention, 'px;')" />
-                </xsl:attribute>
-                <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
-                   id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
-                  <xsl:value-of select="$testTitle" />
-                </a>
-              </xsl:element>
-            </td>
-            <td />
-          </tr>
-        </xsl:if>
-        <xsl:if test="substring-after($result, '#')='failed' or substring-after($result, '#')='cantTell'">
-          <tr bgcolor="#FFB2B2">
-            <td>
-              <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
-                 id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
-                <xsl:value-of select="$testTitle" />
-              </a>
-            </td>
-            <td>
-              <xsl:variable name="message">
-                <xsl:variable name="msg">
-                  <xsl:call-template name="string-replace-all">
-                    <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                    <xsl:with-param name="replace" select="'['" />
-                    <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                  </xsl:call-template>
+        <xsl:variable name="indention" select="$level * 15" />
+        <xsl:choose>
+          <xsl:when test="$result = 'PASSED'">
+            <tr bgcolor="#B2F0D1">
+              <td>
+                <xsl:element name="div">
+                  <xsl:attribute name="style">
+                    <xsl:value-of select="concat('text-indent:', $indention, 'px;')" />
+                  </xsl:attribute>
+                  <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
+                     id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
+                    <xsl:value-of select="$testTitle" />
+                  </a>
+                </xsl:element>
+              </td>
+              <td />
+            </tr>
+          </xsl:when>
+          <xsl:when test="$result = 'FAILED' or $result = 'CANTTELL' or $result = 'INHERITEDFAILURE'">
+            <tr bgcolor="#FFB2B2">
+              <td>
+                <xsl:element name="div">
+                  <xsl:attribute name="style">
+                    <xsl:value-of select="concat('text-indent:', $indention, 'px;')" />
+                  </xsl:attribute>
+                  <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
+                     id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
+                    <xsl:value-of select="$testTitle" />
+                  </a>
+                </xsl:element>
+              </td>
+              <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                    <xsl:call-template name="string-replace-all">
+                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
+                      <xsl:with-param name="replace" select="'['" />
+                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
+                    </xsl:call-template>
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </xsl:variable>
-                <xsl:choose>
-                  <xsl:when test="substring-before($msg,'expected [')">
-                    <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <xsl:value-of select="$msg" />
-                  </xsl:otherwise>
-                </xsl:choose>
-              </xsl:variable>
-              <p>
-                <xsl:value-of select="$message" />
-              </p>
-            </td>
-          </tr>
-        </xsl:if>
-        <xsl:if test="substring-after($result, '#')='untested'">
-          <tr bgcolor="#CCCCCE">
-            <td>
-              <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
-                 id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
-                <xsl:value-of select="$testTitle" />
-              </a>
-            </td>
-            <td>
-              <xsl:variable name="message">
-                <xsl:variable name="msg">
-                  <xsl:call-template name="string-replace-all">
-                    <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                    <xsl:with-param name="replace" select="'['" />
-                    <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                  </xsl:call-template>
+                <p>
+                  <xsl:value-of select="$message" />
+                </p>
+              </td>
+            </tr>
+          </xsl:when>
+          <xsl:when test="$result = 'UNTESTED'">
+            <tr bgcolor="#CCCCCE">
+              <td>
+                <xsl:element name="div">
+                  <xsl:attribute name="style">
+                    <xsl:value-of select="concat('text-indent:', $indention, 'px;')" />
+                  </xsl:attribute>
+                  <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
+                     id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
+                    <xsl:value-of select="$testTitle" />
+                  </a>
+                </xsl:element>
+              </td>
+              <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                    <xsl:call-template name="string-replace-all">
+                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
+                      <xsl:with-param name="replace" select="'['" />
+                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
+                    </xsl:call-template>
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
                 </xsl:variable>
-                <xsl:choose>
-                  <xsl:when test="substring-before($msg,'expected [')">
-                    <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <xsl:value-of select="$msg" />
-                  </xsl:otherwise>
-                </xsl:choose>
-              </xsl:variable>
-              <p>
-                <xsl:value-of select="$message" />
-              </p>
-            </td>
-          </tr>
-        </xsl:if>
+                <p>
+                  <xsl:value-of select="$message" />
+                </p>
+              </td>
+            </tr>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:message>Could not handle assertion with result '<xsl:value-of select="$result" />'. Name is
+              '<xsl:value-of select="$test_uris" />'.
+            </xsl:message>
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="$testCase">
           <xsl:call-template name="assertion_content">
             <xsl:with-param name="context" select="$testCase" />
