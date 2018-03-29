@@ -6,7 +6,6 @@
                 xmlns:dct="http://purl.org/dc/terms/"
                 xmlns:earl="http://www.w3.org/ns/earl#"
                 xmlns:file="java:java.io.File"
-                xmlns:fn="http://www.w3.org/2005/xpath-functions"
                 xmlns:http="http://www.w3.org/2011/http#"
                 xmlns:java="http://www.java.com/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -819,64 +818,68 @@
                   <xsl:value-of select="translate(substring-after($result, '#'), $smallcase, $uppercase)" />
                 </td>
               </tr>
-              <xsl:if test="earl:result/earl:TestResult/cite:message/http:Request">
-                <xsl:variable name="requestMethod"
-                              select="earl:result/earl:TestResult/cite:message/http:Request/http:methodName" />
+              <xsl:for-each select="earl:result/earl:TestResult/cite:message">
                 <tr>
-                  <td colspan="5">Inputs :</td>
-                </tr>
-                <tr>
-                  <td>Method:</td>
+                  <td>Test Requests <xsl:value-of select="position()" />:</td>
                   <td>
-                    <xsl:value-of select="translate($requestMethod, $smallcase, $uppercase)" />
+                    <table>
+                      <xsl:variable name="requestMethod"
+                                    select="http:Request/http:methodName" />
+                      <tr>
+                        <td>Method:</td>
+                        <td>
+                          <xsl:value-of select="translate($requestMethod, $smallcase, $uppercase)" />
+                        </td>
+                      </tr>
+                      <xsl:variable name="input_url">
+                        <xsl:call-template name="testInputs">
+
+                        </xsl:call-template>
+                      </xsl:variable>
+                      <xsl:variable name="requestURI"
+                                    select="http:Request/http:requestURI" />
+
+                      <xsl:choose>
+                        <xsl:when test="(($requestMethod='POST') or ($requestMethod='post'))">
+                          <tr>
+                            <td>URL:</td>
+                            <td>
+                              <xsl:value-of select="substring-before($input_url, '?')" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Body:</td>
+                            <td>
+                              <pre class="brush: xml;">
+                                <xsl:value-of select="$requestURI" />
+                              </pre>
+                            </td>
+                          </tr>
+                        </xsl:when>
+                        <xsl:otherwise>
+                          <tr>
+                            <td>URL:</td>
+                            <td>
+                              <xsl:value-of select="concat(substring-before($input_url, '?'), '?' ,$requestURI)" />
+                            </td>
+                          </tr>
+                        </xsl:otherwise>
+                      </xsl:choose>
+
+                      <tr>
+                        <td>Outputs:</td>
+                        <td>
+                          <!-- <textarea rows="20" cols="40" style="border:none;"><xsl:value-of select="earl:result/earl:TestResult/cite:message/http:Request/http:resp/http:Response/http:body/cnt:ContentAsXML/cnt:rest" /> </textarea> -->
+                          <pre class="brush: xml;">
+                            <xsl:copy-of
+                                    select="http:Request/http:resp/http:Response/http:body/cnt:ContentAsXML/cnt:rest" />
+                          </pre>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
-                <xsl:variable name="input_url">
-                  <xsl:call-template name="testInputs">
-
-                  </xsl:call-template>
-                </xsl:variable>
-                <xsl:variable name="requestURI"
-                              select="earl:result/earl:TestResult/cite:message/http:Request/http:requestURI" />
-
-                <xsl:choose>
-                  <xsl:when test="(($requestMethod='POST') or ($requestMethod='post'))">
-                    <tr>
-                      <td>URL:</td>
-                      <td>
-                        <xsl:value-of select="substring-before($input_url, '?')" />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Body:</td>
-                      <td>
-                        <pre class="brush: xml;">
-                          <xsl:value-of select="$requestURI" />
-                        </pre>
-                      </td>
-                    </tr>
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <tr>
-                      <td>URL:</td>
-                      <td>
-                        <xsl:value-of select="concat(substring-before($input_url, '?'), '?' ,$requestURI)" />
-                      </td>
-                    </tr>
-                  </xsl:otherwise>
-                </xsl:choose>
-
-                <tr>
-                  <td>Outputs :</td>
-                  <td>
-                    <!-- <textarea rows="20" cols="40" style="border:none;"><xsl:value-of select="earl:result/earl:TestResult/cite:message/http:Request/http:resp/http:Response/http:body/cnt:ContentAsXML/cnt:rest" /> </textarea> -->
-                    <pre class="brush: xml;">
-                      <xsl:copy-of
-                              select="earl:result/earl:TestResult/cite:message/http:Request/http:resp/http:Response/http:body/cnt:ContentAsXML/cnt:rest" />
-                    </pre>
-                  </td>
-                </tr>
-              </xsl:if>
+              </xsl:for-each>
               <tr>
                 <td>Reason of Failure:</td>
                 <td>
