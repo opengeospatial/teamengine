@@ -51,6 +51,32 @@ public class EarlToHtmlTransformationTest {
     }
 
     @Test
+    public void testEarlHtmlReport_Ctl_WithHierarchy_WithInheritedFailure()
+                            throws Exception {
+        String outputDirectory = createTempDirectoryAndCopyResources( "earl-results_ctl_withHierarchy_WithInheritedFailure.rdf" );
+
+        EarlToHtmlTransformation earlToHtmlTransformation = new EarlToHtmlTransformation();
+        earlToHtmlTransformation.earlHtmlReport( outputDirectory );
+
+        File indexHtmlFile = new File( outputDirectory, "result/index.html" );
+        assertThat( indexHtmlFile.exists(), is( true ) );
+
+        Source indexHtml = the( indexHtmlFile );
+        // 7 rows plus the header row
+        assertThat( indexHtml,
+                    hasXPath( "count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo( "8" ), nsContext() ) );
+
+        assertThat( indexHtml,
+                    hasXPath( "//html:span[@id='testsInTotal_data-independent']", equalTo( "207" ), nsContext() ) );
+        assertThat( indexHtml,
+                    hasXPath( "//html:span[@id='testsFailed_data-independent']", equalTo( "2" ), nsContext() ) );
+        assertThat( indexHtml,
+                    hasXPath( "//html:span[@id='testsInTotal_data-preconditions']", equalTo( "0" ), nsContext() ) );
+        assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_basic']", equalTo( "11" ), nsContext() ) );
+        assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_queryable']", equalTo( "7" ), nsContext() ) );
+    }
+
+    @Test
     public void testEarlHtmlReport_Ctl_WithHierarchy_MissingElements()
                             throws Exception {
         String outputDirectory = createTempDirectoryAndCopyResources( "earl-results_ctl_withHierarchy_MissingElements.rdf" );

@@ -258,7 +258,7 @@
               <xsl:attribute name="id">
                 <xsl:value-of select="concat('testsFailed_',replace(dct:title, ' ', '_') )" />
               </xsl:attribute>
-              <xsl:value-of select="cite:testsFailed" />
+              <xsl:value-of select="cite:testsFailed + cite:testsInheritedFailure" />
             </xsl:element>
           </td>
           <td bgcolor="#CCCCCE">
@@ -273,7 +273,7 @@
           <td>
             Total tests:
             <xsl:variable name="testsInTotal">
-              <xsl:value-of select="cite:testsPassed + cite:testsFailed + cite:testsSkipped" />
+              <xsl:value-of select="cite:testsPassed + cite:testsFailed + cite:testsInheritedFailure + cite:testsSkipped" />
             </xsl:variable>
             <xsl:element name="span">
               <xsl:attribute name="id">
