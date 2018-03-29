@@ -819,28 +819,25 @@
                 </td>
               </tr>
               <xsl:for-each select="earl:result/earl:TestResult/cite:message">
+                <xsl:variable name="requestMethod"
+                              select="translate(http:Request/http:methodName, $smallcase, $uppercase)" />
+                <xsl:variable name="input_url">
+                  <xsl:call-template name="testInputs" />
+                </xsl:variable>
+                <xsl:variable name="requestURI" select="http:Request/http:requestURI" />
                 <tr>
-                  <td>Test Requests <xsl:value-of select="position()" />:</td>
+                  <td>Test Requests <xsl:value-of select="position()" />:
+                  </td>
                   <td>
                     <table>
-                      <xsl:variable name="requestMethod"
-                                    select="http:Request/http:methodName" />
                       <tr>
                         <td>Method:</td>
                         <td>
-                          <xsl:value-of select="translate($requestMethod, $smallcase, $uppercase)" />
+                          <xsl:value-of select="$requestMethod" />
                         </td>
                       </tr>
-                      <xsl:variable name="input_url">
-                        <xsl:call-template name="testInputs">
-
-                        </xsl:call-template>
-                      </xsl:variable>
-                      <xsl:variable name="requestURI"
-                                    select="http:Request/http:requestURI" />
-
                       <xsl:choose>
-                        <xsl:when test="(($requestMethod='POST') or ($requestMethod='post'))">
+                        <xsl:when test="$requestMethod='POST'">
                           <tr>
                             <td>URL:</td>
                             <td>
@@ -856,6 +853,14 @@
                             </td>
                           </tr>
                         </xsl:when>
+                        <xsl:when test="starts-with($requestURI, 'http')">
+                          <tr>
+                            <td>URL:</td>
+                            <td>
+                              <xsl:value-of select="$requestURI" />
+                            </td>
+                          </tr>
+                        </xsl:when>
                         <xsl:otherwise>
                           <tr>
                             <td>URL:</td>
@@ -865,11 +870,9 @@
                           </tr>
                         </xsl:otherwise>
                       </xsl:choose>
-
                       <tr>
                         <td>Outputs:</td>
                         <td>
-                          <!-- <textarea rows="20" cols="40" style="border:none;"><xsl:value-of select="earl:result/earl:TestResult/cite:message/http:Request/http:resp/http:Response/http:body/cnt:ContentAsXML/cnt:rest" /> </textarea> -->
                           <pre class="brush: xml;">
                             <xsl:copy-of
                                     select="http:Request/http:resp/http:Response/http:body/cnt:ContentAsXML/cnt:rest" />
