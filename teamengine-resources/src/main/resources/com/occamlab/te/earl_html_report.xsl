@@ -772,7 +772,7 @@
                   <td>
                     <xsl:value-of select="$testDescription" />
 
-                    <xsl:if test="substring-after($result, '#')='failed' or substring-after($result, '#')='cantTell'">
+                    <xsl:if test="$result='FAILED' or $result = 'CANTTELL'">
                       <xsl:variable name="testSuiteType" select="//rdf:RDF/cite:TestRun/cite:testSuiteType" />
                       <xsl:if test=" $testSuiteType = 'testng'">
                         <xsl:variable name="testName"
@@ -806,7 +806,7 @@
               <tr>
                 <td>Test Result:</td>
                 <td>
-                  <xsl:value-of select="translate(substring-after($result, '#'), $smallcase, $uppercase)" />
+                  <xsl:value-of select="$result" />
                 </td>
               </tr>
               <xsl:for-each select="earl:result/earl:TestResult/cite:message">
