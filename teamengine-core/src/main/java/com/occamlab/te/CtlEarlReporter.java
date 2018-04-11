@@ -607,8 +607,8 @@ public class CtlEarlReporter {
         } else if ( decodedBaseURL.contains( "unittest" ) ) {
             // for Unit test only
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "unittest" ) );
-            logtestcall = baseUrl.substring( baseUrl.indexOf( System.getProperty( "file.separator" ) ) + 1,
-                                             baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
+            logtestcall = baseUrl.substring( baseUrl.indexOf( "/" ) + 1,
+                                             baseUrl.lastIndexOf( "/" ) );
         }
         if ( logtestcall.contains( "\\" ) ) {
             logtestcall = logtestcall.replace( "\\", "/" );
