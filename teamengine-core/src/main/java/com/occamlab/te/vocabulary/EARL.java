@@ -1,4 +1,10 @@
-package com.occamlab.te.spi.vocabulary;
+/**************************************************************
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC): Moved vocabulary package from spi to core
+ *
+ **************************************************************/
+package com.occamlab.te.vocabulary;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;

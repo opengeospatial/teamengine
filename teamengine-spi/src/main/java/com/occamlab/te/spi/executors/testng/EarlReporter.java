@@ -1,3 +1,10 @@
+/********************************************************************
+ *
+ * Contributor(s)
+ *     C. Heazel (WiSC): Moved vocabulary package from spi to core.
+ *
+ *******************************************************************/
+
 package com.occamlab.te.spi.executors.testng;
 
 import java.io.File;
@@ -39,11 +46,11 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import com.occamlab.te.spi.vocabulary.CITE;
-import com.occamlab.te.spi.vocabulary.CONTENT;
-import com.occamlab.te.spi.vocabulary.Config;
-import com.occamlab.te.spi.vocabulary.EARL;
-import com.occamlab.te.spi.vocabulary.HTTP;
+import com.occamlab.te.vocabulary.CITE;
+import com.occamlab.te.vocabulary.CONTENT;
+import com.occamlab.te.vocabulary.Config;
+import com.occamlab.te.vocabulary.EARL;
+import com.occamlab.te.vocabulary.HTTP;
 
 
 /**
