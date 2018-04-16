@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  environment {
-    GIT_SSH_COMMAND = 'ssh -i ~/.ssh/teamengine'
-  }
   tools {
     maven 'mvn'
     jdk 'JDK 8'
