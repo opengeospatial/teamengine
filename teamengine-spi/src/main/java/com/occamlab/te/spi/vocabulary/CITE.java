@@ -20,7 +20,7 @@ public class CITE {
 
     /** Model that holds the CITE vocabulary terms. */
     private static final Model model = ModelFactory.createDefaultModel();
-    public static final String NS_URI = "http://cite.opengeospatial.org/";
+    public static final String NS_URI = "http://cite.opengeospatial.org/earl#";
     public static final Resource NAMESPACE = model.createResource(NS_URI);
     public static final Resource TestRun = model.createResource(NS_URI + "TestRun");
     public static final Property testsFailed = model.createProperty(NS_URI + "testsFailed");
@@ -62,7 +62,7 @@ public class CITE {
     public static final Resource Not_Tested = model.createResource(NS_URI + "notTested")
             .addProperty(RDF.type, EARL.OutcomeValue);
     public static final Resource Inherited_Failure = model
-            .createResource(NS_URI + "earl#inheritedFailure").addProperty(RDF.type, EARL.OutcomeValue);
+            .createResource(NS_URI + "inheritedFailure").addProperty(RDF.type, EARL.OutcomeValue);
     // Indicate the test suite type i.e. CTL or TestNG based.
     public static final Property testSuiteType = model.createProperty(NS_URI + "testSuiteType");
 }

@@ -4,7 +4,7 @@
         xmlns:http="http://www.w3.org/2011/http#"
         xmlns:cnt="http://www.w3.org/2011/content#"
         xmlns:earl="http://www.w3.org/ns/earl#"
-        xmlns:cite="http://cite.opengeospatial.org/">
+        xmlns:cite="http://cite.opengeospatial.org/earl#">
   <earl:Assertion rdf:about="assert-5">
     <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
     <earl:assertedBy>
