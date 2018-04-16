@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -37,6 +36,9 @@ import org.apache.commons.io.FileUtils;
  * This class is used to process HTML result. 
  * It will transform EARL result into HTML report 
  * and return the HTML result with zip file.
+ *
+ * Contributor(s):
+ *     C. Heazel (WiSC) Modifications to address Fortify issues
  *
  */
 public class HtmlReport {
@@ -84,14 +86,16 @@ public class HtmlReport {
 		File earlResult = new File(outputDir, "earl-results.rdf");
 
 		try {
-	            TransformerFactory tf = TransformerFactory.newInstance();
-	            Transformer transformer = tf.newTransformer(new StreamSource(earlXsl));
- 	            transformer.setParameter("outputDir", htmlOutput);
-                    File indexHtml = new File(htmlOutput, "index.html" );
-                    indexHtml.createNewFile();
-                    FileOutputStream outputStream = new FileOutputStream( indexHtml );
-                    transformer.transform( new StreamSource( earlResult), new StreamResult( outputStream ));
-	            FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
+	      TransformerFactory tf = TransformerFactory.newInstance();
+	      Transformer transformer = tf.newTransformer(new StreamSource(earlXsl));
+ 	      transformer.setParameter("outputDir", htmlOutput);
+        File indexHtml = new File(htmlOutput, "index.html" );
+        indexHtml.createNewFile();
+        FileOutputStream outputStream = new FileOutputStream( indexHtml );
+        transformer.transform( new StreamSource( earlResult), new StreamResult( outputStream ));
+        // Foritfy Mod: Close the outputStream releasing its resources
+        outputStream.close();
+	      FileUtils.copyDirectory(new File(resourceDir), htmlOutput);
 		} catch (Exception e) {
 			LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
 			throw new RuntimeException( e );

@@ -174,6 +174,8 @@ public class HTTPParser {
                 raf.write(queue[qPos]);
                 queue[qPos] = in.read();
                 if (queue[qPos] == -1) {
+                    // Fortify Mod: Clean up the file first, then throw the exception.
+                    raf.close();
                     throw new Exception(EOS_ERR);
                 }
                 qPos = (qPos + 1) % qLen;
@@ -289,6 +291,8 @@ public class HTTPParser {
                 line = in.readLine();
                 num++;
             }
+            // Fortify Mod: Close the BufferedReader and release its resources
+            in.close();
         } else {
             Node parser = select_parser(0, uc.getContentType(), instruction);
             // use TECore to invoke any chained (subsidiary) parsers

@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
@@ -91,9 +92,13 @@ public class CoverageMonitor {
 	      df.setExpandEntityReferences(false);
             DocumentBuilder docBuilder = df.newDocumentBuilder();
             // DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            // Fortify Mod: make sure the input stream is closed
+            // this.coverageDoc = docBuilder.parse(
+            //        getClass().getResourceAsStream(icsPath), null);
+            InputStream is = getClass().getResourceAsStream(icsPath);
+            this.coverageDoc = docBuilder.parse(is, null);
+            is.close();
                 // End Fortify Mods
-            this.coverageDoc = docBuilder.parse(
-                    getClass().getResourceAsStream(icsPath), null);
         } catch (Exception e) {
             LOGR.warning(e.getMessage());
         }

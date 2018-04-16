@@ -7,7 +7,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s):
+    C. Heazel (WiSC) Modifications to address Fortify issues.
 
  ****************************************************************************/
 package com.occamlab.te;
@@ -92,6 +93,8 @@ public class TeErrorListener implements ErrorListener {
                 }
                 current_line++;
             }
+            // Fortify Mod: Close the BufferedReader and free its resources
+            in.close();
             System.err.println(type + " at " + location + ":");
             System.err.println("  " + exception.getMessage()
                     + " in intermediate stylesheet"

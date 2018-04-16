@@ -1,14 +1,3 @@
-/**
- * ******************************************************************************************
- *
- * Version Date: January 2, 2018
- *
- * Contributor(s):
- *     C. Heazel (WiSC): Fortify adjudications
- *
- * ******************************************************************************************
- */
-
 package com.occamlab.te.web.listeners;
 
 import java.io.File;
@@ -45,6 +34,11 @@ import com.occamlab.te.realm.PasswordStorage;
  * character. For example:
  * <code>sha1:64000:18:a6BHX18eMTR1WnCvyR6NzG6VMJcdJE2D:8qPU0jpdPIapbyC+H5dqiaNE</code>
  * </p>
+ *
+ * Version Date: January 4, 2018
+ *
+ * Contributor(s):
+ *      C. Heazel (WiSC) Applied corrections to address Fortify issues
  */
 @WebListener
 public class CleartextPasswordContextListener implements ServletContextListener {
@@ -68,12 +62,7 @@ public class CleartextPasswordContextListener implements ServletContextListener 
         }
         DocumentBuilder domBuilder = null;
         try {
-            // Fortify Mod: Disable entity expansion to foil External Entity Injections
-            // domBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setExpandEntityReferences(false);
-            domBuilder = dbf.newDocumentBuilder();
-            // End Fortify Mod
+            domBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             LOGR.warning(e.getMessage());
             return;
@@ -101,8 +90,12 @@ public class CleartextPasswordContextListener implements ServletContextListener 
                 }
                 pwNode.setTextContent(PasswordStorage.createHash(password));
                 // overwrite contents of file
-                output.setByteStream(new FileOutputStream(userFile, false));
+                // Fortify Mod: Make sure that the output stream is closed
+                // output.setByteStream(new FileOutputStream(userFile, false));
+                FileOutputStream os = new FileOutputStream(userFile, false);
+                output.setByteStream(os);
                 serializer.write(doc, output);
+                os.close();
             } catch (Exception e) {
                 LOGR.info(e.getMessage());
                 continue;

@@ -7,7 +7,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+     C. Heazel (WiSC) Fortify modifications
 
  ****************************************************************************/
 package com.occamlab.te.parsers;
@@ -27,7 +28,12 @@ public class CDataParser {
 
     public static String parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
-        return parse(uc.getInputStream(), instruction, logger);
+        // Fortify Mod: manage the input stream as a local variable so that it can be closed.
+        // return parse(uc.getInputStream(), instruction, logger);
+        InputStream is = uc.getInputStream();
+        String s = parse(is, instruction, logger);
+        is.close();
+        return s;
     }
 
     private static String parse(InputStream is, Element instruction,

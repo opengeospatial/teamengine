@@ -1,0 +1,957 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="1476c0be-8f92-4fc1-9925-9543b4950036" activeEnvironment="Default" name="TEAM Engine" resourceRoot="" soapui-version="5.4.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings/>
+  <con:testSuite id="190b308a-ad99-456c-a418-5482414ca4fb" name="REST API">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="855aadbc-fea9-40ca-8d3a-b86fd64f85a1" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Basic" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="List all" id="6243d715-7900-4046-9f7b-2f83093eadc2">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="List all" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
+          <con:request/>
+          <con:assertion type="Simple Contains" id="61b9a20e-33f0-4334-8ef6-70141a39e8c3" name="Contains Available test suites">
+            <con:configuration>
+              <token>Available test suites</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Valid HTTP Status Codes" id="4d39c148-0ddc-4260-8bfb-b44b7034192b" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:testCase id="5783f8ad-e9e8-4b5b-8321-de11664a9947" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestNG" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="REST interface available" id="d9efa43e-fd4a-4119-9b7f-38c9d460e935">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="REST interface available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
+          <con:request/>
+          <con:assertion type="Simple Contains" id="61b9a20e-33f0-4334-8ef6-70141a39e8c3" name="Contains Available test suites">
+            <con:configuration>
+              <token>Available test suites</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Valid HTTP Status Codes" id="4d39c148-0ddc-4260-8bfb-b44b7034192b" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="22cf9feb-0c51-49a3-9966-0f65761e01b3" name="Contains WFS Test Suite">
+            <con:configuration>
+              <token>WFS 2.0 (ISO 19142:2010) Conformance Test Suite</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Test Suite available" id="acee98c5-7956-4c63-af60-9cee26d4ce8b">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Test Suite available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="fa99f93d-9a50-47b2-a991-1d999d30e858" name="Contains Test Suite">
+            <con:configuration>
+              <token>WFS 2.0 (OGC 09-025r2/ISO 19142) Conformance Test Suite</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/rdf+xml" id="23256c19-bd1f-4d95-8721-d11c31e74d99">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/rdf+xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/zip" id="e5a8ccb9-0ca0-4b1c-844b-efd93d2e95a3">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/zip" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="41b45311-af83-4b46-a7a6-b0fa546e9dbb" name="Content-Type is application/zip">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/zip" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="9ea3a462-0afa-4462-8649-f04ec4874cf4" name="data contentType is application/zip">
+            <con:configuration>
+              <path>/data/@contentType</path>
+              <content>application/zip</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/xml" id="fac1761f-2d6f-4c1b-8b8d-e8578e61e72f">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="249e2d26-0d6e-487c-9e42-eea5b47f168d" name="Content-Type is application/xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="aaccf39e-8e8d-4aaa-b117-91864ee31985" name="Root element testng-results available">
+            <con:configuration>
+              <path>exists(/testng-results)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/rdf+xml,application/xml,application/zip" id="cfaee081-a47b-440f-8ee9-b59a540a0ee9">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/rdf+xml,application/xml,application/zip" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml,application/xml,application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/xml,application/zip,application/rdf+xml" id="dc733543-7185-4cc0-bb37-733f1d685ea9">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/xml,application/zip,application/rdf+xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml,application/zip,application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="249e2d26-0d6e-487c-9e42-eea5b47f168d" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="aaccf39e-8e8d-4aaa-b117-91864ee31985" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/zip;q=0.1,application/xml,application/rdf+xml;q=0.9" id="2eab29b5-85aa-476e-a50f-c2b85beac405" disabled="true">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/zip;q=0.1,application/xml,application/rdf+xml;q=0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml,application/rdf+xml;q=0.9" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element testng-results available">
+            <con:configuration>
+              <path>exists(/testng-results)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" id="6ce853db-b1ff-4ad1-86b6-c3b44072b772">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept header text/html" id="a67bec48-2fca-4fc4-be7b-5310114be50b">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept header text/html" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="text/html" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>406</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept header is missing" id="85edde40-3bba-4173-9e8a-5cbd86e00e5b">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept header is missing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>wfs</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:properties>
+        <con:property>
+          <con:name>ets-code</con:name>
+          <con:value>wfs20</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ets-release-version</con:name>
+          <con:value>1.28</con:value>
+        </con:property>
+        <con:property>
+          <con:name>sut</con:name>
+          <con:value>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value>
+        </con:property>
+      </con:properties>
+    </con:testCase>
+    <con:testCase id="207ef815-d51d-4ebd-ac1b-63954543a5f7" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="CTL" searchProperties="true">
+      <con:settings/>
+      <con:testStep type="httprequest" name="REST interface available" id="11ea883a-ff28-4af5-abee-65c3d1a470af">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="REST interface available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
+          <con:request/>
+          <con:assertion type="Simple Contains" id="61b9a20e-33f0-4334-8ef6-70141a39e8c3" name="Contains Available test suites">
+            <con:configuration>
+              <token>Available test suites</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Valid HTTP Status Codes" id="4d39c148-0ddc-4260-8bfb-b44b7034192b" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="22cf9feb-0c51-49a3-9966-0f65761e01b3" name="Contains WFS Test Suite">
+            <con:configuration>
+              <token>Conformance Test Suite - OGC Web Map Service 1.3.0</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Test Suite available" id="92d0ffc3-d508-428b-8e29-45c364974469">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Test Suite available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="Simple Contains" id="fa99f93d-9a50-47b2-a991-1d999d30e858" name="Contains Test Suite">
+            <con:configuration>
+              <token>WMS 1.3 Conformance Test Suite</token>
+              <ignoreCase>false</ignoreCase>
+              <useRegEx>false</useRegEx>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/rdf+xml" id="b03e3573-d7eb-4ecb-b4ad-21781349564b">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/rdf+xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/zip" id="ae809eec-4047-44f6-9c4f-5e4681faaa45">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/zip" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="41b45311-af83-4b46-a7a6-b0fa546e9dbb" name="Content-Type is application/zip">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/zip" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="9ea3a462-0afa-4462-8649-f04ec4874cf4" name="data contentType is application/zip">
+            <con:configuration>
+              <path>/data/@contentType</path>
+              <content>application/zip</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/xml" id="b1ff460f-6989-450b-ac8e-8b3d772395ff">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="249e2d26-0d6e-487c-9e42-eea5b47f168d" name="Content-Type is application/xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="aaccf39e-8e8d-4aaa-b117-91864ee31985" name="Root element execution available">
+            <con:configuration>
+              <path>exists(/execution)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/rdf+xml,application/xml,application/zip" id="df5392f8-d02a-4650-b1fe-fd51ca7a2515">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/rdf+xml,application/xml,application/zip" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml,application/xml,application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/xml,application/zip,application/rdf+xml" id="50e6140b-0392-44fc-96ca-1c38193884af">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/xml,application/zip,application/rdf+xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml,application/zip,application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="249e2d26-0d6e-487c-9e42-eea5b47f168d" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="aaccf39e-8e8d-4aaa-b117-91864ee31985" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/zip;q=0.1,application/xml,application/rdf+xml;q=0.9" id="354252a6-4552-4c21-b7d7-2a93303920ab" disabled="true">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/zip;q=0.1,application/xml,application/rdf+xml;q=0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml,application/rdf+xml;q=0.5" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element execution available">
+            <con:configuration>
+              <path>exists(/execution)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" id="5e8e8497-a68a-4398-a707-121b7f96c883">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept header text/html" id="e9f2d806-bd79-48c3-a319-fc91901ddd19">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept header text/html" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="text/html" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>406</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="httprequest" name="Accept header is missing" id="2697764d-07c2-4797-80ec-4d7de0d92c60">
+        <con:settings/>
+        <con:config method="GET" xsi:type="con:HttpRequest" id="f079fc99-814a-4fdc-8576-595034292027" name="Accept header is missing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:request/>
+          <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
+            <con:configuration>
+              <codes>200</codes>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
+          </con:assertion>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
+          </con:assertion>
+          <con:credentials>
+            <con:authType>No Authorization</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+            <con:parameter>
+              <con:name>capabilities-url</con:name>
+              <con:value>${#TestCase#sut}</con:value>
+              <con:style>QUERY</con:style>
+            </con:parameter>
+          </con:parameters>
+        </con:config>
+      </con:testStep>
+      <con:properties>
+        <con:property>
+          <con:name>ets-code</con:name>
+          <con:value>wms</con:value>
+        </con:property>
+        <con:property>
+          <con:name>ets-release-version</con:name>
+          <con:value>1.23</con:value>
+        </con:property>
+        <con:property>
+          <con:name>sut</con:name>
+          <con:value>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetCapabilities&amp;service=WMS</con:value>
+        </con:property>
+      </con:properties>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:properties>
+    <con:property>
+      <con:name>teamengine.endpoint</con:name>
+      <con:value>http://cite.opengeospatial.org/te2</con:value>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:sensitiveInformation/>
+</con:soapui-project>

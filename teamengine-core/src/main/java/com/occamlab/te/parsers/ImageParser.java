@@ -849,6 +849,8 @@ public class ImageParser {
 
         Document result = parse(image_is, instruction, logger);
         logger.flush();
+        // Fortify Mod: Close image_is and release its resources
+        image_is.close();
 
         if (result != null) {
             TransformerFactory tf = TransformerFactory.newInstance();

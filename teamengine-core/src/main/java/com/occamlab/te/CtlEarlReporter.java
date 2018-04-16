@@ -1,12 +1,13 @@
 /**
- * ********************************************************************************
+ * ***************************************************************************
  *
  * Version Date: January 8, 2018
  *
  * Contributor(s):
  *     C. Heazel (WiSC): Modifications to address Fortify issues
+ *     C. Heazel (WiSC): Moved vocabulary package from spi to core
  *
- * ********************************************************************************
+ * ***************************************************************************
  */
 
 package com.occamlab.te;
@@ -30,7 +31,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,10 +53,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.occamlab.te.spi.vocabulary.CITE;
-import com.occamlab.te.spi.vocabulary.CONTENT;
-import com.occamlab.te.spi.vocabulary.EARL;
-import com.occamlab.te.spi.vocabulary.HTTP;
+import com.occamlab.te.vocabulary.CITE;
+import com.occamlab.te.vocabulary.CONTENT;
+import com.occamlab.te.vocabulary.EARL;
+import com.occamlab.te.vocabulary.HTTP;
 
 public class CtlEarlReporter {
 
@@ -101,9 +101,6 @@ public class CtlEarlReporter {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         docFactory.setXIncludeAware(true);
-        // Fortify Mod: Disable entity expansion to foil External Entity Injections
-        docFactory.setExpandEntityReferences(false);
-        // End Fortify Mod
         // Source results = null;
         Document document;
         try {
@@ -520,11 +517,8 @@ public class CtlEarlReporter {
 						} else if (httpMethod.equalsIgnoreCase("POST")) {
 							// Post method content
 							try {
-                                                                // Fortify Mod: Prevent external entity injections
-								// Transformer transformer = TransformerFactory.newInstance().newTransformer();
-								TransformerFactory tf = TransformerFactory.newInstance();
-                                                                tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-								Transformer transformer = tf.newTransformer();
+								Transformer transformer = TransformerFactory
+										.newInstance().newTransformer();
 								transformer.setOutputProperty(
 										OutputKeys.INDENT, "yes");
 
@@ -534,6 +528,8 @@ public class CtlEarlReporter {
 								transformer.transform(source, result);
 
 								xmlString = result.getWriter().toString();
+                                                                // Fortify Mod: Close the Writer.  This flushes the content and frees resources which could be exhausted by the do-loop.
+                                                                result.getWriter().close();
 
 								Resource reqContent = earl
 										.createResource(CONTENT.ContentAsXML);

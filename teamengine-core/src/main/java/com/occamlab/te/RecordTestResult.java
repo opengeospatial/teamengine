@@ -1,6 +1,8 @@
 /**
  * **************************************************************************
  *
+ * Version Date: January 5, 2018
+ *
  * Contributor(s): 
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
@@ -143,6 +145,8 @@ public class RecordTestResult {
         Result output = new StreamResult(report_logs);
         //transform the output in xml.
         idTransform.transform(source, output);
+        // Fortify Mod: Flush and free up the OutputStream
+        report_logs.close();
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
         // Read the xml data from file
@@ -158,6 +162,9 @@ public class RecordTestResult {
           bufferedWriter.newLine();
           bufferedWriter.flush();
         }
+        // Fortify Mod: Free up the Buffered Reader and Writer and their associated resources
+        bufferedReader.close();
+        bufferedWriter.close();
         TECore.methodCount=0;
         TECore.rootTestName.clear();
         // Check file exists
@@ -191,6 +198,8 @@ public class RecordTestResult {
         Result output = new StreamResult(report_logs);
         //transform the output in xml.
         idTransform.transform(source, output);
+        // Fortify Mod: Flush and free up the OutputStream
+        report_logs.close();
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
         // Read the xml data from file
@@ -206,6 +215,9 @@ public class RecordTestResult {
           bufferedWriter.newLine();
           bufferedWriter.flush();
         }
+        // Fortify Mod: Free up the Buffered Reader and Writer and their associated resources
+        bufferedReader.close();
+        bufferedWriter.close();
         // Check file exists
         File file = new File(dirPath + Constants.tmp_File);
         if (file.exists()) {

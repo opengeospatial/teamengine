@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.3-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-core</artifactId>
@@ -19,11 +19,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>teamengine-resources</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>teamengine-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -53,10 +48,25 @@
       <version>1.2</version>
     </dependency>
     <dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>2.5</version>
-</dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-core</artifactId>
+      <version>3.1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-csv</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.5</version>
+    </dependency>
     <dependency>
       <groupId>com.thaiopensource</groupId>
       <artifactId>jing</artifactId>
