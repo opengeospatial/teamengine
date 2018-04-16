@@ -24,6 +24,7 @@ import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLProtocolException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -193,7 +194,11 @@ public class HTTPParser {
      */
     public static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger, TECore core) throws Throwable {
-        uc.connect();
+		try {
+			uc.connect();
+		} catch (SSLProtocolException sslep) {
+			throw new SSLProtocolException("[SSL ERROR] Failed to connect with the requested URL due to \"Invalid server_name\" found!! :" + uc.getURL() +":" + sslep.getClass() +" : "+ sslep.getMessage());
+		}
         String mime = uc.getContentType();
         boolean multipart = (mime != null && mime.startsWith("multipart"));
 
