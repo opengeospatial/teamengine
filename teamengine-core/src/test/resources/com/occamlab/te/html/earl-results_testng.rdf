@@ -1,0 +1,2646 @@
+<rdf:RDF
+    xmlns:dct="http://purl.org/dc/terms/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:http="http://www.w3.org/2011/http#"
+    xmlns:cnt="http://www.w3.org/2011/content#"
+    xmlns:earl="http://www.w3.org/ns/earl#"
+    xmlns:cite="http://cite.opengeospatial.org/">
+  <earl:Assertion rdf:about="assert-5">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy>
+      <earl:Assertor rdf:about="https://github.com/opengeospatial/teamengine">
+        <dct:title xml:lang="en">OGC TEAM Engine</dct:title>
+        <dct:description xml:lang="en">Official test harness of the OGC conformance testing program (CITE).</dct:description>
+      </earl:Assertor>
+    </earl:assertedBy>
+    <earl:subject>
+      <earl:TestSubject rdf:about="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    </earl:subject>
+    <earl:result>
+      <earl:TestResult rdf:about="result-5">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.674Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/XMLSchemaTests#compileXMLSchema">
+        <dct:title>compile XML Schema </dct:title>
+        <dct:description>See ISO 19136: A.1.1.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-6">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-6">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.778Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/GeneralSchemaTests#declareTargetNamespace">
+        <dct:title>declare Target Namespace </dct:title>
+        <dct:description>See ISO 19136: 21.2.2, A.1.1.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-3">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-3">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.034Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/SuitePreconditions#serviceIsAvailable">
+        <dct:title>service Is Available </dct:title>
+        <dct:description>SUT produces GetCapabilities response</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-90">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-90">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:59.759Z</dct:date>
+        <dct:description>java.lang.AssertionError: Unexpected HTTP status code. expected [400] but found [200]</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#failed"/>
+        <cite:message>
+          <http:Request>
+            <http:resp>
+              <http:Response>
+                <http:body>
+                  <cnt:ContentAsXML>
+                    <cnt:rest>&lt;wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       numberMatched="10"
+                       numberReturned="10"
+                       timeStamp="2018-03-28T12:09:59Z"
+                       xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd urn:x-inspire:specification:gmlas:ProtectedSites:3.0 http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wfs200?SERVICE=WFS&amp;amp;VERSION=2.0.0&amp;amp;REQUEST=DescribeFeatureType&amp;amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B+version%3D3.2&amp;amp;TYPENAME=ps:ProtectedSite&amp;amp;NAMESPACES=xmlns(ps,urn%3Ax-inspire%3Aspecification%3Agmlas%3AProtectedSites%3A3.0)"&gt;
+  &lt;wfs:boundedBy&gt;
+      &lt;gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326"&gt;
+         &lt;gml:lowerCorner&gt;51.608179 5.106151&lt;/gml:lowerCorner&gt;
+         &lt;gml:upperCorner&gt;51.629880 5.688395&lt;/gml:upperCorner&gt;
+      &lt;/gml:Envelope&gt;
+  &lt;/wfs:boundedBy&gt;
+  &lt;wfs:member&gt;
+      &lt;ps:ProtectedSite xmlns:ps="urn:x-inspire:specification:gmlas:ProtectedSites:3.0"
+                        gml:id="PS_PROTECTEDSITE_a367af0b-9457-4445-9cbd-eb48ae7a844a"&gt;
+         &lt;ps:geometry&gt;
+        &lt;!--Inlined geometry 'PS_PROTECTEDSITE_a367af0b-9457-4445-9cbd-eb48ae7a844a_PS_GEOMETRY'--&gt;
+        &lt;gml:MultiSurface gml:id="PS_PROTECTEDSITE_a367af0b-9457-4445-9cbd-eb48ae7a844a_PS_GEOMETRY"
+                              srsName="urn:ogc:def:crs:EPSG::4326"&gt;
+               &lt;gml:surfaceMember&gt;
+                  &lt;gml:Polygon gml:id="GEOMETRY_dc66c5fb-609a-42b6-9fcd-137bdc6790b0"
+                               srsName="urn:ogc:def:crs:EPSG::4326"&gt;
+                     &lt;gml:exterior&gt;
+                        &lt;gml:LinearRing&gt;
+                           &lt;gml:posList&gt;51.628530 5.116020 51.628578 5.116124 51.628681 5.116019 51.628737 5.115962 51.628771 5.115927 51.628775 5.115922 51.628830 5.116102 51.628849 5.116164 51.628887 5.116134 51.629052 5.116005 51.629370 5.115757 51.629082 5.114502 51.629057 5.114390 51.629044 5.114336 51.628905 5.113622 51.628784 5.113034 51.628753 5.112881 51.628702 5.112707 51.628489 5.112134 51.628270 5.111529 51.627924 5.110590 51.627875 5.110453 51.627682 5.109608 51.627570 5.109129 51.627472 5.108679 51.627468 5.108590 51.627465 5.108507 51.627477 5.108255 51.627521 5.108006 51.627661 5.107368 51.627885 5.106360 51.627908 5.106258 51.627856 5.106251 51.627163 5.106212 51.626471 5.106170 51.626426 5.106170 51.626366 5.106171 51.626275 5.106744 51.626084 5.107866 51.625932 5.108746 51.625859 5.108728 51.624832 5.108485 51.624857 5.108921 51.624868 5.109140 51.624898 5.109558 51.624914 5.109635 51.624369 5.109906 51.624344 5.109370 51.623546 5.109645 51.623174 5.109783 51.622980 5.109849 51.622957 5.109871 51.622896 5.109499 51.622837 5.109199 51.622744 5.108747 51.622671 5.108317 51.622592 5.108354 51.622520 5.108411 51.622328 5.108623 51.622137 5.108806 51.621805 5.109123 51.621725 5.109203 51.621692 5.109235 51.621660 5.109208 51.621639 5.109201 51.621535 5.109255 51.621036 5.109529 51.620615 5.109783 51.620612 5.109750 51.620553 5.109094 51.620538 5.108932 51.620443 5.108087 51.620151 5.108160 51.620060 5.108247 51.619594 5.108693 51.619168 5.109086 51.619052 5.109192 51.619062 5.109258 51.619060 5.109271 51.619055 5.109299 51.618937 5.109352 51.618934 5.109353 51.618397 5.109653 51.618344 5.109656 51.618269 5.109635 51.618302 5.109413 51.618305 5.109328 51.618284 5.109223 51.618214 5.109258 51.618214 5.109258 51.617877 5.109446 51.617431 5.109707 51.617288 5.109417 51.617262 5.109449 51.617261 5.109460 51.617257 5.109535 51.617240 5.109913 51.617228 5.110187 51.617224 5.110319 51.617203 5.110561 51.617148 5.110894 51.617143 5.110926 51.617134 5.110980 51.617125 5.111113 51.617125 5.111184 51.617144 5.111260 51.617227 5.111487 51.617659 5.112641 51.617692 5.112727 51.617726 5.112816 51.617979 5.113489 51.618129 5.113893 51.618159 5.113974 51.618346 5.</cnt:rest>
+                  </cnt:ContentAsXML>
+                </http:body>
+              </http:Response>
+            </http:resp>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+   &lt;wfs:Query xmlns:ns25="urn:x-inspire:specification:gmlas:ProtectedSites:3.0"
+              typeNames="ns25:ProtectedSite"&gt;
+      &lt;fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0"&gt;
+         &lt;fes:BBOX&gt;
+            &lt;fes:ValueReference xmlns:tns="http://www.opengis.net/gml/3.2"&gt;tns:description&lt;/fes:ValueReference&gt;
+            &lt;gml:Envelope xmlns:gml="http://www.opengis.net/gml/3.2" srsName="urn:ogc:def:crs:EPSG::4326"&gt;
+               &lt;gml:lowerCorner&gt;51.6 4.48&lt;/gml:lowerCorner&gt;
+               &lt;gml:upperCorner&gt;51.68 5.92&lt;/gml:upperCorner&gt;
+            &lt;/gml:Envelope&gt;
+         &lt;/fes:BBOX&gt;
+      &lt;/fes:Filter&gt;
+   &lt;/wfs:Query&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+   &lt;wfs:Query xmlns:ns25="urn:x-inspire:specification:gmlas:ProtectedSites:3.0"
+              typeNames="ns25:ProtectedSite"&gt;
+      &lt;fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0"&gt;
+         &lt;fes:BBOX&gt;
+            &lt;fes:ValueReference xmlns:tns="http://www.opengis.net/gml/3.2"&gt;tns:description&lt;/fes:ValueReference&gt;
+            &lt;gml:Envelope xmlns:gml="http://www.opengis.net/gml/3.2" srsName="urn:ogc:def:crs:EPSG::4326"&gt;
+               &lt;gml:lowerCorner&gt;51.6 4.48&lt;/gml:lowerCorner&gt;
+               &lt;gml:upperCorner&gt;51.68 5.92&lt;/gml:upperCorner&gt;
+            &lt;/gml:Envelope&gt;
+         &lt;/fes:BBOX&gt;
+      &lt;/fes:Filter&gt;
+   &lt;/wfs:Query&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#invalidGeometryOperand">
+        <dct:title>invalid Geometry Operand </dct:title>
+        <dct:description>See ISO 19142: 11.4; ISO 19143: 8.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-4">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-4">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.781Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/GeneralSchemaTests#importFullGMLSchema">
+        <dct:title>import Full GML Schema </dct:title>
+        <dct:description>See ISO 19136: 21.2.3, A.1.1.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-91">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-91">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.084Z</dct:date>
+        <dct:description>org.testng.SkipException: Unsupported geometry operands: gml:LineString, gml:Curve</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/spatial/IntersectsTests#intersectsCurve">
+        <dct:title>intersects Curve </dct:title>
+        <dct:description>See OGC 09-026r2, A.8</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-9">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-9">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.781Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/GeneralSchemaTests#declaresGMLObjects">
+        <dct:title>declares GML Objects </dct:title>
+        <dct:description>See ISO 19136: 21.2.1, A.1.1.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-120">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-120">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.783Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/querymgmt/DropStoredQueryTests#dropNonexistentQuery">
+        <dct:title>drop Nonexistent Query </dct:title>
+        <dct:description>See OGC 09-025: 14.6.1, 14.7</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-121">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-121">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.835Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/querymgmt/CreateStoredQueryTests#duplicateQuery">
+        <dct:title>duplicate Query </dct:title>
+        <dct:description>See OGC 09-025: Table 3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-7">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-7">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.787Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/ModelAndSyntaxTests#verifyGMLObjectPropertyPattern">
+        <dct:title>verify GML Object Property Pattern </dct:title>
+        <dct:description>See ISO 19136: 7.1.3, A.1.1.7</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-8">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-8">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.794Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/ComplexPropertyTests#validateMetadataProperties">
+        <dct:title>validate Metadata Properties </dct:title>
+        <dct:description>See ISO 19136: 7.2.6, A.1.1.9</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-61">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-61">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.779Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThanEqualTo_matchAny">
+        <dct:title>property Is Less Than Equal To_match Any </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-85">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-85">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.995Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:requestURI>service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;count=10&amp;startindex=0</http:requestURI>
+            <http:methodName>GET</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterInstant">
+        <dct:title>after Instant </dct:title>
+        <dct:description>See ISO 19143: A.10</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-73">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-73">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:14.097Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThan_matchAny">
+        <dct:title>property Is Less Than_match Any </dct:title>
+        <dct:description>See ISO 19143: 7.7</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-97">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-97">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:59.637Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#bboxWithDefaultExtent">
+        <dct:title>bbox With Default Extent </dct:title>
+        <dct:description>See ISO 19143: 7.8.3.2, A.7</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-50">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-50">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.419Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsNilOperatorTests#propertyIsNil">
+        <dct:title>property Is Nil </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.6, A.6</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-74">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-74">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:11.907Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsNullOperatorTests#gmlNameIsNull">
+        <dct:title>gml Name Is Null </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.5</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-62">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-62">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.89Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsLikeOperatorTests#propertyIsLike">
+        <dct:title>property Is Like </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-98">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-98">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:59.858Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#nonSpecificBBOX">
+        <dct:title>non Specific BBOX </dct:title>
+        <dct:description>See ISO 19143: 7.8.3.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-86">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-86">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.192Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:requestURI>service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;count=10&amp;startindex=0</http:requestURI>
+            <http:methodName>GET</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/temporal/DuringTests#duringPeriod">
+        <dct:title>during Period </dct:title>
+        <dct:description>See ISO 19143: 7.14.6, A.9</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-63">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-63">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.876Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsEqualToOperatorTests#propertyIsNotEqualTo_caseSensitive">
+        <dct:title>property Is Not Equal To_case Sensitive </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-51">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-51">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.761Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#invalidOperand_boundedBy">
+        <dct:title>invalid Operand_bounded By </dct:title>
+        <dct:description>See ISO 19142: 7.5, 11.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-87">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-87">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.197Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/DuringTests#duringPeriod"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-75">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-75">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:11.373Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/GetPropertyValueTests#getProperty_emptyValueRef">
+        <dct:title>get Property_empty Value Ref </dct:title>
+        <dct:description>See ISO 19142: 7.5, 10.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-99">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-99">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.194Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/joins/SpatialJoinTests#joinWithIntersects">
+        <dct:title>join With Intersects </dct:title>
+        <dct:description>See OGC 09-025r2: 7.9.2.5.3, A.1.12</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-52">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-52">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.654Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsGreaterThan_matchAny">
+        <dct:title>property Is Greater Than_match Any </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-40">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-40">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:11.471Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/GetPropertyValueTests#getProperty_emptyValueRef"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-76">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-76">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:18.125Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeaturesByType">
+        <dct:title>get Features By Type </dct:title>
+        <dct:description>See ISO 19142: 11.2.2, 11.2.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-64">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-64">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.796Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsLikeOperatorTests#propertyIsLike"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-88">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-88">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.017Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterInstantWithOffset">
+        <dct:title>after Instant With Offset </dct:title>
+        <dct:description>See ISO 19143: A.10</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-92">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-92">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.104Z</dct:date>
+        <dct:description>org.testng.SkipException: Unsupported geometry operand: {http://www.opengis.net/gml/3.2}Polygon</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/spatial/IntersectsTests#intersectsPolygon">
+        <dct:title>intersects Polygon </dct:title>
+        <dct:description>See OGC 09-026r2, A.8</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-80">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-80">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.132Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/temporal/BeforeTests#beforePeriod">
+        <dct:title>before Period </dct:title>
+        <dct:description>See ISO 19143: A.10</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-93">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-93">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.079Z</dct:date>
+        <dct:description>org.testng.SkipException: Unsupported geometry operands: gml:LineString, gml:Curve</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/IntersectsTests#intersectsCurve"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-81">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-81">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.003Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterInstant"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-94">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-94">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.102Z</dct:date>
+        <dct:description>org.testng.SkipException: Unsupported geometry operand: {http://www.opengis.net/gml/3.2}Polygon</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/IntersectsTests#intersectsPolygon"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-82">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-82">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.008Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:requestURI>service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;count=10&amp;startindex=0</http:requestURI>
+            <http:methodName>GET</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterInstantWithOffset"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-70">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-70">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.911Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThan_matchAll">
+        <dct:title>property Is Less Than_match All </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-83">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-83">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.046Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterPeriod">
+        <dct:title>after Period </dct:title>
+        <dct:description>See ISO 19143: A.10</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-71">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-71">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.536Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsGreaterThan_matchAny"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-95">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-95">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:59.939Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#nonSpecificBBOX"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-72">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-72">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.39Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsGreaterThanEqualTo_matchAny">
+        <dct:title>property Is Greater Than Equal To_match Any </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-60">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-60">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.309Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsNilOperatorTests#propertyIsNil"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-96">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-96">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:59.539Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#bboxWithDefaultExtent"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-84">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-84">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.128Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:requestURI>service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;count=10&amp;startindex=0</http:requestURI>
+            <http:methodName>GET</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/BeforeTests#beforePeriod"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-108">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-108">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.688Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/GetFeatureWithLockTests#lockQueryResults_hits">
+        <dct:title>lock Query Results_hits </dct:title>
+        <dct:description>See ISO 19142: 13.2.4.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-21">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-21">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:07.039Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getCapabilities_acceptVersions">
+        <dct:title>get Capabilities_accept Versions </dct:title>
+        <dct:description>See ISO 19142: 7.2, 7.3.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-45">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-45">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.842Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThan_matchAll"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-33">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-33">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:10.141Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/DescribeStoredQueriesTests#describeStoredQuery_GetFeatureById">
+        <dct:title>describe Stored Query_ Get Feature By Id </dct:title>
+        <dct:description>See ISO 19142: 7.9.3.6</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-69">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-69">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.141Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsLikeOperatorTests#propertyIsNotLike">
+        <dct:title>property Is Not Like </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.4, 7.10</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-57">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-57">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.766Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsEqualToOperatorTests#propertyIsNotEqualTo_caseSensitive"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-109">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-109">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.634Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/LockFeatureTests#lockFeatureWithLockIdAndQuery">
+        <dct:title>lock Feature With Lock Id And Query </dct:title>
+        <dct:description>See 09-025r2: 12.2.4.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-10">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-10">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.792Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/general/ComplexPropertyTests#validateMembersOfGmlObjectCollection">
+        <dct:title>validate Members Of Gml Object Collection </dct:title>
+        <dct:description>See ISO 19136: 7.2.5, A.1.1.14</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-34">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-34">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.635Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/StoredQueryTests#unknownStoredQuery">
+        <dct:title>unknown Stored Query </dct:title>
+        <dct:description>See ISO 19142: 7.9.3.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-22">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-22">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:08.239Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/ServiceMetadataTests#capabilitiesDocIsXmlSchemaValid">
+        <dct:title>capabilities Doc Is Xml Schema Valid </dct:title>
+        <dct:description>See ISO 19142: 8.3.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-58">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-58">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:14.029Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThan_matchAny"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-46">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-46">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.86Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#invalidPropertyReference">
+        <dct:title>invalid Property Reference </dct:title>
+        <dct:description>See ISO 19143: 8.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-118">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-118">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.739Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/paging/PagingTests#traverseResultSetInBothDirections">
+        <dct:title>traverse Result Set In Both Directions </dct:title>
+        <dct:description>See OGC 09-025: 7.7.4.4.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-106">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-106">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.468Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/ReplaceTests#replaceFeature">
+        <dct:title>replace Feature </dct:title>
+        <dct:description>See ISO 19142: 15.3.3, 15.3.6</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-23">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-23">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:10.276Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/ListStoredQueriesTests#listStoredQueries">
+        <dct:title>list Stored Queries </dct:title>
+        <dct:description>See ISO 19142: 14.3.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-11">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-11">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.797Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/components/FeatureComponentTests#verifyFeatureMemberProperties">
+        <dct:title>verify Feature Member Properties </dct:title>
+        <dct:description>See ISO 19136: 9.9, A.1.1.16</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-47">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-47">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.16Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeaturesByType"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-35">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-35">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:14.316Z</dct:date>
+        <dct:description>org.testng.SkipException: No alternative (non-default) CRS supported for any feature type with data.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeatureInOtherCRS">
+        <dct:title>get Feature In Other CRS </dct:title>
+        <dct:description>See OGC 09-025r2: 7.9.2.4.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-59">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-59">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.199Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeaturesByType"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-107">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-107">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.532Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/DeleteTests#deleteFeature">
+        <dct:title>delete Feature </dct:title>
+        <dct:description>See ISO 19142: 15.2.7</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-119">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-119">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.783Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/querymgmt/DropStoredQueryTests#dropStoredQuery">
+        <dct:title>drop Stored Query </dct:title>
+        <dct:description>See OGC 09-025: 14.6.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-12">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-12">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:06.797Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19136/components/FeatureComponentTests#substitutesForAbstractFeature">
+        <dct:title>substitutes For Abstract Feature </dct:title>
+        <dct:description>See ISO 19136: A.1.1.15</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-36">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-36">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.403Z</dct:date>
+        <dct:description>org.testng.SkipException: Unable to find id of feature instance that is NOT of type {urn:x-inspire:specification:gmlas:ProtectedSites:3.0}ProtectedSite</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#inconsistentFeatureIdentifierAndType">
+        <dct:title>inconsistent Feature Identifier And Type </dct:title>
+        <dct:description>See ISO 19142: 7.9.2.4.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-24">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-24">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.007Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/DescribeFeatureTypeTests#describeUnknownFeatureType">
+        <dct:title>describe Unknown Feature Type </dct:title>
+        <dct:description>See ISO 19142: 8.3.4, 9.2.4.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-48">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-48">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.483Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#twoValidFeatureIdentifiers">
+        <dct:title>two Valid Feature Identifiers </dct:title>
+        <dct:description>See ISO 19142: 7.2.2; ISO 19143: 7.11</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-41">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-41">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.538Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#twoValidFeatureIdentifiers"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-65">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-65">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.374Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsNullOperatorTests#propertyIsNotNull">
+        <dct:title>property Is Not Null </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.5, 7.10</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-53">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-53">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.017Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsNullOperatorTests#gmlNameIsNull"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-89">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-89">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:28.024Z</dct:date>
+        <dct:description>java.lang.IndexOutOfBoundsException: Index: 0, Size: 0</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#cantTell"/>
+        <cite:message>
+          <http:Request>
+            <http:requestURI>service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;count=10&amp;startindex=0</http:requestURI>
+            <http:methodName>GET</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterPeriod"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-77">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-77">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.694Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#invalidOperand_boundedBy"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-30">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-30">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.209Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/DescribeFeatureTypeTests#describeUnknownFeatureType"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-54">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-54">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:10.753Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/BasicCapabilitiesTests#describesBasicWFS">
+        <dct:title>describes Basic WFS </dct:title>
+        <dct:description>See ISO 19142: Table 1, Table 13, A.1.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-42">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-42">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.281Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsGreaterThanEqualTo_matchAny"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-78">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-78">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:11.639Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/GetPropertyValueTests#getProperty_gmlId">
+        <dct:title>get Property_gml Id </dct:title>
+        <dct:description>See ISO 19142: 10.2.4.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-66">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-66">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.567Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/PropertyIsEqualToOperatorTests#propertyIsEqualTo_caseSensitive">
+        <dct:title>property Is Equal To_case Sensitive </dct:title>
+        <dct:description>See ISO 19143: 7.7.3.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-43">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-43">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:13.73Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThanEqualTo_matchAny"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-31">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-31">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.375Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/StoredQueryTests#invokeGetFeatureByIdWithUnknownID">
+        <dct:title>invoke Get Feature By Id With Unknown I D </dct:title>
+        <dct:description>See ISO 19142: 7.9.3.6, 11.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-67">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-67">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:11.569Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/GetPropertyValueTests#getProperty_gmlId"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-55">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-55">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.246Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsNullOperatorTests#propertyIsNotNull"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-79">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-79">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.582Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#unknownFeatureIdentifier">
+        <dct:title>unknown Feature Identifier </dct:title>
+        <dct:description>See ISO 19142: 7.2.2, Table 8</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-32">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-32">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:08.435Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/DescribeFeatureTypeTests#describeAllFeatureTypes">
+        <dct:title>describe All Feature Types </dct:title>
+        <dct:description>See ISO 19142: 9.2.4.1</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-20">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-20">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:10.09Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/DescribeStoredQueriesTests#describeStoredQuery_GetFeatureById"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-56">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-56">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.016Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsLikeOperatorTests#propertyIsNotLike"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-44">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-44">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:12.96Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#invalidPropertyReference"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-68">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-68">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:27.652Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsEqualToOperatorTests#propertyIsEqualTo_caseSensitive"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-100">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-100">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.267Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/TransactionCapabilitiesTests#capabilitiesDescribesTransactionalWFS">
+        <dct:title>capabilities Describes Transactional WFS </dct:title>
+        <dct:description>See ISO 19142: Table 13, A.2.23</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-112">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-112">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.633Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/LockFeatureTests#lockAllFeaturesByType">
+        <dct:title>lock All Features By Type </dct:title>
+        <dct:description>See ISO 19142: 12.3.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-124">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-124">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.835Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/querymgmt/CreateStoredQueryTests#createStoredQueryWithUnsupportedQueryLanguage">
+        <dct:title>create Stored Query With Unsupported Query Language </dct:title>
+        <dct:description>See OGC 09-025: 14.2.2.5.3, 14.7</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-29">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-29">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:10.039Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/DescribeStoredQueriesTests#describeAllStoredQueries">
+        <dct:title>describe All Stored Queries </dct:title>
+        <dct:description>See ISO 19142: 14.4.2, Table 21</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-17">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-17">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.421Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/StoredQueryTests#invokeGetFeatureByIdWithUnknownID"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-125">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-125">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.891Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/versioning/VersioningTests#updatedVersionHasSupersededPredecessor">
+        <dct:title>updated Version Has Superseded Predecessor </dct:title>
+        <dct:description>See OGC 09-025: 15.3.5</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-101">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-101">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.41Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/InsertTests#insertSupportedFeature">
+        <dct:title>insert Supported Feature </dct:title>
+        <dct:description>See ISO 19142: 15.2.4, 15.3.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-113">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-113">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.634Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/LockFeatureTests#lockFeatureAlreadyLocked">
+        <dct:title>lock Feature Already Locked </dct:title>
+        <dct:description>See ISO 19142: 12.2.3, 12.2.5</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-18">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-18">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:07.124Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getCapabilities_acceptVersions"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-110">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-110">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.687Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/GetFeatureWithLockTests#lockAllQueryResults_20Seconds">
+        <dct:title>lock All Query Results_20 Seconds </dct:title>
+        <dct:description>See ISO 19142: 12.2.4.2, Table D.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-122">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-122">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.835Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/querymgmt/CreateStoredQueryTests#createGetFeatureByTypeName">
+        <dct:title>create Get Feature By Type Name </dct:title>
+        <dct:description>See OGC 09-025: 14.2, 14.5.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-19">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-19">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:08.211Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/ServiceMetadataTests#capabilitiesDocCorrespondsToWfsSimple">
+        <dct:title>capabilities Doc Corresponds To Wfs Simple </dct:title>
+        <dct:description>See ISO 19142: A.1.1, A.2.23</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-111">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-111">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.589Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/LockingCapabilitiesTests#capabilitiesDescribesLockingWFS">
+        <dct:title>capabilities Describes Locking WFS </dct:title>
+        <dct:description>See ISO 19142: Table 13, A.2.23</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-123">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-123">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.74Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/querymgmt/StoredQueryManagement#supportedStoredQueryLanguages">
+        <dct:title>supported Stored Query Languages </dct:title>
+        <dct:description>See OGC 09-025: Table 12, 14.2.2.5.3</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-1">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-1">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:05.147Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/SuitePreconditions#verifyServiceDescription">
+        <dct:title>verify Service Description </dct:title>
+        <dct:description>Test subject is WFS 2.0 service</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-104">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-104">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.335Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/Update#updateGMLName">
+        <dct:title>update GML Name </dct:title>
+        <dct:description>See ISO 19142: 15.3.3, 15.3.5</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-116">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-116">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.634Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/LockFeatureTests#lockFeatureAndAttemptDelete">
+        <dct:title>lock Feature And Attempt Delete </dct:title>
+        <dct:description>See ISO 19142: 12.2.4.3, 15.2.3.1.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-128">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-128">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.89Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/versioning/VersioningTests#replacementVersionHasNoSuccessor">
+        <dct:title>replacement Version Has No Successor </dct:title>
+        <dct:description>See OGC 09-025: 15.3.6</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-25">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-25">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.83Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/StoredQueryTests#unknownStoredQuery"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-13">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-13">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.275Z</dct:date>
+        <dct:description>java.lang.AssertionError: Feature identifier not found. expected [false] but found [true]</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#failed"/>
+        <cite:message>
+          <http:Request>
+            <http:requestURI>service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;count=10&amp;startindex=0</http:requestURI>
+            <http:methodName>GET</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/StoredQueryTests#invokeGetFeatureById">
+        <dct:title>invoke Get Feature By Id </dct:title>
+        <dct:description>See ISO 19142: 7.9.3.6</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-49">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-49">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:11.085Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/BasicCapabilitiesTests#describesBasicWFS"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-37">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-37">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.329Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeaturesByType"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-2">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-2">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:05.798Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/SuitePreconditions#dataAreAvailable">
+        <dct:title>data Are Available </dct:title>
+        <dct:description>SUT has data for at least one advertised feature type</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-105">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-105">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.406Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/InsertTests#insertInvalidFeature">
+        <dct:title>insert Invalid Feature </dct:title>
+        <dct:description>See ISO 19142: 7.5, 15.4</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-117">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-117">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.738Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test>
+      <earl:TestCase rdf:about="org/opengis/cite/iso19142/paging/PagingTests#getFeatureWithHitsOnly">
+        <dct:title>get Feature With Hits Only </dct:title>
+        <dct:description>See OGC 09-025: 7.7.4.2</dct:description>
+      </earl:TestCase>
+    </earl:test>
+  </earl:Assertion>
+  <cite:TestRun>
+    <cite:testSuiteType>testng</cite:testSuiteType>
+    <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >13</cite:testsFailed>
+    <dct:identifier>23a478e9-f7f6-42cd-a777-604bc4aeb34e</dct:identifier>
+    <cite:inputs>
+      <rdf:Bag>
+        <rdf:li rdf:parseType="Resource">
+          <dct:title>wfs</dct:title>
+          <dct:description>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wfs200?service=WFS&amp;request=GetCapabilities</dct:description>
+        </rdf:li>
+        <rdf:li rdf:parseType="Resource">
+          <dct:title>xsd</dct:title>
+          <dct:description>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wfs200?service=WFS&amp;version=2.0.0&amp;request=DescribeFeatureType</dct:description>
+        </rdf:li>
+      </rdf:Bag>
+    </cite:inputs>
+    <dct:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#duration"
+    >PT55.843S</dct:extent>
+    <dct:created>2018-03-28T12:10:00.948Z</dct:created>
+    <cite:requirements>
+      <rdf:Seq>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Preconditions">
+            <dct:title>Preconditions</dct:title>
+            <cite:isBasic>true</cite:isBasic>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >3</cite:testsPassed>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/SuitePreconditions#verifyServiceDescription"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/SuitePreconditions#dataAreAvailable"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/SuitePreconditions#serviceIsAvailable"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="All-GML-application-schemas">
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >7</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/XMLSchemaTests#compileXMLSchema"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/GeneralSchemaTests#declaresGMLObjects"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/ComplexPropertyTests#validateMetadataProperties"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/ComplexPropertyTests#validateMembersOfGmlObjectCollection"/>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/GeneralSchemaTests#declareTargetNamespace"/>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/ModelAndSyntaxTests#verifyGMLObjectPropertyPattern"/>
+            <dct:title>All GML application schemas</dct:title>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/general/GeneralSchemaTests#importFullGMLSchema"/>
+            <cite:isBasic>true</cite:isBasic>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="GML-application-schemas-defining-features">
+            <dct:title>GML application schemas defining features</dct:title>
+            <cite:isBasic>true</cite:isBasic>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >2</cite:testsPassed>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/components/FeatureComponentTests#verifyFeatureMemberProperties"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19136/components/FeatureComponentTests#substitutesForAbstractFeature"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Simple-WFS">
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/DescribeFeatureTypeTests#describeAllFeatureTypes"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/DescribeFeatureTypeTests#describeUnknownFeatureType"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/StoredQueryTests#invokeGetFeatureById"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/DescribeStoredQueriesTests#describeAllStoredQueries"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/ServiceMetadataTests#capabilitiesDocIsXmlSchemaValid"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getCapabilities_acceptVersions"/>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >2</cite:testsFailed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/DescribeStoredQueriesTests#describeStoredQuery_GetFeatureById"/>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/StoredQueryTests#invokeGetFeatureByIdWithUnknownID"/>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >20</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/ListStoredQueriesTests#listStoredQueries"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/StoredQueryTests#unknownStoredQuery"/>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getCapabilities_missingServiceParam">
+                <dct:title>get Capabilities_missing Service Param </dct:title>
+                <dct:description>See ISO 19142: 7.5</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getFullCapabilities">
+                <dct:title>get Full Capabilities </dct:title>
+                <dct:description>See ISO 19142: 7.2</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+            <dct:title>Simple WFS</dct:title>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/simple/ServiceMetadataTests#capabilitiesDocCorrespondsToWfsSimple"/>
+            <cite:isBasic>true</cite:isBasic>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Basic-WFS">
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsLikeOperatorTests#propertyIsNotLike"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#unknownFeatureIdentifier"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/GetPropertyValueTests#getProperty_emptyValueRef"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsEqualToOperatorTests#propertyIsNotEqualTo_caseSensitive"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#invalidPropertyReference"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/GetPropertyValueTests#getProperty_gmlId"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeaturesByType"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsEqualToOperatorTests#propertyIsEqualTo_caseSensitive"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThan_matchAll"/>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >43</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsNullOperatorTests#propertyIsNotNull"/>
+            <dct:title>Basic WFS</dct:title>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >2</cite:testsSkipped>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThanEqualTo_matchAny"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsLessThan_matchAny"/>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeatureInUnsupportedCRS">
+                <dct:title>get Feature In Unsupported CRS </dct:title>
+                <dct:description>See OGC 09-025r2: A.2.22.1.4</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeatureInOtherCRS"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsLikeOperatorTests#propertyIsLike"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsGreaterThan_matchAny"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsNilOperatorTests#propertyIsNil"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#invalidOperand_boundedBy"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#inconsistentFeatureIdentifierAndType"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#twoValidFeatureIdentifiers"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/PropertyIsNullOperatorTests#gmlNameIsNull"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/BasicCapabilitiesTests#describesBasicWFS"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/ComparisonOperatorTests#propertyIsGreaterThanEqualTo_matchAny"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Temporal-filter">
+            <dct:title>Temporal filter</dct:title>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterInstant"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterPeriod"/>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >10</cite:testsFailed>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/DuringTests#duringPeriod"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/BeforeTests#beforePeriod"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/temporal/AfterTests#afterInstantWithOffset"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Spatial-filter">
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >4</cite:testsSkipped>
+            <dct:title>Spatial filter</dct:title>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#nonSpecificBBOX"/>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >4</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/IntersectsTests#intersectsCurve"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#bboxWithDefaultExtent"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/BBOXTests#invalidGeometryOperand"/>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</cite:testsFailed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/basic/filter/spatial/IntersectsTests#intersectsPolygon"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Spatial-joins">
+            <dct:title>Spatial joins</dct:title>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</cite:testsSkipped>
+            <dct:description>A precondition was not met. All tests in this set were skipped.</dct:description>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/joins/SpatialJoinTests#joinWithIntersects"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Transactional-WFS">
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/transaction/InsertTests#insertInvalidFeature"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/transaction/ReplaceTests#replaceFeature"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/transaction/Update#updateGMLName"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/transaction/InsertTests#insertSupportedFeature"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/transaction/TransactionCapabilitiesTests#capabilitiesDescribesTransactionalWFS"/>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >8</cite:testsSkipped>
+            <dct:description>A precondition was not met. All tests in this set were skipped.</dct:description>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/Update#updateSimplePropertyValue">
+                <dct:title>update Simple Property Value </dct:title>
+                <dct:description>See ISO 19142: 15.3.3, 15.3.5</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <dct:title>Transactional WFS</dct:title>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/transaction/DeleteTests#deleteFeature"/>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/transaction/Update#updateBoundedByWithKMLPoint">
+                <dct:title>update Bounded By With K M L Point </dct:title>
+                <dct:description>See ISO 19142: 7.5, 15.2.5.2.1</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Locking-WFS">
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/GetFeatureWithLockTests#lockAllQueryResults_20Seconds"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/LockFeatureTests#lockAllFeaturesByType"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/GetFeatureWithLockTests#lockQueryResults_hits"/>
+            <dct:description>A precondition was not met. All tests in this set were skipped.</dct:description>
+            <dct:title>Locking WFS</dct:title>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/LockFeatureTests#lockFeatureWithLockIdAndQuery"/>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/LockingCapabilitiesTests#capabilitiesDescribesLockingWFS"/>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >9</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/LockFeatureTests#lockFeatureAndAttemptDelete"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/locking/LockFeatureTests#lockFeatureAlreadyLocked"/>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/locking/GetFeatureWithLockTests#lockSomeFeatures">
+                <dct:title>lock Some Features </dct:title>
+                <dct:description>See ISO 19142: 13.2.4.2</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Response-paging">
+            <dct:title>Response paging</dct:title>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >2</cite:testsSkipped>
+            <dct:description>A precondition was not met. All tests in this set were skipped.</dct:description>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/paging/PagingTests#getFeatureWithHitsOnly"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/paging/PagingTests#traverseResultSetInBothDirections"/>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Manage-stored-queries">
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/querymgmt/CreateStoredQueryTests#createGetFeatureByTypeName"/>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >6</cite:testsSkipped>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/querymgmt/CreateStoredQueryTests#createStoredQueryWithUnsupportedQueryLanguage"/>
+            <dct:title>Manage stored queries</dct:title>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/querymgmt/StoredQueryManagement#supportedStoredQueryLanguages"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/querymgmt/CreateStoredQueryTests#duplicateQuery"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/querymgmt/DropStoredQueryTests#dropNonexistentQuery"/>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/querymgmt/DropStoredQueryTests#dropStoredQuery"/>
+            <dct:description>A precondition was not met. All tests in this set were skipped.</dct:description>
+          </earl:TestRequirement>
+        </rdf:li>
+        <rdf:li>
+          <earl:TestRequirement rdf:about="Feature-versions">
+            <dct:title>Feature versions</dct:title>
+            <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsPassed>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/versioning/VersioningTests#updatedVersionHasSupersededPredecessor"/>
+            <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >4</cite:testsSkipped>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/versioning/VersioningTests#firstVersionHasNoPredecessor">
+                <dct:title>first Version Has No Predecessor </dct:title>
+                <dct:description>See OGC 09-025: 11.3.3.2, 15.3.4; OGC 09-026: 7.11.2</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+            <dct:description>A precondition was not met. All tests in this set were skipped.</dct:description>
+            <dct:hasPart rdf:resource="org/opengis/cite/iso19142/versioning/VersioningTests#replacementVersionHasNoSuccessor"/>
+            <cite:testsFailed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >0</cite:testsFailed>
+            <dct:hasPart>
+              <earl:TestCase rdf:about="org/opengis/cite/iso19142/versioning/VersioningTests#deletedFeatureIsRetired">
+                <dct:title>deleted Feature Is Retired </dct:title>
+                <dct:description>See OGC 09-025: 15.2.7.1</dct:description>
+              </earl:TestCase>
+            </dct:hasPart>
+          </earl:TestRequirement>
+        </rdf:li>
+      </rdf:Seq>
+    </cite:requirements>
+    <cite:testsSkipped rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >36</cite:testsSkipped>
+    <dct:title>wfs20-1.29-SNAPSHOT</dct:title>
+    <cite:testsPassed rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >79</cite:testsPassed>
+  </cite:TestRun>
+  <earl:Assertion rdf:about="assert-14">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-14">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.286Z</dct:date>
+        <dct:description>java.lang.AssertionError: Feature identifier not found. expected [false] but found [true]</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#failed"/>
+        <cite:message>
+          <http:Request>
+            <http:body>
+              <cnt:ContentAsXML>
+                <cnt:rest>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</cnt:rest>
+              </cnt:ContentAsXML>
+            </http:body>
+            <http:requestURI>&lt;wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs/2.0" count="10" service="WFS"
+                startIndex="0"
+                version="2.0.0"&gt;
+&lt;/wfs:GetFeature&gt;</http:requestURI>
+            <http:methodName>POST</http:methodName>
+          </http:Request>
+        </cite:message>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/StoredQueryTests#invokeGetFeatureById"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-38">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-38">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:26.629Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/filter/ResourceIdFilterTests#unknownFeatureIdentifier"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-26">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-26">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:07.968Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getFullCapabilities"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-114">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-114">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.688Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/locking/GetFeatureWithLockTests#lockSomeFeatures"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-126">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-126">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.89Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/versioning/VersioningTests#deletedFeatureIsRetired"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-102">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-102">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.33Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/transaction/Update#updateBoundedByWithKMLPoint"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-27">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-27">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:10.337Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/ListStoredQueriesTests#listStoredQueries"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-15">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-15">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:07.512Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/SimpleCapabilitiesTests#getCapabilities_missingServiceParam"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-39">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-39">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:14.379Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/basic/BasicGetFeatureTests#getFeatureInUnsupportedCRS"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-103">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-103">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.35Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/transaction/Update#updateSimplePropertyValue"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-115">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-115">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.633Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/locking/LockFeatureTests#lockAllFeaturesByType"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-127">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-127">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:10:00.89Z</dct:date>
+        <dct:description>No details available.</dct:description>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#untested"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/versioning/VersioningTests#firstVersionHasNoPredecessor"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-16">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-16">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:08.37Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/DescribeFeatureTypeTests#describeAllFeatureTypes"/>
+  </earl:Assertion>
+  <earl:Assertion rdf:about="assert-28">
+    <earl:mode rdf:resource="http://www.w3.org/ns/earl#automatic"/>
+    <earl:assertedBy rdf:resource="https://github.com/opengeospatial/teamengine"/>
+    <earl:subject rdf:resource="23a478e9-f7f6-42cd-a777-604bc4aeb34e"/>
+    <earl:result>
+      <earl:TestResult rdf:about="result-28">
+        <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2018-03-28T12:09:09.991Z</dct:date>
+        <earl:outcome rdf:resource="http://www.w3.org/ns/earl#passed"/>
+      </earl:TestResult>
+    </earl:result>
+    <earl:test rdf:resource="org/opengis/cite/iso19142/simple/DescribeStoredQueriesTests#describeAllStoredQueries"/>
+  </earl:Assertion>
+</rdf:RDF>
