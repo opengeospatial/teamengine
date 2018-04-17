@@ -6,9 +6,11 @@ The configuration in the tests to represent the conformance class (CC) and basic
 
 ## Configuration in CTL test
 
-* All the conformance class test should be at the main.ctl file, which is the starting point of the test that is based on ctl.
+The conformance classes must be configured on the second level of test hierarchy.
+Example: The starting-test of the suite references the test 'main' (which is the test on first level). The test 'main' executes several tests which should be marked as conformance classes, e.g. 'cc-one' and 'cc-one' (tests on second level). The tests assigned to a second level test may be grouped in hierarchies with undefined depth.
+Neither the test on the first level nor the tests below the second level can be configured as conformance classes!
 
-* To represent the conformance class and basic conformance class we need to add two attributes i.e. **`isConformanceClass`** and **`isBasic`**.
+To represent the conformance class and basic conformance class we need to add two attributes i.e. **`isConformanceClass`** and **`isBasic`**.
 
 #### isConformanceClass:
 
