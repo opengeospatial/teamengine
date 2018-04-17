@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:cite="http://cite.opengeospatial.org/earl#"
+                xmlns:cite="http://cite.opengeospatial.org/"
                 xmlns:cnt="http://www.w3.org/2011/content#"
                 xmlns:dct="http://purl.org/dc/terms/"
                 xmlns:earl="http://www.w3.org/ns/earl#"

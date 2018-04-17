@@ -20,7 +20,7 @@ public class CITE {
 
     /** Model that holds the CITE vocabulary terms. */
     private static final Model model = ModelFactory.createDefaultModel();
-    public static final String NS_URI = "http://cite.opengeospatial.org/earl#";
+    public static final String NS_URI = "http://cite.opengeospatial.org/";
     public static final Resource NAMESPACE = model.createResource(NS_URI);
     public static final Resource TestRun = model.createResource(NS_URI + "TestRun");
     public static final Property testsFailed = model.createProperty(NS_URI + "testsFailed");
@@ -53,16 +53,16 @@ public class CITE {
      */
     public static final Property optionality = model.createProperty(NS_URI + CC_OPTIONALITY);
     // CTL test verdicts
-    public static final Resource Best_Practice = model.createResource(NS_URI + "bestPractice")
+    public static final Resource Best_Practice = model.createResource(NS_URI + "earl#bestPractice")
             .addProperty(RDF.type, EARL.OutcomeValue);
-    public static final Resource Warning = model.createResource(NS_URI + "warning")
+    public static final Resource Warning = model.createResource(NS_URI + "earl#warning")
             .addProperty(RDF.type, EARL.OutcomeValue);
-    public static final Resource Continue = model.createResource(NS_URI + "continue")
+    public static final Resource Continue = model.createResource(NS_URI + "earl#continue")
             .addProperty(RDF.type, EARL.OutcomeValue);
-    public static final Resource Not_Tested = model.createResource(NS_URI + "notTested")
+    public static final Resource Not_Tested = model.createResource(NS_URI + "earl#notTested")
             .addProperty(RDF.type, EARL.OutcomeValue);
     public static final Resource Inherited_Failure = model
-            .createResource(NS_URI + "inheritedFailure").addProperty(RDF.type, EARL.OutcomeValue);
+            .createResource(NS_URI + "earl#inheritedFailure").addProperty(RDF.type, EARL.OutcomeValue);
     // Indicate the test suite type i.e. CTL or TestNG based.
     public static final Property testSuiteType = model.createProperty(NS_URI + "testSuiteType");
 }

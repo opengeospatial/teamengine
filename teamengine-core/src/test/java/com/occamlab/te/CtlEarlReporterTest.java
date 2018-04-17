@@ -55,7 +55,7 @@ public class CtlEarlReporterTest {
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
         nsContext = nsContext.withBinding( "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#" );
         nsContext = nsContext.withBinding( "earl", "http://www.w3.org/ns/earl#" );
-        nsContext = nsContext.withBinding( "cite", "http://cite.opengeospatial.org/earl#" );
+        nsContext = nsContext.withBinding( "cite", "http://cite.opengeospatial.org/" );
         return nsContext;
     }
 
