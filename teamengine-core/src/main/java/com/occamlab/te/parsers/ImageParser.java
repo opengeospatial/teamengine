@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -55,6 +54,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+import javax.net.ssl.SSLProtocolException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Document;
@@ -546,13 +546,15 @@ public class ImageParser {
     }
 
     public static Document parse(URLConnection uc, Element instruction,
-            PrintWriter logger) {
+            PrintWriter logger) throws SSLProtocolException {
         Document doc = null;
         InputStream is = null;
         try {
             is = uc.getInputStream();
             doc = parse(is, instruction, logger);
-        } catch (Exception e) {
+        } catch (SSLProtocolException sslep){
+			throw new SSLProtocolException("[SSL ERROR] Failed to connect with the requested URL due to \"Invalid server_name\" found!! :" + uc.getURL() +":" + sslep.getClass() +" : "+ sslep.getMessage());
+		} catch (Exception e) {
             String msg = String.format(
                     "Failed to parse %s resource from %s %n %s",
                     uc.getContentType(), uc.getURL(), e.getMessage());

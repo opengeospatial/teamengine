@@ -1,3 +1,9 @@
+/***************************************************************
+ *
+ * Contributor(s):
+ *    C. Heazel (WiSC): Moved vocabulary package from spi to core
+ *
+ ***************************************************************/
 package com.occamlab.te.spi.executors.testng;
 
 import static org.junit.Assert.*;
@@ -20,7 +26,7 @@ import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.xml.XmlSuite;
 
-import com.occamlab.te.spi.vocabulary.EARL;
+import com.occamlab.te.vocabulary.EARL;
 
 public class VerifyEarlReporter {
 

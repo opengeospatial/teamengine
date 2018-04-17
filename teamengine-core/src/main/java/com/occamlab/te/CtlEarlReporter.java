@@ -1,12 +1,13 @@
 /**
- * ********************************************************************************
+ * ***************************************************************************
  *
  * Version Date: January 8, 2018
  *
  * Contributor(s):
  *     C. Heazel (WiSC): Modifications to address Fortify issues
+ *     C. Heazel (WiSC): Moved vocabulary package from spi to core
  *
- * ********************************************************************************
+ * ***************************************************************************
  */
 
 package com.occamlab.te;
@@ -51,10 +52,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.occamlab.te.spi.vocabulary.CITE;
-import com.occamlab.te.spi.vocabulary.CONTENT;
-import com.occamlab.te.spi.vocabulary.EARL;
-import com.occamlab.te.spi.vocabulary.HTTP;
+import com.occamlab.te.vocabulary.CITE;
+import com.occamlab.te.vocabulary.CONTENT;
+import com.occamlab.te.vocabulary.EARL;
+import com.occamlab.te.vocabulary.HTTP;
 
 public class CtlEarlReporter {
 
