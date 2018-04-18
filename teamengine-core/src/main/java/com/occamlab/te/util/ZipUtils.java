@@ -49,7 +49,7 @@ public class ZipUtils {
                     dirList[i].getAbsolutePath());
             System.out.println(" Adding: " + dirList[i].getAbsolutePath());
 
-            out.putNextEntry(new ZipEntry(dirList[i].getAbsolutePath()));
+            out.putNextEntry(new ZipEntry(dirList[i].getAbsolutePath().replaceAll("^/+", "")));
 
             // Transfer from the file to the ZIP file
             int len;
