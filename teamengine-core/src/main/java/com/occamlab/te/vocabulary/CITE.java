@@ -59,13 +59,13 @@ public class CITE {
      */
     public static final Property optionality = model.createProperty(NS_URI + CC_OPTIONALITY);
     // CTL test verdicts
-    public static final Resource Best_Practice = model.createResource(NS_URI + "bestPractice")
+    public static final Resource Best_Practice = model.createResource(NS_URI + "earl#bestPractice")
             .addProperty(RDF.type, EARL.OutcomeValue);
-    public static final Resource Warning = model.createResource(NS_URI + "warning")
+    public static final Resource Warning = model.createResource(NS_URI + "earl#warning")
             .addProperty(RDF.type, EARL.OutcomeValue);
-    public static final Resource Continue = model.createResource(NS_URI + "continue")
+    public static final Resource Continue = model.createResource(NS_URI + "earl#continue")
             .addProperty(RDF.type, EARL.OutcomeValue);
-    public static final Resource Not_Tested = model.createResource(NS_URI + "notTested")
+    public static final Resource Not_Tested = model.createResource(NS_URI + "earl#notTested")
             .addProperty(RDF.type, EARL.OutcomeValue);
     public static final Resource Inherited_Failure = model
             .createResource(NS_URI + "earl#inheritedFailure").addProperty(RDF.type, EARL.OutcomeValue);
