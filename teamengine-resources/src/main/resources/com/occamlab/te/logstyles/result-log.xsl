@@ -95,7 +95,7 @@
                         var jsonData = JSON.parse(data);
                         var text = "";
                         if (jsonData.Result !== undefined) {
-                            for (var index = 0; index < 18; index++) {
+                            for (var index = 0; index < 17; index++) {
                                 var reqno=jsonData.Result[index].Name.split(" ")[1];
                                 var id=jsonData.Result[index].id+"_result";
                                 var img=jsonData.Result[index].id+"_img";
@@ -109,7 +109,7 @@
                             }
                         }
                         if (jsonData.Result !== undefined) {
-                            for (var index = 18; index < jsonData.Result.length; index++) {
+                            for (var index = 17; index < jsonData.Result.length; index++) {
                                 var reqno=jsonData.Result[index].Name.split(" ")[1];
                                 var id=jsonData.Result[index].ParentID+"_result";
                                 var leftmarginafter=((+jsonData.Result[index].indent)+1)*20;
@@ -217,13 +217,13 @@
                         } else {
                             $('#16_img').attr("src", success);
                         }
-                        if ($('#17_result').text().indexOf('Request') == -1) {
+                        /* if ($('#17_result').text().indexOf('Request') == -1) {
                             $('#17_img').attr("src", error);
                             $('#3_img').attr("src", error);
                             $('#1_img').attr("src", error);
                         } else {
                             $('#17_img').attr("src", success);
-                        }
+                        } */
                         if ($('#3_img').attr("src").indexOf('warning') > -1) {
                             $('#3_img').attr("src", success);
                         }

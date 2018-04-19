@@ -260,7 +260,7 @@
           // Fortify Mod: Close the FileReader once we are done with it.
           // Object obj = parser.parse(new FileReader(userlog + "/" + sessionId + "/test_data/finalResult.txt"));
           FileReader fr = new FileReader(userlog + "/" + sessionId + "/test_data/finalResult.txt");
-          Object obj = parser.parse(fd);
+          Object obj = parser.parse(fr);
           fr.close();
           JSONObject jsonObject = (JSONObject) obj;
           JSONArray resultMsg = (JSONArray) jsonObject.get("Result");
