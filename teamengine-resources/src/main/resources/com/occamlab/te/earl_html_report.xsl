@@ -252,13 +252,14 @@
               <xsl:value-of select="cite:testsPassed" />
             </xsl:element>
           </td>
+          <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " /> 
           <td bgcolor="#FFB2B2">
             Fail:
             <xsl:element name="span">
               <xsl:attribute name="id">
                 <xsl:value-of select="concat('testsFailed_',replace(dct:title, ' ', '_') )" />
               </xsl:attribute>
-              <xsl:value-of select="cite:testsFailed + cite:testsInheritedFailure" />
+              <xsl:value-of select="cite:testsFailed + $testsInheritedFailure" />
             </xsl:element>
           </td>
           <td bgcolor="#CCCCCE">
@@ -273,7 +274,7 @@
           <td>
             Total tests:
             <xsl:variable name="testsInTotal">
-              <xsl:value-of select="cite:testsPassed + cite:testsFailed + cite:testsInheritedFailure + cite:testsSkipped" />
+              <xsl:value-of select="cite:testsPassed + cite:testsFailed + $testsInheritedFailure + cite:testsSkipped" />
             </xsl:variable>
             <xsl:element name="span">
               <xsl:attribute name="id">
