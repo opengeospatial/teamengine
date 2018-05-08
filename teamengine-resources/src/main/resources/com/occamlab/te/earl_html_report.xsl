@@ -199,8 +199,22 @@
               Core Conformance Classes (Pass = Green; Fail = Red; Skip = Grey):
               <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                 <xsl:if test="cite:isBasic = 'true'">
+                <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " />
+                <xsl:variable name="bgcolor" >
+					<xsl:choose>
+						<xsl:when test="cite:testsPassed > 0 and cite:testsFailed = 0 and $testsInheritedFailure = 0">
+							 <xsl:value-of select="string('#B2F0D1')" />
+						</xsl:when>
+						<xsl:when test="cite:testsPassed = 0 and cite:testsFailed > 0 or $testsInheritedFailure > 0">
+							<xsl:value-of select="string('#FFB2B2')" />
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="string('#CCCCCE')" />
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>	
                   <div style="text-indent:50px;">
-                    <xsl:value-of select="dct:title" />
+                  	<span style="background-color:{$bgcolor};"><xsl:value-of select="dct:title" /></span>
                   </div>
                 </xsl:if>
               </xsl:for-each>
