@@ -122,16 +122,7 @@
               <br />
               Time:
               <xsl:value-of select="rdf:RDF/cite:TestRun/dct:created" />
-              <br />
-              Core Conformance Classes (Implementation passing these classes can be certified):
-              <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
-                <xsl:if test="cite:isBasic = 'true'">
-                  <div style="text-indent:50px;">
-                    <xsl:value-of select="dct:title" />
-                  </div>
-                </xsl:if>
-              </xsl:for-each>
-              <br />
+              <br />              
               Test INPUT:
               <xsl:choose>
                 <xsl:when test="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
@@ -181,7 +172,7 @@
               </xsl:variable>
               <div style="text-indent:0px; float: left;width: 95%;margin-left:3.7%">
                 <span>
-                  <label>Passed core (Can be certified):</label>
+                  <label>Passed Core Conformance Classes (Implementations passing these classes can be certified):</label>
                 </span>
                 <span style="text-intent:0px">
                   <xsl:value-of select="$status" />
@@ -205,6 +196,14 @@
                 <xsl:value-of select="count(//earl:TestRequirement/cite:testsFailed[text() &gt;'0'])" />
               </div>
               <!-- Pass:  <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsPassed"/> | Fail: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsFailed"/> | Skip: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsSkipped"/> -->
+              Core Conformance Classes (Pass = Green; Fail = Red; Skip = Grey):
+              <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
+                <xsl:if test="cite:isBasic = 'true'">
+                  <div style="text-indent:50px;">
+                    <xsl:value-of select="dct:title" />
+                  </div>
+                </xsl:if>
+              </xsl:for-each>
             </font>
           </h3>
           <table border="1">
