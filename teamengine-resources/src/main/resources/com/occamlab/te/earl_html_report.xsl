@@ -122,6 +122,7 @@
               <br />
               Time:
               <xsl:value-of select="rdf:RDF/cite:TestRun/dct:created" />
+              <br />
               <br />              
               Test INPUT:
               <xsl:choose>
@@ -142,6 +143,7 @@
                   <xsl:value-of select="NULL" />
                 </xsl:otherwise>
               </xsl:choose>
+              <br />
               Result:
               <br />
               <xsl:variable name="status">
@@ -195,6 +197,7 @@
                 Number of conformance class failed:
                 <xsl:value-of select="count(//earl:TestRequirement/cite:testsFailed[text() &gt;'0'])" />
               </div>
+              <br />
               <!-- Pass:  <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsPassed"/> | Fail: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsFailed"/> | Skip: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsSkipped"/> -->
               Core Conformance Classes (Pass = Green; Fail = Red; Skip = Grey):
               <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
@@ -205,7 +208,7 @@
 						<xsl:when test="cite:testsPassed > 0 and cite:testsFailed = 0 and $testsInheritedFailure = 0">
 							 <xsl:value-of select="string('#B2F0D1')" />
 						</xsl:when>
-						<xsl:when test="cite:testsPassed = 0 and cite:testsFailed > 0 or $testsInheritedFailure > 0">
+						<xsl:when test="cite:testsFailed > 0 or $testsInheritedFailure > 0">
 							<xsl:value-of select="string('#FFB2B2')" />
 						</xsl:when>
 						<xsl:otherwise>
