@@ -22,7 +22,7 @@
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
   <xsl:variable name="htmlXslt.outputDir" select="$outputDir" />
-  <xsl:variable name="tested-instace-terms" select="'iut,gml,wfs-uri,wmts,wfs,wms'" />
+  <xsl:variable name="tested-instace-terms" select="'iut,gml,wfs-uri,wmts,wfs,wms,capabilities-url'" />
   <xsl:variable name="tested-cc-terms" select="'ics'" />
   <xsl:function name="testng:absolutePath">
     <xsl:param name="fileName" />
@@ -148,7 +148,7 @@
 					
 						</xsl:variable>
                     
-                      <xsl:value-of select="if (not(empty($test-input-title))) then $test-input-title else dct:title" />
+                      <xsl:value-of select="if (not(empty($test-input-title)) and $test-input-title != '') then $test-input-title else dct:title" />
                       :
                       <xsl:value-of select="dct:description" />
                     </div>
