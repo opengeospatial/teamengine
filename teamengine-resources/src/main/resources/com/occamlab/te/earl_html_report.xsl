@@ -22,6 +22,8 @@
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
   <xsl:variable name="htmlXslt.outputDir" select="$outputDir" />
+  <xsl:variable name="tested-instace-terms" select="'iut,gml,wfs-uri,wmts,wfs,wms'" />
+  <xsl:variable name="tested-cc-terms" select="'ics'" />
   <xsl:function name="testng:absolutePath">
     <xsl:param name="fileName" />
     <xsl:value-of select="concat(
@@ -129,7 +131,24 @@
                 <xsl:when test="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
                   <xsl:for-each select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
                     <div style="text-indent:50px;">
-                      <xsl:value-of select="dct:title" />
+						<xsl:variable name="test-input-title">
+						<xsl:variable name="title" select="dct:title" />
+							<xsl:for-each select="tokenize($tested-instace-terms,',')">
+		                        <xsl:variable name="term" select="." />
+								<xsl:if test="$title=$term" >
+									<xsl:value-of select="'Tested Instance'" />
+								</xsl:if>
+							</xsl:for-each>
+							<xsl:for-each select="tokenize($tested-cc-terms,',')">
+		                        <xsl:variable name="term" select="." />
+								<xsl:if test="$title=$term" >
+									<xsl:value-of select="'Tested conformance classes'" />
+								</xsl:if>
+							</xsl:for-each>
+					
+						</xsl:variable>
+                    
+                      <xsl:value-of select="if (not(empty($test-input-title))) then $test-input-title else dct:title" />
                       :
                       <xsl:value-of select="dct:description" />
                     </div>
