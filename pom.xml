@@ -299,6 +299,7 @@
           <configuration>
             <docfilessubdirs>true</docfilessubdirs>
             <show>package</show>
+            <additionalparam>-Xdoclint:none</additionalparam>
           </configuration>
           <executions>
             <execution>
