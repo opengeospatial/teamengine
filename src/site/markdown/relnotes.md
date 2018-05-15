@@ -1,6 +1,19 @@
 Release Notes
 =============
 
+## 5.3 (2018-05-15)
+- Fix [#336](https://github.com/opengeospatial/teamengine/issues/336): Improve header of new HTML report: Test INPUT contains confusing informations
+- Fix [#315](https://github.com/opengeospatial/teamengine/issues/315): Circular dependencies
+- Fix [#337](https://github.com/opengeospatial/teamengine/issues/337): Improve header of new HTML report: Mark passed, failed and skipped conformance classes
+- Fix [#340](https://github.com/opengeospatial/teamengine/issues/340): New HTML report: empty count of the failed and total test.
+- Fix [#338](https://github.com/opengeospatial/teamengine/issues/338): Improve header of new HTML report: Improve structure of header
+- Fix [#333](https://github.com/opengeospatial/teamengine/issues/333): Teamengine: The result of GetMapRequest is marked as failed in wms-client13
+- Fix [#326](https://github.com/opengeospatial/teamengine/issues/326): Change URLs used in EARL Report
+- Fix [#319](https://github.com/opengeospatial/teamengine/issues/319): Implement display of hierarchies in new HTML report of TEAM Engine
+- Fix [#320](https://github.com/opengeospatial/teamengine/issues/320): Improve error handling, logging and reporting regarding HTTPS
+- Fix [#293](https://github.com/opengeospatial/teamengine/issues/293): Fortify Issue - XML External Entity Injection
+- Merge [#325](https://github.com/opengeospatial/teamengine/pull/325): Log Download Bug: remove leading slash from .zip files
+
 ## 5.2 (2018-02-26)
 - Fix [#298](https://github.com/opengeospatial/teamengine/issues/298): Fortify Issue: Unreleased Resource
 - Fix [#286](https://github.com/opengeospatial/teamengine/issues/286): HTML 5.0 Report: Add method and class of the failing test
