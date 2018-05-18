@@ -19,7 +19,6 @@
     <value>cite:Streams</value>
     <value>cite:Bridges</value>
     <value>cite:Autos</value>
-    <value>cite:Terrain</value>
   </param>
   <param name="feature_count" type="xs:positiveInteger">
     <value>1</value>
