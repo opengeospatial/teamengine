@@ -1,0 +1,26 @@
+pipeline {
+  agent any
+  tools {
+    maven 'mvn'
+    jdk 'JDK 8'
+  }
+  stages {
+    stage('Preparation') {
+      steps{
+        deleteDir()
+        sh 'git clone git@github.com:opengeospatial/teamengine.git .'
+      }
+    }
+    stage('Test') {
+      steps{
+        sh 'mvn --version'
+        sh 'mvn clean com.smartbear.soapui:soapui-maven-plugin:test -Dsoapui.teamengine.endpoint=${teamengineEndpoint} -Dsoapui.testng.ets.code=${testngEtsCode} -Dsoapui.testng.ets.version=${testngEtsVersion} -Dsoapui.testng.iut=${testngIut} -Dsoapui.ctl.ets.code=${ctlEtsCode} -Dsoapui.ctl.ets.version=${ctlEtsVersion} -Dsoapui.ctl.iut=${ctlIut}'
+      }
+    }
+    stage('Results') {
+      steps{
+        junit 'TEST-*.xml'
+      }
+    }
+  }
+}
