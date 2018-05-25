@@ -4,7 +4,7 @@
   <con:testSuite id="190b308a-ad99-456c-a418-5482414ca4fb" name="REST API">
     <con:settings/>
     <con:runType>SEQUENTIAL</con:runType>
-    <con:testCase id="855aadbc-fea9-40ca-8d3a-b86fd64f85a1" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Basic" searchProperties="true">
+    <con:testCase id="855aadbc-fea9-40ca-8d3a-b86fd64f85a1" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Basic" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
       <con:settings/>
       <con:testStep type="httprequest" name="List all" id="6243d715-7900-4046-9f7b-2f83093eadc2">
         <con:settings/>
@@ -36,7 +36,7 @@
       </con:testStep>
       <con:properties/>
     </con:testCase>
-    <con:testCase id="5783f8ad-e9e8-4b5b-8321-de11664a9947" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestNG" searchProperties="true">
+    <con:testCase id="5783f8ad-e9e8-4b5b-8321-de11664a9947" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestNG" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
       <con:settings/>
       <con:testStep type="httprequest" name="REST interface available" id="d9efa43e-fd4a-4119-9b7f-38c9d460e935">
         <con:settings/>
@@ -79,7 +79,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -107,7 +107,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -139,7 +139,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -151,7 +151,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -181,7 +181,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -193,7 +193,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -223,7 +223,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -235,7 +235,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml,application/xml,application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -267,7 +267,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -279,7 +279,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml,application/zip,application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -311,7 +311,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -323,7 +323,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml,application/rdf+xml;q=0.9" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -353,7 +353,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -365,7 +365,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -397,7 +397,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -409,7 +409,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="text/html" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -424,7 +424,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -436,7 +436,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#testng.ets.code}/${#Project#testng.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -468,28 +468,19 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>wfs</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#testng.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
         </con:config>
       </con:testStep>
       <con:properties>
-        <con:property>
-          <con:name>ets-code</con:name>
-          <con:value>wfs20</con:value>
-        </con:property>
-        <con:property>
-          <con:name>ets-release-version</con:name>
-          <con:value>1.28</con:value>
-        </con:property>
-        <con:property>
-          <con:name>sut</con:name>
-          <con:value>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value>
-        </con:property>
+        
+        
+        
       </con:properties>
     </con:testCase>
-    <con:testCase id="207ef815-d51d-4ebd-ac1b-63954543a5f7" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="CTL" searchProperties="true">
+    <con:testCase id="207ef815-d51d-4ebd-ac1b-63954543a5f7" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="CTL" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
       <con:settings/>
       <con:testStep type="httprequest" name="REST interface available" id="11ea883a-ff28-4af5-abee-65c3d1a470af">
         <con:settings/>
@@ -532,7 +523,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -560,7 +551,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -592,7 +583,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -604,7 +595,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -634,7 +625,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -646,7 +637,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -676,7 +667,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -688,7 +679,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/rdf+xml,application/xml,application/zip" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -720,7 +711,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -732,7 +723,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xml,application/zip,application/rdf+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -764,7 +755,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -776,7 +767,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml,application/rdf+xml;q=0.5" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -806,7 +797,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -818,7 +809,7 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/zip;q=0.1,application/xml;q=0.4,application/rdf+xml;q=0.7" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -850,7 +841,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -862,12 +853,10 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="text/html" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
-            <con:configuration>
-              <codes>406</codes>
-            </con:configuration>
+            <con:configuration><codes>406</codes></con:configuration>
           </con:assertion>
           <con:credentials>
             <con:authType>No Authorization</con:authType>
@@ -877,7 +866,7 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
@@ -889,7 +878,7 @@ exists(/rdf:RDF)</path>
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#TestCase#ets-code}/${#TestCase#ets-release-version}/run</con:endpoint>
+          <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/${#Project#ctl.ets.version}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
             <con:configuration>
@@ -921,25 +910,16 @@ exists(/rdf:RDF)</path>
           <con:parameters>
             <con:parameter>
               <con:name>capabilities-url</con:name>
-              <con:value>${#TestCase#sut}</con:value>
+              <con:value>${#Project#ctl.iut}</con:value>
               <con:style>QUERY</con:style>
             </con:parameter>
           </con:parameters>
         </con:config>
       </con:testStep>
       <con:properties>
-        <con:property>
-          <con:name>ets-code</con:name>
-          <con:value>wms</con:value>
-        </con:property>
-        <con:property>
-          <con:name>ets-release-version</con:name>
-          <con:value>1.23</con:value>
-        </con:property>
-        <con:property>
-          <con:name>sut</con:name>
-          <con:value>http://cite.deegree.org/deegree-webservices-3.4-RC3/services/wms130?request=GetCapabilities&amp;service=WMS</con:value>
-        </con:property>
+        
+        
+        
       </con:properties>
     </con:testCase>
     <con:properties/>
@@ -949,7 +929,7 @@ exists(/rdf:RDF)</path>
       <con:name>teamengine.endpoint</con:name>
       <con:value>http://cite.opengeospatial.org/te2</con:value>
     </con:property>
-  </con:properties>
+  <con:property><con:name>testng.ets.code</con:name><con:value>wfs20</con:value></con:property><con:property><con:name>testng.ets.version</con:name><con:value>1.29</con:value></con:property><con:property><con:name>testng.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.0/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value></con:property><con:property><con:name>ctl.ets.code</con:name><con:value>wms</con:value></con:property><con:property><con:name>ctl.ets.version</con:name><con:value>1.24</con:value></con:property><con:property><con:name>ctl.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.0/services/wms130?request=GetCapabilities&amp;service=WMS</con:value></con:property></con:properties>
   <con:wssContainer/>
   <con:oAuth2ProfileContainer/>
   <con:oAuth1ProfileContainer/>
