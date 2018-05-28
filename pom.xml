@@ -229,6 +229,7 @@
           <projectFile>test/TEAM-Engine-soapui-project.xml</projectFile>
           <junitReport>true</junitReport>
           <testFailIgnore>true</testFailIgnore>
+          <settingsFile>test/TEAM-Engine-soapui-settings.xml</settingsFile>
           <projectProperties>
             <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
             <value>testng.ets.code=${soapui.testng.ets.code}</value>
