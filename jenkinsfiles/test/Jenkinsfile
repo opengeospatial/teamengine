@@ -14,7 +14,7 @@ pipeline {
     stage('Test') {
       steps{
         sh 'mvn --version'
-        sh 'mvn clean com.smartbear.soapui:soapui-maven-plugin:test -Dsoapui.teamengine.endpoint=${teamengineEndpoint} -Dsoapui.testng.ets.code=${testngEtsCode} -Dsoapui.testng.ets.version=${testngEtsVersion} -Dsoapui.testng.iut=${testngIut} -Dsoapui.ctl.ets.code=${ctlEtsCode} -Dsoapui.ctl.ets.version=${ctlEtsVersion} -Dsoapui.ctl.iut=${ctlIut}'
+        sh 'mvn clean com.smartbear.soapui:soapui-maven-plugin:test --non-recursive -Dsoapui.teamengine.endpoint=${teamengineEndpoint} -Dsoapui.testng.ets.code=${testngEtsCode} -Dsoapui.testng.ets.version=${testngEtsVersion} -Dsoapui.testng.iut=${testngIut} -Dsoapui.ctl.ets.code=${ctlEtsCode} -Dsoapui.ctl.ets.version=${ctlEtsVersion} -Dsoapui.ctl.iut=${ctlIut}'
       }
     }
     stage('Results') {

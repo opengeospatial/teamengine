@@ -217,6 +217,7 @@
         <groupId>com.smartbear.soapui</groupId>
         <artifactId>soapui-maven-plugin</artifactId>
         <version>5.4.0</version>
+        <inherited>false</inherited>
         <dependencies>
           <dependency>
             <groupId>com.jgoodies</groupId>
