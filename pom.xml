@@ -226,10 +226,10 @@
           </dependency>
         </dependencies>
         <configuration>
-          <projectFile>test/TEAM-Engine-soapui-project.xml</projectFile>
+          <projectFile>src/test/resources/soapui/TEAM-Engine-soapui-project.xml</projectFile>
           <junitReport>true</junitReport>
           <testFailIgnore>true</testFailIgnore>
-          <settingsFile>test/TEAM-Engine-soapui-settings.xml</settingsFile>
+          <settingsFile>src/test/resources/soapui/TEAM-Engine-soapui-settings.xml</settingsFile>
           <projectProperties>
             <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
             <value>testng.ets.code=${soapui.testng.ets.code}</value>
