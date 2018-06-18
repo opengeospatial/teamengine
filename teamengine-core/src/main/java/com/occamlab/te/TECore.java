@@ -39,6 +39,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,6 +62,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.occamlab.te.html.EarlToHtmlTransformation;
+
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
@@ -2500,11 +2502,12 @@ public class TECore implements Runnable {
 			NodeList values = userInputs.getDocumentElement()
 					.getElementsByTagName("value");
 			if (values.getLength() == 0) {
-				throw new IllegalArgumentException("No test inputs found.");
-			}
-			for (int i = 0; i < values.getLength(); i++) {
-				Element value = (Element) values.item(i);
-				inputMap.put(value.getAttribute("key"), value.getTextContent());
+				inputMap = Collections.emptyMap();
+			} else {
+				for (int i = 0; i < values.getLength(); i++) {
+					Element value = (Element) values.item(i);
+					inputMap.put(value.getAttribute("key"), value.getTextContent());
+				}
 			}
 		} else if (null != opts.getParams()) {
 			List<String> runParams = opts.getParams();
