@@ -208,17 +208,17 @@
               <input type="hidden" id="noConformanceClass" name="noConformanceClass" value="{$no_of_cc}" />
 
               <div style="margin-left:3.7%">
-                Number of conformance class passed:
+                Number of conformance classes passed:
                 <xsl:value-of
                         select="count(//earl:TestRequirement[cite:testsPassed[text() &gt; '0']]/cite:testsFailed[text() = '0'])" />
               </div>
               <div style="margin-left:3.7%">
-                Number of conformance class failed:
+                Number of conformance classes failed:
                 <xsl:value-of select="count(//earl:TestRequirement/cite:testsFailed[text() &gt;'0'])" />
               </div>
               <br />
               <!-- Pass:  <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsPassed"/> | Fail: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsFailed"/> | Skip: <xsl:value-of select="rdf:RDF/cite:TestRun/cite:testsSkipped"/> -->
-              Core Conformance Classes (Pass = Green; Fail = Red; Skip = Grey):
+              Core conformance classes (Pass = Green; Fail = Red; Skip = Grey):
               <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                 <xsl:if test="cite:isBasic = 'true'">
                 <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " />
