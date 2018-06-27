@@ -130,7 +130,7 @@
               <xsl:choose>
                 <xsl:when test="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
                   <xsl:for-each select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li">
-                    <div style="text-indent:50px;">
+                    <div style="margin-left:3.7%;">
 						<xsl:variable name="test-input-title">
 						<xsl:variable name="title" select="dct:title" />
 							<xsl:for-each select="tokenize($tested-instace-terms,',')">
@@ -147,16 +147,12 @@
 							</xsl:for-each>
 					
 						</xsl:variable>
-                    
-                      <xsl:value-of select="if (not(empty($test-input-title)) and $test-input-title != '') then $test-input-title else dct:title" />
-                      :
-                      <xsl:value-of select="dct:description" />
+						
+					  <span><xsl:value-of select="if (not(empty($test-input-title)) and $test-input-title != '') then $test-input-title else dct:title" /> : </span>
+                      
+                      <span style="text-intent:0px"> <xsl:value-of select="dct:description" /> </span>
                     </div>
                   </xsl:for-each>
-                  <div style="text-indent:50px;">
-                    <xsl:value-of
-                            select="rdf:RDF/cite:TestRun/cite:inputs/rdf:Bag/rdf:li/cnt:ContentAsXML/dct:description" />
-                  </div>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of select="NULL" />
@@ -193,7 +189,7 @@
               </xsl:variable>
               <div style="text-indent:0px; float: left;width: 95%;margin-left:3.7%">
                 <span>
-                  <label>Passed Core Conformance Classes (Implementations passing these classes can be certified):</label>
+                  <label>Passed Core conformance classes (Implementations passing these classes can be certified): </label>
                 </span>
                 <span style="text-intent:0px">
                   <xsl:value-of select="$status" />
@@ -235,7 +231,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>	
-                  <div style="text-indent:50px;">
+                  <div style="margin-left:3.7%">
                   	<span style="background-color:{$bgcolor};"><xsl:value-of select="dct:title" /></span>
                   </div>
                 </xsl:if>
