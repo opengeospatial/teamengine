@@ -470,6 +470,43 @@
               </td>
             </tr>
           </xsl:when>
+          <xsl:when test="$result = 'INHERITEDFAILURE'">
+            <tr bgcolor="#E5E5E6">
+              <td>
+                <xsl:element name="div">
+                  <xsl:attribute name="style">
+                    <xsl:value-of select="concat('text-indent:', $indention, 'px;')" />
+                  </xsl:attribute>
+                  <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
+                     id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
+                    <xsl:value-of select="$testTitle" />
+                  </a>
+                </xsl:element>
+              </td>
+              <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                    <xsl:call-template name="string-replace-all">
+                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
+                      <xsl:with-param name="replace" select="'['" />
+                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
+                    </xsl:call-template>
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:variable>
+                <p>
+                  <xsl:value-of select="$message" />
+                </p>
+              </td>
+            </tr>
+          </xsl:when>
           <xsl:when test="$result = 'UNTESTED'">
             <tr bgcolor="#CCCCCE">
               <td>
