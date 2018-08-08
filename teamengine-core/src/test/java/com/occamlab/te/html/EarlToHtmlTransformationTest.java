@@ -67,7 +67,7 @@ public class EarlToHtmlTransformationTest {
                     hasXPath( "count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo( "8" ), nsContext() ) );
 
         assertThat( indexHtml,
-                    hasXPath( "//html:span[@id='testsInTotal_data-independent']", equalTo( "206" ), nsContext() ) );
+                    hasXPath( "//html:span[@id='testsInTotal_data-independent']", equalTo( "207" ), nsContext() ) );
         assertThat( indexHtml,
                     hasXPath( "//html:span[@id='testsFailed_data-independent']", equalTo( "1" ), nsContext() ) );
         assertThat( indexHtml,

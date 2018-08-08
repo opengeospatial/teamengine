@@ -217,12 +217,13 @@
               Core conformance classes (Pass = Green; Fail = Red; Skip = Grey):
               <xsl:for-each select="/rdf:RDF/cite:TestRun/cite:requirements/rdf:Seq/rdf:li/earl:TestRequirement">
                 <xsl:if test="cite:isBasic = 'true'">
+                <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " />
                 <xsl:variable name="bgcolor" >
 					<xsl:choose>
-						<xsl:when test="cite:testsPassed > 0 and cite:testsFailed = 0">
+						<xsl:when test="cite:testsPassed > 0 and cite:testsFailed = 0 and $testsInheritedFailure = 0">
 							 <xsl:value-of select="string('#B2F0D1')" />
 						</xsl:when>
-						<xsl:when test="cite:testsFailed > 0">
+						<xsl:when test="cite:testsFailed > 0 or $testsInheritedFailure > 0">
 							<xsl:value-of select="string('#FFB2B2')" />
 						</xsl:when>
 						<xsl:otherwise>
@@ -282,6 +283,7 @@
               <xsl:value-of select="cite:testsPassed" />
             </xsl:element>
           </td> 
+          <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " />
           <td bgcolor="#FFB2B2">
             Fail:
             <xsl:element name="span">
@@ -291,6 +293,17 @@
               <xsl:value-of select="cite:testsFailed" />
             </xsl:element>
           </td>
+          <xsl:if test="not($testsInheritedFailure = 0)">
+          <td bgcolor="#FF0000">
+            Inherited fail:
+            <xsl:element name="span">
+              <xsl:attribute name="id">
+                <xsl:value-of select="concat('testsFailed_',replace(dct:title, ' ', '_') )" />
+              </xsl:attribute>
+              <xsl:value-of select=" $testsInheritedFailure" />
+            </xsl:element>
+          </td>
+          </xsl:if>
           <td bgcolor="#CCCCCE">
             Skip:
             <xsl:element name="span">
@@ -303,7 +316,7 @@
           <td>
             Total tests:
             <xsl:variable name="testsInTotal">
-              <xsl:value-of select="cite:testsPassed + cite:testsFailed + cite:testsSkipped" />
+              <xsl:value-of select="cite:testsPassed + cite:testsFailed + $testsInheritedFailure + cite:testsSkipped" />
             </xsl:variable>
             <xsl:element name="span">
               <xsl:attribute name="id">
@@ -471,7 +484,7 @@
             </tr>
           </xsl:when>
           <xsl:when test="$result = 'INHERITEDFAILURE'">
-            <tr bgcolor="#E5E5E6">
+            <tr bgcolor="#FF0000">
               <td>
                 <xsl:element name="div">
                   <xsl:attribute name="style">
