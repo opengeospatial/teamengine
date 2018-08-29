@@ -22,6 +22,7 @@
     <html>
         <head>
             <title>Executing Tests</title>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
             <script>
                 var LONG_TIMEOUT = 4000;
                 var SHORT_TIMEOUT = 1000;
@@ -167,22 +168,21 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
                 %>
                     window.location = url + "&stop=" + stop + "&t=" + d.getTime();
                 }
+                
+                function validation() {
+        			var iuturi = window.frames[1].window.document.forms[0].elements.iut_uri.value;
+        			var iutdoc = window.frames[1].window.document.forms[0].elements.iut_doc.value;
+        			if ((iutdoc == undefined || iutdoc == null || iutdoc == "")
+        					&& (iuturi == undefined || iuturi == null || iuturi == "")) {
+        				alert("Capability URL or document is empty.");
+        				window.frames[1].window.document.forms[0].elements.iut_uri.focus();
+        				return false;
+        			}
+        			if (iutdoc !== undefined && iutdoc !== null && iutdoc !== "") {
+        				window.frames[1].window.document.forms[0].elements.iut_uri.value = "";
+        			}
+        		}
             </script>
-	<script>
-		function validation() {
-			var iuturi = window.frames[1].window.document.forms[0].elements.iut_uri.value;
-			var iutdoc = window.frames[1].window.document.forms[0].elements.iut_doc.value;
-			if ((iutdoc == undefined || iutdoc == null || iutdoc == "")
-					&& (iuturi == undefined || iuturi == null || iuturi == "")) {
-				alert("Capability URL or Doc is empty.");
-				window.frames[1].window.document.forms[0].elements.iut_uri.focus();
-				return false;
-			}
-			if (iutdoc !== undefined && iutdoc !== null && iutdoc !== "") {
-				window.frames[1].window.document.forms[0].elements.iut_uri.value = "";
-			}
-		}
-	</script>
 	</head>
 	<frameset onload="start()" rows="102,*">
             <frame name="te_test_controls" src="testControls.html">
