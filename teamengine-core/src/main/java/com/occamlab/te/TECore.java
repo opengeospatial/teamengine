@@ -2108,6 +2108,8 @@ public class TECore implements Runnable {
               + instruction_e.getLocalName();
       ParserEntry pe = index.getParser(key);
       Object instance = null;
+
+      // Instantiate the parser object if requested.
       if (pe.isInitialized()) {
         instance = parserInstances.get(key);
         if (instance == null) {
@@ -2123,6 +2125,7 @@ public class TECore implements Runnable {
           parserInstances.put(key, instance);
         }
       }
+
       Method method = parserMethods.get(key);
       if (method == null) {
         TEClassLoader cl = engine.getClassLoader(opts.getSourcesName());
@@ -2157,7 +2160,11 @@ public class TECore implements Runnable {
           msg += ": " + cause.getMessage();
         }
         jlogger.log( SEVERE, msg, e);
-        throw e;
+        // CTL says parsers should return null if they encounter an error.
+        // Apparently this parser is broken. Wrap the thrown exception in a
+        // RuntimeException since we really know nothing about what went wrong.
+        throw new RuntimeException(
+                "Parser " + pe.getId() + " threw an exception.", cause);
       }
       pwLogger.close();
       if (return_object instanceof Node) {
