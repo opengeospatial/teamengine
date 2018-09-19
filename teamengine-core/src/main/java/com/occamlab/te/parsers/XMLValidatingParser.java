@@ -448,7 +448,7 @@ public class XMLValidatingParser {
 	 *             If any errors occur while attempting to validate the
 	 *             document.
 	 */
-	void validateAgainstDTDList(Document doc, ArrayList<Object> dtdList,
+	private void validateAgainstDTDList(Document doc, ArrayList<Object> dtdList,
 			ErrorHandler errHandler) throws Exception {
 		jlogger.finer("Validating XML resource from " + doc.getDocumentURI());
 		DocumentBuilder db = dtdValidatingDBF.newDocumentBuilder();

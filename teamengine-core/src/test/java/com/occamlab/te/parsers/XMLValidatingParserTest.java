@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,12 +39,11 @@ public class XMLValidatingParserTest {
 	@Test
 	public void createParserWithCswSchemaAsResource() throws Exception {
 		Document schemaRefs = parseResourceDocument("/conf/schema-refs.xml");
+		final File expectedFile = new File(getClass().getResource("/xsd/ogc/csw/2.0.2/csw-2.0.2.2.xsd").getFile());
+		final List<Object> expectedList = Arrays.asList(expectedFile);
 		XMLValidatingParser iut = new XMLValidatingParser(schemaRefs);
 		assertNotNull(iut);
-		assertEquals("Unexpected number of schema references", 1,
-				iut.schemaList.size());
-		assertTrue("Expected File instance.",
-				File.class.isInstance(iut.schemaList.get(0)));
+		assertEquals(expectedList, iut.schemaList);
 	}
 
 	@Test
@@ -110,6 +110,20 @@ public class XMLValidatingParserTest {
 	}
 
 	@Test
+	public void parseWithInlineSchemaAndNoSchemaLocation() throws Exception {
+		Document schemaRefs = parseResourceDocument("/conf/schema-inline.xml");
+		URL url = getClass().getResource("/comment.xml");
+		StringWriter strWriter = new StringWriter();
+		PrintWriter logger = new PrintWriter(strWriter);
+		XMLValidatingParser iut = new XMLValidatingParser();
+		Document result = iut.parse(url.openConnection(),
+				schemaRefs.getDocumentElement(), logger);
+		assertEquals("Unexpected validation error(s) were reported.",
+				"", strWriter.toString());
+		assertNotNull(result);
+	}
+
+	@Test
 	public void validateWithNullSchemaListAndNoSchemaLocation()
 			throws SAXException, IOException {
 		Document doc = parseResourceDocument("/ipo.xml");
@@ -163,23 +177,23 @@ public class XMLValidatingParserTest {
 	@Test
 	public void validateWithNullDTDList_valid() throws Exception {
 		final Document doc = parseResourceDocument("/testng.xml");
-		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
-		iut.validateAgainstDTDList(doc, null, errHandler);
-		List<String> errList = errHandler.toList();
+		NodeList errList = iut.validate(doc, null);
 		assertEquals("Unexpected number of validation errors reported.", 0,
-				errList.size());
+				errList.getLength());
 	}
 
+	/**
+	 * Tests validating a DTD-specified document against a different DTD. Should
+	 * fail validation.
+	 */
 	@Test
-	public void validateWithNullDTDList_invalid() throws Exception {
-		final Document doc = parseResourceDocument("/testng-invalid.xml");
-		XmlErrorHandler errHandler = new XmlErrorHandler();
+	public void validateWithMismatchedDTDList() throws Exception {
+		final Document doc = parseResourceDocument("/testng.xml");
+		final Document dtdInstructions = parseResourceDocument("/conf/dtd-ref-wms.xml");
 		XMLValidatingParser iut = new XMLValidatingParser();
-		iut.validateAgainstDTDList(doc, null, errHandler);
-		List<String> errList = errHandler.toList();
-		assertEquals("Unexpected number of validation errors reported.", 2,
-				errList.size());
+		NodeList errList = iut.validate(doc, dtdInstructions);
+		assertTrue("should report validation errors", errList.getLength() > 0);
 	}
 
 	@Test
