@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,8 +37,7 @@ public class XMLValidatingParserTest {
 
 	@Test
 	public void createParserWithCswSchemaAsResource() throws Exception {
-		Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-				"/conf/schema-refs.xml"));
+		Document schemaRefs = parseResourceDocument("/conf/schema-refs.xml");
 		XMLValidatingParser iut = new XMLValidatingParser(schemaRefs);
 		assertNotNull(iut);
 		assertEquals("Unexpected number of schema references", 1,
@@ -49,9 +47,8 @@ public class XMLValidatingParserTest {
 	}
 
 	@Test
-	public void parsePurchaseOrder_valid() throws Exception {
-		Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-				"/conf/schema-refs-ipo.xml"));
+	public void parseWithSchemaListAndNoLocation() throws Exception {
+		Document schemaRefs = parseResourceDocument("/conf/schema-refs-ipo.xml");
 		URL url = getClass().getResource("/ipo.xml");
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
@@ -66,9 +63,41 @@ public class XMLValidatingParserTest {
 	}
 
 	@Test
+	public void parseWithSchemaListAndLocation() throws Exception {
+		final Document schemaRefs = parseResourceDocument("/conf/multiple-schema-refs.xml");
+		final Document doc = parseResourceDocument("/ipo-multipleSchemaRefs.xml");
+		StringWriter strWriter = new StringWriter();
+		PrintWriter logger = new PrintWriter(strWriter);
+		XMLValidatingParser iut = new XMLValidatingParser();
+		Document result = iut.parse(doc, schemaRefs.getDocumentElement(), logger);
+		assertNotNull(result);
+		assertEquals("Unexpected validation error(s) were reported.",
+				"", strWriter.toString());
+	}
+
+	/**
+	 * Tests that an XML document with a schema location is still declared invalid
+	 * if {@link XMLValidatingParser} is configured with a different, non-matching
+	 * schema.
+	 */
+	@Test
+	public void parseWithSchemaListAndDifferentLocation() throws Exception {
+		// This document also tests schema loading from a URL (as opposed to a classpath
+		// resource).
+		final Document schemaRefs = parseResourceDocument("/conf/schema-ref-log4j.xml");
+		final Document doc = parseResourceDocument("/ipo-schemaLoc.xml");
+		StringWriter strWriter = new StringWriter();
+		PrintWriter logger = new PrintWriter(strWriter);
+		XMLValidatingParser iut = new XMLValidatingParser();
+		Document result = iut.parse(doc, schemaRefs.getDocumentElement(), logger);
+		assertNull(result);
+		assertNotEquals("Validation error(s) should be reported.",
+				"", strWriter.toString());
+	}
+
+	@Test
 	public void parsePurchaseOrder_invalid() throws Exception {
-		Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-				"/conf/schema-refs-ipo.xml"));
+		Document schemaRefs = parseResourceDocument("/conf/schema-refs-ipo.xml");
 		URL url = getClass().getResource("/ipo-invalid.xml");
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
@@ -83,8 +112,7 @@ public class XMLValidatingParserTest {
 	@Test
 	public void validateWithNullSchemaListAndNoSchemaLocation()
 			throws SAXException, IOException {
-		Document doc = docBuilder.parse(getClass().getResourceAsStream(
-				"/ipo.xml"));
+		Document doc = parseResourceDocument("/ipo.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
 		iut.validateAgainstXMLSchemaList(doc, null, errHandler);
@@ -95,9 +123,7 @@ public class XMLValidatingParserTest {
 	@Test
 	public void validateWithNullSchemaListAndSchemaLocation()
 			throws SAXException, IOException, URISyntaxException {
-		URL url = getClass().getResource("/ipo-schemaLoc.xml");
-		Document doc = docBuilder.parse(url.openStream());
-		doc.setDocumentURI(url.toString());
+		final Document doc = parseResourceDocument("/ipo-schemaLoc.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
 		iut.validateAgainstXMLSchemaList(doc, null, errHandler);
@@ -109,9 +135,7 @@ public class XMLValidatingParserTest {
 	@Test
 	public void parseWithNullInstructionAndMultipleSchemaLocations()
 			throws Exception {
-		URL docUrl = getClass().getResource("/ipo-multipleSchemaRefs.xml");
-		Document doc = docBuilder.parse(docUrl.openStream());
-		doc.setDocumentURI(docUrl.toString());
+		final Document doc = parseResourceDocument("/ipo-multipleSchemaRefs.xml");
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
@@ -124,11 +148,8 @@ public class XMLValidatingParserTest {
 	@Test
 	public void parseWithEmptySchemaListAndMultipleSchemaLocations()
 			throws Exception {
-		Document schemaRefs = docBuilder.parse(getClass().getResourceAsStream(
-				"/conf/no-schema-refs.xml"));
-		URL docUrl = getClass().getResource("/ipo-multipleSchemaRefs.xml");
-		Document doc = docBuilder.parse(docUrl.openStream());
-		doc.setDocumentURI(docUrl.toString());
+		final Document schemaRefs = parseResourceDocument("/conf/no-schema-refs.xml");
+		final Document doc = parseResourceDocument("/ipo-multipleSchemaRefs.xml");
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
@@ -141,9 +162,7 @@ public class XMLValidatingParserTest {
 
 	@Test
 	public void validateWithNullDTDList_valid() throws Exception {
-		URL url = getClass().getResource("/testng.xml");
-		Document doc = docBuilder.parse(url.toString());
-		doc.setDocumentURI(url.toString());
+		final Document doc = parseResourceDocument("/testng.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
 		iut.validateAgainstDTDList(doc, null, errHandler);
@@ -154,9 +173,7 @@ public class XMLValidatingParserTest {
 
 	@Test
 	public void validateWithNullDTDList_invalid() throws Exception {
-		URL url = getClass().getResource("/testng-invalid.xml");
-		Document doc = docBuilder.parse(url.toString());
-		doc.setDocumentURI(url.toString());
+		final Document doc = parseResourceDocument("/testng-invalid.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
 		iut.validateAgainstDTDList(doc, null, errHandler);
@@ -167,9 +184,7 @@ public class XMLValidatingParserTest {
 
 	@Test
 	public void validateDocumentWithDoctype_invalid() throws Exception {
-		URL url = getClass().getResource("/testng-invalid.xml");
-		Document doc = docBuilder.parse(url.toString());
-		doc.setDocumentURI(url.toString());
+		final Document doc = parseResourceDocument("/testng-invalid.xml");
 		XMLValidatingParser iut = new XMLValidatingParser();
 		NodeList errList = iut.validate(doc, null);
 		assertEquals("Unexpected number of validation errors reported.", 2,
@@ -188,4 +203,17 @@ public class XMLValidatingParserTest {
 		assertNull(result);
 	}
 
+	/**
+	 * Parses an XML Document from a classpath resource.
+	 * 
+	 * @param resourcePath relative to the current class
+	 * @return never null
+	 */
+	private Document parseResourceDocument(final String resourcePath)
+			throws SAXException, IOException {
+		final URL url = getClass().getResource(resourcePath);
+		final Document doc = docBuilder.parse(url.toString());
+		doc.setDocumentURI(url.toString());
+		return doc;
+	}
 }
