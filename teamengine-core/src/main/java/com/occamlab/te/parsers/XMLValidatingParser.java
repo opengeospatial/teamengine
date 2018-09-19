@@ -10,7 +10,6 @@ package com.occamlab.te.parsers;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.IOException;
@@ -20,24 +19,21 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLProtocolException;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.w3c.dom.Document;
@@ -49,6 +45,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import com.occamlab.te.ErrorHandlerImpl;
+import com.occamlab.te.parsers.xml.SchemaLoader;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
@@ -57,14 +54,14 @@ import com.occamlab.te.util.URLConnectionUtils;
  * 
  */
 public class XMLValidatingParser {
-	static SchemaFactory SF = null;
 	static TransformerFactory TF = null;
 	static DocumentBuilderFactory nonValidatingDBF = null;
 	static DocumentBuilderFactory schemaValidatingDBF = null;
 	static DocumentBuilderFactory dtdValidatingDBF = null;
 	ArrayList<Object> schemaList = new ArrayList<Object>();
 	ArrayList<Object> dtdList = new ArrayList<Object>();
-	private static Logger jlogger = Logger
+	private final SchemaLoader schemaLoader = new SchemaLoader();
+	private static final Logger jlogger = Logger
 			.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
 	private void loadSchemaList(Document schemaLinks,
@@ -131,26 +128,6 @@ public class XMLValidatingParser {
 	}
 
 	public XMLValidatingParser() {
-		if (SF == null) {
-			String property_name = "javax.xml.validation.SchemaFactory:"
-					+ XMLConstants.W3C_XML_SCHEMA_NS_URI;
-			String oldprop = System.getProperty(property_name);
-			System.setProperty(property_name,
-					"org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-			SF = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			try {
-				SF.setFeature(
-						"http://apache.org/xml/features/validation/schema-full-checking",
-						false);
-			} catch (Exception e) {
-				jlogger.warning("Unable to set feature '*/schema-full-checking'");
-			}
-			if (oldprop == null) {
-				System.clearProperty(property_name);
-			} else {
-				System.setProperty(property_name, oldprop);
-			}
-		}
 
 		if (nonValidatingDBF == null) {
 			String property_name = "javax.xml.parsers.DocumentBuilderFactory";
@@ -404,27 +381,15 @@ public class XMLValidatingParser {
 	 * @throws IOException
 	 *             If an I/O error occurs.
 	 */
-	void validateAgainstXMLSchemaList(Document doc, ArrayList<Object> xsdList,
+	void validateAgainstXMLSchemaList(Document doc, List<Object> xsdList,
 			ErrorHandler errHandler) throws SAXException, IOException {
-		jlogger.finer("Validating XML resource from " + doc.getDocumentURI());
-		Schema schema = SF.newSchema();
+		jlogger.fine("Validating XML resource from " + doc.getDocumentURI()
+			+ " with these specified schemas: " + xsdList);
+		Schema schema;
 		if (null != xsdList && !xsdList.isEmpty()) {
-			Source[] schemaSources = new Source[xsdList.size()];
-			for (int i = 0; i < xsdList.size(); i++) {
-				Object ref = xsdList.get(i);
-				if (ref instanceof File) {
-					schemaSources[i] = new StreamSource((File) ref);
-				} else if (ref instanceof URL) {
-					schemaSources[i] = new StreamSource(ref.toString());
-				} else if (ref instanceof char[]) {
-					schemaSources[i] = new StreamSource(new CharArrayReader(
-							(char[]) ref));
-				} else {
-					throw new IllegalArgumentException(
-							"Unknown schema reference: " + ref.toString());
-				}
-			}
-			schema = SF.newSchema(schemaSources);
+			schema = schemaLoader.loadSchema(xsdList);
+		} else {
+			schema = schemaLoader.defaultSchema();
 		}
 		Validator validator = schema.newValidator();
 		validator.setErrorHandler(errHandler);
