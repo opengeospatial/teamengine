@@ -145,7 +145,7 @@ a RESTful API, with links to test suite documentation
 ### Install test suites in TEAM Engine
 
 There are various examples of an executable test suite (ETS) that can be installed in 
-TEAM Engine. For example.
+TEAM Engine. For example,
 
 - [GML 3.2.1](https://github.com/opengeospatial/ets-gml32)
 - [WMS 1.3](https://github.com/opengeospatial/ets-wms13)
@@ -160,8 +160,8 @@ deployed in a similar manner. To download and install a test suite do the follow
 4. Build the test suite: `mvn clean install`
 5. Check that the build is successful--you should see **BUILD SUCCESS** displayed in the terminal output
 6. Change to the target folder `cd target`
-7. Unpack the archive file that ends with *ctl.zip* into $TE_BASE/scripts
-8. Unpack the archive file that ends with *deps.zip* into $TE_BASE/resources/lib
+7. Unpack the archive file that ends with *ctl.zip* into `$TE_BASE/scripts`
+8. If it exists, unpack the archive file that ends with *deps.zip* into `$TE_BASE/resources/lib`
 
 
 ### Customize the welcome page
