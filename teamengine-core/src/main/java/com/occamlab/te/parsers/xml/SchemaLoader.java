@@ -1,14 +1,10 @@
 package com.occamlab.te.parsers.xml;
 
-import java.io.CharArrayReader;
-import java.io.File;
-import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -56,30 +52,17 @@ public class SchemaLoader {
 	/**
 	 * Creates a {@link Schema} object for the specified schema documents.
 	 * 
-	 * @param xsdList
-	 *            a list of {@link File}s, {@link URL}s, or char arrays providing
-	 *            the schema documents. Must not be null.
+	 * @param suppliers
+	 *            a list of {@link SchemaSupplier}s supplying the schemas. Must not
+	 *            be null or contain any nulls.
 	 * @return the created {@link Schema} object. Never null.
 	 * @throws SAXException
 	 *             if the Schema cannot be created
-	 * @throws IllegalArgumentException
-	 *             if the xsdList contains an invalid object type
 	 */
-	public Schema loadSchema(List<Object> xsdList) throws SAXException {
-		Source[] schemaSources = new Source[xsdList.size()];
-		for (int i = 0; i < xsdList.size(); i++) {
-			Object ref = xsdList.get(i);
-			if (ref instanceof File) {
-				schemaSources[i] = new StreamSource((File) ref);
-			} else if (ref instanceof URL) {
-				schemaSources[i] = new StreamSource(ref.toString());
-			} else if (ref instanceof char[]) {
-				schemaSources[i] = new StreamSource(new CharArrayReader(
-						(char[]) ref));
-			} else {
-				throw new IllegalArgumentException(
-						"Unknown schema reference: " + ref.toString());
-			}
+	public Schema loadSchema(final List<SchemaSupplier> suppliers) throws SAXException {
+		Source[] schemaSources = new Source[suppliers.size()];
+		for (int i = 0; i < suppliers.size(); i++) {
+			schemaSources[i] = suppliers.get(i).makeSource();
 		}
 		synchronized (this) {
             return schemaFactory.newSchema(schemaSources);

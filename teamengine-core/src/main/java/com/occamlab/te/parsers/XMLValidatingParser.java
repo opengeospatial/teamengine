@@ -46,6 +46,7 @@ import org.xml.sax.SAXException;
 
 import com.occamlab.te.ErrorHandlerImpl;
 import com.occamlab.te.parsers.xml.SchemaLoader;
+import com.occamlab.te.parsers.xml.SchemaSupplier;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
@@ -387,7 +388,13 @@ public class XMLValidatingParser {
 			+ " with these specified schemas: " + xsdList);
 		Schema schema;
 		if (null != xsdList && !xsdList.isEmpty()) {
-			schema = schemaLoader.loadSchema(xsdList);
+			// Convert the List<Object> into a List<SchemaSupplier>. This is a
+			// temporary step until we just store a List<SchemaSupplier>.
+			final ArrayList<SchemaSupplier> suppliers = new ArrayList<>();
+			for (final Object schemaObj : xsdList) {
+				suppliers.add(SchemaSupplier.makeSupplier(schemaObj));
+			}
+			schema = schemaLoader.loadSchema(suppliers);
 		} else {
 			schema = schemaLoader.defaultSchema();
 		}
