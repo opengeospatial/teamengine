@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -129,7 +130,7 @@ public class XMLValidatingParserTest {
 		Document doc = parseResourceDocument("/ipo.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
-		iut.validateAgainstXMLSchemaList(doc, null, errHandler);
+		iut.validateAgainstXMLSchemaList(doc, Collections.emptyList(), errHandler);
 		assertFalse("Expected one or more validation errors.",
 				errHandler.isEmpty());
 	}
@@ -140,7 +141,7 @@ public class XMLValidatingParserTest {
 		final Document doc = parseResourceDocument("/ipo-schemaLoc.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
-		iut.validateAgainstXMLSchemaList(doc, null, errHandler);
+		iut.validateAgainstXMLSchemaList(doc, Collections.emptyList(), errHandler);
 		List<String> errList = errHandler.toList();
 		assertEquals("Unexpected number of validation errors reported.", 0,
 				errList.size());

@@ -231,11 +231,6 @@ public class XMLValidatingParser {
 			throws Exception {
 		jlogger.finer("Received XML resource of type "
 				+ input.getClass().getName());
-		ArrayList<Object> schemas = new ArrayList<Object>();
-		ArrayList<Object> dtds = new ArrayList<Object>();
-		schemas.addAll(this.schemaList);
-		dtds.addAll(this.dtdList);
-		loadSchemaLists(parserConfig, schemas, dtds);
 		Document resultDoc = null;
 		ErrorHandlerImpl errHandler = new ErrorHandlerImpl("Parsing", logger);
 
@@ -259,11 +254,7 @@ public class XMLValidatingParser {
 					+ input.getClass().getName());
 		}
 		errHandler.setRole("Validation");
-		if (null == resultDoc.getDoctype() && dtds.isEmpty()) {
-			validateAgainstXMLSchemaList(resultDoc, schemas, errHandler);
-		} else {
-			validateAgainstDTDList(resultDoc, dtds, errHandler);
-		}
+		validate(resultDoc, parserConfig, errHandler);
 		int error_count = errHandler.getErrorCount();
 		int warning_count = errHandler.getWarningCount();
 		if (error_count > 0 || warning_count > 0) {
@@ -351,18 +342,32 @@ public class XMLValidatingParser {
 		if (doc == null || doc.getDocumentElement() == null) {
 			throw new NullPointerException("Input document is null.");
 		}
+		XmlErrorHandler errHandler = new XmlErrorHandler();
+		validate(doc, instruction, errHandler);
+		return errHandler;
+	}
+
+	/**
+	 * Validates the given XML {@link Document} per the given instructions,
+	 * recording errors in the given error handler.
+	 * 
+	 * @param doc must not be null
+	 * @param instruction may be null to signify no special instructions
+	 * @param errHandler errors will be recorded on this object
+	 */
+	private void validate(
+			final Document doc, final Node instruction, final ErrorHandler errHandler)
+			throws Exception {
 		ArrayList<Object> schemas = new ArrayList<Object>();
 		ArrayList<Object> dtds = new ArrayList<Object>();
 		schemas.addAll(schemaList);
 		dtds.addAll(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);
-		XmlErrorHandler errHandler = new XmlErrorHandler();
 		if (null == doc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(doc, schemas, errHandler);
 		} else {
 			validateAgainstDTDList(doc, dtds, errHandler);
 		}
-		return errHandler;
 	}
 
 	/**
@@ -372,8 +377,8 @@ public class XMLValidatingParser {
 	 * @param doc
 	 *            The input Document node.
 	 * @param xsdList
-	 *            A list of XML schema references. If the list is {@code null}
-	 *            or empty, validation will be performed by using location hints
+	 *            A list of XML schema references. Must be non-null, but if
+	 *            empty, validation will be performed by using location hints
 	 *            found in the input document.
 	 * @param errHandler
 	 *            An ErrorHandler that collects validation errors.
@@ -387,7 +392,7 @@ public class XMLValidatingParser {
 		jlogger.fine("Validating XML resource from " + doc.getDocumentURI()
 			+ " with these specified schemas: " + xsdList);
 		Schema schema;
-		if (null != xsdList && !xsdList.isEmpty()) {
+		if (!xsdList.isEmpty()) {
 			// Convert the List<Object> into a List<SchemaSupplier>. This is a
 			// temporary step until we just store a List<SchemaSupplier>.
 			final ArrayList<SchemaSupplier> suppliers = new ArrayList<>();
@@ -405,20 +410,19 @@ public class XMLValidatingParser {
 	}
 
 	/**
-	 * Validates an XML resource against a list of DTD schemas or as indicated
-	 * by a DOCTYPE declaration. Validation errors are reported to the given
-	 * handler. If no DTD list is provided the external schema reference in the
-	 * DOCTYPE declaration is used (Note: an internal subset is ignored).
+	 * Validates an XML resource against a list of DTD schemas or as indicated by a
+	 * DOCTYPE declaration. Validation errors are reported to the given handler. If
+	 * no DTD references are provided the external schema reference in the DOCTYPE
+	 * declaration is used (Note: an internal subset is ignored).
 	 * 
 	 * @param doc
 	 *            The input Document.
 	 * @param dtdList
-	 *            A list of DTD schema references (may be null or empty).
+	 *            A list of DTD schema references. May be empty but not null.
 	 * @param errHandler
 	 *            An ErrorHandler that collects validation errors.
 	 * @throws Exception
-	 *             If any errors occur while attempting to validate the
-	 *             document.
+	 *             If any errors occur while attempting to validate the document.
 	 */
 	private void validateAgainstDTDList(Document doc, ArrayList<Object> dtdList,
 			ErrorHandler errHandler) throws Exception {
@@ -437,7 +441,7 @@ public class XMLValidatingParser {
 	     Transformer copier = tf.newTransformer();
            ByteArrayOutputStream content = new ByteArrayOutputStream();
 		Result copy = new StreamResult(content);
-		if (null == dtdList || dtdList.isEmpty()) {
+		if (dtdList.isEmpty()) {
 			DocumentType doctype = doc.getDoctype();
 			if (null == doctype) {
 				return;
