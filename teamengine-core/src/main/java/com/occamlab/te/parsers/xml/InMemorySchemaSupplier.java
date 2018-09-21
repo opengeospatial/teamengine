@@ -1,6 +1,7 @@
 package com.occamlab.te.parsers.xml;
 
 import java.io.CharArrayReader;
+import java.util.Arrays;
 import java.util.Objects;
 
 import javax.xml.transform.Source;
@@ -27,5 +28,31 @@ public class InMemorySchemaSupplier implements SchemaSupplier {
 	@Override
 	public Source makeSource() {
 		return new StreamSource(new CharArrayReader(chars));
+	}
+
+	/**
+	 * Returns a string representation of this instance. The format is unspecified,
+	 * but it will contain the number of stored characters.
+	 */
+	@Override
+	public String toString() {
+		return String.format("%s{%d chars}", getClass().getSimpleName(), chars.length);
+	}
+
+	/**
+	 * Implements value equality based on the stored characters.
+	 */
+	@Override
+	public final boolean equals(Object obj) {
+		if (obj instanceof InMemorySchemaSupplier) {
+			final InMemorySchemaSupplier other = (InMemorySchemaSupplier)obj;
+			return Arrays.equals(this.chars, other.chars);
+		}
+		return false;
+	}
+
+	@Override
+	public final int hashCode() {
+		return Arrays.hashCode(chars);
 	}
 }

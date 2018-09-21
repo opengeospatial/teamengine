@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import com.occamlab.te.ErrorHandlerImpl;
+import com.occamlab.te.parsers.xml.InMemorySchemaSupplier;
 import com.occamlab.te.parsers.xml.SchemaLoader;
 import com.occamlab.te.parsers.xml.SchemaSupplier;
 import com.occamlab.te.util.DomUtils;
@@ -59,19 +61,20 @@ public class XMLValidatingParser {
 	static DocumentBuilderFactory nonValidatingDBF = null;
 	static DocumentBuilderFactory schemaValidatingDBF = null;
 	static DocumentBuilderFactory dtdValidatingDBF = null;
-	ArrayList<Object> schemaList = new ArrayList<Object>();
+	ArrayList<SchemaSupplier> schemaList = new ArrayList<>();
 	ArrayList<Object> dtdList = new ArrayList<Object>();
 	private final SchemaLoader schemaLoader = new SchemaLoader();
 	private static final Logger jlogger = Logger
 			.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
-	private void loadSchemaList(Document schemaLinks,
-			ArrayList<Object> schemas, String schemaType) throws Exception {
+	private List<Object> loadSchemaList(Document schemaLinks,
+			String schemaType) throws Exception {
 		NodeList nodes = schemaLinks.getElementsByTagNameNS(
 				"http://www.occamlab.com/te/parsers", schemaType);
 		if (nodes.getLength() == 0) {
-			return;
+			return Collections.emptyList();
 		}
+		final ArrayList<Object> schemas = new ArrayList<>();
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Element e = (Element) nodes.item(i);
 			Object schema = null;
@@ -98,9 +101,10 @@ public class XMLValidatingParser {
 			jlogger.finer("Adding schema reference " + schema.toString());
 			schemas.add(schema);
 		}
+		return schemas;
 	}
 
-	private void loadSchemaLists(Node schemaLinks, ArrayList<Object> schemas,
+	private void loadSchemaLists(Node schemaLinks, ArrayList<SchemaSupplier> schemas,
 			ArrayList<Object> dtds) throws Exception {
 		if (null == schemaLinks) {
 			return;
@@ -113,8 +117,14 @@ public class XMLValidatingParser {
 		} else {
 			configDoc = schemaLinks.getOwnerDocument();
 		}
-		loadSchemaList(configDoc, schemas, "schema");
-		loadSchemaList(configDoc, dtds, "dtd");
+
+		final ArrayList<SchemaSupplier> schemaSuppliers = new ArrayList<>();
+		for (final Object schemaObj : loadSchemaList(configDoc, "schema")) {
+			schemaSuppliers.add(SchemaSupplier.makeSupplier(schemaObj));
+		}
+		schemas.addAll(schemaSuppliers);
+		dtds.addAll(loadSchemaList(configDoc, "dtd"));
+
 		// If instruction body is an embedded xsd:schema, add it to the
 		// ArrayList
 		NodeList nodes = configDoc.getElementsByTagNameNS(
@@ -124,7 +134,7 @@ public class XMLValidatingParser {
 			CharArrayWriter caw = new CharArrayWriter();
 			Transformer t = TF.newTransformer();
 			t.transform(new DOMSource(e), new StreamResult(caw));
-			schemas.add(caw.toCharArray());
+			schemas.add(new InMemorySchemaSupplier(caw.toCharArray()));
 		}
 	}
 
@@ -358,7 +368,7 @@ public class XMLValidatingParser {
 	private void validate(
 			final Document doc, final Node instruction, final ErrorHandler errHandler)
 			throws Exception {
-		ArrayList<Object> schemas = new ArrayList<Object>();
+		ArrayList<SchemaSupplier> schemas = new ArrayList<>();
 		ArrayList<Object> dtds = new ArrayList<Object>();
 		schemas.addAll(schemaList);
 		dtds.addAll(dtdList);
@@ -387,19 +397,13 @@ public class XMLValidatingParser {
 	 * @throws IOException
 	 *             If an I/O error occurs.
 	 */
-	void validateAgainstXMLSchemaList(Document doc, List<Object> xsdList,
+	void validateAgainstXMLSchemaList(Document doc, List<SchemaSupplier> xsdList,
 			ErrorHandler errHandler) throws SAXException, IOException {
 		jlogger.fine("Validating XML resource from " + doc.getDocumentURI()
 			+ " with these specified schemas: " + xsdList);
 		Schema schema;
 		if (!xsdList.isEmpty()) {
-			// Convert the List<Object> into a List<SchemaSupplier>. This is a
-			// temporary step until we just store a List<SchemaSupplier>.
-			final ArrayList<SchemaSupplier> suppliers = new ArrayList<>();
-			for (final Object schemaObj : xsdList) {
-				suppliers.add(SchemaSupplier.makeSupplier(schemaObj));
-			}
-			schema = schemaLoader.loadSchema(suppliers);
+			schema = schemaLoader.loadSchema(xsdList);
 		} else {
 			schema = schemaLoader.defaultSchema();
 		}

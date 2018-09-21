@@ -23,9 +23,39 @@ public class FileSchemaSupplier implements SchemaSupplier {
 		file = Objects.requireNonNull(pFile);
 	}
 
+	public File getFile() {
+		return file;
+	}
+
 	@Override
 	public Source makeSource() {
 		return new StreamSource(file);
 	}
 
+	/**
+	 * Returns a string representation of this instance. The format is unspecified,
+	 * but it will contain the file path.
+	 */
+	@Override
+	public String toString() {
+		return String.format("%s{%s}", getClass().getSimpleName(), file);
+	}
+
+	/**
+	 * Implements value equality based on the file reference.
+	 */
+	@Override
+	public final boolean equals(final Object obj) {
+		if (obj instanceof FileSchemaSupplier) {
+			final FileSchemaSupplier other = (FileSchemaSupplier)obj;
+			return this.getFile().equals(other.getFile());
+		}
+
+		return false;
+	}
+
+	@Override
+	public final int hashCode() {
+		return getFile().hashCode();
+	}
 }
