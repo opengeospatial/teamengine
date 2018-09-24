@@ -45,9 +45,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.ImmutableList;
 import com.occamlab.te.ErrorHandlerImpl;
+import com.occamlab.te.parsers.xml.CachingSchemaLoader;
 import com.occamlab.te.parsers.xml.InMemorySchemaSupplier;
-import com.occamlab.te.parsers.xml.SchemaLoader;
+import com.occamlab.te.parsers.xml.XsdSchemaLoader;
 import com.occamlab.te.parsers.xml.SchemaSupplier;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
@@ -63,7 +65,19 @@ public class XMLValidatingParser {
 	static DocumentBuilderFactory dtdValidatingDBF = null;
 	ArrayList<SchemaSupplier> schemaList = new ArrayList<>();
 	ArrayList<Object> dtdList = new ArrayList<Object>();
-	private final SchemaLoader schemaLoader = new SchemaLoader();
+
+	/*
+	 * For now we create a new cache per instance of XMLValidatingParser, which
+	 * means a new cache per test run. These schemas could be cached for a
+	 * longer period than that, but then the question because "how long?" Until
+	 * the web app shuts down? Try to obey the caching headers in the HTTP
+	 * responses?
+	 * 
+	 * This solution at least fixes the major performance issue.
+	 */
+	private final CachingSchemaLoader schemaLoader =
+			new CachingSchemaLoader(new XsdSchemaLoader());
+
 	private static final Logger jlogger = Logger
 			.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
@@ -403,7 +417,7 @@ public class XMLValidatingParser {
 			+ " with these specified schemas: " + xsdList);
 		Schema schema;
 		if (!xsdList.isEmpty()) {
-			schema = schemaLoader.loadSchema(xsdList);
+			schema = schemaLoader.loadSchema(ImmutableList.copyOf(xsdList));
 		} else {
 			schema = schemaLoader.defaultSchema();
 		}
