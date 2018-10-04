@@ -45,7 +45,7 @@ public class XMLValidatingParserTest {
 		assertEquals("Unexpected number of schema references", 1,
 				iut.schemaList.size());
 		assertTrue("Expected File instance.",
-				File.class.isInstance(iut.schemaList.get(0)));
+				URL.class.isInstance(iut.schemaList.get(0)));
 	}
 
 	@Test
