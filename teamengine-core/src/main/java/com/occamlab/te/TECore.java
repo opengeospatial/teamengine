@@ -16,6 +16,8 @@
  */
 package com.occamlab.te;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,6 +37,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,6 +52,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageTypeSpecifier;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -61,6 +66,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.occamlab.te.html.EarlToHtmlTransformation;
+
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
@@ -2302,6 +2308,50 @@ public class TECore implements Runnable {
       method = attr.getValue().toLowerCase();
     } else if (hasFiles) {
       method = "post";
+    }
+    
+    // Save images into session if the ets is interactive and it contains the
+    // images.
+    List<Element> images = DomUtils.getElementsByTagName(form, "img");
+    if (images.size() > 0) {
+      int imageCount = 1;
+      for (Element image : images) {
+        if (image.hasAttribute("src")) {
+          String src = image.getAttribute("src");
+          String imageFormat = null;
+          String imgName = null;
+          if (src.contains("FORMAT")) {
+            URL url = new URL(URLDecoder.decode(src, "UTF-8"));
+            String params[] = url.getQuery().split("&");
+            for (String param : params) {
+              if (param.split("=")[0].equalsIgnoreCase("FORMAT")) {
+                imageFormat = param.split("=")[1].split("/")[1];
+              }
+            }
+            if (null == imageFormat) {
+              imageFormat = "PNG";
+            }
+          }
+          String testName = System.getProperty("TestName");
+          if (testName.contains(" ")) {
+            imgName = testName.substring(testName.indexOf(":") + 1,
+                testName.indexOf(" "));
+          } else {
+            imgName = testName;
+          }
+          String downloadPath = opts.testLogDir + File.separator
+              + opts.sessionId + File.separator + "images" + File.separator
+              + imgName + imageCount + "." + imageFormat;
+          URL url = new URL(src);
+          BufferedImage img = ImageIO.read(url);
+          File file = new File(downloadPath);
+          if (!file.exists()) {
+            file.getParentFile().mkdirs();
+          }
+          ImageIO.write(img, imageFormat, file);
+          imageCount++;
+        }
+      }
     }
 
     XsltTransformer formTransformer = engine.getFormExecutable().load();
