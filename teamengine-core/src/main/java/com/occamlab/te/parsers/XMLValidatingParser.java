@@ -93,7 +93,7 @@ public class XMLValidatingParser {
 					jlogger.warning(msg);
 					throw new Exception(msg);
 				}
-				schema = new File(url.getFile());
+				schema = url;
 			} else {
 				throw new Exception("Unknown schema resource type " + type);
 			}
