@@ -82,6 +82,20 @@
     </xsl:variable>
     <xsl:choose>
       <xsl:when test="$testName-Version = 'title'">
+      	<xsl:variable name="testTitle">
+	      <xsl:choose>
+	        <xsl:when test="contains($testTitle, 'SNAPSHOT')">
+	          <xsl:call-template name="substring-before-after">
+	            <xsl:with-param name="getString" select="'before'" />
+	            <xsl:with-param name="string" select="$testTitle" />
+	            <xsl:with-param name="delimiter" select="$delimiters" />
+	          </xsl:call-template>
+	        </xsl:when>
+	        <xsl:otherwise>
+	          <xsl:value-of select="$testTitle" />
+	        </xsl:otherwise>
+	      </xsl:choose>
+	    </xsl:variable>
         <xsl:variable name="testName">
           <xsl:call-template name="substring-before-after">
             <xsl:with-param name="getString" select="'before'" />
@@ -92,14 +106,35 @@
         <xsl:value-of select="$testName" />
       </xsl:when>
       <xsl:when test="$testName-Version = 'version'">
+        <xsl:variable name="testTitle-version">
+	      <xsl:choose>
+	        <xsl:when test="contains($testTitle, 'SNAPSHOT')">
+		          <xsl:call-template name="substring-before-after">
+		            <xsl:with-param name="getString" select="'before'" />
+		            <xsl:with-param name="string" select="$testTitle" />
+		            <xsl:with-param name="delimiter" select="$delimiters" />
+		          </xsl:call-template>
+	        </xsl:when>
+	        <xsl:otherwise>
+	          <xsl:value-of select="$testTitle" />
+	        </xsl:otherwise>
+	      </xsl:choose>
+	    </xsl:variable>
         <xsl:variable name="testVersion">
           <xsl:call-template name="substring-before-after">
             <xsl:with-param name="getString" select="'after'" />
-            <xsl:with-param name="string" select="$testTitle" />
+            <xsl:with-param name="string" select="$testTitle-version" />
             <xsl:with-param name="delimiter" select="$delimiters" />
           </xsl:call-template>
         </xsl:variable>
-        <xsl:value-of select="$testVersion" />
+        <xsl:choose>
+	        <xsl:when test="contains($testTitle, 'SNAPSHOT')">
+	          <xsl:value-of select="concat($testVersion, '-SNAPSHOT')" />
+	        </xsl:when>
+	        <xsl:otherwise>
+	          <xsl:value-of select="$testVersion" />
+	        </xsl:otherwise>
+	      </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="'NULL'" />
@@ -758,7 +793,7 @@
           <xsl:when test="contains($string, $delimiter)">
             <xsl:variable name="s-tokenized" select="tokenize($string, $delimiter)" />
             <xsl:value-of
-                    select="replace(string-join(remove($s-tokenized, count($s-tokenized)),$delimiter), $delimiter, ' ')" />
+                    select="string-join(remove($s-tokenized, count($s-tokenized)),$delimiter)" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="$string" />
