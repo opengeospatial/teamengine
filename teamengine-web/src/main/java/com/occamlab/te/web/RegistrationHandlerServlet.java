@@ -43,6 +43,9 @@ public class RegistrationHandlerServlet extends HttpServlet {
             String password = request.getParameter("password");
             String hashedPassword = PasswordStorage.createHash(password);
             String email = request.getParameter("email");
+            String firstName = request.getParameter("firstName");
+            String lastName = request.getParameter("lastName");
+            String organization = request.getParameter("organization");
             File userDir = new File(conf.getUsersDir(), username);
             if (userDir.exists()) {
                 String url = "register.jsp?error=duplicate&username=" + username;
@@ -61,6 +64,9 @@ public class RegistrationHandlerServlet extends HttpServlet {
                 out.println(" </roles>");
                 out.println(" <password>" + hashedPassword + "</password>");
                 out.println(" <email>" + email + "</email>");
+                out.println(" <firstName>" + firstName + "</firstName>");
+                out.println(" <lastName>" + lastName + "</lastName>");
+                out.println(" <organization>" + organization + "</organization>");
                 out.println("</user>");
                 out.close();
                 response.sendRedirect("registered.jsp");

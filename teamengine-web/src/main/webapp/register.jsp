@@ -3,6 +3,9 @@
 <%
 String username = request.getParameter("username");
 String email = request.getParameter("email");
+String firstName = request.getParameter("firstName");
+String lastName = request.getParameter("lastName");
+String organization = request.getParameter("organization");
 %>
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -91,6 +94,14 @@ if ("duplicate".equals(request.getParameter("error"))) {
 				<br/>
 				<table>
 					<tr>
+						<td>First Name:</td>
+						<td><input name="firstName" type="text" value="<%= firstName == null ? "" : firstName %>"/></td>
+					</tr>
+					<tr>
+						<td>Last Name:</td>
+						<td><input name="lastName" type="text" value="<%= lastName == null ? "" : lastName %>"/></td>
+					</tr>
+					<tr>
 						<td>Username:</td>
 						<td><input name="username" type="text" value="<%= username == null ? "" : username %>"/></td>
 					</tr>
@@ -105,6 +116,10 @@ if ("duplicate".equals(request.getParameter("error"))) {
 					<tr>
 						<td>Email (Optional):</td>
 						<td><input name="email" type="text" value="<%= email == null ? "" : email %>"/></td>
+					</tr>
+					<tr>
+						<td>Organization:</td>
+						<td><input name="organization" type="text" value="<%= organization == null ? "" : organization %>"/></td>
 					</tr>
 				</table>
 <% if (!request.isSecure()) { %>
