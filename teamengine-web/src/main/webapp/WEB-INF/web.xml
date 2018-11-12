@@ -11,6 +11,25 @@
     <param-name>appVersion</param-name>
     <param-value>${project.version}</param-value>
   </context-param>
+  <context-param>
+        <param-name>host</param-name>
+        <param-value>smtp.gmail.com</param-value>
+    </context-param>
+ 
+    <context-param>
+        <param-name>port</param-name>
+        <param-value>587</param-value>
+    </context-param>
+ 
+    <context-param>
+        <param-name>user</param-name>
+        <param-value>keshav.nangare@gmail.com</param-value>
+    </context-param>
+ 
+    <context-param>
+        <param-name>pass</param-name>
+        <param-value>keshavn@123</param-value>
+    </context-param>
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
@@ -40,6 +59,10 @@
   <servlet>
     <servlet-name>prettyPrintLogs</servlet-name>
     <servlet-class>com.occamlab.te.web.PrettyPrintLogsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>resetPasswordHandler</servlet-name>
+    <servlet-class>com.occamlab.te.web.ResetPasswordHandler</servlet-class>  
   </servlet>
   <servlet>
     <servlet-name>emailLog</servlet-name>
@@ -99,6 +122,10 @@
   <servlet-mapping>
     <servlet-name>registrationHandler</servlet-name>
     <url-pattern>/registrationHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>resetPasswordHandler</servlet-name>
+    <url-pattern>/resetPasswordHandler</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>logout</servlet-name>
