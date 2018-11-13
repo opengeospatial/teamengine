@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -22,9 +24,16 @@ public class EmailUtility {
     Properties properties = new Properties();
     properties.put("mail.smtp.host", host);
     properties.put("mail.smtp.port", portNo);
+    properties.put("mail.smtp.auth", "true");
     properties.put("mail.smtp.starttls.enable", "true");
-
-    Session session = Session.getDefaultInstance(properties);
+    
+    Authenticator auth = new Authenticator() {
+      public PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(userName, pwd);
+      }
+    };
+  
+    Session session = Session.getInstance(properties, auth);
     Message msg = new MimeMessage(session);
     try {
       msg.setFrom(new InternetAddress(userName));
@@ -32,7 +41,7 @@ public class EmailUtility {
       msg.setRecipients(Message.RecipientType.TO, toAddresses);
       msg.setSubject(subject);
       msg.setSentDate(new Date());
-      msg.setText(message);
+      msg.setContent(message, "text/html; charset=utf-8");
 
       Transport.send(msg);
     } catch (Exception e) {
