@@ -3,6 +3,15 @@
  */
 package com.occamlab.te.web;
 
+import java.io.File;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -66,5 +75,46 @@ public class XMLUtils {
 
 			return null;
 		}
+		
+		/**
+		 * This method is used to parse xml document and will return 
+		 * document object.
+		 * 
+		 * @param xmlFile
+		 *    Input should XML file with File object.
+		 * @return doc 
+		 *    Return document object.
+		 */
+		public static Document parseDocument(File xmlFile) {
+		  try {
+		    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		    dbf.setNamespaceAware(true);
+		    dbf.setExpandEntityReferences(false);
+		    DocumentBuilder db = dbf.newDocumentBuilder();
+		    Document doc = db.parse(xmlFile);
+		    return doc;
+		  } catch (Exception e) {
+		    throw new RuntimeException("Failed to parse xml file: " + xmlFile
+		        + " Error: " + e.getMessage());
+		  }
+		}
+		
+		/**
+		 * The XML file is uploaded 
+		 * @param xmlFile
+		 * @return
+		 */
+        public static void transformDocument(Document doc, File xmlFile) {
+          try {
+            DOMSource source = new DOMSource(doc);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            StreamResult result = new StreamResult(xmlFile);
+            transformer.transform(source, result);
+          } catch (Exception e) {
+            throw new RuntimeException("Failed to update xml file. " + e.getMessage());
+          }
+        }
 
 }

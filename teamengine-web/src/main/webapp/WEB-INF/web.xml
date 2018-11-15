@@ -23,12 +23,12 @@
  
     <context-param>
         <param-name>user</param-name>
-        <param-value>keshav.nangare@gmail.com</param-value>
+        <param-value>demo@demo.com</param-value>
     </context-param>
  
     <context-param>
         <param-name>pass</param-name>
-        <param-value>keshavn@123</param-value>
+        <param-value>demo123</param-value>
     </context-param>
   <servlet>
     <servlet-name>test</servlet-name>
@@ -62,6 +62,10 @@
   </servlet>
   <servlet>
     <servlet-name>resetPasswordHandler</servlet-name>
+    <servlet-class>com.occamlab.te.web.ResetPasswordHandler</servlet-class>  
+  </servlet>
+  <servlet>
+    <servlet-name>updatePasswordHandler</servlet-name>
     <servlet-class>com.occamlab.te.web.ResetPasswordHandler</servlet-class>  
   </servlet>
   <servlet>
@@ -126,6 +130,10 @@
   <servlet-mapping>
     <servlet-name>resetPasswordHandler</servlet-name>
     <url-pattern>/resetPasswordHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updatePasswordHandler</servlet-name>
+    <url-pattern>/updatePasswordHandler</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>logout</servlet-name>

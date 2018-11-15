@@ -25,6 +25,13 @@ if (request.getParameter("error") != null) {
 	out.println("<span style=\"color: red\">The username and/or password did not match.  Please try again.</span>");
 }
 %>
+	<div id="success" style="color: #0325f9">
+		<%
+		  if ("pwd".equals(request.getParameter("success"))) {
+		    out.println("Thank you! Your password is succesfully changed.");
+		  }
+		%>
+	</div>
 		<form method="post" action="j_security_check">
 			<p>
 				Enter your username and password:<br/>

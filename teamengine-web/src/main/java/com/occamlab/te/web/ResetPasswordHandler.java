@@ -17,18 +17,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.occamlab.te.realm.PasswordStorage;
 
 import java.io.File;
 
@@ -59,6 +53,20 @@ public class ResetPasswordHandler extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+      String servletPath = request.getServletPath();
+      if("/resetPasswordHandler".equalsIgnoreCase(servletPath)) {
+        resetPassowrdHandler(request, response);
+      } else if("/updatePasswordHandler".equalsIgnoreCase(servletPath)) {
+        updatePassword(request, response);
+      }
+    }
+    
+    /**
+     * This method will send email to registered user along with the 
+     * verification code and verification code will stored into
+     * user.xml file.
+     */
+    public void resetPassowrdHandler(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         try {
             String username = request.getParameter("username");
             userDir = new File(conf.getUsersDir(), username);
@@ -67,11 +75,7 @@ public class ResetPasswordHandler extends HttpServlet {
                 response.sendRedirect(url);
             } else {
                 File xmlfile = new File(userDir, "user.xml");
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setNamespaceAware(true);
-                dbf.setExpandEntityReferences(false);
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(xmlfile);
+                Document doc = XMLUtils.parseDocument(xmlfile);
                 Element userDetails = (Element) (doc.getElementsByTagName("user")
                         .item(0));
                 NodeList emailList = userDetails.getElementsByTagName("email");
@@ -141,7 +145,7 @@ public class ResetPasswordHandler extends HttpServlet {
                 if (emailList.getLength() > 0) {
                   updateUserDetails(doc, userDetails, vCode);
                   EmailUtility.sendEmail(host, port, user, pass, emailList.item(0).getTextContent(), subject, message);
-                  response.sendRedirect("resetPassword.jsp?emailStatus=true");
+                  response.sendRedirect("updatePassword.jsp?emailStatus=true");
                 } else { 
                   String url = "resetPassword.jsp?error=emailNotExists&username="
                     + username;
@@ -152,6 +156,65 @@ public class ResetPasswordHandler extends HttpServlet {
             throw new ServletException(e);
         }
     }
+    
+    /**
+     * This method will validate the verification code and update the new password if
+     * the code is valid. 
+     * Otherwise it will throw error. 
+     * @throws ServletException 
+     */
+    public void updatePassword(HttpServletRequest request,
+        HttpServletResponse response) throws ServletException {
+      try {
+        String vCode = request.getParameter("vCode");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String hashedPassword = PasswordStorage.createHash(password);
+  
+        userDir = new File(conf.getUsersDir(), username);
+        if (!userDir.exists()) {
+          String url = "updatePassword.jsp?error=userNotExists&username="
+              + username;
+          response.sendRedirect(url);
+        } else {
+          File xmlfile = new File(userDir, "user.xml");
+          Document doc = XMLUtils.parseDocument(xmlfile);
+          Element userDetails = (Element) (doc.getElementsByTagName("user")
+              .item(0));
+  
+          NodeList vCodeList = userDetails
+              .getElementsByTagName("verificationCode");
+          String storedVerificationCode = null;
+          if (vCodeList.getLength() > 0) {
+            Element vCodeElement = (Element) doc.getElementsByTagName(
+                "verificationCode").item(0);
+            storedVerificationCode = vCodeElement.getTextContent();
+          }
+  
+          if (storedVerificationCode.equalsIgnoreCase(vCode)) {
+            NodeList pwdList = userDetails.getElementsByTagName("password");
+            if (pwdList.getLength() != 0) {
+              Element pwdElement = (Element) doc.getElementsByTagName("password")
+                  .item(0);
+              Node parent = pwdElement.getParentNode();
+              parent.removeChild(pwdElement);
+            }
+            Element pwdElement = doc.createElement("password");
+            pwdElement.setTextContent(hashedPassword);
+            userDetails.appendChild(pwdElement);
+            XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
+            String url = "login.jsp?success=pwd";
+            response.sendRedirect(url);
+          } else {
+            String url = "updatePassword.jsp?error=invalidVcode&username=" + username + "&vCode=" + vCode;
+            response.sendRedirect(url);
+          }
+        }
+      } catch (Exception e) {
+        throw new ServletException(e);
+      }
+    }
+    
   /**
    * Store verification code into the user.xml file to validate the code.
    * @param doc
@@ -171,17 +234,6 @@ public class ResetPasswordHandler extends HttpServlet {
     Element verificationCode = doc.createElement("verificationCode");
     verificationCode.setTextContent(verifyCode);
     userDetails.appendChild(verificationCode);
-    try {
-      DOMSource source = new DOMSource(doc);
-      TransformerFactory transformerFactory = TransformerFactory.newInstance();
-      Transformer transformer = transformerFactory.newTransformer();
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      StreamResult result = new StreamResult(new File(userDir, "user.xml"));
-      transformer.transform(source, result);
-    } catch (Exception e) {
-      throw new RuntimeException(
-          "Failed to update userdetails with the verification code "
-              + e.getMessage());
-    }
+    XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
   }
 }
