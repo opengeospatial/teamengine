@@ -36,6 +36,16 @@ String organization = request.getParameter("organization");
 
 			function submitform() {
 				var form = document.forms["registration"];
+				var firstName = form.elements["firstName"].value;
+				if (firstName == null || firstName == '') {
+					showerror("FirstName is required.");
+					return;
+				}
+				var lastName = form.elements["lastName"].value;
+				if (lastName == null || lastName == '') {
+					showerror("LastName is required.");
+					return;
+				}
 				var username = form.elements["username"].value;
 				if (username.length < 6) {
 					showerror("Username must be at least 6 characters.");
@@ -52,13 +62,21 @@ String organization = request.getParameter("organization");
 					return;
 				}
 				var email = form.elements["email"].value;
-				if (email.length > 0) {
+				if (email == null || email == '') {
+						showerror("Email address is required.");
+						return;
+				} else if (email.length > 0) {
 					var amp = email.indexOf("@");
 					var dot = email.lastIndexOf(".");
 					if (!(amp > 0 && dot > amp+1)) {
 						showerror("Invalid email address.");
 						return;
 					}
+				}
+				var organization = form.elements["organization"].value;
+				if (organization == null || organization == '') {
+					showerror("Organization is required.");
+					return;
 				}
 <% if (!request.isSecure()) { %>
 				if (!form.elements["disclaimer"].checked) {
@@ -71,10 +89,13 @@ String organization = request.getParameter("organization");
 			
 			function resetform() {
 				var form = document.forms["registration"];
+				form.elements["firstName"].value = "";
+				form.elements["lastName"].value = "";
 				form.elements["username"].value = "";
 				form.elements["password"].value = "";
 				form.elements["repeat_password"].value = "";
 				form.elements["email"].value = "";
+				form.elements["organization"].value = "";
 			}
 		</script>
 	</head>
@@ -114,7 +135,7 @@ if ("duplicate".equals(request.getParameter("error"))) {
 						<td><input name="repeat_password" type="password"/></td>
 					</tr>
 					<tr>
-						<td>Email (Optional):</td>
+						<td>Email:</td>
 						<td><input name="email" type="text" value="<%= email == null ? "" : email %>"/></td>
 					</tr>
 					<tr>
