@@ -87,16 +87,18 @@ String username = request.getParameter("username");
 						value="<%=username == null ? "" : username%>" /></td>
 				</tr>
 				<tr>
-					<td>Password:</td>
+					<td>New Password:</td>
 					<td><input name="password" type="password" /></td>
 				</tr>
 				<tr>
 					<td>Repeat Password:</td>
 					<td><input name="repeat_password" type="password" /></td>
 				</tr>
+				<tr>
+					<td><input type="button" value="Submit" onclick="submitform()" /></td>
+					<td><input type="button" value="Reset" onclick="resetform()" /></td>
+				</tr>
 			</table>
-			<br /> <input type="button" value="Submit" onclick="submitform()" />
-			<input type="button" value="Reset" onclick="resetform()" /> <br />
 		</p>
 	</form>
 	<%@ include file="footer.jsp"%>

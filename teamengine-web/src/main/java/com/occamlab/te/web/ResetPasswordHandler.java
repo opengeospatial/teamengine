@@ -1,15 +1,3 @@
-/****************************************************************************
-
- The Original Code is TEAM Engine.
-
- The Initial Developer of the Original Code is Northrop Grumman Corporation
- jointly with The National Technology Alliance.  Portions created by
- Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
- Grumman Corporation. All Rights Reserved.
-
- Contributor(s): No additional contributors to date
-
- ****************************************************************************/
 package com.occamlab.te.web;
 
 import javax.servlet.ServletContext;
@@ -32,14 +20,12 @@ import java.io.File;
  */
 public class ResetPasswordHandler extends HttpServlet {
 
-    private static final long serialVersionUID = 7428127065308163495L;
-
     Config conf;
     private String host;
     private String port;
     private String user;
     private String pass;
-    private String subject = "Reset your Teamengine password";
+    private String subject = "Reset your TEAM Engine password";
     private String message;
     File userDir;
 
@@ -118,16 +104,19 @@ public class ResetPasswordHandler extends HttpServlet {
                     + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">Dear &nbsp;" + username + ",</td>"
                     + "                                        </tr>"
                     + "                                        <tr>"
-                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">You recently requested to reset your password for your Teamengine account. Use below verfication code to reset your password.</td>"
+                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">You recently requested to reset your password for your TEAM Engine account. Use below verfication code to reset your password.</td>"
                     + "                                        </tr>"
                     + "                                        <tr>"
                     + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px;  font-family: Helvetica, Arial, sans-serif;\"><b>Verification Code :&nbsp;" + vCode + "</b></td>"
                     + "                                        </tr>"
                     + "                                        <tr>"
-                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">If you did not request a password reset, please ignore this email or contact to CITE team.</td>"
+                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">If you did not request a password reset, please ignore this email or contact the CITE team.</td>"
                     + "                                        </tr>"
                     + "                                        <tr>"
-                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">Regards,<br>CITE TEAM</td>"
+                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\"> <a href=\"" + getBaseUrl(request) +"\"> Follow this link to reset your password.</a></td>"
+                    + "                                        </tr>"
+                    + "                                        <tr>"
+                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">Regards,<br>CITE team</td>"
                     + "                                        </tr>"
                     + "                                    </table>"
                     + "                                </td>"
@@ -143,7 +132,7 @@ public class ResetPasswordHandler extends HttpServlet {
                     + "</html>";
                 
                 if (emailList.getLength() > 0) {
-                  updateUserDetails(doc, userDetails, vCode);
+                  saveVerificationCode(doc, userDetails, vCode);
                   EmailUtility.sendEmail(host, port, user, pass, emailList.item(0).getTextContent(), subject, message);
                   response.sendRedirect("updatePassword.jsp?emailStatus=true");
                 } else { 
@@ -221,19 +210,30 @@ public class ResetPasswordHandler extends HttpServlet {
    * @param userDetails
    * @param verifyCode
    */
-  public void updateUserDetails(Document doc, Element userDetails,
+  public void saveVerificationCode(Document doc, Element userDetails,
       String verifyCode) {
 
-    NodeList vCodeList = userDetails.getElementsByTagName("verificationCode");
-    if (vCodeList.getLength() != 0) {
-      Element element = (Element) doc.getElementsByTagName("verificationCode")
-          .item(0);
-      Node parent = element.getParentNode();
-      parent.removeChild(element);
-    }
+    //Remove element if exist.
+    doc = XMLUtils.removeElement(doc, userDetails, "verificationCode");
+    
+    //Update new details to existing document
     Element verificationCode = doc.createElement("verificationCode");
     verificationCode.setTextContent(verifyCode);
     userDetails.appendChild(verificationCode);
     XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
   }
+  /**
+   * Returns the base URL from the current request context.
+   * @param request
+   * @return baseUrl
+   */
+  public static String getBaseUrl(HttpServletRequest request) {
+    String scheme = request.getScheme();
+    String host = request.getServerName();
+    int port = request.getServerPort();
+    String contextPath = request.getContextPath();
+
+    String baseUrl = scheme + "://" + host + ((("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443)) ? "" : ":" + port) + contextPath;
+    return baseUrl;
+}
 }

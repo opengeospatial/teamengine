@@ -48,21 +48,20 @@ if ("userNotExists".equals(request.getParameter("error"))) {
   }
 %>
 		</div>
-		<form name="resetPassowrd" method="post" action="resetPasswordHandler">
-			<p>
-				Enter registered username only <br/>
-				<br/>
-				<table>
-					<tr>
-						<td>Username :</td>
-						<td><input name="username" type="text" value="<%= username == null ? "" : username %>"/></td>
-					</tr>
-				</table>
-				<input type="button" value="Submit" onclick="submitform()"/>
-				<input type="button" value="Reset" onclick="resetform()"/>
-				<br/>
-			</p>
-		</form>
-		<%@ include file="footer.jsp" %>
+	<form name="resetPassowrd" method="post" action="resetPasswordHandler">
+			<p>Enter registered username only</p>
+			<table>
+				<tr>
+					<td>Username :</td>
+					<td><input name="username" type="text"
+						value="<%=username == null ? "" : username%>" /></td>
+				</tr>
+				<tr>
+					<td><input type="button" value="Submit" onclick="submitform()" /></td>
+					<td><input type="button" value="Reset" onclick="resetform()" /></td>
+				</tr>
+			</table>
+	</form>
+	<%@ include file="footer.jsp" %>
 	</body>
 </html>

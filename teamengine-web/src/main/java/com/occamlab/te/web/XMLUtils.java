@@ -19,6 +19,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -100,7 +101,7 @@ public class XMLUtils {
 		}
 		
 		/**
-		 * The XML file is uploaded 
+		 * This method is used to write the DOM object to XML file. 
 		 * @param xmlFile
 		 * @return
 		 */
@@ -115,6 +116,27 @@ public class XMLUtils {
           } catch (Exception e) {
             throw new RuntimeException("Failed to update xml file. " + e.getMessage());
           }
+        }
+        
+        /**
+         * This method removes the element from the document.
+         * 
+         * @param doc
+         * @param element 
+         *      Object of root element
+         * @param elementName
+         *      The name of element to remove.
+         * @return
+         */
+        public static Document removeElement(Document doc, Element element, String elementName){
+          NodeList elementList = element.getElementsByTagName(elementName);
+          if (elementList.getLength() != 0) {
+            Element elementToRemove = (Element) doc.getElementsByTagName(elementName)
+                .item(0);
+            Node parent = elementToRemove.getParentNode();
+            parent.removeChild(elementToRemove);
+          }
+          return doc;
         }
 
 }
