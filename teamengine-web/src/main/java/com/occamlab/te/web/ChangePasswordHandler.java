@@ -1,0 +1,75 @@
+package com.occamlab.te.web;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.occamlab.te.realm.PasswordStorage;
+
+import java.io.File;
+
+/**
+ * Handles requests to change password.
+ * 
+ */
+public class ChangePasswordHandler extends HttpServlet {
+
+  Config conf;
+  
+  public void init() throws ServletException {
+    conf = new Config();
+  }
+
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException {
+
+    try {
+      String oldPass = request.getParameter("oldPass");
+      String username = request.getParameter("username");
+      String password = request.getParameter("password");
+      String hashedPassword = PasswordStorage.createHash(password);
+
+      File userDir = new File(conf.getUsersDir(), username);
+      if (!userDir.exists()) {
+        String url = "changePassword.jsp?error=userNotExists&username="
+            + username;
+        response.sendRedirect(url);
+      } else {
+        File xmlfile = new File(userDir, "user.xml");
+        Document doc = XMLUtils.parseDocument(xmlfile);
+        Element userDetails = (Element) (doc.getElementsByTagName("user")
+            .item(0));
+
+        NodeList oldPwdList = userDetails
+            .getElementsByTagName("password");
+        String storedOldPassword = null;
+        if (oldPwdList.getLength() > 0) {
+          Element oldePwdElement = (Element) oldPwdList.item(0);
+          storedOldPassword = oldePwdElement.getTextContent();
+        }
+        Boolean isValid = PasswordStorage.verifyPassword(oldPass, storedOldPassword);
+        if (isValid) {
+          doc = XMLUtils.removeElement(doc, userDetails, "password");
+          Element pwdElement = doc.createElement("password");
+          pwdElement.setTextContent(hashedPassword);
+          userDetails.appendChild(pwdElement);
+          XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
+          request.getSession().invalidate();
+          response.sendRedirect(request.getContextPath());
+        } else {
+          String url = "changePassword.jsp?error=invalidOldPwd";
+          response.sendRedirect(url);
+        }
+      }
+    } catch (Exception e) {
+      throw new ServletException(e);
+    }
+  }
+}
