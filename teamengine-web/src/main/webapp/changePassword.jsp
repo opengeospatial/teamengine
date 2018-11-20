@@ -31,13 +31,13 @@ String username = request.getRemoteUser();
 			showerror("Username must be at least 6 characters.");
 			return;
 		}
-		var password = form.elements["password"].value;
-		if (password.length == 0) {
+		var newPassword = form.elements["newPassword"].value;
+		if (newPassword.length == 0) {
 			showerror("New Password is required.");
 			return;
 		}
 		var repeat_password = form.elements["repeat_password"].value;
-		if (repeat_password != password) {
+		if (repeat_password != newPassword) {
 			showerror("Passwords don't match.");
 			return;
 		}
@@ -48,7 +48,7 @@ String username = request.getRemoteUser();
 		var form = document.forms["changePassword"];
 		form.elements["oldPass"].value = "";
 		form.elements["username"].value = "";
-		form.elements["password"].value = "";
+		form.elements["newPassword"].value = "";
 		form.elements["repeat_password"].value = "";
 	}
 </script>
@@ -81,7 +81,7 @@ String username = request.getRemoteUser();
 				</tr>
 				<tr>
 					<td>New Password:</td>
-					<td><input name="password" type="password" /></td>
+					<td><input name="newPassword" type="password" /></td>
 				</tr>
 				<tr>
 					<td>Repeat Password:</td>

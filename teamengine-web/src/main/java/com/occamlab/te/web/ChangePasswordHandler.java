@@ -1,6 +1,5 @@
 package com.occamlab.te.web;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.realm.PasswordStorage;
@@ -33,8 +31,7 @@ public class ChangePasswordHandler extends HttpServlet {
     try {
       String oldPass = request.getParameter("oldPass");
       String username = request.getParameter("username");
-      String password = request.getParameter("password");
-      String hashedPassword = PasswordStorage.createHash(password);
+      String newPassword = request.getParameter("newPassword");
 
       File userDir = new File(conf.getUsersDir(), username);
       if (!userDir.exists()) {
@@ -54,11 +51,12 @@ public class ChangePasswordHandler extends HttpServlet {
           Element oldePwdElement = (Element) oldPwdList.item(0);
           storedOldPassword = oldePwdElement.getTextContent();
         }
+        
         Boolean isValid = PasswordStorage.verifyPassword(oldPass, storedOldPassword);
         if (isValid) {
           doc = XMLUtils.removeElement(doc, userDetails, "password");
           Element pwdElement = doc.createElement("password");
-          pwdElement.setTextContent(hashedPassword);
+          pwdElement.setTextContent(PasswordStorage.createHash(newPassword));
           userDetails.appendChild(pwdElement);
           XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
           request.getSession().invalidate();
