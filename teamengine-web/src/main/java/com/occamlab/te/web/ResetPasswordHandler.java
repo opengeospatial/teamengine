@@ -113,7 +113,7 @@ public class ResetPasswordHandler extends HttpServlet {
                     + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">If you did not request a password reset, please ignore this email or contact the CITE team.</td>"
                     + "                                        </tr>"
                     + "                                        <tr>"
-                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\"> <a href=\"" + getBaseUrl(request) +"\"> Follow this link to reset your password.</a></td>"
+                    + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\"> <a href=\"" + getBaseUrl(request) + "/updatePassword.jsp" +"\"> Follow this link to reset your password.</a></td>"
                     + "                                        </tr>"
                     + "                                        <tr>"
                     + "                                            <td align=\"left\" style=\"padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif;\">Regards,<br>CITE team</td>"
