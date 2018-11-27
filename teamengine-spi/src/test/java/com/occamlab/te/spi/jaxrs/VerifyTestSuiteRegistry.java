@@ -37,6 +37,6 @@ public class VerifyTestSuiteRegistry {
     @Test
     public void getUnregisteredController() {
         TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Assert.assertNull(registry.getController("foo", "1.0"));
+        Assert.assertNull(registry.getController("foo"));
     }
 }

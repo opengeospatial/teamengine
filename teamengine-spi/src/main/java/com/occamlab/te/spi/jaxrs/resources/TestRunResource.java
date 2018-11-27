@@ -43,7 +43,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * 
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
-@Path("suites/{etsCode}/{etsVersion}/run")
+@Path("suites/{etsCode}/run")
 public class TestRunResource {
 
     private static final Logger LOGR = Logger.getLogger( TestRunResource.class.getPackage().getName() );
@@ -113,7 +113,7 @@ public class TestRunResource {
     public Response handleGetZip( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion )
                             throws IOException {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        Source results = executeTestRun( etsCode, etsVersion, params, APPLICATION_ZIP );
+        Source results = executeTestRun( etsCode, params, APPLICATION_ZIP );
 
         String htmlOutput = results.getSystemId().toString();
         int count = htmlOutput.split( ":", -1 ).length - 1;
@@ -300,7 +300,7 @@ public class TestRunResource {
             msg.append( params.toString() );
             LOGR.fine( msg.toString() );
         }
-        return executeTestRun( etsCode, etsVersion, params, preferredMediaType );
+        return executeTestRun( etsCode, params, preferredMediaType );
     }
 
     private Source handlePost( String etsCode, String etsVersion, File entityBody, String preferredMediaType ) {
@@ -316,7 +316,7 @@ public class TestRunResource {
         }
         Map<String, List<String>> args = new HashMap<String, List<String>>();
         args.put( "iut", Arrays.asList( entityBody.toURI().toString() ) );
-        return executeTestRun( etsCode, etsVersion, args, preferredMediaType );
+        return executeTestRun( etsCode, args, preferredMediaType );
     }
 
     private Source handleMultipartFormDataPost( String etsCode, String etsVersion, File entityBody, File schBody,
@@ -346,7 +346,7 @@ public class TestRunResource {
             }
             args.put( "sch", Arrays.asList( schBody.toURI().toString() ) );
         }
-        return executeTestRun( etsCode, etsVersion, args, preferredMediaType );
+        return executeTestRun( etsCode, args, preferredMediaType );
     }
 
     /**
@@ -362,12 +362,12 @@ public class TestRunResource {
      * @throws WebApplicationException
      *             If an error occurs while executing a test run.
      */
-    private Source executeTestRun( String etsCode, String etsVersion, Map<String, List<String>> testRunArgs,
+    private Source executeTestRun( String etsCode, Map<String, List<String>> testRunArgs,
                                    String preferredMediaType ) {
         testRunArgs.put( "acceptMediaType", Arrays.asList( preferredMediaType ) );
         if ( LOGR.isLoggable( Level.FINE ) ) {
             StringBuilder msg = new StringBuilder( "Test run arguments - " );
-            msg.append( etsCode ).append( "/" ).append( etsVersion ).append( "\n" );
+            msg.append( etsCode ).append( "/" );
             msg.append( testRunArgs.toString() );
             if ( null != this.headers.getMediaType() ) {
                 msg.append( "Entity media type: " + this.headers.getMediaType() );
@@ -375,7 +375,7 @@ public class TestRunResource {
             LOGR.fine( msg.toString() );
         }
         Document xmlArgs = readTestRunArguments( testRunArgs );
-        TestSuiteController controller = findController( etsCode, etsVersion );
+        TestSuiteController controller = findController( etsCode );
         Source testResults = null;
         try {
             testResults = controller.doTestRun( xmlArgs );
@@ -386,11 +386,11 @@ public class TestRunResource {
         } catch ( Exception ex ) {
             LOGR.log( Level.WARNING, ex.getMessage(), ex );
             ErrorResponseBuilder builder = new ErrorResponseBuilder();
-            String error_msg = "Error executing test suite ("+ etsCode +"-" + etsVersion + "): " + "Error message: " + ex.getMessage();
+            String error_msg = "Error executing test suite ("+ etsCode + "): " + "Error message: " + ex.getMessage();
             Response rsp = builder.buildErrorResponse(500,error_msg);
             throw new WebApplicationException( rsp );
         }
-        LOGR.fine( String.format( "Test results for suite %s-%s: %s", etsCode, etsVersion, testResults.getSystemId() ) );
+        LOGR.fine( String.format( "Test results for suite %s: %s", etsCode, testResults.getSystemId() ) );
         return testResults;
     }
 
@@ -406,10 +406,10 @@ public class TestRunResource {
      * @throws WebApplicationException
      *             If a corresponding controller cannot be found.
      */
-    private TestSuiteController findController( String code, String version )
+    private TestSuiteController findController( String code )
                             throws WebApplicationException {
         TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        TestSuiteController controller = registry.getController( code, version );
+        TestSuiteController controller = registry.getController( code);
         if ( null == controller ) {
             throw new WebApplicationException( 404 );
         }

@@ -89,11 +89,9 @@ public class TestSuiteSetResource {
             if (!reqUriInfo.getPath().endsWith("/")) {
                 etsURI.append(this.reqUriInfo.getPath()).append("/");
             }
-            etsURI.append(etsController.getCode()).append("/")
-                    .append(etsController.getVersion()).append("/");
+            etsURI.append(etsController.getCode()).append("/");
             link.setAttribute("href", etsURI.toString());
-            link.setAttribute("id", etsController.getCode() + "-"
-                    + etsController.getVersion());
+            link.setAttribute("id", etsController.getCode());
             etsURI.setLength(0);
         }
         return new DOMSource(xhtmlDoc);

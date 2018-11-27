@@ -13,7 +13,7 @@ import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
  * A document resource that provides an overview of the executable test suite
  * (ETS) and guidance about how to run the tests.
  */
-@Path("suites/{etsCode}/{etsVersion}/")
+@Path("suites/{etsCode}/")
 public class TestSuiteOverviewResource {
 
     /**
@@ -33,12 +33,10 @@ public class TestSuiteOverviewResource {
     @GET
     @Produces("text/html; charset='utf-8'")
     public InputStream getTestSuiteDescription(
-            @PathParam("etsCode") String etsCode,
-            @PathParam("etsVersion") String etsVersion) {
+            @PathParam("etsCode") String etsCode) {
 
         StringBuilder docPath = new StringBuilder("/doc/");
-        docPath.append(etsCode).append("/").append(etsVersion)
-                .append("/overview.html");
+        docPath.append(etsCode).append("/overview.html");
         InputStream atsStream = this.getClass().getResourceAsStream(
                 docPath.toString());
         if (null == atsStream) {
