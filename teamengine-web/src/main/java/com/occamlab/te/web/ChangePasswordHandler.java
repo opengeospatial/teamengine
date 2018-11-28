@@ -10,8 +10,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.realm.PasswordStorage;
+import com.occamlab.te.realm.UserGenericPrincipal;
 
 import java.io.File;
+import java.security.Principal;
 
 /**
  * Handles requests to change password.
@@ -59,6 +61,10 @@ public class ChangePasswordHandler extends HttpServlet {
           pwdElement.setTextContent(PasswordStorage.createHash(newPassword));
           userDetails.appendChild(pwdElement);
           XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
+           Principal userPrincipal = UserGenericPrincipal.getInstance().removePrincipal(username);
+           if(userPrincipal == null){
+             throw new RuntimeException("Failed update old credentials");
+           }
           request.getSession().invalidate();
           response.sendRedirect(request.getContextPath());
         } else {

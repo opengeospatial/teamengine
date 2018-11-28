@@ -20,8 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.catalina.Realm;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
@@ -62,7 +64,7 @@ public class PBKDF2Realm extends RealmBase {
     private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
     private String rootPath = null;
     private DocumentBuilder DB = null;
-    private HashMap<String, Principal> principals = new HashMap<String, Principal>();
+    private HashMap<String, Principal> principals = UserGenericPrincipal.getInstance().getPrincipals();
 
     public String getRoot() {
         return rootPath;
@@ -223,4 +225,5 @@ public class PBKDF2Realm extends RealmBase {
         }
         return principal;
     }
+    
 }
