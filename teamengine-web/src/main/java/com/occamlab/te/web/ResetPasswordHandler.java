@@ -1,10 +1,12 @@
 package com.occamlab.te.web;
 
-import javax.servlet.ServletContext;
+import static java.util.logging.Level.SEVERE;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -13,6 +15,10 @@ import org.w3c.dom.NodeList;
 import com.occamlab.te.realm.PasswordStorage;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Handles requests to register new users.
@@ -20,6 +26,7 @@ import java.io.File;
  */
 public class ResetPasswordHandler extends HttpServlet {
 
+    private static final Logger LOGR = Logger.getLogger(ResetPasswordHandler.class.getName());
     Config conf;
     private String host;
     private String port;
@@ -31,11 +38,6 @@ public class ResetPasswordHandler extends HttpServlet {
 
     public void init() throws ServletException {
         conf = new Config();
-        ServletContext context = getServletContext();
-        host = context.getInitParameter("host");
-        port = context.getInitParameter("port");
-        user = context.getInitParameter("user");
-        pass = context.getInitParameter("pass");
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -60,6 +62,12 @@ public class ResetPasswordHandler extends HttpServlet {
                 String url = "resetPassword.jsp?error=userNotExists&username=" + username;
                 response.sendRedirect(url);
             } else {
+                Properties properties = new Properties();
+                properties = getEmailProps();
+                host = properties.getProperty("host");
+                port = properties.getProperty("port");
+                user = properties.getProperty("user");
+                pass = properties.getProperty("pass");
                 File xmlfile = new File(userDir, "user.xml");
                 Document doc = XMLUtils.parseDocument(xmlfile);
                 Element userDetails = (Element) (doc.getElementsByTagName("user")
@@ -192,7 +200,7 @@ public class ResetPasswordHandler extends HttpServlet {
             pwdElement.setTextContent(hashedPassword);
             userDetails.appendChild(pwdElement);
             XMLUtils.transformDocument(doc, new File(userDir, "user.xml"));
-            String url = "login.jsp?success=pwd";
+            String url = "viewSessions.jsp?success=pwd";
             response.sendRedirect(url);
           } else {
             String url = "updatePassword.jsp?error=invalidVcode&username=" + username + "&vCode=" + vCode;
@@ -236,4 +244,32 @@ public class ResetPasswordHandler extends HttpServlet {
     String baseUrl = scheme + "://" + host + ((("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443)) ? "" : ":" + port) + contextPath;
     return baseUrl;
 }
+  
+  public Properties getEmailProps() {
+
+    Properties prop = new Properties();
+    InputStream input = null;
+
+    try {
+
+      input = getClass().getResourceAsStream("/email.properties");
+      if (input == null) {
+        LOGR.log(SEVERE, "Sorry, unable to find 'email.properties'");
+        return prop;
+      }
+      prop.load(input);
+
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    } finally {
+      if (input != null) {
+        try {
+          input.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return prop;
+  }
 }

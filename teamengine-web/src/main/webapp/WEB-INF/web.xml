@@ -11,25 +11,6 @@
     <param-name>appVersion</param-name>
     <param-value>${project.version}</param-value>
   </context-param>
-  <context-param>
-        <param-name>host</param-name>
-        <param-value>smtp.gmail.com</param-value>
-    </context-param>
- 
-    <context-param>
-        <param-name>port</param-name>
-        <param-value>587</param-value>
-    </context-param>
- 
-    <context-param>
-        <param-name>user</param-name>
-        <param-value>demo@demo.com</param-value>
-    </context-param>
- 
-    <context-param>
-        <param-name>pass</param-name>
-        <param-value>demo123</param-value>
-    </context-param>
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
