@@ -4,6 +4,7 @@
 package com.occamlab.te.web;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,10 +19,15 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.xerces.impl.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * @author lbermudez
@@ -107,14 +113,21 @@ public class XMLUtils {
 		 */
         public static void transformDocument(Document doc, File xmlFile) {
           try {
-            DOMSource source = new DOMSource(doc);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            StreamResult result = new StreamResult(xmlFile);
-            transformer.transform(source, result);
+            DOMImplementationRegistry domRegistry = DOMImplementationRegistry.newInstance();
+            DOMImplementationLS lsFactory = (DOMImplementationLS) domRegistry.getDOMImplementation("LS 3.0");
+            
+            LSSerializer serializer = lsFactory.createLSSerializer();
+            serializer.getDomConfig().setParameter(Constants.DOM_XMLDECL, Boolean.FALSE);
+            serializer.getDomConfig().setParameter(Constants.DOM_FORMAT_PRETTY_PRINT, Boolean.TRUE);
+            LSOutput output = lsFactory.createLSOutput();
+            output.setEncoding("UTF-8");
+            
+            FileOutputStream os = new FileOutputStream(xmlFile, false);
+            output.setByteStream(os);
+            serializer.write(doc, output);
+            os.close();
           } catch (Exception e) {
-            throw new RuntimeException("Failed to update xml file. " + e.getMessage());
+            throw new RuntimeException("Failed to update user details. " + e.getMessage());
           }
         }
         
