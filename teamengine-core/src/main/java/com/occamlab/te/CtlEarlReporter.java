@@ -106,6 +106,8 @@ public class CtlEarlReporter {
     private int totalWarningCount;
 
     private int totalInheritedFailureCount;
+    
+    private Boolean passedCoreConformanceClasses = true;
 
     public CtlEarlReporter() {
         this.earlModel = ModelFactory.createDefaultModel();
@@ -193,6 +195,7 @@ public class CtlEarlReporter {
         this.testRun.addLiteral( CITE.testsWarning, new Integer( this.totalWarningCount ) );
         this.testRun.addLiteral( CITE.testsInheritedFailure, new Integer( this.totalInheritedFailureCount ) );
         this.testRun.addLiteral( CITE.testSuiteType, "ctl" );
+        this.testRun.addLiteral( CITE.passedCoreConformanceClasses, passedCoreConformanceClasses );
 
         this.earlModel.add( model );
 
@@ -236,6 +239,11 @@ public class CtlEarlReporter {
                 testReq.addLiteral( CITE.testsNotTested, new Integer( this.cNotTestedCount ) );
                 testReq.addLiteral( CITE.testsWarning, new Integer( this.cWarningCount ) );
                 testReq.addLiteral( CITE.testsInheritedFailure, new Integer( this.cInheritedFailureCount ) );
+                if(testInfo.isBasic){
+                  if(cFailCount > 0 || cInheritedFailureCount > 0){
+                    passedCoreConformanceClasses = false;
+                  }
+                }
                 this.totalPassCount += cPassCount;
                 this.totalFailCount += cFailCount;
                 this.totalSkipCount += cSkipCount;
