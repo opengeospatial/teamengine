@@ -8,6 +8,7 @@
 package com.occamlab.te.util;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.ByteArrayOutputStream;
@@ -39,6 +40,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Attr;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * Allows for manipulating of a DOM Document by adding/removing/etc elements and
@@ -429,5 +434,31 @@ public class DomUtils {
            }
            return doc;
        }
+    
+    /**
+     * Write document object to XML file
+     * 
+     * @param doc Document object 
+     * @param xmlFile XML file path which we have to write the result.
+     */
+    public static void transformDocument(Document doc, File xmlFile) {
+      try {
+        DOMImplementationRegistry domRegistry = DOMImplementationRegistry.newInstance();
+        DOMImplementationLS lsFactory = (DOMImplementationLS) domRegistry.getDOMImplementation("LS 3.0");
+        
+        LSSerializer serializer = lsFactory.createLSSerializer();
+        serializer.getDomConfig().setParameter("xml-declaration", Boolean.FALSE);
+        serializer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+        LSOutput output = lsFactory.createLSOutput();
+        output.setEncoding("UTF-8");
+        
+        FileOutputStream os = new FileOutputStream(xmlFile, false);
+        output.setByteStream(os);
+        serializer.write(doc, output);
+        os.close();
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to update XML file. " + e.getMessage());
+      }
+    }
 
 }

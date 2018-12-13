@@ -61,6 +61,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.occamlab.te.html.EarlToHtmlTransformation;
+
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
@@ -2542,4 +2543,52 @@ public class TECore implements Runnable {
     return doc;
   }
 
+  /**
+   * This method is used by ets-wms-client13 to write the requested layers
+   * by the tools e.g. Udig & QGIS into the session directory.
+   * 
+   * @param requestedLayersDoc Document object of requested layers.
+   */
+  public void storeRequestedLayers(Document requestedLayersDoc) {
+
+    String filepath = opts.getLogDir() + File.separator + opts.sessionId
+        + File.separator + "test_data" + File.separator
+        + "Get-Map-Layer-New.xml";
+    File xmlFile = new File(filepath);
+    try {
+      if (!xmlFile.exists()) {
+        xmlFile.createNewFile();
+        System.out.println("File not exist: " + xmlFile.toString());
+        PrintStream out = new PrintStream(new FileOutputStream(xmlFile));
+        out.println(DomUtils.serializeSource(new DOMSource(requestedLayersDoc)));
+        out.close();
+      } else {
+        System.out.println("File is exist: " + xmlFile.toString());
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setExpandEntityReferences(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(xmlFile);
+
+        Node layerNode = doc.getElementsByTagName("Layers").item(0);
+        Node requestedLayerNode = requestedLayersDoc.getElementsByTagName(
+            "Layers").item(0);
+        Element requestedLayerElement = (Element) requestedLayerNode;
+        NodeList requestedLayerValueList = requestedLayerElement
+            .getElementsByTagName("value");
+        for (int i = 0; i < requestedLayerValueList.getLength(); i++) {
+          Node requestedLayerValueNode = requestedLayerValueList.item(i);
+          Node firstDocImportedNode = doc.importNode(requestedLayerValueNode,
+              true);
+          layerNode.appendChild(firstDocImportedNode);
+        }
+
+        DomUtils.transformDocument(doc, xmlFile);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to parse xml file: " + xmlFile
+          + " Error: " + e.getMessage());
+    }
+  }  
+  
 }
