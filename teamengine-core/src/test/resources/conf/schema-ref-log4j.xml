@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers"
+    ignoreErrors="false" ignoreWarnings="true">
+    <ctlp:schemas>
+        <!--
+        We use log4j as a url-based test because w3.org artifically slows responses. See
+        <https://www.w3.org/Help/Webmaster#slowdtd>.
+        -->
+        <ctlp:schema type="url">https://raw.githubusercontent.com/apache/logging-log4j2/log4j-2.9.0/log4j-core/src/main/resources/Log4j-config.xsd</ctlp:schema>
+    </ctlp:schemas>
+</ctlp:XMLValidatingParser>

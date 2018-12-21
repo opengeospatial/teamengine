@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers"
+    ignoreErrors="false" ignoreWarnings="true">
+    <ctlp:schemas>
+        <ctlp:dtd type="url">http://schemas.opengis.net/wms/1.1.1/WMS_exception_1_1_1.dtd</ctlp:dtd>
+    </ctlp:schemas>
+</ctlp:XMLValidatingParser>
