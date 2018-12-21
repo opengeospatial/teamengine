@@ -169,19 +169,27 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
                     window.location = url + "&stop=" + stop + "&t=" + d.getTime();
                 }
                 
-                function validation() {
-        			var iuturi = window.frames[1].window.document.forms[0].elements.iut_uri.value;
-        			var iutdoc = window.frames[1].window.document.forms[0].elements.iut_doc.value;
+             // Validate the inputs.
+                function validateIutInputs(iut_uri, iut_doc) {
+        			var iuturi = window.frames[1].window.document.getElementById(iut_uri).value;
+        			var iutdoc = window.frames[1].window.document.getElementById(iut_doc).value;
         			if ((iutdoc == undefined || iutdoc == null || iutdoc == "")
         					&& (iuturi == undefined || iuturi == null || iuturi == "")) {
-        				alert("Capability URL or document is empty.");
-        				window.frames[1].window.document.forms[0].elements.iut_uri.focus();
+        				alert("Capability URL or document should not be empty.");
+        				window.frames[1].window.document.getElementById(iut_uri).focus();
         				return false;
         			}
-        			if (iutdoc !== undefined && iutdoc !== null && iutdoc !== "") {
-        				window.frames[1].window.document.forms[0].elements.iut_uri.value = "";
-        			}
         		}
+                
+                // Reset iut_uri if the file is uploaded.
+                function resetIutValue(iut_uri, iut_doc){
+					var iut_uri_value = window.frames[1].window.document.getElementById(iut_uri).value;
+					var iut_doc_value = window.frames[1].window.document.getElementById(iut_doc).value;
+					
+					if (iut_doc_value !== undefined && iut_doc_value !== null && iut_doc_value !== "") {
+				        window.frames[1].window.document.getElementById(iut_uri).value = "";
+				    }
+				}
             </script>
 	</head>
 	<frameset onload="start()" rows="102,*">
