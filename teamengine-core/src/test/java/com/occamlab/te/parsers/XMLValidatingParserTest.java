@@ -24,7 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.occamlab.te.parsers.xml.FileSchemaSupplier;
+import com.occamlab.te.parsers.xml.UrlSchemaSupplier;
 
 public class XMLValidatingParserTest {
 
@@ -43,8 +43,7 @@ public class XMLValidatingParserTest {
 	public void createParserWithCswSchemaAsResource() throws Exception {
 		Document schemaRefs = parseResourceDocument("/conf/schema-refs.xml");
 		final URL expectedResource = getClass().getResource("/xsd/ogc/csw/2.0.2/csw-2.0.2.2.xsd");
-		final FileSchemaSupplier expectedSupplier = new FileSchemaSupplier(
-				new File(expectedResource.getFile()));
+		final UrlSchemaSupplier expectedSupplier = new UrlSchemaSupplier(expectedResource);
 		XMLValidatingParser iut = new XMLValidatingParser(schemaRefs);
 		assertNotNull(iut);
 		assertEquals(Arrays.asList(expectedSupplier), iut.schemaList);
