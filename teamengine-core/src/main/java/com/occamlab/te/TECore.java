@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
@@ -65,6 +66,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import com.occamlab.te.form.ImageHandler;
 import com.occamlab.te.html.EarlToHtmlTransformation;
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
@@ -135,7 +137,7 @@ public class TECore implements Runnable {
   public static int methodCount = 0;
   String testName = "";
   public static String nameOfTest = "";
-  RuntimeOptions opts;
+  final RuntimeOptions opts;
   String testServletURL = null;
   volatile PrintStream out; // Console destination
   boolean web = false; // True when running as a servlet
@@ -220,8 +222,11 @@ public class TECore implements Runnable {
   public static Document userInputs = null;
   public Boolean supportHtmlReport = false;
 
-  public TECore() {
+  public final ImageHandler imageHandler;
 
+  public TECore() {
+    this.opts = null;
+    this.imageHandler = null;
   }
 
   public TECore(Engine engine, Index index, RuntimeOptions opts) {
@@ -229,8 +234,9 @@ public class TECore implements Runnable {
     this.index = index;
     this.opts = opts;
     this.recordedForms = new RecordedForms(opts.getRecordedForms());
-    testPath = opts.getSessionId();
-    out = System.out;
+    this.testPath = opts.getSessionId();
+    this.out = System.out;
+    this.imageHandler = new ImageHandler(opts.testLogDir, opts.sessionId);
   }
 
   public TestEntry getParentTest() {
@@ -2309,50 +2315,7 @@ public class TECore implements Runnable {
     } else if (hasFiles) {
       method = "post";
     }
-    
-    // Save images into session if the ets is interactive and it contains the
-    // images.
-    List<Element> images = DomUtils.getElementsByTagName(form, "img");
-    if (images.size() > 0) {
-      int imageCount = 1;
-      for (Element image : images) {
-        if (image.hasAttribute("src")) {
-          String src = image.getAttribute("src");
-          String imageFormat = null;
-          String imgName = null;
-          if (src.contains("FORMAT")) {
-            URL url = new URL(URLDecoder.decode(src, "UTF-8"));
-            String params[] = url.getQuery().split("&");
-            for (String param : params) {
-              if (param.split("=")[0].equalsIgnoreCase("FORMAT")) {
-                imageFormat = param.split("=")[1].split("/")[1];
-              }
-            }
-            if (null == imageFormat) {
-              imageFormat = "PNG";
-            }
-          }
-          String testName = System.getProperty("TestName");
-          if (testName.contains(" ")) {
-            imgName = testName.substring(testName.indexOf(":") + 1,
-                testName.indexOf(" "));
-          } else {
-            imgName = testName;
-          }
-          String downloadPath = opts.testLogDir + File.separator
-              + opts.sessionId + File.separator + "images" + File.separator
-              + imgName + imageCount + "." + imageFormat;
-          URL url = new URL(src);
-          BufferedImage img = ImageIO.read(url);
-          File file = new File(downloadPath);
-          if (!file.exists()) {
-            file.getParentFile().mkdirs();
-          }
-          ImageIO.write(img, imageFormat, file);
-          imageCount++;
-        }
-      }
-    }
+    imageHandler.saveImages(form);
 
     XsltTransformer formTransformer = engine.getFormExecutable().load();
     formTransformer.setSource(new DOMSource(ctlForm));
