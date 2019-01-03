@@ -16,6 +16,8 @@
  */
 package com.occamlab.te;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,6 +37,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,10 +49,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageTypeSpecifier;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -61,6 +67,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import com.occamlab.te.form.ImageHandler;
 import com.occamlab.te.html.EarlToHtmlTransformation;
 
 import net.sf.saxon.dom.NodeOverNodeInfo;
@@ -131,7 +138,7 @@ public class TECore implements Runnable {
   public static int methodCount = 0;
   String testName = "";
   public static String nameOfTest = "";
-  RuntimeOptions opts;
+  final RuntimeOptions opts;
   String testServletURL = null;
   volatile PrintStream out; // Console destination
   boolean web = false; // True when running as a servlet
@@ -216,8 +223,11 @@ public class TECore implements Runnable {
   public static Document userInputs = null;
   public Boolean supportHtmlReport = false;
 
-  public TECore() {
+  public final ImageHandler imageHandler;
 
+  public TECore() {
+    this.opts = null;
+    this.imageHandler = null;
   }
 
   public TECore(Engine engine, Index index, RuntimeOptions opts) {
@@ -225,8 +235,9 @@ public class TECore implements Runnable {
     this.index = index;
     this.opts = opts;
     this.recordedForms = new RecordedForms(opts.getRecordedForms());
-    testPath = opts.getSessionId();
-    out = System.out;
+    this.testPath = opts.getSessionId();
+    this.out = System.out;
+    this.imageHandler = new ImageHandler(opts.testLogDir, opts.sessionId);
   }
 
   public TestEntry getParentTest() {
@@ -2305,6 +2316,7 @@ public class TECore implements Runnable {
     } else if (hasFiles) {
       method = "post";
     }
+    imageHandler.saveImages(form);
 
     XsltTransformer formTransformer = engine.getFormExecutable().load();
     formTransformer.setSource(new DOMSource(ctlForm));
