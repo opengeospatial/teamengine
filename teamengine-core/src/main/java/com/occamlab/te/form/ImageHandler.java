@@ -3,6 +3,8 @@ package com.occamlab.te.form;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.List;
@@ -44,44 +46,50 @@ public class ImageHandler {
     public void saveImages( Element form )
                             throws IOException {
         List<Element> images = DomUtils.getElementsByTagName( form, "img" );
-        if ( images.size() > 0 ) {
-            int imageCount = 1;
-            for ( Element image : images ) {
-                if ( image.hasAttribute( "src" ) ) {
-                    String src = image.getAttribute( "src" );
-                    String imageFormat = null;
-                    String imgName = null;
-                    if ( src.contains( "FORMAT" ) ) {
-                        URL url = new URL( URLDecoder.decode( src, "UTF-8" ) );
-                        String params[] = url.getQuery().split( "&" );
-                        for ( String param : params ) {
-                            if ( param.split( "=" )[0].equalsIgnoreCase( "FORMAT" ) ) {
-                                imageFormat = param.split( "=" )[1].split( "/" )[1];
-                            }
-                        }
-                        if ( null == imageFormat ) {
-                            imageFormat = "PNG";
-                        }
-                    }
-                    String testName = System.getProperty( "TestName" );
-                    if ( testName.contains( " " ) ) {
-                        imgName = testName.substring( testName.indexOf( ":" ) + 1, testName.indexOf( " " ) );
-                    } else {
-                        imgName = testName;
-                    }
-                    String downloadPath = testLogDir + File.separator + sessionId + File.separator + "images"
-                                          + File.separator + imgName + imageCount + "." + imageFormat;
-                    URL url = new URL( src );
-                    BufferedImage img = ImageIO.read( url );
-                    File file = new File( downloadPath );
-                    if ( !file.exists() ) {
-                        file.getParentFile().mkdirs();
-                    }
-                    ImageIO.write( img, imageFormat, file );
-                    imageCount++;
+        int imageCount = 1;
+        for ( Element image : images ) {
+            if ( image.hasAttribute( "src" ) ) {
+                String src = image.getAttribute( "src" );
+                String imageFormat = parseImageFormat( src );
+                String testName = System.getProperty( "TestName" );
+                String imgName = parseImageName( testName );
+                URL url = new URL( src );
+                BufferedImage img = ImageIO.read( url );
+                File file = createImageFile( imageCount, imageFormat, imgName );
+                if ( !file.exists() ) {
+                    file.getParentFile().mkdirs();
+                }
+                ImageIO.write( img, imageFormat, file );
+                imageCount++;
+            }
+        }
+    }
+
+    private File createImageFile( int imageCount, String imageFormat, String imgName ) {
+        String downloadPath = testLogDir + File.separator + sessionId + File.separator + "images" + File.separator
+                              + imgName + imageCount + "." + imageFormat;
+        return new File( downloadPath );
+    }
+
+    private String parseImageFormat( String src )
+                            throws MalformedURLException, UnsupportedEncodingException {
+        if ( src.contains( "FORMAT" ) ) {
+            URL url = new URL( URLDecoder.decode( src, "UTF-8" ) );
+            String params[] = url.getQuery().split( "&" );
+            for ( String param : params ) {
+                if ( param.split( "=" )[0].equalsIgnoreCase( "FORMAT" ) ) {
+                    return param.split( "=" )[1].split( "/" )[1];
                 }
             }
         }
+        return "PNG";
+    }
+
+    private String parseImageName( String testName ) {
+        if ( testName.contains( " " ) ) {
+            return testName.substring( testName.indexOf( ":" ) + 1, testName.indexOf( " " ) );
+        }
+        return testName;
     }
 
 }
