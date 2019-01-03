@@ -81,6 +81,7 @@ public class EarlReporter implements IReporter {
     private Model earlModel;
     private String suiteName;
     private Config config;
+    private Boolean passedCoreConformanceClasses = true;
 
     public EarlReporter() {
         this.earlModel = ModelFactory.createDefaultModel();
@@ -103,6 +104,7 @@ public class EarlReporter implements IReporter {
             this.testRun.addLiteral(DCTerms.extent, duration);
             this.testRun.addLiteral(CITE.testSuiteType, "testng");
             processSuiteResults(model, suite.getResults());
+            this.testRun.addLiteral(CITE.passedCoreConformanceClasses, passedCoreConformanceClasses);
             this.earlModel.add(model);
         }
         File outputDir = new File(outputDirectory);
@@ -131,7 +133,8 @@ public class EarlReporter implements IReporter {
      */
     void processSuiteResults(Model model, Map<String, ISuiteResult> results) {
         for (Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
-            String testReqName = entry.getKey().replaceAll("\\s", "-");
+            String testName = entry.getKey();
+            String testReqName = testName.replaceAll("\\s", "-");
             // can return existing resource in model
             Resource testReq = model.createResource(testReqName);
             ITestContext testContext = entry.getValue().getTestContext();
@@ -144,6 +147,11 @@ public class EarlReporter implements IReporter {
             if (nPassed + nFailed == 0) {
                 testReq.addProperty(DCTerms.description,
                         "A precondition was not met. All tests in this set were skipped.");
+            }
+            if(isBasicConformanceClass(testName)){
+              if(nFailed > 0){
+                passedCoreConformanceClasses = false;
+              }              
             }
             processTestResults(model, testContext.getFailedTests());
             processTestResults(model, testContext.getSkippedTests());
@@ -215,11 +223,6 @@ public class EarlReporter implements IReporter {
         String key = null;
         for (XmlTest xmlTest : testList) {
             String testName = xmlTest.getName();
-            for (Entry<String, List<String>> ccEntry : config.getConformanceClassMap().entrySet()) {
-        		if(ccEntry.getKey().contains(suiteName)){
-        			key = ccEntry.getKey();	
-        		}
-        	}
             Resource testReq = earl.createResource(testName.replaceAll("\\s", "-"),
                     EARL.TestRequirement);
             testReq.addProperty(DCTerms.title, testName);
@@ -227,14 +230,9 @@ public class EarlReporter implements IReporter {
             if (null != testOptionality && !testOptionality.isEmpty()) {
                 testReq.addProperty(CITE.optionality, testOptionality);
             }
-            if(null != key){
-                List<String> ConfClass = config.getConformanceClassMap().get(key);
-                for (String cClass : ConfClass) {
-                	if(cClass.equalsIgnoreCase(testName)){
-                		testReq.addProperty(CITE.isBasic, "true");
-                	}
-                }
-             }
+            if (isBasicConformanceClass(testName)) {
+              testReq.addProperty(CITE.isBasic, "true");
+            }
             reqs.add(testReq);
         }
         this.testRun.addProperty(CITE.requirements, reqs);
@@ -433,6 +431,32 @@ public class EarlReporter implements IReporter {
             httpReq.addProperty(HTTP.resp, httpRsp);
         }
         earlResult.addProperty(CITE.message, httpReq);
+    }
+    
+    /**
+     * Verify the given Conformance Class is basic or not.
+     * @param testName
+     * @return Return true if CC is basic CC otherwise false.
+     */
+    public Boolean isBasicConformanceClass(String testName) {
+      String key = null;
+      for (Entry<String, List<String>> ccEntry : config.getConformanceClassMap()
+          .entrySet()) {
+        if (ccEntry.getKey().contains(suiteName)) {
+          key = ccEntry.getKey();
+        }
+      }
+  
+      if (null != key) {
+        List<String> ConfClass = config.getConformanceClassMap().get(key);
+        for (String cClass : ConfClass) {
+          if (cClass.equalsIgnoreCase(testName)) {
+            return true;
+          }
+        }
+      }
+  
+      return false;
     }
     
     /*
