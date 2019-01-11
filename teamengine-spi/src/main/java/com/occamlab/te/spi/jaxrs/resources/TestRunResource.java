@@ -69,63 +69,40 @@ public class TestRunResource {
     /**
      * Processes a request submitted using the GET method with. The test run arguments are specified in the query
      * component of the Request-URI as a sequence of key-value pairs.
-     * 
-     * @param etsCode
-     *            A String that identifies the test suite to be run.
-     * @param etsVersion
-     *            A String specifying the desired test suite version.
-     * @return An RDF (EARL) representation of the test results.
-     */
-    @GET
-    @Produces("application/rdf+xml;qs=0.75;charset='utf-8'")
-    public Source handleGetRdf( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) {
-        return handleGet( etsCode, etsVersion, APPLICATION_RDF_XML );
-    }
-
-    /**
-     * Processes a request submitted using the GET method with. The test run arguments are specified in the query
-     * component of the Request-URI as a sequence of key-value pairs.
      *
      * @param etsCode
      *            A String that identifies the test suite to be run.
      * @param etsVersion
      *            A String specifying the desired test suite version.
-     * @return An XML representation of the test results.
+     * @return A result is returned according to media-type.
+     * @throws IOException 
      */
     @GET
-    @Produces("application/xml;qs=0.5;charset='utf-8'")
-    public Source handleGetXml( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) {
-        return handleGet( etsCode, etsVersion, APPLICATION_XML );
-    }
+    public Response handleGet( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion) throws IOException {
+       
+      List<MediaType> acceptableMediaTypeList = this.headers.getAcceptableMediaTypes();
+      String mediaType = getPreferredMediaType(acceptableMediaTypeList);
+      Source results = handleGet(etsCode, etsVersion, mediaType);
 
-    /**
-     * Processes a request submitted using the GET method with. The test run arguments are specified in the query
-     * component of the Request-URI as a sequence of key-value pairs.
-     *
-     * @param etsCode
-     *            A String that identifies the test suite to be run.
-     * @param etsVersion
-     *            A String specifying the desired test suite version.
-     * @return An zip archive containing the HTML representation of the test results.
-     */
-    @GET
-    @Produces("application/zip;qs=0.25;charset='utf-8'")
-    public Response handleGetZip( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion )
-                            throws IOException {
-        MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        Source results = executeTestRun( etsCode, etsVersion, params, APPLICATION_ZIP );
-
-        String htmlOutput = results.getSystemId().toString();
-        int count = htmlOutput.split( ":", -1 ).length - 1;
-        String zipFile = ( count > 1 ) ? htmlOutput.split( "file:/" )[1] : htmlOutput.split( "file:" )[1];
-        File fileOut = new File( zipFile );
-        if ( !fileOut.exists() ) {
-            throw new WebApplicationException( 404 );
-        }
-        return Response.ok( FileUtils.readFileToByteArray( fileOut ) ).type( APPLICATION_ZIP ).header( "Content-Disposition",
-                                                                                                       "attachment; filename=\"result.zip\";" ).header( "Cache-Control",
-                                                                                                                                                        "no-cache" ).build();
+    if (mediaType.equals(APPLICATION_ZIP)) {
+      String htmlOutput = results.getSystemId().toString();
+      int count = htmlOutput.split(":", -1).length - 1;
+      String zipFile = (count > 1) ? htmlOutput.split("file:/")[1] : htmlOutput
+          .split("file:")[1];
+      File fileOut = new File(zipFile);
+      if (!fileOut.exists()) {
+        throw new WebApplicationException(404);
+      }
+      return Response
+          .ok(FileUtils.readFileToByteArray(fileOut))
+          .type(APPLICATION_ZIP)
+          .header("Content-Disposition", "attachment; filename=\"result.zip\";")
+          .header("Cache-Control", "no-cache").build();
+    } else {
+      return Response.ok(results).type(mediaType).build();
     }
+  }
+
 
     /**
      * Processes a request submitted using the POST method. The request entity represents the test subject or provides
@@ -301,6 +278,47 @@ public class TestRunResource {
             LOGR.fine( msg.toString() );
         }
         return executeTestRun( etsCode, etsVersion, params, preferredMediaType );
+    }
+    
+    /**
+     * This method is used to parse mediaType from the request. 
+     * If mediaType is not passed by client then application/xml will be returned. 
+     * 
+     * @param acceptableMediaTypeList
+     * @return preferredMediaType
+     */
+    private String getPreferredMediaType(List<MediaType> acceptableMediaTypeList) {
+      String preferredMediaType = null;
+      Map<Integer, String> precedenceMap = new HashMap<Integer, String>();
+      if (acceptableMediaTypeList != null) {
+        if (acceptableMediaTypeList.size() > 1) {
+          for (MediaType mediaType : acceptableMediaTypeList) {
+            String mediaTypeName = mediaType.toString();
+            if (mediaTypeName.contains(APPLICATION_RDF_XML)) {
+              precedenceMap.put(1, APPLICATION_RDF_XML);
+            } else if (mediaTypeName.contains(APPLICATION_XML)) {
+              precedenceMap.put(2, APPLICATION_XML);
+            } else if (mediaTypeName.contains(APPLICATION_ZIP)) {
+              precedenceMap.put(3, APPLICATION_ZIP);
+            }
+          }
+          if (precedenceMap.size() > 1) {
+            if (precedenceMap.containsKey(1)) {
+              preferredMediaType = APPLICATION_RDF_XML;
+            } else if (precedenceMap.containsKey(2)
+                && precedenceMap.containsKey(3)) {
+              preferredMediaType = APPLICATION_XML;
+            }
+          } else {
+            preferredMediaType = precedenceMap.get(precedenceMap.keySet().toArray()[0]);
+          }
+        } else {
+          preferredMediaType = acceptableMediaTypeList.get(0).toString();
+        }
+      } else {
+        preferredMediaType = APPLICATION_RDF_XML;
+      }
+      return preferredMediaType;
     }
 
     private Source handlePost( String etsCode, String etsVersion, File entityBody, String preferredMediaType ) {
