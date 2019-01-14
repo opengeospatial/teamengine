@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -36,7 +37,11 @@ import org.w3c.dom.Element;
 /**
  * Encapsulates all information pertaining to a test session.
  */
-public class TestSession {
+public class TestSession implements  Comparable<TestSession> {
+
+
+    private static Logger LOGR = Logger.getLogger( TestSession.class.getName() );
+    
     String sessionId;
     String sourcesName;
     String description;
@@ -91,7 +96,7 @@ public class TestSession {
         Element session = (Element) (doc.getElementsByTagName("session")
                 .item(0));
         setSourcesName(session.getAttribute("sourcesId"));
-        if(null!=session.getAttribute("date")){
+        if(session.hasAttribute("date")){
         setCurrentDate(session.getAttribute("date"));
         }else{
           setCurrentDate("");
@@ -106,40 +111,46 @@ public class TestSession {
                 .getElementsByTagName("description").item(0));
         this.description = description.getTextContent();
     }
+
     /**
-     * This will return the sorted list
-     * of TestSession data according to date.
+     * This will return the sorted list of TestSession data according to date.
      * 
-     * @param testData 
-     * 			List of all TestSessions. 
-     * @return
-     * 			Return the sorted list of testData.
+     * @param testData
+     *            List of all TestSessions.
+     * @return Return the sorted list of testData.
      */
-	public List<TestSession> getSortedMap(List<TestSession> testData) {
+    public List<TestSession> getSortedMap( List<TestSession> testData ) {
+        Collections.sort( testData );
+        Collections.reverse( testData );
+        return testData;
+    }
 
-		Collections.sort(testData, new Comparator<TestSession>() {
+    @Override
+    public int compareTo( TestSession other ) {
+        if ( other == null ) {
+            return -1;
+        }
+        Date otherDate = convertStringToDate( other.getCurrentDate(), other.getSessionId() );
+        if ( otherDate == null ) {
+            return -1;
+        }
+        Date thisDate = convertStringToDate( this.getCurrentDate(), this.getSessionId() );
+        if ( thisDate == null )
+            return 1;
+        return thisDate.compareTo( otherDate );
+    }
 
-			@Override
-			public int compare(TestSession o1, TestSession o2) {
-
-				try {
-					return convertStringToDate(o2.getCurrentDate()).compareTo(
-							convertStringToDate(o1.getCurrentDate()));
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-				return 0;
-			}
-		});
-		return testData;
-	}
-    
-	public static Date convertStringToDate(String dateString)
-			throws ParseException {
-		Format formatter = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
-		Date date = ((DateFormat) formatter).parse(dateString);
-		return date;
-	}
+    private Date convertStringToDate( String dateString, String sessionId ) {
+        try {
+            if ( dateString != null ) {
+                Format formatter = new SimpleDateFormat( "yyyy/MM/dd  HH:mm:ss" );
+                return ( (DateFormat) formatter ).parse( dateString );
+            }
+        } catch ( Exception e ) {
+            LOGR.warning( "Could not parse date '" + dateString + "' of session with id " + sessionId );
+        }
+        return null;
+    }
     
     public String getDescription() {
         return description;
