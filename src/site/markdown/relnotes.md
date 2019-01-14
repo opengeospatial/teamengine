@@ -1,6 +1,9 @@
 Release Notes
 =============
 
+## 5.3 (2019-01-14)
+- Fix [#381](https://github.com/opengeospatial/teamengine/issues/381): Ensure correct comparison of session dates
+
 ## 5.3 (2018-05-15)
 - Fix [#336](https://github.com/opengeospatial/teamengine/issues/336): Improve header of new HTML report: Test INPUT contains confusing informations
 - Fix [#315](https://github.com/opengeospatial/teamengine/issues/315): Circular dependencies
