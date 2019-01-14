@@ -9,6 +9,7 @@ pipeline {
       steps{
         deleteDir()
         sh 'git clone git@github.com:opengeospatial/teamengine.git .'
+        sh 'git checkout release-5_3_1'
       }
     }
     stage('Build') {
