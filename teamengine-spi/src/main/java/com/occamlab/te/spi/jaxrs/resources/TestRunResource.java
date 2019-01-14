@@ -59,7 +59,7 @@ public class TestRunResource {
     private static final String APPLICATION_ZIP = "application/zip";
 
     private static final String APPLICATION_XML = "application/xml";
-
+    
     @Context
     private UriInfo reqUriInfo;
 
@@ -290,7 +290,7 @@ public class TestRunResource {
     private String getPreferredMediaType(List<MediaType> acceptableMediaTypeList) {
       String preferredMediaType = null;
       Map<Integer, String> precedenceMap = new HashMap<Integer, String>();
-      if (acceptableMediaTypeList != null) {
+      if (acceptableMediaTypeList != null ) {
         if (acceptableMediaTypeList.size() > 1) {
           for (MediaType mediaType : acceptableMediaTypeList) {
             String mediaTypeName = mediaType.toString();
@@ -302,18 +302,37 @@ public class TestRunResource {
               precedenceMap.put(3, APPLICATION_ZIP);
             }
           }
-          if (precedenceMap.size() > 1) {
-            if (precedenceMap.containsKey(1)) {
-              preferredMediaType = APPLICATION_RDF_XML;
-            } else if (precedenceMap.containsKey(2)
-                && precedenceMap.containsKey(3)) {
-              preferredMediaType = APPLICATION_XML;
-            }
+          if (precedenceMap.size() == 0) {
+            ErrorResponseBuilder builder = new ErrorResponseBuilder();
+            String error_msg = "Not acceptable MediaType: "
+                + acceptableMediaTypeList.toString();
+            Response rsp = builder.buildErrorResponse(406, error_msg);
+            throw new WebApplicationException(rsp);
+          } else if (precedenceMap.size() > 1) {
+              if (precedenceMap.containsKey(1)) {
+                preferredMediaType = APPLICATION_RDF_XML;
+              } else if (precedenceMap.containsKey(2) && precedenceMap.containsKey(3)) {
+                preferredMediaType = APPLICATION_XML;
+              }
           } else {
-            preferredMediaType = precedenceMap.get(precedenceMap.keySet().toArray()[0]);
+            preferredMediaType = precedenceMap.get(precedenceMap.keySet()
+                .toArray()[0]);
           }
         } else {
-          preferredMediaType = acceptableMediaTypeList.get(0).toString();
+            String mediaType = acceptableMediaTypeList.get(0).toString();
+            if(mediaType.contains("*/*")){
+              preferredMediaType = APPLICATION_RDF_XML;
+            } else if(mediaType.contains(APPLICATION_RDF_XML) || 
+                      mediaType.contains(APPLICATION_XML) ||
+                      mediaType.contains(APPLICATION_ZIP)) {
+              preferredMediaType = mediaType;
+            }
+            else {
+              ErrorResponseBuilder builder = new ErrorResponseBuilder();
+              String error_msg = "Not acceptable MediaType: " + mediaType;
+              Response rsp = builder.buildErrorResponse(406,error_msg);
+              throw new WebApplicationException( rsp );
+            }
         }
       } else {
         preferredMediaType = APPLICATION_RDF_XML;

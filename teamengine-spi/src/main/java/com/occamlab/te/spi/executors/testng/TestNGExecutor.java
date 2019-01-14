@@ -177,7 +177,7 @@ public class TestNGExecutor implements TestRunExecutor {
 
     /**
      * Gets the preferred media type for the test results as indicated by the value of the "acceptMediaType" key in the
-     * given properties file. The default value is "application/xml".
+     * given properties file. The default value is "application/rdf+xml".
      * 
      * @param testRunArgs
      *            An XML properties file containing test run arguments.
@@ -187,7 +187,7 @@ public class TestNGExecutor implements TestRunExecutor {
         String mediaTypeFromTestRunArg = parseMediaTypeFromTestRunArgs( testRunArgs );
         if ( mediaTypeFromTestRunArg != null && SUPPORTED_MEDIA_TYPES.contains( mediaTypeFromTestRunArg ) )
             return mediaTypeFromTestRunArg;
-        return "application/xml";
+        return "application/rdf+xml";
     }
 
     /**
