@@ -8,58 +8,48 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
-    // Zips the directory and all of it's sub directories
-    public static void zipDir(File zipFile, File dirObj) throws Exception {
-        // File dirObj = new File(dir);
-        if (!dirObj.isDirectory()) {
-            System.err.println(dirObj.getName() + " is not a directory");
-            System.exit(1);
+    
+  // Zips the directory and all of it's sub directories
+  public static void zipDir(File zipFile, File dirObj) throws Exception {
+
+    try {
+      ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+      if (dirObj.isDirectory()) {
+        for (String fileName : dirObj.list()) {
+          addDir("", dirObj.getAbsolutePath() + "/" + fileName, out);
         }
+      } else {
+        addDir("", dirObj.getAbsolutePath(), out);
+      }
+      out.flush();
+      out.close();
 
-        try {
-
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-                    zipFile));
-
-            System.out.println("Creating : " + zipFile);
-
-            addDir(dirObj, out);
-            // Complete the ZIP file
-            out.close();
-
-        } catch (IOException e) {
-            throw new Exception(e.getMessage());
-        }
-
+    } catch (IOException e) {
+      throw new Exception(e.getMessage());
     }
 
-    // Add directory to zip file
-    private static void addDir(File dirObj, ZipOutputStream out)
-            throws IOException {
-        File[] dirList = dirObj.listFiles();
-        byte[] tmpBuf = new byte[1024];
+  }
+    
+  // Add directory to zip file
+  private static void addDir(String path, String dirObj, ZipOutputStream out)
+      throws IOException {
+    File srcFile = new File(dirObj);
+    String filePath = "".equals(path) ? srcFile.getName() : path + "/" + srcFile.getName();
+    if (srcFile.isDirectory()) {
+      for (String fileName : srcFile.list()) {
+        addDir(filePath, srcFile.getAbsolutePath() + "/" + fileName, out);
+      }
+    } else {
+      out.putNextEntry(new ZipEntry(filePath));
+      FileInputStream in = new FileInputStream(srcFile);
 
-        for (int i = 0; i < dirList.length; i++) {
-            if (dirList[i].isDirectory()) {
-                addDir(dirList[i], out);
-                continue;
-            }
-
-            FileInputStream in = new FileInputStream(
-                    dirList[i].getAbsolutePath());
-            System.out.println(" Adding: " + dirList[i].getAbsolutePath());
-
-            out.putNextEntry(new ZipEntry(dirList[i].getAbsolutePath().replaceAll("^/+", "")));
-
-            // Transfer from the file to the ZIP file
-            int len;
-            while ((len = in.read(tmpBuf)) > 0) {
-                out.write(tmpBuf, 0, len);
-            }
-
-            // Complete the entry
-            out.closeEntry();
-            in.close();
-        }
+      byte[] buffer = new byte[1024];
+      int len;
+      while ((len = in.read(buffer)) != -1) {
+        out.write(buffer, 0, len);
+      }
+      out.closeEntry();
+      in.close();
     }
+  }
 }
