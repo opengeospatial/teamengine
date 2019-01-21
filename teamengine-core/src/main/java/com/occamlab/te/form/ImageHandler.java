@@ -50,6 +50,7 @@ public class ImageHandler {
         for ( Element image : images ) {
             if ( image.hasAttribute( "src" ) ) {
                 String src = image.getAttribute( "src" );
+                if(src.contains("http")){
                 String imageFormat = parseImageFormat( src );
                 String testName = System.getProperty( "TestName" );
                 String imgName = parseImageName( testName );
@@ -61,6 +62,7 @@ public class ImageHandler {
                 }
                 ImageIO.write( img, imageFormat, file );
                 imageCount++;
+                }
             }
         }
     }
