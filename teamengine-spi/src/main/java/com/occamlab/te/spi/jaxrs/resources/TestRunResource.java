@@ -29,13 +29,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 
 import org.apache.commons.io.FileUtils;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
-import com.sun.jersey.multipart.FormDataParam;
 
 /**
  * A controller resource that provides the results of a test run. An XML representation of the results is obtained using
@@ -220,7 +220,7 @@ public class TestRunResource {
     @Produces("application/rdf+xml;qs=0.75;charset='utf-8'")
     public Source handleMultipartFormDataRdf( @PathParam("etsCode") String etsCode,
                                               @PathParam("etsVersion") String etsVersion,
-                                              @FormDataParam("iut") File entityBody, @FormDataParam("sch") File schBody ) {
+                                              @org.glassfish.jersey.media.multipart.FormDataParam("iut") File entityBody, @org.glassfish.jersey.media.multipart.FormDataParam("sch") File schBody ) {
         return handleMultipartFormDataPost( etsCode, etsVersion, entityBody, schBody, APPLICATION_RDF_XML );
     }
 

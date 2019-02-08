@@ -12,7 +12,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>com.sun.jersey:jersey-*</include>
+        <include>org.glassfish.jersey.bundles:*</include>
         <include>org.apache.derby:derby</include>
         <include>org.opengis.cite.teamengine:teamengine-realm</include>
       </includes>
@@ -21,12 +21,12 @@
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>
     </dependencySet>
-    <dependencySet>
+    <!-- <dependencySet>
       <includes>
         <include>javax.ws.rs:jsr311*</include>
       </includes>
       <scope>provided</scope>
       <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
+    </dependencySet> -->
   </dependencySets>
 </assembly>
