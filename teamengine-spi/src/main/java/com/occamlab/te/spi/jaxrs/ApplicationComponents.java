@@ -1,7 +1,6 @@
 package com.occamlab.te.spi.jaxrs;
 
 import javax.ws.rs.ApplicationPath;
-
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
@@ -13,7 +12,7 @@ import org.glassfish.jersey.server.ResourceConfig;
  * @see javax.ws.rs.core.Application
  */
 
-@ApplicationPath("rest")
+@ApplicationPath("/rest")
 public class ApplicationComponents extends ResourceConfig {
 
     /**
@@ -23,7 +22,7 @@ public class ApplicationComponents extends ResourceConfig {
      */
     public ApplicationComponents() {
    // Register resources and providers using package-scanning.
-      packages("com.occamlab.te.spi.jaxrs.resources");
+      packages(true, "com.occamlab.te.spi.jaxrs.resources");
     }
 
 }
