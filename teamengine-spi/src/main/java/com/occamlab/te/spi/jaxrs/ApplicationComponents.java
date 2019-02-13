@@ -1,6 +1,6 @@
 package com.occamlab.te.spi.jaxrs;
 
-import javax.ws.rs.ApplicationPath;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
@@ -12,7 +12,6 @@ import org.glassfish.jersey.server.ResourceConfig;
  * @see javax.ws.rs.core.Application
  */
 
-@ApplicationPath("/rest")
 public class ApplicationComponents extends ResourceConfig {
 
     /**
@@ -23,6 +22,7 @@ public class ApplicationComponents extends ResourceConfig {
     public ApplicationComponents() {
    // Register resources and providers using package-scanning.
       packages(true, "com.occamlab.te.spi.jaxrs.resources");
+      register(MultiPartFeature.class);
     }
 
 }

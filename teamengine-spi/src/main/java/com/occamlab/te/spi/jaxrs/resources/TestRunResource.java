@@ -220,7 +220,7 @@ public class TestRunResource {
     @Produces("application/rdf+xml;qs=0.75;charset='utf-8'")
     public Source handleMultipartFormDataRdf( @PathParam("etsCode") String etsCode,
                                               @PathParam("etsVersion") String etsVersion,
-                                              @org.glassfish.jersey.media.multipart.FormDataParam("iut") File entityBody, @org.glassfish.jersey.media.multipart.FormDataParam("sch") File schBody ) {
+                                              @FormDataParam("iut") File entityBody, @FormDataParam("sch") File schBody ) {
         return handleMultipartFormDataPost( etsCode, etsVersion, entityBody, schBody, APPLICATION_RDF_XML );
     }
 
