@@ -164,6 +164,18 @@
             WEB-INF/lib/javax.ws.rs-api*.jar,
             WEB-INF/lib/asm-*.jar,
             WEB-INF/lib/derby-*.jar,
+            WEB-INF/lib/aopalliance-repackaged*.jar,
+            WEB-INF/lib/hk2-*.jar,
+            WEB-INF/lib/javassist-*.jar,
+            WEB-INF/lib/javax.annotation-api*.jar,
+            WEB-INF/lib/javax.inject-*.jar,
+            WEB-INF/lib/jersey-client*.jar,
+            WEB-INF/lib/jersey-common*.jar,
+            WEB-INF/lib/jersey-container-servlet*.jar,
+            WEB-INF/lib/jersey-hk2*.jar,
+            WEB-INF/lib/jersey-media-jaxb-*.jar,
+            WEB-INF/lib/osgi-resource-locator*.jar,
+            WEB-INF/lib/validation-api-*.jar
           </packagingExcludes>
           <archive>
             <manifest>
