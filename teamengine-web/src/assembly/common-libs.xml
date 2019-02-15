@@ -26,7 +26,7 @@
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>javax.ws.rs:javax.ws.rs-api</include>
+        <include>jakarta.ws.rs:jakarta.ws.rs-api*</include>
       </includes>
       <scope>provided</scope>
       <useProjectArtifact>false</useProjectArtifact>

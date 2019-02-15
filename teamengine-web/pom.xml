@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.glassfish.jersey</groupId>
             <artifactId>jersey-bom</artifactId>
-            <version>2.26-b06</version>
+            <version>2.28</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -80,9 +80,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
-      <version>2.1</version>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>2.1.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -162,6 +162,7 @@
             WEB-INF/lib/jersey-core*.jar,
             WEB-INF/lib/jersey-serv*.jar,
             WEB-INF/lib/javax.ws.rs-api*.jar,
+            WEB-INF/lib/jakarta*.jar,
             WEB-INF/lib/asm-*.jar,
             WEB-INF/lib/derby-*.jar,
             WEB-INF/lib/aopalliance-repackaged*.jar,
