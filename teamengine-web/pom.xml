@@ -19,6 +19,17 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildDate>${maven.build.timestamp}</buildDate>
    </properties>
+   <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.jersey</groupId>
+            <artifactId>jersey-bom</artifactId>
+            <version>2.28</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+   </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -42,9 +53,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-servlet</artifactId>
-      <version>1.19</version>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -70,15 +80,15 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-      <version>1.1.1</version>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>2.1.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -151,9 +161,22 @@
             WEB-INF/lib/teamengine-realm*.jar,
             WEB-INF/lib/jersey-core*.jar,
             WEB-INF/lib/jersey-serv*.jar,
-            WEB-INF/lib/jsr311-api-*.jar,
+            WEB-INF/lib/javax.ws.rs-api*.jar,
+            WEB-INF/lib/jakarta*.jar,
             WEB-INF/lib/asm-*.jar,
             WEB-INF/lib/derby-*.jar,
+            WEB-INF/lib/aopalliance-repackaged*.jar,
+            WEB-INF/lib/hk2-*.jar,
+            WEB-INF/lib/javassist-*.jar,
+            WEB-INF/lib/javax.annotation-api*.jar,
+            WEB-INF/lib/javax.inject-*.jar,
+            WEB-INF/lib/jersey-client*.jar,
+            WEB-INF/lib/jersey-common*.jar,
+            WEB-INF/lib/jersey-container-servlet*.jar,
+            WEB-INF/lib/jersey-hk2*.jar,
+            WEB-INF/lib/jersey-media-jaxb-*.jar,
+            WEB-INF/lib/osgi-resource-locator*.jar,
+            WEB-INF/lib/validation-api-*.jar
           </packagingExcludes>
           <archive>
             <manifest>

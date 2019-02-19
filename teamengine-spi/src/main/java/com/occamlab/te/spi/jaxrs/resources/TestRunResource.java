@@ -29,13 +29,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 
 import org.apache.commons.io.FileUtils;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
-import com.sun.jersey.multipart.FormDataParam;
 
 /**
  * A controller resource that provides the results of a test run. An XML representation of the results is obtained using
@@ -364,17 +364,18 @@ public class TestRunResource {
      */
     private Source executeTestRun( String etsCode, String etsVersion, Map<String, List<String>> testRunArgs,
                                    String preferredMediaType ) {
-        testRunArgs.put( "acceptMediaType", Arrays.asList( preferredMediaType ) );
+        Map<String, List<String>> updatedTestRunArgs = new HashMap<>(testRunArgs);
+        updatedTestRunArgs.put( "acceptMediaType", Arrays.asList( preferredMediaType ) );
         if ( LOGR.isLoggable( Level.FINE ) ) {
             StringBuilder msg = new StringBuilder( "Test run arguments - " );
             msg.append( etsCode ).append( "/" ).append( etsVersion ).append( "\n" );
-            msg.append( testRunArgs.toString() );
+            msg.append( updatedTestRunArgs.toString() );
             if ( null != this.headers.getMediaType() ) {
                 msg.append( "Entity media type: " + this.headers.getMediaType() );
             }
             LOGR.fine( msg.toString() );
         }
-        Document xmlArgs = readTestRunArguments( testRunArgs );
+        Document xmlArgs = readTestRunArguments( updatedTestRunArgs );
         TestSuiteController controller = findController( etsCode, etsVersion );
         Source testResults = null;
         try {
