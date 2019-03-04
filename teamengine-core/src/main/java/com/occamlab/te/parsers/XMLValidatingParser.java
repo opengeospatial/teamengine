@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLProtocolException;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -224,9 +223,9 @@ public class XMLValidatingParser {
 		} catch (SSLProtocolException sslep){
 			throw new SSLProtocolException("[SSL ERROR] Failed to connect with the requested URL due to \"Invalid server_name\" found!! :" + uc.getURL() +":" + sslep.getClass() +" : "+ sslep.getMessage());
 		} catch (Exception e) {
-			throw new RuntimeException(String.format(
-					"Failed to parse resource from %s %n %s", uc.getURL(),
-					e.getMessage()));
+			throw new RuntimeException(
+					String.format("Failed to parse resource from %s", uc.getURL()),
+					e);
 		}
 		return doc;
 	}
