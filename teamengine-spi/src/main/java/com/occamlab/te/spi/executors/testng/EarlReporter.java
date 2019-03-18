@@ -81,7 +81,7 @@ public class EarlReporter implements IReporter {
     private Model earlModel;
     private String suiteName;
     private Config config;
-    private Boolean passedCoreConformanceClasses = true;
+    private Boolean areCoreConformanceClassesPassed = true;
 
     public EarlReporter() {
         this.earlModel = ModelFactory.createDefaultModel();
@@ -104,7 +104,7 @@ public class EarlReporter implements IReporter {
             this.testRun.addLiteral(DCTerms.extent, duration);
             this.testRun.addLiteral(CITE.testSuiteType, "testng");
             processSuiteResults(model, suite.getResults());
-            this.testRun.addLiteral(CITE.passedCoreConformanceClasses, passedCoreConformanceClasses);
+            this.testRun.addLiteral(CITE.areCoreConformanceClassesPassed, areCoreConformanceClassesPassed);
             this.earlModel.add(model);
         }
         File outputDir = new File(outputDirectory);
@@ -150,7 +150,7 @@ public class EarlReporter implements IReporter {
             }
             if(isBasicConformanceClass(testName)){
               if(nFailed > 0){
-                passedCoreConformanceClasses = false;
+                areCoreConformanceClassesPassed = false;
               }              
             }
             processTestResults(model, testContext.getFailedTests());

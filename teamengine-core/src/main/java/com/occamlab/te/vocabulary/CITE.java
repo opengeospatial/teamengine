@@ -72,5 +72,5 @@ public class CITE {
     // Indicate the test suite type i.e. CTL or TestNG based.
     public static final Property testSuiteType = model.createProperty(NS_URI + "testSuiteType");
     // Indicate the implementations passing these core conformance classes can be certified or not.
-    public static final Property passedCoreConformanceClasses = model.createProperty(NS_URI + "passedCoreConformanceClasses");
+    public static final Property areCoreConformanceClassesPassed = model.createProperty(NS_URI + "areCoreConformanceClassesPassed");
 }
