@@ -66,6 +66,14 @@
       <%@ include file="header.jsp" %>
       <h2>Test Sessions</h2>
       
+      <div id="success" style="color: #0325f9">
+		<%
+		  if ("updateDetails".equals(request.getParameter("success"))) {
+		    out.println("User details updated successfully!");
+		  }
+		%>
+	</div>
+      
       <br />
       <a href="createSession.jsp">Create a new session</a>
       <br />

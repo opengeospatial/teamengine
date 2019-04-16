@@ -62,6 +62,10 @@
     <servlet-class>com.occamlab.te.web.ChangePasswordHandler</servlet-class>  
   </servlet>
   <servlet>
+    <servlet-name>updateUserDetailsHandler</servlet-name>
+    <servlet-class>com.occamlab.te.web.UpdateUserDetailsHandler</servlet-class>  
+  </servlet>
+  <servlet>
     <servlet-name>emailLog</servlet-name>
     <servlet-class>com.occamlab.te.web.EmailLogServlet</servlet-class>
     <init-param>
@@ -133,6 +137,10 @@
     <url-pattern>/changePasswordHandler</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>updateUserDetailsHandler</servlet-name>
+    <url-pattern>/updateUserDetailsHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>logout</servlet-name>
     <url-pattern>/logout</url-pattern>
   </servlet-mapping>
@@ -172,6 +180,7 @@
       <url-pattern>/emailSent.jsp</url-pattern>
       <url-pattern>/userProfile.jsp</url-pattern>
       <url-pattern>/startTesting.jsp</url-pattern>
+      <url-pattern>/updateUserDetails.jsp</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>user</role-name>
