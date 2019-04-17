@@ -8,58 +8,57 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
-    // Zips the directory and all of it's sub directories
-    public static void zipDir(File zipFile, File dirObj) throws Exception {
-        // File dirObj = new File(dir);
-        if (!dirObj.isDirectory()) {
-            System.err.println(dirObj.getName() + " is not a directory");
-            System.exit(1);
+
+    /**
+     * Zips the directory and all of it's sub directories
+     *
+     * @param zipFile
+     *            the file to write the files into, never <code>null</code>
+     * @param directoryToZip
+     *            the directory to zip, never <code>null</code>
+     * @throws Exception
+     *             if the zip file could not be created
+     * @throws IllegalArgumentException
+     *             if the directoryToZip is not a directory
+     */
+    public static void zipDir( File zipFile, File directoryToZip )
+                            throws Exception {
+        if ( !directoryToZip.isDirectory() ) {
+            throw new IllegalArgumentException( "Directory to zip is not a directory" );
         }
-
         try {
-
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-                    zipFile));
-
-            System.out.println("Creating : " + zipFile);
-
-            addDir(dirObj, out);
-            // Complete the ZIP file
+            ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFile ) );
+            File parentDir = new File( directoryToZip.toURI().resolve( ".." ) );
+            for ( File file : directoryToZip.listFiles() ) {
+                zip( parentDir, file, out );
+            }
+            out.flush();
             out.close();
-
-        } catch (IOException e) {
-            throw new Exception(e.getMessage());
+        } catch ( IOException e ) {
+            throw new Exception( e.getMessage() );
         }
 
     }
 
-    // Add directory to zip file
-    private static void addDir(File dirObj, ZipOutputStream out)
-            throws IOException {
-        File[] dirList = dirObj.listFiles();
-        byte[] tmpBuf = new byte[1024];
-
-        for (int i = 0; i < dirList.length; i++) {
-            if (dirList[i].isDirectory()) {
-                addDir(dirList[i], out);
-                continue;
+    private static void zip( File parentDir, File fileOrDirectoryToZip, ZipOutputStream out )
+                            throws IOException {
+        String filePath = parentDir.toURI().relativize( fileOrDirectoryToZip.toURI() ).getPath();
+        if ( fileOrDirectoryToZip.isDirectory() ) {
+            for ( File file : fileOrDirectoryToZip.listFiles() ) {
+                zip( parentDir, file, out );
             }
+        } else {
+            out.putNextEntry( new ZipEntry( filePath ) );
+            FileInputStream in = new FileInputStream( fileOrDirectoryToZip );
 
-            FileInputStream in = new FileInputStream(
-                    dirList[i].getAbsolutePath());
-            System.out.println(" Adding: " + dirList[i].getAbsolutePath());
-
-            out.putNextEntry(new ZipEntry(dirList[i].getAbsolutePath().replaceAll("^/+", "")));
-
-            // Transfer from the file to the ZIP file
+            byte[] buffer = new byte[1024];
             int len;
-            while ((len = in.read(tmpBuf)) > 0) {
-                out.write(tmpBuf, 0, len);
+            while ( ( len = in.read( buffer ) ) != -1 ) {
+                out.write( buffer, 0, len );
             }
-
-            // Complete the entry
             out.closeEntry();
             in.close();
         }
     }
+
 }
