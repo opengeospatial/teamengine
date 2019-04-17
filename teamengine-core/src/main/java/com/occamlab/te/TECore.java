@@ -849,6 +849,7 @@ public class TECore implements Runnable {
         fbw.newLine();
         fbw.write("Test Name : " + System.getProperty("TestName"));
         fbw.newLine();
+        fbw.write("Failed to execute the extension function: ");
         e.printStackTrace(new PrintWriter(fbw));
         fbw.newLine();
         fbw.close();
