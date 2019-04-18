@@ -354,8 +354,6 @@ public class TestRunResource {
      * 
      * @param etsCode
      *            A String that identifies the test suite to be run.
-     * @param etsVersion
-     *            A String specifying the desired test suite version.
      * @param testRunArgs
      *            A multi-valued Map containing the test run arguments.
      * @return An XML representation of the test run results.
@@ -400,8 +398,6 @@ public class TestRunResource {
      * 
      * @param code
      *            A <code>String</code> identifying the ETS to execute.
-     * @param version
-     *            A <code>String</code> indicating the version of the ETS.
      * @return The <code>TestSuiteController</code> for the requested ETS.
      * @throws WebApplicationException
      *             If a corresponding controller cannot be found.

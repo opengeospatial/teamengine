@@ -59,8 +59,6 @@ public class TestSuiteRegistry {
      * 
      * @param etsCode
      *            The alphanumeric code for the ETS.
-     * @param etsVersion
-     *            The version of the ETS.
      * @return A TestSuiteController, or {@code null} if one cannot be found.
      */
     public TestSuiteController getController(String etsCode) {
