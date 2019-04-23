@@ -317,17 +317,28 @@
               </xsl:attribute>
               <xsl:value-of select="cite:testsPassed" />
             </xsl:element>
-          </td>
-          <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " /> 
+          </td> 
+          <xsl:variable name="testsInheritedFailure" select="if (cite:testsInheritedFailure >= 0) then cite:testsInheritedFailure else 0 " />
           <td bgcolor="#FFB2B2">
             Fail:
             <xsl:element name="span">
               <xsl:attribute name="id">
                 <xsl:value-of select="concat('testsFailed_',replace(dct:title, ' ', '_') )" />
               </xsl:attribute>
-              <xsl:value-of select="cite:testsFailed + $testsInheritedFailure" />
+              <xsl:value-of select="cite:testsFailed" />
             </xsl:element>
           </td>
+          <xsl:if test="not($testsInheritedFailure = 0)">
+          <td bgcolor="#f0d831">
+            Inherited fail:
+            <xsl:element name="span">
+              <xsl:attribute name="id">
+                <xsl:value-of select="concat('testsFailed_',replace(dct:title, ' ', '_') )" />
+              </xsl:attribute>
+              <xsl:value-of select=" $testsInheritedFailure" />
+            </xsl:element>
+          </td>
+          </xsl:if>
           <td bgcolor="#CCCCCE">
             Skip:
             <xsl:element name="span">
@@ -470,8 +481,45 @@
               <td />
             </tr>
           </xsl:when>
-          <xsl:when test="$result = 'FAILED' or $result = 'CANTTELL' or $result = 'INHERITEDFAILURE'">
+          <xsl:when test="$result = 'FAILED' or $result = 'CANTTELL'">
             <tr bgcolor="#FFB2B2">
+              <td>
+                <xsl:element name="div">
+                  <xsl:attribute name="style">
+                    <xsl:value-of select="concat('text-indent:', $indention, 'px;')" />
+                  </xsl:attribute>
+                  <a href="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}" class="testDetailsLink"
+                     id="{testng:htmlContentFileName($testCaseName)}#{$testCaseName}">
+                    <xsl:value-of select="$testTitle" />
+                  </a>
+                </xsl:element>
+              </td>
+              <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                    <xsl:call-template name="string-replace-all">
+                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
+                      <xsl:with-param name="replace" select="'['" />
+                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
+                    </xsl:call-template>
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:variable>
+                <p>
+                  <xsl:value-of select="$message" />
+                </p>
+              </td>
+            </tr>
+          </xsl:when>
+          <xsl:when test="$result = 'INHERITEDFAILURE'">
+            <tr bgcolor="#f0d831">
               <td>
                 <xsl:element name="div">
                   <xsl:attribute name="style">

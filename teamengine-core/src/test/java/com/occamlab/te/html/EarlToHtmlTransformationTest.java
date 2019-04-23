@@ -69,7 +69,7 @@ public class EarlToHtmlTransformationTest {
         assertThat( indexHtml,
                     hasXPath( "//html:span[@id='testsInTotal_data-independent']", equalTo( "207" ), nsContext() ) );
         assertThat( indexHtml,
-                    hasXPath( "//html:span[@id='testsFailed_data-independent']", equalTo( "2" ), nsContext() ) );
+                    hasXPath( "//html:span[@id='testsFailed_data-independent']", equalTo( "1" ), nsContext() ) );
         assertThat( indexHtml,
                     hasXPath( "//html:span[@id='testsInTotal_data-preconditions']", equalTo( "0" ), nsContext() ) );
         assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_basic']", equalTo( "11" ), nsContext() ) );
