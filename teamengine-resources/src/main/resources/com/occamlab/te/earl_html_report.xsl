@@ -294,7 +294,7 @@
             </xsl:element>
           </td>
           <xsl:if test="not($testsInheritedFailure = 0)">
-          <td bgcolor="#FF0000">
+          <td bgcolor="#f0d831">
             Inherited fail:
             <xsl:element name="span">
               <xsl:attribute name="id">
@@ -484,7 +484,7 @@
             </tr>
           </xsl:when>
           <xsl:when test="$result = 'INHERITEDFAILURE'">
-            <tr bgcolor="#FF0000">
+            <tr bgcolor="#f0d831">
               <td>
                 <xsl:element name="div">
                   <xsl:attribute name="style">
