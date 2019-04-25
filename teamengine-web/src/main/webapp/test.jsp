@@ -179,6 +179,10 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
         				window.frames[1].window.document.getElementById(iut_uri).focus();
         				return false;
         			}
+        			if (iutdoc != null && iutdoc != "" && iuturi != null && iuturi != "") {
+        				alert("Provide only one input either capability URL or document!");
+        				return false;
+        			}
         		}
                 
                 // Reset iut_uri if the file is uploaded.
