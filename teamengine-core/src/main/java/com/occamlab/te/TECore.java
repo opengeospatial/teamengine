@@ -16,8 +16,6 @@
  */
 package com.occamlab.te;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,7 +35,6 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,13 +46,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageTypeSpecifier;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -871,9 +865,11 @@ public class TECore implements Runnable {
         }
     if (logger != null) {
             logger.println("<endtest result=\"" + test.getResult() + "\"/>");
-            
-            if(test.getIsConformanceClass().equals("true")){
-            	logger.println("<conformanceClass name=\"" + test.getLocalName() + "\"" + " isBasic=\"" + test.getIsBasic() + "\"" + " result=\"" + test.getResult() + "\" />");
+
+            if(test.isConformanceClass()){
+                logger.println("<conformanceClass name=\"" + test.getLocalName() + "\"" + " isBasic=\""
+                                + Boolean.toString( test.isBasic() ) + "\"" + " result=\"" + test.getResult()
+                                + "\" />");
             	supportHtmlReport = true;
             }
       logger.println("</log>");
@@ -883,7 +879,7 @@ public class TECore implements Runnable {
 //  Add missing info in the log.xml E.g. endtag '</log> or' endtest '<endtest result="1" />'.
     if(opts.getLogDir() != null && testPath != null){
 	    String logDir = opts.getLogDir() + "/" + testPath;
-	    addMissingInfo(logDir, test.getResult());
+	    addMissingInfo(logDir, test);
     }
     }
     //Create node which contain all test detail.
@@ -917,7 +913,7 @@ public class TECore implements Runnable {
         return test.getResult();
     }
 
-	public void addMissingInfo(String dir, int testResult) {
+	public void addMissingInfo(String dir, TestEntry test) {
 
 		String logdir = dir + File.separator + "log.xml";
 		DocumentBuilderFactory dbf = null;
@@ -950,14 +946,11 @@ public class TECore implements Runnable {
 		NodeList nl = doc.getElementsByTagName("endtest");
 		if (nl.getLength() == 0) {
 
-			Element root = doc.getDocumentElement();
-			Element endtest = doc.createElement("endtest");
+          Element root = doc.getDocumentElement();
+          appendEndTestElement(test, doc, root);
+          appendConformanceClassElement(test, doc, root);
+        }
 
-			Attr resultAttribute = doc.createAttribute("result");
-			resultAttribute.setValue(Integer.toString(testResult));
-
-			endtest.setAttributeNode(resultAttribute);
-			root.appendChild(endtest);
 			try {
 				DOMSource source = new DOMSource(doc);
 
@@ -973,7 +966,37 @@ public class TECore implements Runnable {
 			}
 
 		}
-	}
+
+    private void appendEndTestElement( TestEntry test, Document doc, Element root ) {
+        Element endtest = doc.createElement( "endtest" );
+
+        Attr resultAttribute = doc.createAttribute( "result" );
+        resultAttribute.setValue( Integer.toString( test.getResult() ) );
+
+        endtest.setAttributeNode( resultAttribute );
+        root.appendChild( endtest );
+    }
+
+    private void appendConformanceClassElement( TestEntry test, Document doc, Element root ) {
+        if ( test.isConformanceClass() ) {
+            Element conformanceClass = doc.createElement( "conformanceClass" );
+
+            Attr nameAttribute = doc.createAttribute( "name" );
+            nameAttribute.setValue( test.getLocalName() );
+
+            Attr isBasicAttribute = doc.createAttribute( "isBasic" );
+            isBasicAttribute.setValue( Boolean.toString( test.isBasic() ) );
+
+            Attr resultAttribute = doc.createAttribute( "result" );
+            resultAttribute.setValue( Integer.toString( test.getResult() ) );
+
+            conformanceClass.setAttributeNode( nameAttribute );
+            conformanceClass.setAttributeNode( isBasicAttribute );
+            conformanceClass.setAttributeNode( resultAttribute );
+            root.appendChild( conformanceClass );
+        }
+
+}
 
 /**
    * Runs a subtest as directed by a &lt;ctl:call-test&gt; instruction.
