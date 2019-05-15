@@ -3,6 +3,9 @@
 <%
 String username = request.getParameter("username");
 String email = request.getParameter("email");
+String firstName = request.getParameter("firstName");
+String lastName = request.getParameter("lastName");
+String organization = request.getParameter("organization");
 %>
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -33,6 +36,16 @@ String email = request.getParameter("email");
 
 			function submitform() {
 				var form = document.forms["registration"];
+				var firstName = form.elements["firstName"].value;
+				if (firstName == null || firstName == '') {
+					showerror("FirstName is required.");
+					return;
+				}
+				var lastName = form.elements["lastName"].value;
+				if (lastName == null || lastName == '') {
+					showerror("LastName is required.");
+					return;
+				}
 				var username = form.elements["username"].value;
 				if (username.length < 6) {
 					showerror("Username must be at least 6 characters.");
@@ -49,13 +62,21 @@ String email = request.getParameter("email");
 					return;
 				}
 				var email = form.elements["email"].value;
-				if (email.length > 0) {
+				if (email == null || email == '') {
+						showerror("Email address is required.");
+						return;
+				} else if (email.length > 0) {
 					var amp = email.indexOf("@");
 					var dot = email.lastIndexOf(".");
 					if (!(amp > 0 && dot > amp+1)) {
 						showerror("Invalid email address.");
 						return;
 					}
+				}
+				var organization = form.elements["organization"].value;
+				if (organization == null || organization == '') {
+					showerror("Organization is required.");
+					return;
 				}
 <% if (!request.isSecure()) { %>
 				if (!form.elements["disclaimer"].checked) {
@@ -68,10 +89,13 @@ String email = request.getParameter("email");
 			
 			function resetform() {
 				var form = document.forms["registration"];
+				form.elements["firstName"].value = "";
+				form.elements["lastName"].value = "";
 				form.elements["username"].value = "";
 				form.elements["password"].value = "";
 				form.elements["repeat_password"].value = "";
 				form.elements["email"].value = "";
+				form.elements["organization"].value = "";
 			}
 		</script>
 	</head>
@@ -91,6 +115,14 @@ if ("duplicate".equals(request.getParameter("error"))) {
 				<br/>
 				<table>
 					<tr>
+						<td>First Name:</td>
+						<td><input name="firstName" type="text" value="<%= firstName == null ? "" : firstName %>"/></td>
+					</tr>
+					<tr>
+						<td>Last Name:</td>
+						<td><input name="lastName" type="text" value="<%= lastName == null ? "" : lastName %>"/></td>
+					</tr>
+					<tr>
 						<td>Username:</td>
 						<td><input name="username" type="text" value="<%= username == null ? "" : username %>"/></td>
 					</tr>
@@ -103,8 +135,12 @@ if ("duplicate".equals(request.getParameter("error"))) {
 						<td><input name="repeat_password" type="password"/></td>
 					</tr>
 					<tr>
-						<td>Email (Optional):</td>
+						<td>Email:</td>
 						<td><input name="email" type="text" value="<%= email == null ? "" : email %>"/></td>
+					</tr>
+					<tr>
+						<td>Organization:</td>
+						<td><input name="organization" type="text" value="<%= organization == null ? "" : organization %>"/></td>
 					</tr>
 				</table>
 <% if (!request.isSecure()) { %>
