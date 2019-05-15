@@ -67,16 +67,11 @@
   </servlet>
   <servlet>
     <servlet-name>TestSuiteController</servlet-name>
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <description>http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html</description>
       <param-name>javax.ws.rs.Application</param-name>
       <param-value>com.occamlab.te.spi.jaxrs.ApplicationComponents</param-value>
-    </init-param>
-    <init-param>
-      <description>http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/api/core/ResourceConfig.html#FEATURE_REDIRECT</description>
-      <param-name>com.sun.jersey.config.feature.Redirect</param-name>
-      <param-value>false</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>

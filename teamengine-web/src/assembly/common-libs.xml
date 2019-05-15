@@ -12,7 +12,10 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>com.sun.jersey:jersey-*</include>
+        <include>org.glassfish.jersey:jersey-*</include>
+        <include>org.glassfish.jersey.core:jersey-server*</include>
+        <include>org.glassfish.jersey.containers:jersey-container-servlet*</include>
+        <include>org.glassfish.jersey.inject:jersey-hk2*</include>
         <include>org.apache.derby:derby</include>
         <include>org.opengis.cite.teamengine:teamengine-realm</include>
       </includes>
@@ -23,7 +26,7 @@
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>javax.ws.rs:jsr311*</include>
+        <include>jakarta.ws.rs:jakarta.ws.rs-api*</include>
       </includes>
       <scope>provided</scope>
       <useProjectArtifact>false</useProjectArtifact>

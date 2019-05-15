@@ -240,7 +240,7 @@ public class EarlReporter implements IReporter {
 
     /**
      * Adds the test inputs to the TestRun resource. Each input is an anonymous
-     * member of an unordered collection (rdf:Bag). A {@value #TEST_RUN_ID}
+     * member of an unordered collection (rdf:Bag). A {@link #TEST_RUN_ID}
      * parameter is treated in special manner: its value is set as the value of
      * the standard dct:identifier property.
      * 
@@ -393,9 +393,9 @@ public class EarlReporter implements IReporter {
      * cause of a fail verdict. Specifically, the following statements are added
      * to the report:
      * <ul>
-     * <li>{@value #REQ_ATTR} : Information about the request message
+     * <li>{@link #REQ_ATTR} : Information about the request message
      * (earl:TestResult --cite:message-- http:Request)</li>
-     * <li>{@value #RSP_ATTR} : Information about the response message
+     * <li>{@link #RSP_ATTR} : Information about the response message
      * (http:Request --http:resp-- http:Response)</li>
      * </ul>
      * 
