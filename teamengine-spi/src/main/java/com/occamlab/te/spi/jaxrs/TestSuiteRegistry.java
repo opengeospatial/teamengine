@@ -59,22 +59,16 @@ public class TestSuiteRegistry {
      * 
      * @param etsCode
      *            The alphanumeric code for the ETS.
-     * @param etsVersion
-     *            The version of the ETS.
      * @return A TestSuiteController, or {@code null} if one cannot be found.
      */
-    public TestSuiteController getController(String etsCode, String etsVersion) {
+    public TestSuiteController getController(String etsCode) {
         if (etsCode.length() == 0 || etsCode == null) {
             throw new IllegalArgumentException("ETS code not specified.");
-        }
-        if (etsVersion.length() == 0 || etsVersion == null) {
-            throw new IllegalArgumentException("ETS version not specified.");
         }
         TestSuiteController controller = null;
         if (!controllers.isEmpty()) {
             for (TestSuiteController ets : this.controllers) {
-                if (ets.getCode().equalsIgnoreCase(etsCode)
-                        && ets.getVersion().equalsIgnoreCase(etsVersion)) {
+                if (ets.getCode().equalsIgnoreCase(etsCode)) {
                     controller = ets;
                     break;
                 }

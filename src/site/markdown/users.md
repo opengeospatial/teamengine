@@ -163,11 +163,11 @@ end points:
 | URI (relative to base) | Resource | Method(s) | Response media type |
 |--- | --- | --- | --- |
 | /rest/suites | List of available test suites | GET |  application/xhtml+xml |
-| /rest/suites/{etsCode}/{etsVersion} | Test suite documentation | GET | application/xhtml+xml |
-| /rest/suites/{etsCode}/{etsVersion}/run | Test run controller | GET, POST | application/rdf+xml, application/xml, application/zip |
+| /rest/suites/{etsCode} | Test suite documentation | GET | application/xhtml+xml |
+| /rest/suites/{etsCode}/run | Test run controller | GET, POST | application/rdf+xml, application/xml, application/zip |
 
-In the request URIs the `{etsCode}` and `{etsVersion}` parameters denote the
-test suite code (example: "wfs20") and version (example: "1.25"), respectively, for a particular test suite.
+In the request URIs the `{etsCode}` parameter denotes the
+test suite code (example: "wfs20"), respectively, for a particular test suite.
 
 ![warning](./images/warn-16px.png) **Warning:** When using the REST API, if any
 test run argument includes a URI value that contains an ampersand ('&')
