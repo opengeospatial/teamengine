@@ -10,7 +10,6 @@ package com.occamlab.te.parsers;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +19,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,14 +30,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.w3c.dom.Document;
@@ -47,7 +45,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.ImmutableList;
 import com.occamlab.te.ErrorHandlerImpl;
+import com.occamlab.te.parsers.xml.CachingSchemaLoader;
+import com.occamlab.te.parsers.xml.InMemorySchemaSupplier;
+import com.occamlab.te.parsers.xml.XsdSchemaLoader;
+import com.occamlab.te.parsers.xml.SchemaSupplier;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
@@ -56,23 +59,36 @@ import com.occamlab.te.util.URLConnectionUtils;
  * 
  */
 public class XMLValidatingParser {
-	static SchemaFactory SF = null;
 	static TransformerFactory TF = null;
 	static DocumentBuilderFactory nonValidatingDBF = null;
 	static DocumentBuilderFactory schemaValidatingDBF = null;
 	static DocumentBuilderFactory dtdValidatingDBF = null;
-	ArrayList<Object> schemaList = new ArrayList<Object>();
+	ArrayList<SchemaSupplier> schemaList = new ArrayList<>();
 	ArrayList<Object> dtdList = new ArrayList<Object>();
-	private static Logger jlogger = Logger
+
+	/*
+	 * For now we create a new cache per instance of XMLValidatingParser, which
+	 * means a new cache per test run. These schemas could be cached for a
+	 * longer period than that, but then the question because "how long?" Until
+	 * the web app shuts down? Try to obey the caching headers in the HTTP
+	 * responses?
+	 * 
+	 * This solution at least fixes the major performance issue.
+	 */
+	private final CachingSchemaLoader schemaLoader =
+			new CachingSchemaLoader(new XsdSchemaLoader());
+
+	private static final Logger jlogger = Logger
 			.getLogger("com.occamlab.te.parsers.XMLValidatingParser");
 
-	private void loadSchemaList(Document schemaLinks,
-			ArrayList<Object> schemas, String schemaType) throws Exception {
+	private List<Object> loadSchemaList(Document schemaLinks,
+			String schemaType) throws Exception {
 		NodeList nodes = schemaLinks.getElementsByTagNameNS(
 				"http://www.occamlab.com/te/parsers", schemaType);
 		if (nodes.getLength() == 0) {
-			return;
+			return Collections.emptyList();
 		}
+		final ArrayList<Object> schemas = new ArrayList<>();
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Element e = (Element) nodes.item(i);
 			Object schema = null;
@@ -99,9 +115,10 @@ public class XMLValidatingParser {
 			jlogger.finer("Adding schema reference " + schema.toString());
 			schemas.add(schema);
 		}
+		return schemas;
 	}
 
-	private void loadSchemaLists(Node schemaLinks, ArrayList<Object> schemas,
+	private void loadSchemaLists(Node schemaLinks, ArrayList<SchemaSupplier> schemas,
 			ArrayList<Object> dtds) throws Exception {
 		if (null == schemaLinks) {
 			return;
@@ -114,8 +131,14 @@ public class XMLValidatingParser {
 		} else {
 			configDoc = schemaLinks.getOwnerDocument();
 		}
-		loadSchemaList(configDoc, schemas, "schema");
-		loadSchemaList(configDoc, dtds, "dtd");
+
+		final ArrayList<SchemaSupplier> schemaSuppliers = new ArrayList<>();
+		for (final Object schemaObj : loadSchemaList(configDoc, "schema")) {
+			schemaSuppliers.add(SchemaSupplier.makeSupplier(schemaObj));
+		}
+		schemas.addAll(schemaSuppliers);
+		dtds.addAll(loadSchemaList(configDoc, "dtd"));
+
 		// If instruction body is an embedded xsd:schema, add it to the
 		// ArrayList
 		NodeList nodes = configDoc.getElementsByTagNameNS(
@@ -125,31 +148,11 @@ public class XMLValidatingParser {
 			CharArrayWriter caw = new CharArrayWriter();
 			Transformer t = TF.newTransformer();
 			t.transform(new DOMSource(e), new StreamResult(caw));
-			schemas.add(caw.toCharArray());
+			schemas.add(new InMemorySchemaSupplier(caw.toCharArray()));
 		}
 	}
 
 	public XMLValidatingParser() {
-		if (SF == null) {
-			String property_name = "javax.xml.validation.SchemaFactory:"
-					+ XMLConstants.W3C_XML_SCHEMA_NS_URI;
-			String oldprop = System.getProperty(property_name);
-			System.setProperty(property_name,
-					"org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-			SF = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			try {
-				SF.setFeature(
-						"http://apache.org/xml/features/validation/schema-full-checking",
-						false);
-			} catch (Exception e) {
-				jlogger.warning("Unable to set feature '*/schema-full-checking'");
-			}
-			if (oldprop == null) {
-				System.clearProperty(property_name);
-			} else {
-				System.setProperty(property_name, oldprop);
-			}
-		}
 
 		if (nonValidatingDBF == null) {
 			String property_name = "javax.xml.parsers.DocumentBuilderFactory";
@@ -252,11 +255,6 @@ public class XMLValidatingParser {
 			throws Exception {
 		jlogger.finer("Received XML resource of type "
 				+ input.getClass().getName());
-		ArrayList<Object> schemas = new ArrayList<Object>();
-		ArrayList<Object> dtds = new ArrayList<Object>();
-		schemas.addAll(this.schemaList);
-		dtds.addAll(this.dtdList);
-		loadSchemaLists(parserConfig, schemas, dtds);
 		Document resultDoc = null;
 		ErrorHandlerImpl errHandler = new ErrorHandlerImpl("Parsing", logger);
 
@@ -280,11 +278,7 @@ public class XMLValidatingParser {
 					+ input.getClass().getName());
 		}
 		errHandler.setRole("Validation");
-		if (null == resultDoc.getDoctype() && dtds.isEmpty()) {
-			validateAgainstXMLSchemaList(resultDoc, schemas, errHandler);
-		} else {
-			validateAgainstDTDList(resultDoc, dtds, errHandler);
-		}
+		validate(resultDoc, parserConfig, errHandler);
 		int error_count = errHandler.getErrorCount();
 		int warning_count = errHandler.getWarningCount();
 		if (error_count > 0 || warning_count > 0) {
@@ -372,18 +366,32 @@ public class XMLValidatingParser {
 		if (doc == null || doc.getDocumentElement() == null) {
 			throw new NullPointerException("Input document is null.");
 		}
-		ArrayList<Object> schemas = new ArrayList<Object>();
+		XmlErrorHandler errHandler = new XmlErrorHandler();
+		validate(doc, instruction, errHandler);
+		return errHandler;
+	}
+
+	/**
+	 * Validates the given XML {@link Document} per the given instructions,
+	 * recording errors in the given error handler.
+	 * 
+	 * @param doc must not be null
+	 * @param instruction may be null to signify no special instructions
+	 * @param errHandler errors will be recorded on this object
+	 */
+	private void validate(
+			final Document doc, final Node instruction, final ErrorHandler errHandler)
+			throws Exception {
+		ArrayList<SchemaSupplier> schemas = new ArrayList<>();
 		ArrayList<Object> dtds = new ArrayList<Object>();
 		schemas.addAll(schemaList);
 		dtds.addAll(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);
-		XmlErrorHandler errHandler = new XmlErrorHandler();
 		if (null == doc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(doc, schemas, errHandler);
 		} else {
 			validateAgainstDTDList(doc, dtds, errHandler);
 		}
-		return errHandler;
 	}
 
 	/**
@@ -393,8 +401,8 @@ public class XMLValidatingParser {
 	 * @param doc
 	 *            The input Document node.
 	 * @param xsdList
-	 *            A list of XML schema references. If the list is {@code null}
-	 *            or empty, validation will be performed by using location hints
+	 *            A list of XML schema references. Must be non-null, but if
+	 *            empty, validation will be performed by using location hints
 	 *            found in the input document.
 	 * @param errHandler
 	 *            An ErrorHandler that collects validation errors.
@@ -403,27 +411,15 @@ public class XMLValidatingParser {
 	 * @throws IOException
 	 *             If an I/O error occurs.
 	 */
-	void validateAgainstXMLSchemaList(Document doc, ArrayList<Object> xsdList,
+	void validateAgainstXMLSchemaList(Document doc, List<SchemaSupplier> xsdList,
 			ErrorHandler errHandler) throws SAXException, IOException {
-		jlogger.finer("Validating XML resource from " + doc.getDocumentURI());
-		Schema schema = SF.newSchema();
-		if (null != xsdList && !xsdList.isEmpty()) {
-			Source[] schemaSources = new Source[xsdList.size()];
-			for (int i = 0; i < xsdList.size(); i++) {
-				Object ref = xsdList.get(i);
-				if (ref instanceof File) {
-					schemaSources[i] = new StreamSource((File) ref);
-				} else if (ref instanceof URL) {
-					schemaSources[i] = new StreamSource(ref.toString());
-				} else if (ref instanceof char[]) {
-					schemaSources[i] = new StreamSource(new CharArrayReader(
-							(char[]) ref));
-				} else {
-					throw new IllegalArgumentException(
-							"Unknown schema reference: " + ref.toString());
-				}
-			}
-			schema = SF.newSchema(schemaSources);
+		jlogger.fine("Validating XML resource from " + doc.getDocumentURI()
+			+ " with these specified schemas: " + xsdList);
+		Schema schema;
+		if (!xsdList.isEmpty()) {
+			schema = schemaLoader.loadSchema(ImmutableList.copyOf(xsdList));
+		} else {
+			schema = schemaLoader.defaultSchema();
 		}
 		Validator validator = schema.newValidator();
 		validator.setErrorHandler(errHandler);
@@ -432,22 +428,21 @@ public class XMLValidatingParser {
 	}
 
 	/**
-	 * Validates an XML resource against a list of DTD schemas or as indicated
-	 * by a DOCTYPE declaration. Validation errors are reported to the given
-	 * handler. If no DTD list is provided the external schema reference in the
-	 * DOCTYPE declaration is used (Note: an internal subset is ignored).
+	 * Validates an XML resource against a list of DTD schemas or as indicated by a
+	 * DOCTYPE declaration. Validation errors are reported to the given handler. If
+	 * no DTD references are provided the external schema reference in the DOCTYPE
+	 * declaration is used (Note: an internal subset is ignored).
 	 * 
 	 * @param doc
 	 *            The input Document.
 	 * @param dtdList
-	 *            A list of DTD schema references (may be null or empty).
+	 *            A list of DTD schema references. May be empty but not null.
 	 * @param errHandler
 	 *            An ErrorHandler that collects validation errors.
 	 * @throws Exception
-	 *             If any errors occur while attempting to validate the
-	 *             document.
+	 *             If any errors occur while attempting to validate the document.
 	 */
-	void validateAgainstDTDList(Document doc, ArrayList<Object> dtdList,
+	private void validateAgainstDTDList(Document doc, ArrayList<Object> dtdList,
 			ErrorHandler errHandler) throws Exception {
 		jlogger.finer("Validating XML resource from " + doc.getDocumentURI());
 		DocumentBuilder db = dtdValidatingDBF.newDocumentBuilder();
@@ -464,7 +459,7 @@ public class XMLValidatingParser {
 	     Transformer copier = tf.newTransformer();
            ByteArrayOutputStream content = new ByteArrayOutputStream();
 		Result copy = new StreamResult(content);
-		if (null == dtdList || dtdList.isEmpty()) {
+		if (dtdList.isEmpty()) {
 			DocumentType doctype = doc.getDoctype();
 			if (null == doctype) {
 				return;
