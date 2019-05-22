@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -19,6 +20,8 @@ import com.occamlab.te.util.DomUtils;
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
  */
 public class ImageHandler {
+
+    private static final Logger LOG = Logger.getLogger( ImageHandler.class.getName() );
 
     private final File testLogDir;
 
@@ -50,25 +53,35 @@ public class ImageHandler {
         for ( Element image : images ) {
             if ( image.hasAttribute( "src" ) ) {
                 String src = image.getAttribute( "src" );
-                String imageFormat = parseImageFormat( src );
-                String testName = System.getProperty( "TestName" );
-                String imgName = parseImageName( testName );
-                URL url = new URL( src );
-                BufferedImage img = ImageIO.read( url );
-                File file = createImageFile( imageCount, imageFormat, imgName );
-                if ( !file.exists() ) {
-                    file.getParentFile().mkdirs();
+                if ( src.startsWith( "http" ) ) {
+                    String imageFormat = parseImageFormat( src );
+                    String imgName = parseImageName();
+                    File target = createImageFile( imageCount, imageFormat, imgName );
+                    saveImage(src, imageFormat, target);
+                    imageCount++;
                 }
-                ImageIO.write( img, imageFormat, file );
-                imageCount++;
             }
+        }
+    }
+
+    private void saveImage( String src, String imageFormat, File file ) {
+        try {
+            URL url = new URL( src );
+            BufferedImage img = ImageIO.read( url );
+            ImageIO.write( img, imageFormat, file );
+        } catch ( Exception e ) {
+            LOG.warning( "Could not write image " + src + " to " + file );
         }
     }
 
     private File createImageFile( int imageCount, String imageFormat, String imgName ) {
         String downloadPath = testLogDir + File.separator + sessionId + File.separator + "images" + File.separator
                               + imgName + imageCount + "." + imageFormat;
-        return new File( downloadPath );
+        File target = new File( downloadPath );
+        if ( !target.exists() ) {
+            target.getParentFile().mkdirs();
+        }
+        return target;
     }
 
     private String parseImageFormat( String src )
@@ -85,7 +98,8 @@ public class ImageHandler {
         return "PNG";
     }
 
-    private String parseImageName( String testName ) {
+    private String parseImageName() {
+        String testName = System.getProperty( "TestName" );
         if ( testName.contains( " " ) ) {
             return testName.substring( testName.indexOf( ":" ) + 1, testName.indexOf( " " ) );
         }
