@@ -1,7 +1,28 @@
 Release Notes
 =============
 
-## 5.3 (2019-01-14)
+## 5.4 (2019-05-23)
+- [#395](https://github.com/opengeospatial/teamengine/issues/395): Move SoapUI tests to sub module
+- [#385](https://github.com/opengeospatial/teamengine/issues/385): Failed to load ets-wms-client13 ctl form
+- [#357](https://github.com/opengeospatial/teamengine/issues/357): WCS test is slow due to repeated schema loading
+- [#261](https://github.com/opengeospatial/teamengine/issues/261): REST API: Create path for latest version of each test suite
+- [#370](https://github.com/opengeospatial/teamengine/issues/370): Enhance mandatory informations when registering to TEAM Engine
+- [#398](https://github.com/opengeospatial/teamengine/issues/398): Fix fallback of writting the end of the log by writting the conformanceClass element
+- [#331](https://github.com/opengeospatial/teamengine/issues/331): New HTML report of CTL test suites: Inherited failures are not marked but counted as usual failures
+- [#364](https://github.com/opengeospatial/teamengine/issues/364): Change login time interval
+- [#323](https://github.com/opengeospatial/teamengine/issues/323): Provide documentation how to get information about if the test can get certified
+- [#358](https://github.com/opengeospatial/teamengine/issues/358): TEAM Engine source code has mixed line endings
+- [#359](https://github.com/opengeospatial/teamengine/issues/359): Root cause exception is not logged when XMLValidatingParser fails
+- [#365](https://github.com/opengeospatial/teamengine/issues/365): Save images of interactive tests to session folder of user
+- [#367](https://github.com/opengeospatial/teamengine/issues/367): Link to JavaDoc is broken in HTML report in a SNAPSHOT version
+- [#348](https://github.com/opengeospatial/teamengine/issues/348): Teamengine failed to generate new HTML report if the testInputs are empty.
+- [#362](https://github.com/opengeospatial/teamengine/issues/362): Update resource accessing method of XMLValidationParser as URL instead of File
+- [#356](https://github.com/opengeospatial/teamengine/pull/356): Clarify that the "deps" zip may not exist
+- [#352](https://github.com/opengeospatial/teamengine/pull/352): fix: teamengine-web/pom.xml to reduce potential vulnerabilities (#1)
+- [#344](https://github.com/opengeospatial/teamengine/issues/344): The wms-client13 test shows the one test failure in table even all the tests are passed.
+- [#350](https://github.com/opengeospatial/teamengine/issues/350): New HTML report: Homogenize layout
+
+## 5.3.1 (2019-01-14)
 - Fix [#381](https://github.com/opengeospatial/teamengine/issues/381): Ensure correct comparison of session dates
 
 ## 5.3 (2018-05-15)
