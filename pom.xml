@@ -87,13 +87,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <saxon.version>9.0.0.8</saxon.version>
-    <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
-    <soapui.testng.ets.code>wfs20</soapui.testng.ets.code>
-    <soapui.testng.ets.version>1.29</soapui.testng.ets.version>
-    <soapui.testng.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
-    <soapui.ctl.ets.code>wms</soapui.ctl.ets.code>
-    <soapui.ctl.ets.version>1.24</soapui.ctl.ets.version>
-    <soapui.ctl.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
   </properties>
 
   <modules>
@@ -105,6 +98,7 @@
     <module>teamengine-web</module>
     <module>teamengine-console</module>
     <module>teamengine-virtualization</module>
+    <module>teamengine-tests</module>
   </modules>
 
   <dependencyManagement>
@@ -211,34 +205,6 @@
         <version>1.1</version>
         <configuration>
           <scmBranch>gh-pages</scmBranch>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.smartbear.soapui</groupId>
-        <artifactId>soapui-maven-plugin</artifactId>
-        <version>5.4.0</version>
-        <inherited>false</inherited>
-        <dependencies>
-          <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>forms</artifactId>
-            <version>1.0.7</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <projectFile>src/test/resources/soapui/TEAM-Engine-soapui-project.xml</projectFile>
-          <junitReport>true</junitReport>
-          <testFailIgnore>true</testFailIgnore>
-          <settingsFile>src/test/resources/soapui/TEAM-Engine-soapui-settings.xml</settingsFile>
-          <projectProperties>
-            <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
-            <value>testng.ets.code=${soapui.testng.ets.code}</value>
-            <value>testng.ets.version=${soapui.testng.ets.version}</value>
-            <value>testng.iut=${soapui.testng.iut}</value>
-            <value>ctl.ets.code=${soapui.ctl.ets.code}</value>
-            <value>ctl.ets.version=${soapui.ctl.ets.version}</value>
-            <value>ctl.iut=${soapui.ctl.iut}</value>
-          </projectProperties>
         </configuration>
       </plugin>
     </plugins>
@@ -427,13 +393,6 @@
       </build>
     </profile>
   </profiles>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>smartbear-sweden-plugin-repository</id>
-      <url>http://www.soapui.org/repository/maven2/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <distributionManagement>
     <repository>

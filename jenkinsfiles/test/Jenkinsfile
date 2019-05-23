@@ -14,12 +14,13 @@ pipeline {
     stage('Test') {
       steps{
         sh 'mvn --version'
-        sh 'mvn clean com.smartbear.soapui:soapui-maven-plugin:test -N -Dsoapui.teamengine.endpoint=${teamengineEndpoint} -Dsoapui.testng.ets.code=${testngEtsCode} -Dsoapui.testng.ets.version=${testngEtsVersion} -Dsoapui.testng.iut=${testngIut} -Dsoapui.ctl.ets.code=${ctlEtsCode} -Dsoapui.ctl.ets.version=${ctlEtsVersion} -Dsoapui.ctl.iut=${ctlIut}'
+        sh 'cd teamengine-tests && mvn clean com.smartbear.soapui:soapui-maven-plugin:test -Dsoapui.test.fail.ignore=true -Dsoapui.teamengine.endpoint=${teamengineEndpoint} -Dsoapui.testng.ets.code=${testngEtsCode} -Dsoapui.testng.ets.version=${testngEtsVersion} -Dsoapui.testng.iut=${testngIut} -Dsoapui.ctl.ets.code=${ctlEtsCode} -Dsoapui.ctl.ets.version=${ctlEtsVersion} -Dsoapui.ctl.iut=${ctlIut}'
       }
     }
     stage('Results') {
       steps{
-        junit 'TEST-*.xml'
+        junit '**/target/soapui/TEST-*.xml'
+        archive 'target/*'
       }
     }
   }

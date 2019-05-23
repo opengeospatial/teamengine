@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opengis.cite</groupId>
+    <artifactId>teamengine</artifactId>
+    <version>5.4-SNAPSHOT</version>
+  </parent>
+  <groupId>org.opengis.cite.teamengine</groupId>
+  <artifactId>teamengine-tests</artifactId>
+  <packaging>pom</packaging>
+
+  <name>TEAM Engine - Tests</name>
+  <description>
+    Contains integration and system tests.
+  </description>
+
+  <developers>
+    <developer>
+      <name>Dirk Stenger</name>
+      <url>https://github.com/dstenger</url>
+      <timezone>Germany/Berlin</timezone>
+    </developer>
+  </developers>
+
+  <properties>
+    <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
+    <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
+    <soapui.testng.ets.code>wfs20</soapui.testng.ets.code>
+    <soapui.testng.ets.version>1.29</soapui.testng.ets.version>
+    <soapui.testng.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
+    <soapui.ctl.ets.code>wms</soapui.ctl.ets.code>
+    <soapui.ctl.ets.version>1.24</soapui.ctl.ets.version>
+    <soapui.ctl.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
+  </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.smartbear.soapui</groupId>
+          <artifactId>soapui-maven-plugin</artifactId>
+          <version>5.4.0</version>
+          <inherited>false</inherited>
+          <dependencies>
+            <dependency>
+              <groupId>com.jgoodies</groupId>
+              <artifactId>forms</artifactId>
+              <version>1.0.7</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <projectFile>src/test/resources/soapui/TEAM-Engine-soapui-project.xml</projectFile>
+            <settingsFile>src/test/resources/soapui/TEAM-Engine-soapui-settings.xml</settingsFile>
+            <outputFolder>${project.build.directory}/soapui</outputFolder>
+            <junitReport>true</junitReport>
+            <testFailIgnore>${soapui.test.fail.ignore}</testFailIgnore>
+            <projectProperties>
+              <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
+              <value>testng.ets.code=${soapui.testng.ets.code}</value>
+              <value>testng.ets.version=${soapui.testng.ets.version}</value>
+              <value>testng.iut=${soapui.testng.iut}</value>
+              <value>ctl.ets.code=${soapui.ctl.ets.code}</value>
+              <value>ctl.ets.version=${soapui.ctl.ets.version}</value>
+              <value>ctl.iut=${soapui.ctl.iut}</value>
+            </projectProperties>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>smartbear-sweden-plugin-repository</id>
+      <url>http://www.soapui.org/repository/maven2/</url>
+    </pluginRepository>
+  </pluginRepositories>
+</project>
