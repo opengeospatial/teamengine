@@ -334,14 +334,10 @@ exists(/rdf:RDF)</path>
             <con:configuration><scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
 assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText></con:configuration>
           </con:assertion>
-          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element testng-results available">
-            <con:configuration>
-              <path>exists(/testng-results)</path>
-              <content>true</content>
-              <allowWildcards>false</allowWildcards>
-              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
-              <ignoreComments>false</ignoreComments>
-            </con:configuration>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration><path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration>
           </con:assertion>
           <con:credentials>
             <con:authType>No Authorization</con:authType>
@@ -776,14 +772,10 @@ exists(/rdf:RDF)</path>
             <con:configuration><scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
 assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText></con:configuration>
           </con:assertion>
-          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element execution available">
-            <con:configuration>
-              <path>exists(/execution)</path>
-              <content>true</content>
-              <allowWildcards>false</allowWildcards>
-              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
-              <ignoreComments>false</ignoreComments>
-            </con:configuration>
+          <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
+            <con:configuration><path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+exists(/rdf:RDF)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration>
           </con:assertion>
           <con:credentials>
             <con:authType>No Authorization</con:authType>
@@ -925,7 +917,7 @@ exists(/rdf:RDF)</path>
       <con:name>teamengine.endpoint</con:name>
       <con:value>http://cite.opengeospatial.org/te2</con:value>
     </con:property>
-  <con:property><con:name>testng.ets.code</con:name><con:value>wfs20</con:value></con:property><con:property><con:name>testng.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.0/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value></con:property><con:property><con:name>ctl.ets.code</con:name><con:value>wms</con:value></con:property><con:property><con:name>ctl.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.0/services/wms130?request=GetCapabilities&amp;service=WMS</con:value></con:property></con:properties>
+  <con:property><con:name>testng.ets.code</con:name><con:value>wfs20</con:value></con:property><con:property><con:name>testng.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.5/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value></con:property><con:property><con:name>ctl.ets.code</con:name><con:value>wms</con:value></con:property><con:property><con:name>ctl.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.5/services/wms130?request=GetCapabilities&amp;service=WMS</con:value></con:property></con:properties>
   <con:wssContainer/>
   <con:oAuth2ProfileContainer/>
   <con:oAuth1ProfileContainer/>
