@@ -27,11 +27,9 @@
     <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
     <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
     <soapui.testng.ets.code>wfs20</soapui.testng.ets.code>
-    <soapui.testng.ets.version>1.29</soapui.testng.ets.version>
-    <soapui.testng.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
+    <soapui.testng.iut>http://cite.deegree.org/deegree-webservices-3.4.5/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
     <soapui.ctl.ets.code>wms</soapui.ctl.ets.code>
-    <soapui.ctl.ets.version>1.24</soapui.ctl.ets.version>
-    <soapui.ctl.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
+    <soapui.ctl.iut>http://cite.deegree.org/deegree-webservices-3.4.5/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
   </properties>
 
   <build>
@@ -40,7 +38,7 @@
         <plugin>
           <groupId>com.smartbear.soapui</groupId>
           <artifactId>soapui-maven-plugin</artifactId>
-          <version>5.4.0</version>
+          <version>5.5.0</version>
           <inherited>false</inherited>
           <dependencies>
             <dependency>
@@ -58,10 +56,8 @@
             <projectProperties>
               <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
               <value>testng.ets.code=${soapui.testng.ets.code}</value>
-              <value>testng.ets.version=${soapui.testng.ets.version}</value>
               <value>testng.iut=${soapui.testng.iut}</value>
               <value>ctl.ets.code=${soapui.ctl.ets.code}</value>
-              <value>ctl.ets.version=${soapui.ctl.ets.version}</value>
               <value>ctl.iut=${soapui.ctl.iut}</value>
             </projectProperties>
           </configuration>
