@@ -25,14 +25,29 @@ if (request.getParameter("error") != null) {
 	out.println("<span style=\"color: red\">The username and/or password did not match.  Please try again.</span>");
 }
 %>
+	<div id="success" style="color: #0325f9">
+		<%
+		  if ("pwd".equals(request.getParameter("success"))) {
+		    out.println("Thank you! Your password is succesfully changed.");
+		  }
+		%>
+	</div>
 		<form method="post" action="j_security_check">
-			<p>
-				Enter your username and password:<br/>
-				<br/>
-				Username: <input type="text" name="j_username"/><br/>
-				Password: <input type="password" name="j_password"/><br/>
-				<input type="submit" value="Log In"/><br/>
-			</p>
+		<p>Enter your username and password:</p>
+		<table>
+			<tr>		
+				<td>Username: </td> 
+				<td><input type="text" name="j_username"/></td>
+			</tr>	
+			<tr>		
+				<td>Password:</td> 
+				<td><input type="password" name="j_password"/></td>	
+			</tr>	
+			<tr>		
+				<td><input type="submit" value="Log In"/></td> 
+				<td><a href="resetPassword.jsp">Forgot password? </a></td>
+			</tr>
+		</table>
 		</form>
 		If you don't have a username and password, please <a href="register.jsp">register</a>.
 		<%@ include file="footer.jsp" %>
