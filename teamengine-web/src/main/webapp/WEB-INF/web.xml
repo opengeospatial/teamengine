@@ -19,6 +19,14 @@
   <filter-name>clearVerificationCode</filter-name>  
   <url-pattern>/viewSessions.jsp</url-pattern>  
   </filter-mapping>
+  <filter>  
+  <filter-name>CheckUserProfileFilter</filter-name>  
+  <filter-class>com.occamlab.te.web.listeners.CheckUserProfileFilter</filter-class>  
+  </filter>  
+  <filter-mapping>  
+  <filter-name>CheckUserProfileFilter</filter-name>  
+  <url-pattern>*.jsp</url-pattern>
+  </filter-mapping>
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
@@ -64,6 +72,10 @@
   <servlet>
     <servlet-name>updateUserDetailsHandler</servlet-name>
     <servlet-class>com.occamlab.te.web.UpdateUserDetailsHandler</servlet-class>  
+  </servlet>
+  <servlet>
+    <servlet-name>updateUserDetails</servlet-name>
+    <servlet-class>com.occamlab.te.web.UpdateUserDetails</servlet-class>  
   </servlet>
   <servlet>
     <servlet-name>emailLog</servlet-name>
@@ -139,6 +151,10 @@
   <servlet-mapping>
     <servlet-name>updateUserDetailsHandler</servlet-name>
     <url-pattern>/updateUserDetailsHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateUserDetails</servlet-name>
+    <url-pattern>/updateUserDetails</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>logout</servlet-name>
