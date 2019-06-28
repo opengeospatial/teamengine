@@ -105,14 +105,9 @@ $(function () {
         $.ajax({
             type: "post",
             url:  "updateUserDetails",
-            data: "firstName=" + fname + "&lastName=" + lname + "&email=" + email + "&organization=" + org,
+            data: "firstName=" + fname.val() + "&lastName=" + lname.val() + "&email=" + email.val() + "&organization=" + org.val(),
             success: function(msg){      
-            	$( "#dialog-form" ).dialog( "close" );
-            	setTimeout(function () {
-            		if(msg.includes("success")){
-                		alert("Details updated successfully!");
-                	}
-                }, 500);            	
+            	$( "#dialog-form" ).dialog( "close" );           	
             }
         });
     }
@@ -173,7 +168,7 @@ $(function () {
 </div>
 
 <div id="dialog-form" title="Update user details">
-	<p class="validateTips">All form fields are required.</p>
+	<p class="validateTips">Please update user details to continue.</p>
 	<form method="post" action="updateUserDetailsHandler">
 		<fieldset style="padding: 0; border: 0; margin-top: 25px; align: center;">
 			<table>
