@@ -42,7 +42,7 @@ public final class BasicXMLReporter implements IReporter {
         StringBuilder reporterConfig = new StringBuilder(
                 XMLReporter.class.getName() + ":");
         reporterConfig.append("stackTraceOutputMethod=").append(
-                XMLReporterConfig.STACKTRACE_NONE);
+                XMLReporterConfig.StackTraceLevels.NONE);
         reporterConfig.append(",").append("generateTestResultAttributes=true");
         reporterConfig.append(",").append("generateGroupsAttribute=true");
         ReporterConfig reporterConf = ReporterConfig.deserialize(reporterConfig

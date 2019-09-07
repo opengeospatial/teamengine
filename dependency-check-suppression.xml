@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+   <suppress>
+      <notes><![CDATA[
+      file name: tomcat-api-8.5.45.jar
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat/tomcat\-api@.*$</packageUrl>
+      <cve>CVE-2016-5425</cve>
+   </suppress>
+</suppressions>
