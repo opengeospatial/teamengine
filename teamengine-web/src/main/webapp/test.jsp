@@ -184,16 +184,6 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
         				return false;
         			}
         		}
-                
-                // Reset iut_uri if the file is uploaded.
-                function resetIutValue(iut_uri, iut_doc){
-					var iut_uri_value = window.frames[1].window.document.getElementById(iut_uri).value;
-					var iut_doc_value = window.frames[1].window.document.getElementById(iut_doc).value;
-					
-					if (iut_doc_value !== undefined && iut_doc_value !== null && iut_doc_value !== "") {
-				        window.frames[1].window.document.getElementById(iut_uri).value = "";
-				    }
-				}
             </script>
 	</head>
 	<frameset onload="start()" rows="102,*">
