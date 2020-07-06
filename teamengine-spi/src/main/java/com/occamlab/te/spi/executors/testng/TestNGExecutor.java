@@ -10,7 +10,9 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +28,7 @@ import org.xml.sax.InputSource;
 
 import com.occamlab.te.spi.executors.TestRunExecutor;
 import com.occamlab.te.spi.util.HtmlReport;
+import com.occamlab.te.spi.util.TestRunUtils;
 
 /**
  * 
@@ -112,13 +115,32 @@ public class TestNGExecutor implements TestRunExecutor {
         if (null == testRunArgs) {
             throw new IllegalArgumentException("No test run arguments were supplied.");
         }
+        
+        String runId = null;
+        String sourcesId = "";
+        Map<String, String> argsMap = extractTestRunArguments(testRunArgs);
+        
+        if (argsMap.containsKey("logDir")) {
+            this.outputDir = new File(argsMap.get("logDir"));
+        }
+        
+        if (argsMap.containsKey("sourcesId")) {
+            sourcesId = argsMap.get("sourcesId");
+        }
+        
+        if (argsMap.containsKey("sessionId")) {
+            runId = argsMap.get("sessionId");
+            TestRunUtils.save(this.outputDir, runId, sourcesId);
+        } else {
+            runId = UUID.randomUUID().toString();
+        }
+        
         TestNG driver = new TestNG();
         setTestSuites(driver, this.testngConfig);
         driver.setVerbose(0);
         driver.setUseDefaultListeners(this.useDefaultListeners);
-        UUID runId = UUID.randomUUID();
-        File runDir = new File(this.outputDir, runId.toString());
-        if (!runDir.mkdir()) {
+        File runDir = new File(this.outputDir, runId);
+        if (!runDir.exists() && !runDir.mkdir()) {
             runDir = this.outputDir;
             LOGR.config("Created test run directory at " + runDir.getAbsolutePath());
         }
@@ -234,5 +256,27 @@ public class TestNGExecutor implements TestRunExecutor {
         }
         return null;
     }
-
+    
+    /**
+     * Extracts test run arguments from an XML properties file. The arguments
+     * are added to the resulting <code>HashMap</code> object as
+     * key-value pairs".
+     *
+     * @param testRunArgs An XML representation of a properties file containing
+     * an {@literal <entry>} element for each supplied argument.
+     * @return The HashMap containing settings for a test run, including a list of
+     * parameters (which may be empty).
+     *
+     */
+    Map<String, String> extractTestRunArguments(Document testRunArgs) {
+        Map<String, String> argsMap = new HashMap<String, String>();
+        if (null != testRunArgs) {
+            NodeList entries = testRunArgs.getElementsByTagName("entry");
+            for (int i = 0; i < entries.getLength(); i++) {
+                Element entry = (Element) entries.item(i);
+                argsMap.put(entry.getAttribute("key"), entry.getTextContent().trim());
+            }
+        }
+        return argsMap;
+    }
 }

@@ -11,6 +11,7 @@ import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.spi.executors.TestRunExecutor;
 import com.occamlab.te.spi.util.HtmlReport;
+import com.occamlab.te.spi.util.TestRunUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,6 +67,26 @@ public class CtlExecutor implements TestRunExecutor {
     public Source execute(Document testRunArgs) {
         RuntimeOptions runOpts = extractTestRunArguments(testRunArgs);
         runOpts.setLogDir(new File(System.getProperty("java.io.tmpdir")));
+        
+        String sourcesId = "";
+        
+        for (String param: runOpts.getParams()) {
+            String paramValue = param.substring(param.indexOf("=") + 1, param.length());
+            
+            if (param.contains("logDir")) {
+                runOpts.setLogDir(new File(paramValue));
+            }
+            
+            if (param.contains("sourcesId")) {
+                sourcesId = paramValue;
+            }
+            
+            if (param.contains("sessionId")) {
+                runOpts.setSessionId(paramValue);
+                TestRunUtils.save(runOpts.getLogDir(), runOpts.getSessionId(), sourcesId);
+            }
+        }
+        
         if (null == runOpts.getSessionId()) {
             runOpts.setSessionId(UUID.randomUUID().toString());
         }

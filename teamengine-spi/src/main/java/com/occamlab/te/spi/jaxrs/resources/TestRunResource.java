@@ -35,6 +35,8 @@ import org.w3c.dom.Element;
 import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
+import com.occamlab.te.spi.util.TestRunUtils;
+import com.occamlab.te.util.LogUtils;
 import com.sun.jersey.multipart.FormDataParam;
 
 /**
@@ -362,6 +364,17 @@ public class TestRunResource {
      */
     private Source executeTestRun( String etsCode, Map<String, List<String>> testRunArgs,
                                    String preferredMediaType ) {
+        
+        List<String> authCredentials = this.headers.getRequestHeader("Authorization");
+        String logDir = System.getProperty("TE_BASE") + "\\users\\" + TestRunUtils.getUserName(authCredentials) + "\\rest";
+        
+        if (null != logDir) {
+            String sessionId = LogUtils.generateSessionId(new File(logDir));
+            
+            testRunArgs.put("logDir", Arrays.asList(logDir));
+            testRunArgs.put("sessionId", Arrays.asList(sessionId));
+        }
+        
         testRunArgs.put( "acceptMediaType", Arrays.asList( preferredMediaType ) );
         if ( LOGR.isLoggable( Level.FINE ) ) {
             StringBuilder msg = new StringBuilder( "Test run arguments - " );
@@ -372,8 +385,10 @@ public class TestRunResource {
             }
             LOGR.fine( msg.toString() );
         }
-        Document xmlArgs = readTestRunArguments( testRunArgs );
         TestSuiteController controller = findController( etsCode );
+        
+        testRunArgs.put("sourcesId", Arrays.asList(TestRunUtils.getSourcesId(controller)));
+        Document xmlArgs = readTestRunArguments( testRunArgs );
         Source testResults = null;
         try {
             testResults = controller.doTestRun( xmlArgs );
