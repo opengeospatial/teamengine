@@ -1,5 +1,8 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -7,6 +10,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import com.occamlab.te.spi.jaxrs.ErrorResponseBuilder;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
@@ -17,6 +26,12 @@ import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
  */
 @Path("suites/{etsCode}/")
 public class TestSuiteOverviewResource {
+
+    private static final String APPLICATION_TEXT_HTML = "text/html";
+
+    private static final String APPLICATION_XML = "application/xml";
+
+    private static final String APPLICATION_JSON = "application/json";
 
     /**
      * Returns a description of the test suite. The representation is a
@@ -32,35 +47,121 @@ public class TestSuiteOverviewResource {
      */
     @GET
     @Produces("text/html; charset='utf-8'")
-    public InputStream getTestSuiteDescription( @PathParam("etsCode") String etsCode ) {
-        StringBuilder docPath = createPathToDoc( etsCode );
-        InputStream atsStream = this.getClass().getResourceAsStream( docPath.toString() );
-        if ( null == atsStream ) {
+    public InputStream getTestSuiteDescriptionAsHTML(@PathParam("etsCode") String etsCode) {
+        InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_TEXT_HTML);
+
+        if (null == atsStream) {
             ErrorResponseBuilder builder = new ErrorResponseBuilder();
-            Response rsp = builder.buildErrorResponse( 404, "Test suite overview not found." );
-            throw new WebApplicationException( rsp );
+            Response rsp = builder.buildErrorResponse(404, "Test suite overview not found.");
+            throw new WebApplicationException(rsp);
         }
         return atsStream;
     }
 
-    private StringBuilder createPathToDoc( String etsCode ) {
+    /**
+     * Returns a description of the test suite. The representation is a
+     * well-formed XML document.
+     * 
+     * @param etsCode
+     *            A code denoting the relevant ETS.
+     * @return An InputStream to read the summary document from the classpath (
+     *         <code>/doc/{etsCode}/{etsVersion}/overview.xml</code>).
+     */
+    @GET
+    @Produces("application/xml; charset='utf-8'")
+    public InputStream getTestSuiteDescriptionAsXML(@PathParam("etsCode") String etsCode) {
+        InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_XML);
+
+        if (null == atsStream) {
+            ErrorResponseBuilder builder = new ErrorResponseBuilder();
+            Response rsp = builder.buildErrorResponse(404, "Test suite overview not found.");
+            throw new WebApplicationException(rsp);
+        }
+        return atsStream;
+    }
+
+    /**
+     * Returns a description of the test suite. The representation is a
+     * well-formed JSON document.
+     * 
+     * @param etsCode
+     *            A code denoting the relevant ETS.
+     * @return An InputStream to read the summary document from the environment
+     *         variable path java.io.tmpdir.
+     */
+    @GET
+    @Produces("application/json")
+    public InputStream getTestSuiteDescriptionasJSON(@PathParam("etsCode") String etsCode) {
+        InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_JSON);
+
+        if (null == atsStream) {
+            ErrorResponseBuilder builder = new ErrorResponseBuilder();
+            Response rsp = builder.buildErrorResponse(404, "Test suite overview not found.");
+            throw new WebApplicationException(rsp);
+        }
+        return atsStream;
+    }
+
+    private StringBuilder createPathToDoc(String etsCode, String extension) {
         StringBuilder docPath = new StringBuilder();
-        docPath.append( "/doc/" );
-        docPath.append( etsCode );
-        docPath.append( "/" );
-        docPath.append( findVersion( etsCode ) );
-        docPath.append( "/overview.html" );
+        docPath.append("/doc/");
+        docPath.append(etsCode);
+        docPath.append("/");
+        docPath.append(findVersion(etsCode));
+        docPath.append("/overview.");
+        docPath.append(extension);
+
         return docPath;
     }
 
-    private String findVersion(String code )
-            throws WebApplicationException {
+    private String findVersion(String code) throws WebApplicationException {
         TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        TestSuiteController controller = registry.getController( code);
-        if ( null == controller ) {
-            throw new WebApplicationException( 404 );
+        TestSuiteController controller = registry.getController(code);
+        if (null == controller) {
+            throw new WebApplicationException(404);
         }
         return controller.getVersion();
     }
     
+    private InputStream getTestSuiteDescription(String etsCode, String preferredMediaType) {
+        StringBuilder overviewXml = createPathToDoc(etsCode, "xml");
+        InputStream atsStream = this.getClass().getResourceAsStream(overviewXml.toString());
+
+        if (null != atsStream) {
+
+            if (preferredMediaType.contains("xml")) {
+                return atsStream;
+            }
+
+            File resultFile = null;
+            String resourceFile = null;
+
+            if (preferredMediaType.contains("html")) {
+                resultFile = new File(System.getProperty("java.io.tmpdir"), "testsuiteoverview.html");
+                resourceFile = "com/occamlab/te/test_suite_overview_html.xsl";
+            } else if (preferredMediaType.contains("json")) {
+                resultFile = new File(System.getProperty("java.io.tmpdir"), "testsuiteoverview.json");
+                resourceFile = "com/occamlab/te/test_suite_overview_json.xsl";
+            }
+
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            String testSuiteOverviewXsl = cl.getResource(resourceFile).toString();
+
+            try {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                Transformer transformer = tf.newTransformer(new StreamSource(testSuiteOverviewXsl));
+                transformer.transform(new StreamSource(atsStream), new StreamResult(resultFile));
+
+                atsStream = new FileInputStream(resultFile);
+
+            } catch (TransformerException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            overviewXml = createPathToDoc(etsCode, "html");
+            atsStream = this.getClass().getResourceAsStream(overviewXml.toString());
+        }
+        return atsStream;
+    }
 }
