@@ -25,7 +25,7 @@ public class RestAuthenticationFilter implements Filter {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             String authCredentials = httpServletRequest.getHeader(AUTHENTICATION_HEADER);
             
-            if (null != authCredentials) {
+            if (null != authCredentials && authCredentials != "" && authCredentials.startsWith("Basic ")) {
                 final String encodedUserPassword = authCredentials.replaceFirst("Basic" + " ", "");
                 String usernameAndPassword = null;
                 
@@ -37,9 +37,21 @@ public class RestAuthenticationFilter implements Filter {
                     e.printStackTrace();
                 }
                 
-                final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
-                final String username = tokenizer.nextToken();
-                final String password = tokenizer.nextToken();
+                String username = "";
+                String password =  "";
+                
+                if (null != usernameAndPassword && usernameAndPassword.length() > 1) {
+                    final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
+                    
+                    if (tokenizer.countTokens() == 2) {
+                        username = tokenizer.nextToken();
+                        password = tokenizer.nextToken();
+                    } else {
+                        unauthorizedException(response);
+                    }
+                } else {
+                    unauthorizedException(response);
+                }
                 String root = System.getProperty("TE_BASE") + "/users";
                 
                 PBKDF2Realm pbkdf2Realm = new PBKDF2Realm();
@@ -49,18 +61,10 @@ public class RestAuthenticationFilter implements Filter {
                 if (null != principal) {
                     filter.doFilter(request, response);
                 } else {
-                    if (response instanceof HttpServletResponse) {
-                        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-                        httpServletResponse.setHeader("WWW-Authenticate", "Basic realm=\"Insert credentials\"");
-                        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    }
+                    unauthorizedException(response);
                 }
             } else {
-                if (response instanceof HttpServletResponse) {
-                    HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-                    httpServletResponse.setHeader("WWW-Authenticate", "Basic realm=\"Insert credentials\"");
-                    httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                }
+                unauthorizedException(response);
             }
         }
     }
@@ -71,5 +75,13 @@ public class RestAuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig arg0) throws ServletException {
+    }
+    
+    private void unauthorizedException(ServletResponse response) {
+        if (response instanceof HttpServletResponse) {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            httpServletResponse.setHeader("WWW-Authenticate", "Basic realm=\"Insert credentials\"");
+            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 }
