@@ -214,7 +214,7 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
-  public static Document userInputs = null;
+  public Document userInputs = null;
   public Boolean supportHtmlReport = false;
 
   public final ImageHandler imageHandler;
