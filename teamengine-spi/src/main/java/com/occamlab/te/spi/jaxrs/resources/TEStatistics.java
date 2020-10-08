@@ -48,6 +48,7 @@ public class TEStatistics {
         String htmlOutput = results.getSystemId().toString();
         Integer count = htmlOutput.split(":", -1).length - 1;
         String zipFile = (count > 1) ? htmlOutput.split("file:/")[1] : htmlOutput.split("file:")[1];
+        String fileName = zipFile.substring(zipFile.lastIndexOf("/") + 1);
         File fileOut = new File(zipFile);
 
         if (!fileOut.exists()) {
@@ -55,7 +56,7 @@ public class TEStatistics {
         }
 
         return Response.ok(FileUtils.readFileToByteArray(fileOut)).type("application/zip")
-                .header("Content-Disposition", "attachment; filename=\"TEStatistics.zip\";").header("Cache-Control", "no-cache").build();
+                .header("Content-Disposition", "attachment; filename=" + fileName).header("Cache-Control", "no-cache").build();
     }
 
     private Source generateStatisticsReports() {
@@ -205,7 +206,7 @@ public class TEStatistics {
                 TEStatisticsUtil.getArrayListAsString(usersPerMonth),
                 new JSONObject(numberOfUsersAndTestSuite).toString());
 
-        File zipFile = new File(statisticsLogDir, "TEStatistics.zip");
+        File zipFile = new File(statisticsLogDir, "TE_Statistics_" + loggerDate + ".zip");
 
         if (zipFile.exists()) {
             zipFile.delete();

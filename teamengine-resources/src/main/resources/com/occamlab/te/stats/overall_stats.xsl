@@ -76,7 +76,7 @@
 							<td>
 								<a style="text-decoration: none;">
 								    <xsl:attribute name="href">
-									    <xsl:value-of select="concat($link, '-stats.html')" />
+									    <xsl:value-of select="concat(replace($link, ' ', '_'), '_stats.html')" />
 								    </xsl:attribute>
 									<xsl:value-of select="." />
 								</a>

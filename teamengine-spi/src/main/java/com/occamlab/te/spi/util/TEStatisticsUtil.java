@@ -598,13 +598,10 @@ public class TEStatisticsUtil {
             if (!statisticsResultDir.exists()) {
                 statisticsResultDir.mkdir();
             }
-            File indexHtml = new File(statisticsResultDir, testSuiteName + "-stats.html");
-
-            if (indexHtml.exists()) {
-                indexHtml.delete();
-            }
-            indexHtml.createNewFile();
-            fo = new FileOutputStream(indexHtml);
+            testSuiteName = testSuiteName.replace(" ", "_");
+            File testSuiteHtml = new File(statisticsResultDir, testSuiteName + "_stats.html");
+            testSuiteHtml.createNewFile();
+            fo = new FileOutputStream(testSuiteHtml);
             transformer.transform(new StreamSource(input), new StreamResult(fo));
             fo.close();
         } catch (Exception e) {
@@ -884,8 +881,8 @@ public class TEStatisticsUtil {
             String simpleFilePath = file.getAbsolutePath();
             FileInputStream in = new FileInputStream(simpleFilePath);
 
-            int index = simpleFilePath.indexOf("TE_Statistics");
-            simpleFilePath = simpleFilePath.substring(index);
+            int index = simpleFilePath.lastIndexOf("\\");
+            simpleFilePath = simpleFilePath.substring(index + 1);
             out.putNextEntry(new ZipEntry(simpleFilePath));
 
             // Transfer from the file to the ZIP file
