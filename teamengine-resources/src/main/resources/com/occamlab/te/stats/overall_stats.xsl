@@ -170,7 +170,8 @@
 								yAxes: [{
 									id: &apos;A&apos;,
 									ticks: {
-										beginAtZero: true
+										beginAtZero: true,
+										precision: 0
 									},
 									position: &apos;left&apos;,
 									scaleLabel: {
@@ -184,7 +185,8 @@
 								{
 									id: &apos;B&apos;,
 									ticks: {
-										beginAtZero: true
+										beginAtZero: true,
+										precision: 0
 									},
 									position: &apos;right&apos;,
 									scaleLabel: {

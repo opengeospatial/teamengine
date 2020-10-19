@@ -101,7 +101,8 @@
 									}],
 									yAxes: [{
 										ticks: {
-											beginAtZero: true
+											beginAtZero: true,
+											precision: 0
 										},
 										scaleLabel: {
 											display: true,
@@ -147,7 +148,8 @@
 									}],
 									yAxes: [{
 										ticks: {
-											beginAtZero: true
+											beginAtZero: true,
+											precision: 0
 										},
 										scaleLabel: {
 											display: true,
@@ -205,7 +207,8 @@
 									}],
 									yAxes: [{
 										ticks: {
-											beginAtZero: true
+											beginAtZero: true,
+											precision: 0
 										},
 										scaleLabel: {
 											display: true,
