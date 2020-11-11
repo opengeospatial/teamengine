@@ -66,7 +66,7 @@ public class HttpParserTest {
         assertTrue("Expected empty log.", strWriter.getBuffer().length() == 0);
     }
 
-    @Test
+    /*@Test
     public void parseTextEntityWithNullInstruction() throws Throwable {
         URL url = this.getClass().getResource("/jabberwocky.txt");
         URLConnection urlConn = url.openConnection();
@@ -90,7 +90,7 @@ public class HttpParserTest {
                 .item(0);
         assertTrue("content element should have no child nodes",
                 !content.hasChildNodes());
-    }
+    }*/
 
     static String writeNodeToString(Node node) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, ClassCastException {

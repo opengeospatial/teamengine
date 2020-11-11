@@ -12,7 +12,7 @@
 
   <name>TEAM Engine - Service Providers</name>
   <description>
-  Provides various capabilities such as support for alternative test runners 
+  Provides various capabilities such as support for alternative test runners
   and a REST API that exposes endpoints for executing test suites.
   </description>
 
@@ -26,7 +26,7 @@
       <name>Keshav Nangare</name>
       <url>https://github.com/keshav-nangare</url>
       <timezone>Asia/Kolkata</timezone>
-    </developer> 
+    </developer>
   </developers>
 
   <dependencies>
@@ -135,7 +135,11 @@
         <artifactId>buildnumber-maven-plugin</artifactId>
       </plugin>
       <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+              <source>8</source>
+          </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

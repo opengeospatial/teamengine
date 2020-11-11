@@ -14,3 +14,7 @@ release.properties
 
 # Packer output
 packer_cache/
+
+# macOS
+
+.DS_Store

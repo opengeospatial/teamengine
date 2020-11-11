@@ -12,7 +12,7 @@
 
   <name>TEAM Engine - CTL Test Suite Providers</name>
   <description>
-  Enables the execution of legacy CTL (OGC Compliance Test language) test suites 
+  Enables the execution of legacy CTL (OGC Compliance Test language) test suites
   using a RESTful API.
   </description>
 
@@ -26,7 +26,7 @@
       <name>Keshav Nangare</name>
       <url>https://github.com/keshav-nangare</url>
       <timezone>Asia/Kolkata</timezone>
-    </developer> 
+    </developer>
   </developers>
 
   <dependencies>
@@ -68,7 +68,11 @@
         <artifactId>buildnumber-maven-plugin</artifactId>
       </plugin>
       <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+              <source>8</source>
+          </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

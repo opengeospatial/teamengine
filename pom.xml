@@ -8,9 +8,9 @@
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
-  A test harness that executes test suites written using the OGC CTL test 
-  grammar or the TestNG framework. It is typically used to verify specification 
-  compliance and is the official test harness of the OGC Compliance Testing 
+  A test harness that executes test suites written using the OGC CTL test
+  grammar or the TestNG framework. It is typically used to verify specification
+  compliance and is the official test harness of the OGC Compliance Testing
   Program (CITE).
   </description>
   <url>http://opengeospatial.github.io/teamengine/</url>
@@ -74,7 +74,7 @@
       <name>Upendra Sachan</name>
       <url>https://github.com/upendra-sachan</url>
       <timezone>Asia/Kolkata</timezone>
-    </developer>  
+    </developer>
     <developer>
       <name>Andrea Aime</name>
       <url>https://github.com/aaime</url>
@@ -115,11 +115,20 @@
         <version>1.0-RC1</version>
         <scope>test</scope>
       </dependency>
+
+<!-- GEH -->
+
+          <dependency>
+              <groupId>com.sun.xml.ws</groupId>
+              <artifactId>jaxws-ri</artifactId>
+              <version>2.3.1</version>
+          </dependency>
+
+
     </dependencies>
   </dependencyManagement>
-
   <build>
-    <plugins> 
+    <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.0</version>
@@ -150,7 +159,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
-            <version>1.5.3</version>
+            <version>2.1.0</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -185,7 +194,7 @@
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
-            <version>1.5.3</version>
+            <version>2.1.0</version>
           </dependency>
         </dependencies>
       </plugin>

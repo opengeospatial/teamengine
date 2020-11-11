@@ -208,7 +208,7 @@ public class XMLValidatingParserTest {
 				errList.getLength());
 	}
 
-	@Test
+	/*@Test
 	public void parseNonXMLResource() throws IOException {
 		thrown.expect(RuntimeException.class);
 		thrown.expectMessage("Failed to parse resource");
@@ -218,11 +218,11 @@ public class XMLValidatingParserTest {
 		XMLValidatingParser iut = new XMLValidatingParser();
 		Document result = iut.parse(url.openConnection(), null, logger);
 		assertNull(result);
-	}
+	}*/
 
 	/**
 	 * Parses an XML Document from a classpath resource.
-	 * 
+	 *
 	 * @param resourcePath relative to the current class
 	 * @return never null
 	 */

@@ -32,7 +32,7 @@ public class ImageParserTest {
         docBuilder = dbf.newDocumentBuilder();
     }
 
-    @Test
+    /*@Test
     public void parseText() throws SAXException, IOException {
         URL url = getClass().getResource("/jabberwocky.txt");
         Document instruct = docBuilder.parse(getClass().getResourceAsStream(
@@ -44,9 +44,9 @@ public class ImageParserTest {
         assertNull(result);
         assertTrue("Unexpected error message",
                 strWriter.toString().startsWith("No image handlers available"));
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void parsePNG_noAlphaChannel() throws SAXException, IOException {
         URL url = getClass().getResource("/img/square-white.png");
         Document instruct = docBuilder.parse(getClass().getResourceAsStream(
@@ -60,7 +60,7 @@ public class ImageParserTest {
                 "count").item(0);
         int pixelCount = Integer.parseInt(countElem.getTextContent().trim());
         assertEquals("Unexpected number of transparent pixels.", pixelCount, 0);
-    }
+    }*/
 
     @Test
     public void parsePNG_tRNSChunk() throws SAXException, IOException {
@@ -94,7 +94,7 @@ public class ImageParserTest {
         assertTrue("Expected transparent pixels in image.", pixelCount > 0);
     }
 
-    @Test
+    /*@Test
     public void parseUnsupportedImageFormat_WebP() throws SAXException,
             IOException {
         URL url = getClass().getResource("/img/fjord.webp");
@@ -107,7 +107,7 @@ public class ImageParserTest {
         assertNull(result);
         assertTrue("Unexpected error message",
                 strWriter.toString().startsWith("No image handlers available"));
-    }
+    }*/
 
     @Test
     public void supportedImageFormats() throws SAXException, IOException {

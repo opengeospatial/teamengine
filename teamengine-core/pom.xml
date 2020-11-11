@@ -11,7 +11,7 @@
 
   <name>TEAM Engine - Core Module</name>
   <description>
-  The core module includes the main CTL script processor along with various 
+  The core module includes the main CTL script processor along with various
   supporting test utilities.
   </description>
 
@@ -126,6 +126,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
+          <source>8</source>
           <docfilessubdirs>true</docfilessubdirs>
           <show>package</show>
           <additionalparam>-Xdoclint:none</additionalparam>
