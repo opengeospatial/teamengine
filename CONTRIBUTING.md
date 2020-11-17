@@ -24,3 +24,20 @@ If the branch is intended to fix an issue then ideally mention the issue number 
 - If changes are requested by the maintainers, make them as soon as possible.
 - After your pull request is merged, let the world know on social media!
 - Invite other developers to contribute.
+
+## Commit Guidelines
+
+
+
+1. **Copyright headers**
+   * If you are modifying an existing file that does not have a copyright header, then add a copyright header indicating the year the file was created and who owns the copyright. An example is below:
+
+   ```
+   /* (c) 2020 Open Geospatial Consortium - All rights reserved
+    * This code is licensed under the Apache License, Version 2.0 license, available at https://github.com/opengeospatial/teamengine/blob/master/LICENSE.txt
+    * 
+    */
+   ```
+
+   * There is no need to update the copyright year when updating an existing file.
+   * If there is no copyright header, create one.
