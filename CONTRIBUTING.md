@@ -29,7 +29,7 @@ If the branch is intended to fix an issue then ideally mention the issue number 
 
 
 
-1. **Copyright headers**
+**Copyright headers**
    * If you are modifying an existing file that does not have a copyright header, then add a copyright header indicating the year the file was created and who owns the copyright. An example is below:
 
    ```
