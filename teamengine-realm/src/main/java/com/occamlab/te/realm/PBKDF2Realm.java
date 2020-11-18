@@ -1,4 +1,10 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * ***********************************************************************
  *
  * Version Date: January 8, 2018
@@ -36,7 +42,7 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
  * A custom Tomcat Realm implementation that reads user information from an XML
  * file located in a sub-directory of the TEAMengine users directory. A sample
  * representation is shown below.
- * 
+ *
  * <pre>
  * &lt;user&gt;
  *   &lt;name&gt;p.fogg&lt;/name&gt;
@@ -53,7 +59,7 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
  * character. For example:
  * <code>sha1:64000:18:a6BHX18eMTR1WnCvyR6NzG6VMJcdJE2D:8qPU0jpdPIapbyC+H5dqiaNE</code>
  * </p>
- * 
+ *
  * @see <a href="https://github.com/defuse/password-hashing">Secure Password
  *      Storage v2.0</a>
  */
@@ -139,7 +145,7 @@ public class PBKDF2Realm extends RealmBase {
     /**
      * Sets the location of the root users directory. This is specified by the
      * "root" attribute of the Realm element in the context definition.
-     * 
+     *
      * @param root
      *            A String specifying a directory location (TE_BASE/users).
      */
@@ -183,7 +189,7 @@ public class PBKDF2Realm extends RealmBase {
 
     /**
      * Creates a new GenericPrincipal representing the specified user.
-     * 
+     *
      * @param username
      *            The username for this user.
      * @param password
