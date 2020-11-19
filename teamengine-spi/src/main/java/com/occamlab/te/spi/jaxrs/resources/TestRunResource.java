@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.File;
@@ -40,7 +47,7 @@ import com.sun.jersey.multipart.FormDataParam;
 /**
  * A controller resource that provides the results of a test run. An XML representation of the results is obtained using
  * HTTP/1.1 methods in accord with the JAX-RS 1.1 specification (JSR 311).
- * 
+ *
  * @see <a href="http://jcp.org/en/jsr/detail?id=311">JSR 311</a>
  */
 @Path("suites/{etsCode}/run")
@@ -69,7 +76,7 @@ public class TestRunResource {
     /**
      * Processes a request submitted using the GET method with. The test run arguments are specified in the query
      * component of the Request-URI as a sequence of key-value pairs.
-     * 
+     *
      * @param etsCode
      *            A String that identifies the test suite to be run.
      * @param etsVersion
@@ -152,7 +159,7 @@ public class TestRunResource {
      * Processes a request submitted using the POST method. The request entity represents the test subject or provides
      * metadata about it. The entity body is written to a local file, the location of which is set as the value of the
      * {@code iut} parameter.
-     * 
+     *
      * @param etsCode
      *            A String that identifies the test suite to be run.
      * @param etsVersion
@@ -233,7 +240,7 @@ public class TestRunResource {
      * <li>The "sch" part defines supplementary constraints defined in a Schematron schema; it is also written to a
      * local file, the location of which is set as the value of the {@code sch} argument.</li>
      * </ol>
-     * 
+     *
      * @param etsCode
      *            A String that identifies the test suite to be run.
      * @param etsVersion
@@ -243,7 +250,7 @@ public class TestRunResource {
      * @param schBody
      *            A File containing supplementary constraints (e.g. a Schematron schema).
      * @return An XML representation of the test results.
-     * 
+     *
      * @see <a href="http://tools.ietf.org/html/rfc7578" target="_blank">RFC 7578: Returning Values from Forms:
      *      multipart/form-data</a>
      * @see <a href= "http://standards.iso.org/ittf/PubliclyAvailableStandards/c040833_ISO_IEC_19757-3_2006(E).zip"
@@ -351,7 +358,7 @@ public class TestRunResource {
 
     /**
      * Executes a test run using the supplied arguments.
-     * 
+     *
      * @param etsCode
      *            A String that identifies the test suite to be run.
      * @param testRunArgs
@@ -395,7 +402,7 @@ public class TestRunResource {
     /**
      * Obtains a <code>TestSuiteController</code> for a particular executable test suite (ETS) identified by code and
      * version.
-     * 
+     *
      * @param code
      *            A <code>String</code> identifying the ETS to execute.
      * @return The <code>TestSuiteController</code> for the requested ETS.
@@ -415,7 +422,7 @@ public class TestRunResource {
     /**
      * Extracts test run arguments from the given Map and inserts them into a DOM Document representing an XML
      * properties file.
-     * 
+     *
      * @param requestParams
      *            A collection of key-value pairs. Each key can have zero or more values but only the first value is
      *            used.

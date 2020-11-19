@@ -1,4 +1,10 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * ********************************************************************
  *
  * Version Date: March 26, 2018
@@ -32,9 +38,9 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FileUtils;
 
 /**
- * 
- * This class is used to process HTML result. 
- * It will transform EARL result into HTML report 
+ *
+ * This class is used to process HTML result.
+ * It will transform EARL result into HTML report
  * and return the HTML result with zip file.
  *
  * Contributor(s):
@@ -48,7 +54,7 @@ public class HtmlReport {
 	/**
 	 * This method will return the HTML result with zip file.
 	 * @param outputDirectory
-	 * 
+	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -61,18 +67,18 @@ public class HtmlReport {
             LOGR.log( Level.SEVERE, "Could not create zip file with html results.", e );
 		}
 		return htmlResultFile;
-		
+
 	}
-	
+
 	/**
      * Convert EARL result into HTML report.
-     * 
+     *
      * @param outputDir
      * 		Location of the test result.
-     * @return 
+     * @return
      * 		Return the output file.
      * @throws FileNotFoundException
-     * 		Throws exception if file is not available. 
+     * 		Throws exception if file is not available.
      */
     public static File earlHtmlReport( String outputDir )
                     throws FileNotFoundException {
@@ -106,7 +112,7 @@ public class HtmlReport {
         }
         return htmlOutput;
     }
-    
+
     /**
      *  Zips the directory and all of it's sub directories
      * @param zipFile

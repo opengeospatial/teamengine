@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 /********************************************************************
  *
  * Contributor(s)
@@ -58,7 +65,7 @@ import com.occamlab.te.vocabulary.HTTP;
  * results expressed using the W3C Evaluation and Report Language (EARL)
  * vocabulary. The graph is serialized as RDF/XML to a file in the output
  * directory (earl-results.rdf).
- * 
+ *
  * @see <a href="https://www.w3.org/TR/EARL10-Schema/" target="_blank">
  *      Evaluation and Report Language (EARL) 1.0 Schema</a>
  * @see <a href="https://www.w3.org/TR/HTTP-in-RDF10/" target="_blank">HTTP
@@ -124,7 +131,7 @@ public class EarlReporter implements IReporter {
      * Each test subset is defined by a {@literal <test>} tag in the suite
      * definition; these correspond to earl:TestRequirement resources in the
      * model.
-     * 
+     *
      * @param model
      *            An RDF Model containing EARL statements.
      * @param results
@@ -151,7 +158,7 @@ public class EarlReporter implements IReporter {
             if(isBasicConformanceClass(testName)){
               if(nFailed > 0){
                 areCoreConformanceClassesPassed = false;
-              }              
+              }
             }
             processTestResults(model, testContext.getFailedTests());
             processTestResults(model, testContext.getSkippedTests());
@@ -162,7 +169,7 @@ public class EarlReporter implements IReporter {
     /**
      * Initializes the test results graph with basic information about the
      * assertor (earl:Assertor) and test subject (earl:TestSubject).
-     * 
+     *
      * @param suite
      *            Information about the test suite.
      * @return An RDF Model containing EARL statements.
@@ -212,7 +219,7 @@ public class EarlReporter implements IReporter {
      * Adds the list of conformance classes to the TestRun resource. A
      * conformance class corresponds to a {@literal <test>} tag in the TestNG
      * suite definition; it is represented as an earl:TestRequirement resource.
-     * 
+     *
      * @param earl
      *            An RDF model containing EARL statements.
      * @param testList
@@ -243,7 +250,7 @@ public class EarlReporter implements IReporter {
      * member of an unordered collection (rdf:Bag). A {@value #TEST_RUN_ID}
      * parameter is treated in special manner: its value is set as the value of
      * the standard dct:identifier property.
-     * 
+     *
      * @param earl
      *            An RDF model containing EARL statements.
      * @param params
@@ -270,7 +277,7 @@ public class EarlReporter implements IReporter {
     /**
      * Writes the model to a file (earl-results.rdf) in the specified directory
      * using the RDF/XML syntax.
-     * 
+     *
      * @param model
      *            A representation of an RDF graph.
      * @param outputDirectory
@@ -307,7 +314,7 @@ public class EarlReporter implements IReporter {
      * Returns a description of an error or exception that occurred while
      * executing a test. The details are extracted from the associated
      * <code>Throwable</code> or its underlying cause.
-     * 
+     *
      * @param result
      *            Information about a test result.
      * @return A String providing diagnostic information.
@@ -330,7 +337,7 @@ public class EarlReporter implements IReporter {
      * described by an Assertion resource. The TestResult and TestCase resources
      * are linked to the Assertion in accord with the EARL schema; the latter is
      * also linked to a TestRequirement.
-     * 
+     *
      * @param earl
      *            An RDF Model containing EARL statements.
      * @param results
@@ -398,7 +405,7 @@ public class EarlReporter implements IReporter {
      * <li>{@value #RSP_ATTR} : Information about the response message
      * (http:Request --http:resp-- http:Response)</li>
      * </ul>
-     * 
+     *
      * @param earlResult
      *            An earl:TestResult resource.
      * @param tngResult
@@ -432,7 +439,7 @@ public class EarlReporter implements IReporter {
         }
         earlResult.addProperty(CITE.message, httpReq);
     }
-    
+
     /**
      * Verify the given Conformance Class is basic or not.
      * @param testName
@@ -446,7 +453,7 @@ public class EarlReporter implements IReporter {
           key = ccEntry.getKey();
         }
       }
-  
+
       if (null != key) {
         List<String> ConfClass = config.getConformanceClassMap().get(key);
         for (String cClass : ConfClass) {
@@ -455,16 +462,16 @@ public class EarlReporter implements IReporter {
           }
         }
       }
-  
+
       return false;
     }
-    
+
     /*
      * This method is used to correct the mangled name issue.
      * 	e.g. 'compileXMLSchema' ===> 'compile XML Schema'
-     *  
+     *
      * @param testName
-     *           Name of the test method. 
+     *           Name of the test method.
      */
     public String breakIntoWords(String testName) {
 		String updateTestName = "";

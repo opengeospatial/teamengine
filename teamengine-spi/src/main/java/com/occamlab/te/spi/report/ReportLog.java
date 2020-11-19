@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.report;
 
 import java.text.DateFormat;
@@ -11,19 +18,19 @@ import org.testng.Reporter;
 
 /**
  *  A service to send test statistics and test run results to TestNG HTML report.
- *  The test statistics are printed on 'Result overview' page and 
+ *  The test statistics are printed on 'Result overview' page and
  *  'Reporter output page' of the HTML reports.
- *  Modifications are made in testng-report.xsl file  to change the 
- *  styling of the result table in the reports as well as to display 
+ *  Modifications are made in testng-report.xsl file  to change the
+ *  styling of the result table in the reports as well as to display
  *  test name, test description and the reason why a test failed.
- * 
+ *
  */
 public class ReportLog {
-    
+
     /**
-     * Creates report logs that consists of test statics by extracting information from 
+     * Creates report logs that consists of test statics by extracting information from
      * the Test suite results. These Report logs are then printed in the TestNG HTML reports.
-     * 
+     *
      * @param suite is the test suite from which you want to extract test results information.
      */
     public void generateLogs(ISuite suite) {
@@ -69,7 +76,7 @@ public class ReportLog {
                     failReportConformance2 = failReportConformance2+", "+input + " conform to the clause A." + count + " of "+suiteName;
                 } else {
                         failReportConformance2 = failReportConformance2+", "+input + " does not conform to the clause A." + count + " of "+suiteName;
-                    
+
                 }
                 finalPassedTest = finalPassedTest + no_of_passedTest;
                 finalSkippedTest = finalSkippedTest + no_of_skippedTest;

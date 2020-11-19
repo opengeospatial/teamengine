@@ -1,7 +1,13 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * **************************************************************************
  *
- * Contributor(s): 
+ * Contributor(s):
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
@@ -46,12 +52,12 @@ import org.w3c.dom.ls.LSSerializer;
  * request parameter values that did <strong>not</strong> appear in any request,
  * thus indicating which implemented options were not covered.
  * </p>
- * 
+ *
  * <p>
  * A sample representation of an ICS for the GetCapabilities request is shown in
  * the listing below.
  * </p>
- * 
+ *
  * <pre>
  * {@code
  * <request name="GetCapabilities">
@@ -64,7 +70,7 @@ import org.w3c.dom.ls.LSSerializer;
  * </request>
  * }
  * </pre>
- * 
+ *
  */
 public class CoverageMonitor {
 
@@ -118,7 +124,7 @@ public class CoverageMonitor {
 
     /**
      * Returns the location of the test session directory.
-     * 
+     *
      * @return A File object denoting a directory in the local file system.
      */
     public File getTestSessionDir() {
@@ -128,7 +134,7 @@ public class CoverageMonitor {
     /**
      * Sets the location of the test session directory where the coverage
      * results will be written to.
-     * 
+     *
      * @param sessionDir
      *            A File object (it should correspond to a directory).
      */
@@ -146,7 +152,7 @@ public class CoverageMonitor {
      * coverage report is modified over the course of the test run as requests
      * are received; the residual document includes only those parameter values
      * that were <em>not requested</em>.
-     * 
+     *
      * @param query
      *            The (decoded) query component of a GET request.
      */
@@ -158,7 +164,7 @@ public class CoverageMonitor {
               qryParams.put(nvp[0].toLowerCase(), nvp[1]);
             }else{
               qryParams.put(nvp[0].toLowerCase(), "");
-            }    
+            }
         }
         String reqType = qryParams.get("request");
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -215,7 +221,7 @@ public class CoverageMonitor {
                         + coverageFile.getCanonicalPath());
                     }
                 else {
-                    // If nothing was written, then there should be an exception message.  
+                    // If nothing was written, then there should be an exception message.
                     // If an additional message is desired, then add it here.
                     }
             } catch (IOException ioe) {
@@ -228,7 +234,7 @@ public class CoverageMonitor {
     /**
      * Writes a DOM Document to the given OutputStream using the "UTF-8"
      * encoding. The XML declaration is omitted.
-     * 
+     *
      * @param outStream
      *            The destination OutputStream object.
      * @param doc

@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.InputStream;
@@ -21,12 +28,12 @@ public class TestSuiteOverviewResource {
     /**
      * Returns a description of the test suite. The representation is a
      * "polyglot" HTML5 document that is also a well-formed XML document.
-     * 
+     *
      * @param etsCode
      *            A code denoting the relevant ETS.
      * @return An InputStream to read the summary document from the classpath (
      *         <code>/doc/{etsCode}/{etsVersion}/overview.html</code>).
-     * 
+     *
      * @see <a href="http://www.w3.org/TR/html-polyglot/">Polyglot Markup:
      *      HTML-Compatible XHTML Documents</a>
      */
@@ -62,5 +69,5 @@ public class TestSuiteOverviewResource {
         }
         return controller.getVersion();
     }
-    
+
 }

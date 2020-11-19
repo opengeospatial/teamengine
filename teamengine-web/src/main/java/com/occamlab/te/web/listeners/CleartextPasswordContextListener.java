@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.web.listeners;
 
 import java.io.File;
@@ -108,10 +115,10 @@ public class CleartextPasswordContextListener implements ServletContextListener 
      * "DOM Level 3 Load and Save" specification. It provides various factory
      * methods for creating the objects required for loading and saving DOM
      * nodes.
-     * 
+     *
      * @return A factory object, or <code>null</code> if one cannot be created
      *         (in which case a warning will be logged).
-     * 
+     *
      * @see <a href="https://www.w3.org/TR/DOM-Level-3-LS/">Document Object
      *      Model (DOM) Level 3 Load and Save Specification, Version 1.0</a>
      */

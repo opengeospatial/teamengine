@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.jaxrs;
 
 import javax.ws.rs.core.Response;
@@ -6,7 +13,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 /**
  * Creates an error response that includes an entity body describing the error
  * condition. The entity conforms to the XHTML Basic 1.1 schema.
- * 
+ *
  * @see <a href="http://www.w3.org/TR/xhtml-basic/">XHTML Basic (W3C
  *      Recommendation)</a>
  */
@@ -16,7 +23,7 @@ public class ErrorResponseBuilder {
      * Builds a response message that indicates some kind of error has occurred.
      * The error message is included as the content of the xhtml:body/xhtml:p
      * element.
-     * 
+     *
      * @param statusCode
      *            The relevant HTTP error code (4xx, 5xx).
      * @param msg

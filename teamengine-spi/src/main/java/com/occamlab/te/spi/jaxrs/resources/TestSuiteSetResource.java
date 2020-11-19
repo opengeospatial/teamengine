@@ -1,4 +1,10 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * *********************************************************************************
  *
  * Version Date January 6, 2018
@@ -60,7 +66,7 @@ public class TestSuiteSetResource {
     /**
      * Presents an XHTML representation containing a listing of registered test
      * suites with links to each.
-     * 
+     *
      * @return A Source object containing the information needed to read the
      *         collection (an HTML5 document represented using the XHTML
      *         syntax).
@@ -100,7 +106,7 @@ public class TestSuiteSetResource {
     /**
      * Reads the template document from the classpath. It contains an empty
      * list.
-     * 
+     *
      * @return A DOM Document node.
      */
     Document readTemplate() {
