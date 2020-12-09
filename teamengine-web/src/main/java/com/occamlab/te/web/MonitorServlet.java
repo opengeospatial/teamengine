@@ -1,7 +1,13 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * **************************************************************************
  *
- * Contributor(s): 
+ * Contributor(s):
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
@@ -55,7 +61,7 @@ import com.occamlab.te.util.DomUtils;
  * A servlet that intercepts a client request and validates it with a registered
  * MonitorCall object. Each MonitorCall object is associated with a service
  * endpoint.
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class MonitorServlet extends HttpServlet {
@@ -278,7 +284,7 @@ public class MonitorServlet extends HttpServlet {
                 // Fortify Mod: prevent external entity injection
             dbf.setExpandEntityReferences(false);
             DB = dbf.newDocumentBuilder();
-                // Fortify Mod: prevent external entity injection 
+                // Fortify Mod: prevent external entity injection
             TransformerFactory tf = TransformerFactory.newInstance();
             tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             identityTransformer = tf.newTransformer();
@@ -333,7 +339,7 @@ public class MonitorServlet extends HttpServlet {
                     || mime.indexOf("application/xml") == 0) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(data);
                 Element eBody = doc.createElementNS(CTL_NS, "ctl:body");
-                    // Fortify Mod: prevent external entity injection 
+                    // Fortify Mod: prevent external entity injection
                 TransformerFactory tf = TransformerFactory.newInstance();
                 tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                 Transformer t = tf.newTransformer();

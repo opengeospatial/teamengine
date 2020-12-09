@@ -1,7 +1,13 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * **************************************************************************
  *
- * Contributor(s): 
+ * Contributor(s):
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
@@ -33,7 +39,7 @@ import com.occamlab.te.util.ZipUtils;
 
 /**
  * Servlet implementation class for Servlet: EmailLogServlet
- * 
+ *
  */
 public class EmailLogServlet extends javax.servlet.http.HttpServlet implements
         javax.servlet.Servlet {

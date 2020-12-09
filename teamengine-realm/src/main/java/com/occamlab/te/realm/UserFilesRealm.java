@@ -1,7 +1,12 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * **************************************************************************
  *
- * Contributor(s): 
+ * Contributor(s):
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
@@ -30,7 +35,7 @@ import org.w3c.dom.NodeList;
  * A Realm implementation that reads user information from an XML file located
  * in a sub-directory of the users directory. A sample representation is shown
  * below.
- * 
+ *
  * <pre>
  * &lt;user&gt;
  *   &lt;name&gt;p.fogg&lt;/name&gt;
@@ -45,7 +50,7 @@ import org.w3c.dom.NodeList;
  * <strong>WARNING:</strong> This implementation is deprecated, since it only
  * handles clear text passwords.
  * </p>
- * 
+ *
  * @deprecated Superseded by {@link PBKDF2Realm}.
  */
 public class UserFilesRealm extends RealmBase {
@@ -62,7 +67,7 @@ public class UserFilesRealm extends RealmBase {
     /**
      * Sets the location of the root users directory. This is specified by the
      * "root" attribute of the Realm element in the context definition.
-     * 
+     *
      * @param root
      *            A String specifying a directory location (TE_BASE/users).
      */
@@ -110,7 +115,7 @@ public class UserFilesRealm extends RealmBase {
 
     /**
      * Creates a new GenericPrincipal representing the specified user.
-     * 
+     *
      * @param username
      *            The username for this user.
      * @param password

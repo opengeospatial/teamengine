@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.executors.testng;
 
 import java.util.List;
@@ -11,7 +18,7 @@ import org.testng.xml.XmlSuite;
 /**
  * A basic XML reporter that suppresses stack traces and writes the test results
  * to a single file (testng-results.xml) in the specified output directory.
- * 
+ *
  * @see <a
  *      href="http://testng.org/doc/documentation-main.html#logging-xml-reports">
  *      TestNG documentation, 6.2.5</a>
@@ -33,7 +40,7 @@ public final class BasicXMLReporter implements IReporter {
     /**
      * Creates an XML reporter that suppresses stack traces and includes test
      * result attributes (if set).
-     * 
+     *
      * @return A customized reporter that generates an XML representation of the
      *         test results. The document element is &lt;testng-results&gt;.
      */

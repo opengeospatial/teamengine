@@ -1,4 +1,10 @@
-/****************************************************************************
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *****************************************************************************
 
  The Original Code is TEAM Engine.
 
@@ -7,7 +13,7 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): 
+ Contributor(s):
  	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
@@ -41,7 +47,7 @@ public class TestSession implements  Comparable<TestSession> {
 
 
     private static Logger LOGR = Logger.getLogger( TestSession.class.getName() );
-    
+
     String sessionId;
     String sourcesName;
     String description;
@@ -71,10 +77,10 @@ public class TestSession implements  Comparable<TestSession> {
         for (String profile : profiles) {
             out.println("<profile>" + profile + "</profile>");
         }
-        
+
         String description_data;
         description_data = StringUtils.escapeXML(description);
-        
+
         out.println("<description>" + description_data + "</description>");
         out.println("</session>");
         // Fortify Mod: flush and close the PrintStream
@@ -114,7 +120,7 @@ public class TestSession implements  Comparable<TestSession> {
 
     /**
      * This will return the sorted list of TestSession data according to date.
-     * 
+     *
      * @param testData
      *            List of all TestSessions.
      * @return Return the sorted list of testData.
@@ -151,7 +157,7 @@ public class TestSession implements  Comparable<TestSession> {
         }
         return null;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -183,7 +189,7 @@ public class TestSession implements  Comparable<TestSession> {
     public void setSourcesName(String sourcesName) {
         this.sourcesName = sourcesName;
     }
-    
+
     public String getCurrentDate() {
         return currentDate;
     }

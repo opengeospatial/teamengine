@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.executors;
 
 import java.util.HashMap;
@@ -22,7 +29,7 @@ public class FixtureManager {
 
     /**
      * Returns a singleton manager in a lazy (but thread-safe) manner.
-     * 
+     *
      * @return the <code>FixtureManager</code> instance.
      */
     public static FixtureManager getInstance() {
@@ -46,7 +53,7 @@ public class FixtureManager {
     /**
      * Gets the fixture for the specified test run. If runId is an empty String
      * and only one fixture exists this is returned.
-     * 
+     *
      * @param runId
      *            The test run identifier (may be an empty String).
      * @return A TestRunFixture, or {@code null } if a matching one cannot be
@@ -61,7 +68,7 @@ public class FixtureManager {
 
     /**
      * Adds a fixture.
-     * 
+     *
      * @param runId
      *            The test run identifier.
      * @param fixture
@@ -73,7 +80,7 @@ public class FixtureManager {
 
     /**
      * Removes a fixture.
-     * 
+     *
      * @param runId
      *            The test run identifier.
      */
@@ -83,7 +90,7 @@ public class FixtureManager {
 
     /**
      * Lists the identifiers of registered test run fixtures.
-     * 
+     *
      * @return A Set containing fixture identifiers.
      */
     public Set<String> listFixtureIdentifiers() {

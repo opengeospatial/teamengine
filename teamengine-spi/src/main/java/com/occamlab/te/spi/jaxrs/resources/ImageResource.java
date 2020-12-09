@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.InputStream;
@@ -21,7 +28,7 @@ public class ImageResource {
     /**
      * Returns an image resource from this classpath location:
      * <code>/doc/{etsCode}/{etsVersion}/resources/{image}</code>
-     * 
+     *
      * @param etsCode
      *            The test suite code.
      * @param etsVersion

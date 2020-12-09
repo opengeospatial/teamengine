@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.jaxrs;
 
 import java.util.HashSet;
@@ -11,7 +18,7 @@ import java.util.logging.Logger;
  * instantiation mechanism for known TestSuiteController implementations. The
  * service provider mechanism is used to discover test suites. Only one registry
  * is created.
- * 
+ *
  * @see java.util.ServiceLoader ServiceLoader
  */
 public class TestSuiteRegistry {
@@ -29,7 +36,7 @@ public class TestSuiteRegistry {
 
     /**
      * Returns a singleton registry instance in a lazy (but thread-safe) manner.
-     * 
+     *
      * @return the {@code TestSuiteRegistry} instance.
      */
     public static TestSuiteRegistry getInstance() {
@@ -56,7 +63,7 @@ public class TestSuiteRegistry {
 
     /**
      * Gets the controller for a specified executable test suite (ETS).
-     * 
+     *
      * @param etsCode
      *            The alphanumeric code for the ETS.
      * @return A TestSuiteController, or {@code null} if one cannot be found.

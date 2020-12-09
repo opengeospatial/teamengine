@@ -66,6 +66,8 @@ branch, and then create a pull request
 The [cite-forum](http://cite.opengeospatial.org/forum) is where software developers discuss issues 
 and solutions related to OGC tests and TEAM Engine. 
 
+Contributers are expected to observe the project's [code of conduct](https://github.com/opengeospatial/teamengine/blob/master/CODE_OF_CONDUCT.md).
+
 ### More Information
 
 Visit the [CITE website](http://cite.opengeospatial.org/) for more information about the 

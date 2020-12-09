@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.executors;
 
 import java.util.Set;
@@ -14,7 +21,7 @@ public interface TestRunFixture {
     /**
      * Adds an item to the fixture. If an item with the given name already
      * exists it is replaced.
-     * 
+     *
      * @param name
      *            The name of the item.
      * @param value
@@ -24,7 +31,7 @@ public interface TestRunFixture {
 
     /**
      * Retrieves an item from the fixture by name.
-     * 
+     *
      * @param name
      *            The name of the item to return.
      * @return The item, or <code>null</code> if no corresponding item exists.
@@ -33,14 +40,14 @@ public interface TestRunFixture {
 
     /**
      * Returns a set of all item names.
-     * 
+     *
      * @return A Set containing the names of all items in the fixture.
      */
     public Set<String> listItemNames();
 
     /**
      * Removes an item specified by name.
-     * 
+     *
      * @param name
      *            The name of the item to remove.
      */

@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.executors.testng;
 
 import java.io.File;
@@ -28,7 +35,7 @@ import com.occamlab.te.spi.executors.TestRunExecutor;
 import com.occamlab.te.spi.util.HtmlReport;
 
 /**
- * 
+ *
  * Executes a TestNG test suite using the given test run arguments.
  */
 public class TestNGExecutor implements TestRunExecutor {
@@ -36,17 +43,17 @@ public class TestNGExecutor implements TestRunExecutor {
     private static final Logger LOGR = Logger.getLogger(TestNGExecutor.class.getPackage().getName());
 
     private static final List<String> SUPPORTED_MEDIA_TYPES = Arrays.asList( "application/xml", "application/zip", "application/rdf+xml" );
-    
+
     private boolean useDefaultListeners;
-    
+
     private File outputDir;
-    
+
     private URI testngConfig;
 
     /**
      * Constructs a TestNG executor with the given test suite definition. The
      * default listeners are <strong>not</strong> used.
-     * 
+     *
      * @param testngSuite
      *            A reference to a file containing a TestNG suite definition
      *            (with &lt;suite&gt; as the document element).
@@ -57,7 +64,7 @@ public class TestNGExecutor implements TestRunExecutor {
 
     /**
      * Constructs a TestNG executor configured as indicated.
-     * 
+     *
      * @param testngSuite
      *            A reference to a file containing a TestNG suite definition.
      * @param outputDirPath
@@ -85,7 +92,7 @@ public class TestNGExecutor implements TestRunExecutor {
      * Executes a test suite using the supplied test run arguments. The test run
      * arguments are expected to be contained in an XML properties document
      * structured as shown in the following example.
-     * 
+     *
      * <pre>
      * {@code
      * <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -96,12 +103,12 @@ public class TestNGExecutor implements TestRunExecutor {
      * </properties>
      * }
      * </pre>
-     * 
+     *
      * <p>
      * <strong>Note:</strong>The actual arguments (key-value pairs) are
      * suite-specific.
      * </p>
-     * 
+     *
      * @param testRunArgs
      *            A DOM Document node that contains a set of XML properties.
      * @return A Source object that provides an XML representation of the test
@@ -145,7 +152,7 @@ public class TestNGExecutor implements TestRunExecutor {
      * Returns the test results in the specified format. The default media type
      * is "application/xml", but "application/rdf+xml" (RDF/XML) is also
      * supported.
-     * 
+     *
      * @param mediaType
      *            The media type of the test results (XML or RDF/XML).
      * @param outputDirectory
@@ -178,7 +185,7 @@ public class TestNGExecutor implements TestRunExecutor {
     /**
      * Gets the preferred media type for the test results as indicated by the value of the "acceptMediaType" key in the
      * given properties file. The default value is "application/xml".
-     * 
+     *
      * @param testRunArgs
      *            An XML properties file containing test run arguments.
      * @return The preferred media type.
@@ -198,7 +205,7 @@ public class TestNGExecutor implements TestRunExecutor {
      * <li>A file: URI</li>
      * <li>A jar: URI</li>
      * </ul>
-     * 
+     *
      * @param driver
      *            The main TestNG driver.
      * @param ets

@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.spi.executors.testng;
 
 import java.util.List;
@@ -26,7 +33,7 @@ public class AlterSuiteParametersListener implements IAlterSuiteListener {
 
     /**
      * Sets the test run arguments from entries in a properties document.
-     * 
+     *
      * @param testRunArgs
      *            A Document that contains a set of XML properties.
      */
@@ -39,7 +46,7 @@ public class AlterSuiteParametersListener implements IAlterSuiteListener {
 
     /**
      * Sets the test run identifier.
-     * 
+     *
      * @param testRunId
      *            A universally unique identifier (128-bit value).
      */
