@@ -5,10 +5,12 @@
 
 	<xsl:template match="/">{
 		"testsuite": {
-			"title": "<xsl:value-of select="/testsuite/title/text()" />",
+			"title": "<xsl:value-of select="/testsuite/title" />",
 			"description": "<xsl:value-of select="/testsuite/description" />",
-			"testrunarguments": <xsl:call-template name="testrunargument" />,
-			"notes": <xsl:call-template name="note" />
+			"testrunarguments": <xsl:call-template name="testrunargument" />
+			<xsl:if test="/testsuite/notes/note">,
+			    "notes": <xsl:call-template name="note" />
+			</xsl:if>
 			}
 		}
 	</xsl:template>
@@ -19,8 +21,8 @@
 				<xsl:for-each select="/testsuite/testrunarguments/testrunargument">
 					{
 						"name": "<xsl:value-of select="name" />",
-						"obligation": "<xsl:value-of select="obligation" />",
 						"valuedomain": "<xsl:value-of select="valuedomain" />",
+						"obligation": "<xsl:value-of select="obligation" />",
 						"description": "<xsl:value-of select="description" />"
 					}<xsl:choose><xsl:when test="position() != last()">,</xsl:when></xsl:choose>
 				</xsl:for-each>
@@ -28,10 +30,10 @@
 			</xsl:when>
 			<xsl:otherwise>
 				{
-					"name": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/name/text()" />",
-					"obligation": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/obligation/text()" />",
-					"valuedomain": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/valuedomain/text()" />",
-					"description": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/description/text()" />"
+					"name": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/name" />",
+					"valuedomain": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/valuedomain" />",
+					"obligation": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/obligation" />",
+					"description": "<xsl:value-of select="/testsuite/testrunarguments/testrunargument/description" />"
 				}
 			</xsl:otherwise>
 		</xsl:choose>
@@ -45,7 +47,7 @@
 				</xsl:for-each>
 				]
 			</xsl:when>
-			<xsl:otherwise>"<xsl:value-of select="/testsuite/notes/note/text()" />"</xsl:otherwise>
+			<xsl:otherwise>"<xsl:value-of select="/testsuite/notes/note" />"</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>

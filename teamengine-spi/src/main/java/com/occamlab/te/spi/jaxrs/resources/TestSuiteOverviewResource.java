@@ -135,15 +135,17 @@ public class TestSuiteOverviewResource {
         InputStream atsStream = this.getClass().getResourceAsStream(overviewXml.toString());
 
         if (null != atsStream) {
-
-            if (preferredMediaType.contains("xml")) {
-                return atsStream;
-            }
-
             File resultFile = null;
             String resourceFile = null;
 
-            if (preferredMediaType.contains("html")) {
+            if (preferredMediaType.contains("xml")) {
+                return atsStream;
+            } else if (preferredMediaType.contains("html")) {
+                StringBuilder overviewHtml = createPathToDoc(etsCode, "html");
+                InputStream atsStream1 = this.getClass().getResourceAsStream(overviewHtml.toString());
+                if (null != atsStream1) {
+                    return atsStream1;
+                }
                 resultFile = new File(System.getProperty("java.io.tmpdir"), "testsuiteoverview.html");
                 resourceFile = "com/occamlab/te/test_suite_overview_html.xsl";
             } else if (preferredMediaType.contains("json")) {

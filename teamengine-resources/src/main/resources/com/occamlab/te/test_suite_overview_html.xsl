@@ -60,10 +60,10 @@
 			</head>
 			<body>
 				<h1>
-					<xsl:value-of select="/testsuite/title/text()" />
+					<xsl:value-of select="/testsuite/title" />
 				</h1>
 				<p>
-					<xsl:value-of select="/testsuite/description/text()" />
+					<xsl:value-of select="/testsuite/description" />
 				</p>
 				<table border="1" style="border-collapse: collapse;">
 					<caption>Test run arguments</caption>
@@ -82,28 +82,30 @@
 									<xsl:value-of select="name" />
 								</td>
 								<td>
-									<xsl:value-of select="obligation" />
+									<xsl:value-of select="valuedomain" />
 								</td>
 								<td>
-									<xsl:value-of select="valuedomain" />
+									<xsl:value-of select="obligation" />
 								</td>
 								<td>
 									<xsl:value-of select="description" />
 								</td>
 							</tr>
 						</xsl:for-each>
-						<tr>
-							<td colspan="4">
-								<strong>Notes</strong>
-								<xsl:for-each select="/testsuite/notes/note">
-									<ul>
-										<li>
-											<xsl:value-of select="." />
-										</li>
-									</ul>
-								</xsl:for-each>
-							</td>
-						</tr>
+						<xsl:if test="/testsuite/notes/note">
+							<tr>
+								<td colspan="4">
+									<strong>Notes</strong>
+									<xsl:for-each select="/testsuite/notes/note">
+										<ul>
+											<li>
+												<xsl:value-of select="." />
+											</li>
+										</ul>
+									</xsl:for-each>
+								</td>
+							</tr>
+						</xsl:if>
 					</tbody>
 				</table>
 			</body>
