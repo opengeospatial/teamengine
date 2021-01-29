@@ -139,6 +139,7 @@
       <url-pattern>/emailSent.jsp</url-pattern>
       <url-pattern>/userProfile.jsp</url-pattern>
       <url-pattern>/startTesting.jsp</url-pattern>
+      <url-pattern>/reports/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>user</role-name>
