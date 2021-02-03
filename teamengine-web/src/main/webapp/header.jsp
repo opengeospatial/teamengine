@@ -3,9 +3,10 @@
 		style="position: static; background-color: black; width: 100%; height: 100px; overflow: hidden"
 		onclick="window.location = ''">
 		<!-- Image derived from "Dinky the Steam Engine - main drive wheel", Steve Karg, http://www.burningwell.org -->
-		<img style="position: absolute" src="images/banner.jpg" alt="TEAM Engine Banner" />
+		<% String contextPath = request.getContextPath(); %>
+		<img style="position: absolute" src='<%= contextPath + "/images/banner.jpg" %>' alt="TEAM Engine Banner" />
 		<div style="position: absolute;">
-      <div style="margin-bottom: 0.75em;"><img src="site/logo.png"/></div>
+      <div style="margin-bottom: 0.75em;"><img src='<%= contextPath + "/site/logo.png" %>' /></div>
       <%@include file="site/title.html" %>
 		</div>
 		<%
