@@ -366,6 +366,14 @@ public class TECore implements Runnable {
   }
 
   public void reexecute_test(String testPath) throws Exception {
+    File deleteExistingResultDir = new File(opts.getLogDir() + File.separator + testPath + File.separator + "result");
+    if (deleteExistingResultDir.exists()) {
+       Misc.deleteDir(deleteExistingResultDir);
+    }
+    File deleteExistingTestngDir = new File(opts.getLogDir() + File.separator + testPath + File.separator + "testng");
+    if (deleteExistingTestngDir.exists()) {
+        Misc.deleteDir(deleteExistingTestngDir);
+    }
     Document log = LogUtils.readLog(opts.getLogDir(), testPath);
     String testId = LogUtils.getTestIdFromLog(log);
     TestEntry test = index.getTest(testId);
