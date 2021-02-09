@@ -406,5 +406,5 @@ so the test runner will find it.
 
 ### Mailing lists
 * [TestNG users](https://groups.google.com/forum/#!forum/testng-users)
-* [OGC/CITE developers](https://lists.opengeospatial.org/mailman/listinfo/cite-dev)
-* [OGC/CITE users](https://lists.opengeospatial.org/mailman/listinfo/cite-forum)
+* [OGC/CITE developers](https://lists.ogc.org/mailman/listinfo/cite-dev)
+* [OGC/CITE users](https://lists.ogc.org/mailman/listinfo/cite-forum)
