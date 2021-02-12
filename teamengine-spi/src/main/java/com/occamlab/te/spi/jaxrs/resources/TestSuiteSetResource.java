@@ -18,6 +18,10 @@
 package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +40,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
+
+import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -44,7 +50,6 @@ import org.w3c.dom.Text;
  * A collection resource that provides a listing of all available test suites.
  */
 @Path("suites")
-@Produces("application/xhtml+xml; charset='utf-8'")
 public class TestSuiteSetResource {
 
     @Context
@@ -72,6 +77,7 @@ public class TestSuiteSetResource {
      *         syntax).
      */
     @GET
+    @Produces("application/xhtml+xml; charset='utf-8'")
     public Source listTestSuites() {
         Document xhtmlDoc = readTemplate();
         if (null == xhtmlDoc) {
@@ -101,6 +107,92 @@ public class TestSuiteSetResource {
             etsURI.setLength(0);
         }
         return new DOMSource(xhtmlDoc);
+    }
+
+    /**
+     * Presents an XML representation containing a listing of registered test
+     * suites with links to each.
+     * 
+     * @return A Source object containing the information needed to read the
+     *         collection (an XML document).
+     */
+    @GET
+    @Produces("application/xml; charset='utf-8'")
+    public Source listTestSuitesAsXML() {
+        Document xmlDoc = this.docBuilder.newDocument();
+
+        Element testSuites = xmlDoc.createElement("testSuites");
+        xmlDoc.appendChild(testSuites);
+
+        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+        Set<TestSuiteController> etsControllers = registry.getControllers();
+
+        for (TestSuiteController etsController : etsControllers) {
+
+            Element testSuite = xmlDoc.createElement("testSuite");
+            testSuites.appendChild(testSuite);
+
+            Element testSuiteTitle = xmlDoc.createElement("title");
+            testSuiteTitle.setTextContent(etsController.getTitle());
+            testSuite.appendChild(testSuiteTitle);
+            
+            Element testSuiteVersion = xmlDoc.createElement("version");
+            testSuiteVersion.setTextContent(etsController.getVersion());
+            testSuite.appendChild(testSuiteVersion);
+
+            Element testSuiteRestUri = xmlDoc.createElement("endpoint");
+
+            StringBuilder etsURI = new StringBuilder();
+            etsURI.append(reqUriInfo.getBaseUri());
+            etsURI.append(this.reqUriInfo.getPath());
+            etsURI.append(etsController.getCode()).append("/");
+
+            testSuiteRestUri.setTextContent(etsURI.toString());
+            testSuite.appendChild(testSuiteRestUri);
+            
+            Element testSuiteEtsCode = xmlDoc.createElement("etscode");
+            testSuiteEtsCode.setTextContent(etsController.getCode());
+            testSuite.appendChild(testSuiteEtsCode);
+        }
+        return new DOMSource(xmlDoc);
+    }
+
+    /**
+     * Presents an JSON representation containing a listing of registered test
+     * suites with links to each.
+     * 
+     * @return A Response with object containing the information.
+     */
+    @GET
+    @Produces("application/json")
+    public Response listTestSuitesAsJSON() {
+        List<JSONObject> testSuiteList = new ArrayList<JSONObject>();
+        
+        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+        Set<TestSuiteController> etsControllers = registry.getControllers();
+        
+        for (TestSuiteController etsController : etsControllers) {
+            StringBuilder etsURI = new StringBuilder();
+            etsURI.append(reqUriInfo.getBaseUri());
+            etsURI.append(this.reqUriInfo.getPath());
+            etsURI.append(etsController.getCode()).append("/");
+            
+            Map<String, String> testSuiteInfoMap = new HashMap<String, String>();
+            testSuiteInfoMap.put("title", etsController.getTitle());
+            testSuiteInfoMap.put("version", etsController.getVersion());
+            testSuiteInfoMap.put("etsCode", etsController.getCode());
+            testSuiteInfoMap.put("endpoint", etsURI.toString());
+            
+            JSONObject testSuiteInfo = new JSONObject(testSuiteInfoMap);
+            
+            testSuiteList.add(testSuiteInfo);
+        }
+        Map<String, List<JSONObject>> testSuitesMap = new HashMap<String, List<JSONObject>>();
+        testSuitesMap.put("testSuites", testSuiteList);
+
+        JSONObject testSuites = new JSONObject(testSuitesMap);
+        
+        return Response.status(200).entity(testSuites.toString()).build();
     }
 
     /**
