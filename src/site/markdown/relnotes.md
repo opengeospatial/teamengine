@@ -1,6 +1,17 @@
 Release Notes
 =============
 
+## 5.4.1 (2021-02-19)
+- [#447](https://github.com/opengeospatial/teamengine/issues/447): TestSuite version on API
+- [#397](https://github.com/opengeospatial/teamengine/issues/397): Enhance REST API by a technical response with information about the ets
+- [#435](https://github.com/opengeospatial/teamengine/issues/435): Test INPUT in HTML report displays wrong information
+- [#451](https://github.com/opengeospatial/teamengine/issues/451): Report visibility issue
+- [#416](https://github.com/opengeospatial/teamengine/issues/416): Unable to build behind corporate proxy
+- [#431](https://github.com/opengeospatial/teamengine/pull/431): Bump xercesImpl from 2.11.0 to 2.12.0 in /teamengine-core
+- [#437](https://github.com/opengeospatial/teamengine/pull/437): Bump junit from 4.12 to 4.13.1
+- [#456](https://github.com/opengeospatial/teamengine/pull/456): Fix mailing list links
+- [#400](https://github.com/opengeospatial/teamengine/issues/400): Update tests to use TEAM Engine 5.4
+
 ## 5.4 (2019-05-23)
 - [#395](https://github.com/opengeospatial/teamengine/issues/395): Move SoapUI tests to sub module
 - [#385](https://github.com/opengeospatial/teamengine/issues/385): Failed to load ets-wms-client13 ctl form
