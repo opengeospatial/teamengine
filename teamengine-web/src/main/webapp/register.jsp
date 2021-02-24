@@ -112,7 +112,7 @@ if ("duplicate".equals(request.getParameter("error"))) {
 		<form name="registration" method="post" action="registrationHandler">
 			<p>
 				Create a username (with at least 6 characters) and password:<br/>
-				<br/>
+				<div style="color: red">All fields are required.</div><br/>
 				<table>
 					<tr>
 						<td>First Name:</td>
