@@ -1,7 +1,6 @@
 package com.occamlab.te.realm;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Base64;
 import java.util.StringTokenizer;
 
@@ -13,6 +12,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.catalina.realm.GenericPrincipal;
 
 public class RestAuthenticationFilter implements Filter {
     private static final String AUTHENTICATION_HEADER = "Authorization";
@@ -56,10 +57,21 @@ public class RestAuthenticationFilter implements Filter {
                 
                 PBKDF2Realm pbkdf2Realm = new PBKDF2Realm();
                 pbkdf2Realm.setRoot(root);
-                Principal principal = pbkdf2Realm.authenticate(username, password);
+                GenericPrincipal principal = (GenericPrincipal) pbkdf2Realm.authenticate(username, password);
                 
                 if (null != principal) {
-                    filter.doFilter(request, response);
+                    if (httpServletRequest.getRequestURI().contains("stats")) {
+                        String[] roles = principal.getRoles();
+                        for (String role : roles) {
+                            if (role.equalsIgnoreCase("admin")) {
+                                filter.doFilter(request, response);
+                            }
+                        }
+                        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+                        httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    } else {
+                        filter.doFilter(request, response);
+                    }
                 } else {
                     unauthorizedException(response);
                 }
