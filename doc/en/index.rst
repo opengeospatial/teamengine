@@ -903,7 +903,7 @@ The statistics report is accessible via teamengine API and only admin can access
 **Following steps are required to become an admin:**
 
 1. Open file from the TE_BASE/users/${username}/user.xml 
-2. Add the \<name>admin\</name> element under the <roles> and it should look like as below:
+2. Add the \<name>admin\</name> element under the \<roles> and it should look like as below:
 	    
         <roles>
     	    <name>user</name>
