@@ -11,6 +11,7 @@
         <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="List all" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xhtml+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
           <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
           <con:request/>
@@ -43,6 +44,7 @@
         <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="REST interface available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xhtml+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>            
           </con:settings>
           <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
           <con:request/>
@@ -481,6 +483,7 @@ exists(/rdf:RDF)</path>
         <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="REST interface available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xhtml+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
           <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
           <con:request/>
