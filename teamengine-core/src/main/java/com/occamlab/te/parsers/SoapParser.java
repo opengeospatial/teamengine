@@ -123,7 +123,7 @@ public class SoapParser {
      * 
      * @author Simone Gianfranceschi
      */
-    private Document parse(Object xml, Element instruction, PrintWriter logger)
+    public Document parse(Object xml, Element instruction, PrintWriter logger)
             throws Exception {
         Document soapMessage = null;
         String returnType = instruction.getAttribute("return");// envelope or
