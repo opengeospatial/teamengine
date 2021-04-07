@@ -11,20 +11,21 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.Expression;
-import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.Axis;
-import net.sf.saxon.om.EmptyIterator;
+import net.sf.saxon.expr.parser.ExpressionTool;
+import net.sf.saxon.om.AxisInfo;
+import net.sf.saxon.om.GroundedValue;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.om.StructuredQName;
-import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.tree.iter.EmptyIterator;
 import net.sf.saxon.type.ItemType;
 import net.sf.saxon.type.SchemaType;
 import net.sf.saxon.value.ObjectValue;
-import net.sf.saxon.value.Value;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
@@ -45,9 +46,8 @@ public class TEXSLFunctionCall extends TEFunctionCall {
 
     public static String getType(Expression expr, XPathContext context)
             throws XPathException {
-        ValueRepresentation vr = ExpressionTool.lazyEvaluate(expr, context, 1);
-        ItemType it = Value.asValue(vr).getItemType(
-                context.getConfiguration().getTypeHierarchy());
+        Sequence sequence = ExpressionTool.lazyEvaluate(expr, context, false);
+        ItemType it = SequenceTool.getItemType(sequence, context.getConfiguration().getTypeHierarchy());
         if (it instanceof SchemaType) {
             return "xs:" + ((SchemaType) it).getName();
         }
@@ -56,8 +56,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
 
     public SequenceIterator iterate(XPathContext context) throws XPathException {
         Controller controller = context.getController();
-        ObjectValue ov = (ObjectValue) controller.getParameter("{" + Test.TE_NS
-                + "}core");
+        ObjectValue<?> ov = (ObjectValue<?>) controller.getParameter(new StructuredQName("", Test.TE_NS, "core"));
         TECore core = (TECore) ov.getObject();
 
         Expression[] argExpressions = getArguments();
@@ -69,7 +68,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
             xml += " local-name=\"" + param.getLocalPart() + "\"";
             xml += " namespace-uri=\"" + param.getNamespaceURI() + "\"";
             xml += " prefix=\"" + param.getPrefix() + "\"";
-            ValueRepresentation vr = ExpressionTool.eagerEvaluate(
+            GroundedValue groundValue = ExpressionTool.eagerEvaluate(
                     argExpressions[i], context);
             Value v = Value.asValue(vr);
             try {
@@ -122,7 +121,7 @@ public class TEXSLFunctionCall extends TEFunctionCall {
         if (result == null) {
             return EmptyIterator.getInstance();
         } else {
-            return result.iterateAxis(Axis.CHILD);
+            return result.iterateAxis(AxisInfo.CHILD);
         }
     }
 }

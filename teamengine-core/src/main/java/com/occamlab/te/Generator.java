@@ -28,7 +28,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.lib.Feature;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.Serializer;
@@ -88,7 +88,7 @@ public class Generator {
 
         // Create a transformer to generate executable scripts from CTL sources
         Processor processor = new Processor(false);
-        processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING,
+        processor.setConfigurationProperty(Feature.LINE_NUMBERING,
                 Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
         XsltExecutable generatorXsltExecutable = generatorCompiler.compile(
@@ -203,7 +203,7 @@ public class Generator {
                     // and is saved to disk. The generator also creates XSL
                     // template files in the working dir.
                     generatorTransformer.setSource(ctlSource);
-                    Serializer generatorSerializer = new Serializer();
+                    Serializer generatorSerializer = processor.newSerializer();
                     generatorSerializer.setOutputFile(indexFile);
                     generatorTransformer.setDestination(generatorSerializer);
                     XdmAtomicValue av = new XdmAtomicValue(
