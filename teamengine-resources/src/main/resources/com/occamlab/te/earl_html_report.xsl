@@ -507,6 +507,9 @@
                     <xsl:when test="substring-before($msg,'expected [')">
                       <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
                     </xsl:when>
+                    <xsl:when test="substring-after($msg,':')">
+                      <xsl:value-of select="substring-after($msg, ':')" />
+                    </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of select="$msg" />
                     </xsl:otherwise>
@@ -580,6 +583,9 @@
                   <xsl:choose>
                     <xsl:when test="substring-before($msg,'expected [')">
                       <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:when test="substring-after($msg,':')">
+                      <xsl:value-of select="substring-after($msg, ':')" />
                     </xsl:when>
                     <xsl:otherwise>
                       <xsl:value-of select="$msg" />
