@@ -8,16 +8,22 @@
  */
 package com.occamlab.te.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +32,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants; // Addition for Fortify modifications
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +40,8 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -50,6 +59,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
+
+import net.sf.saxon.s9api.Axis;
+import net.sf.saxon.s9api.XdmNode;
 
 public class LogUtils {
 
@@ -103,6 +115,11 @@ public class LogUtils {
             try {
                 t.transform(new StreamSource(f), new DOMResult(doc));
             } catch (Exception e) {
+                //Issue ets-wcs10 #54 To handle invalid characters in response
+                if (e.getMessage().contains("An invalid XML character")) {
+                    String validString = readValidCharsFromLogFile(f);
+                    writeValidCharsToLogFile(f, validString);
+                }
                 // The log may not have been closed properly.
                 // Try again with a closing </log> tag
                 RandomAccessFile raf = new RandomAccessFile(f, "r");
@@ -127,6 +144,68 @@ public class LogUtils {
         } else {
             return null;
         }
+    }
+
+    public static String readValidCharsFromLogFile(File path) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+                String strippedLine = stripNonValidXMLCharacters(sCurrentLine);
+
+                if (strippedLine.length() != sCurrentLine.length()) {
+                    if (strippedLine.contains("<content>")) {
+                        StringBuilder builder = new StringBuilder(strippedLine);
+                        builder.insert(builder.indexOf("<content>") + 9, "<![CDATA[");
+                        builder.insert(builder.indexOf("</content>"), "]]>");
+                        strippedLine = builder.toString();
+                    }
+                }
+                sb.append(strippedLine);
+            }
+        }
+        if (sb.toString().indexOf("</log>") != -1) {
+            sb.replace(sb.indexOf("</log>"), sb.length(), "");
+        }
+        return sb.toString();
+    }
+
+    public static void writeValidCharsToLogFile(File file, String validString) throws IOException {
+        StringWriter stringWriter = new StringWriter();
+        StreamResult xmlOutput = new StreamResult(stringWriter);
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer;
+        try {
+            transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.CDATA_SECTION_ELEMENTS, "content");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+            Source xmlInput = new StreamSource(new StringReader(validString));
+            transformer.transform(xmlInput, xmlOutput);
+        } catch (TransformerException e) {
+            System.out.println(e.getMessage());
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(xmlOutput.getWriter().toString());
+        writer.close();
+    }
+
+    public static String stripNonValidXMLCharacters(String in) {
+        StringBuffer out = new StringBuffer();
+        char current;
+
+        if (in == null || ("".equals(in)))
+            return "";
+        for (int i = 0; i < in.length(); i++) {
+            current = in.charAt(i);
+            if ((current == 0x9) || (current == 0xA) || (current == 0xD)
+                    || ((current >= 0x20) && (current <= 0xD7FF))
+                    || ((current >= 0xE000) && (current <= 0xFFFD))
+                    || ((current >= 0x10000) && (current <= 0x10FFFF)))
+                out.append(current);
+        }
+        return out.toString().replaceAll("&#", "");
     }
 
     // Returns the id of a test from its log document
