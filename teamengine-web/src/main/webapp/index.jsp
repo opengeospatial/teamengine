@@ -12,13 +12,6 @@
     <body>
       <%@ include file="header.jsp" %>
       <%@ include file="welcome.jsp" %>
-      <section id="noColumn">
-      <a href="viewSessions.jsp" style="text-decoration: none">
-        <span class="box">Sign in</span></a> 
-      or 
-      <a href="register.jsp" style="text-decoration: none">
-        <span class="box">Create an account</span></a>
-      </section>  
-        <%@ include file="footer.jsp" %>
+      <%@ include file="footer.jsp" %>
     </body>
   </html>
