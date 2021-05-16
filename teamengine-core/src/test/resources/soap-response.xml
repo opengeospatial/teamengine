@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope
+	xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sos="http://www.opengis.net/sos/2.0"
+	xmlns:om="http://www.opengis.net/om/2.0"
+	xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sosGetObservation.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gmlBase.xsd http://www.w3.org/2003/05/soap-envelope http://www.w3.org/2003/05/soap-envelope">
+	<soap:Header />
+	<soap:Body>
+		<sos:GetObservationResponse>
+			<sos:observationData>
+				<om:OM_Observation gml:id="o_0D4447DFB5AFBEDEDE5CF243F25B47F69D1B7BE1">
+					<gml:description>test description for this observation</gml:description>
+					<gml:identifier codeSpace="http://www.opengis.net/def/nil/OGC/0/unknown">http:/www.tsuruoka-nct.ac.jp/test/observation/0</gml:identifier>
+					<om:type xlink:href="http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement" />
+					<om:phenomenonTime>
+						<gml:TimeInstant gml:id="phenomenonTime_430">
+							<gml:timePosition>2012-11-19T17:45:15.000Z</gml:timePosition>
+						</gml:TimeInstant>
+					</om:phenomenonTime>
+					<om:resultTime xlink:href="#phenomenonTime_430" />
+					<om:procedure xlink:href="http://www.tsuruoka-nct.ac.jp/test/procedure/0" />
+					<om:observedProperty xlink:href="http://www.tsuruoka-nct.ac.jp/test/observableProperty/Temperature" />
+					<om:featureOfInterest xlink:href="http://www.52north.org/test/featureOfInterest/9" />
+					<om:result xmlns:ns="http://www.opengis.net/gml/3.2" uom="test_unit_9_3" xsi:type="ns:MeasureType">0.28</om:result>
+				</om:OM_Observation>
+			</sos:observationData>
+		</sos:GetObservationResponse>
+	</soap:Body>
+</soap:Envelope>
