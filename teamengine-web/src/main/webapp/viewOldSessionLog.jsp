@@ -79,6 +79,10 @@ public void jspInit() {
 <%
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
+      if (sessionId == null || sessionId.isEmpty()) {
+          response.sendRedirect("viewSessions.jsp");
+          return;
+      }
       TestSession ts = new TestSession();
       ts.load(userlog, sessionId);
       String suiteName = "null";

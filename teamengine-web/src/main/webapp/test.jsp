@@ -43,6 +43,10 @@
                     var d = new Date();
                 <%
 mode = request.getParameter("mode");
+if (mode == null || mode.isEmpty()) {
+    response.sendRedirect("viewSessions.jsp");
+    return;
+}
 test = request.getParameter("test");
 sessionId = request.getParameter("session");
 paramMap = request.getParameterMap();
