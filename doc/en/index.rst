@@ -1,9 +1,9 @@
 TEAM Engine Tutorial
 ####################
 
-:author: Luis Bermudez <lbermudez@opengeospatial.org>, Richard Martell, Chris Coppock
-:version: 4.2
-:date: July 31, 2015
+:author: Luis Bermudez, Richard Martell, Chris Coppock, Gobe Hobona
+:version: 5.4
+:date: January 28, 2021
 :questions: http://cite.opengeospatial.org/forum
 
 .. contents::
@@ -17,9 +17,9 @@ TEAM Engine Tutorial
 .. section-numbering::
 
 .. raw:: pdf
-   
+
    PageBreak oneColumn
-   
+
 
 Introduction
 ------------
@@ -44,7 +44,7 @@ This is the long tutorial. A short tutorial is available `here <http://opengeosp
 License
 -------
 
-The license for TEAM Engine is `Apache 2.0 <https://github.com/opengeospatial/teamengine/blob/master/LICENSE.txt>`_.    
+The license for TEAM Engine is `Apache 2.0 <https://github.com/opengeospatial/teamengine/blob/master/LICENSE.txt>`_.
 
 
 Download and Configure Prerequisite Software (Mostly for Windows Users)
@@ -56,7 +56,7 @@ Download Required Software
 
 In order to build Team Engine and the OGC tests you will need the following software:
 
-- **Java 8**: Download Java JDK (Java Development Kit) 8, from `here <http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>`_.
+- **Java 8**: Download the Java Development Kit (JDK) 8, from `here <https://www.oracle.com/uk/java/technologies/javase/javase-jdk8-downloads.html>`_. Alternatively, you may download the `Red Hat OpenJDK 8 <https://developers.redhat.com/products/openjdk/download>`_.
 - Maven: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
 - **Git 1.8**: Download Git-SCM version 1.9.4 from `here <http://git-scm.com/download/win>`_.
 - **Apache Tomcat 7.0.52**: Download Apache Tomcat version 7.0.52 from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
@@ -72,7 +72,7 @@ Configure Java
 	1. Browse to the downloaded file location and locate the installation file
 	2. Execute installation file from download location on the local workstation
 	3. Complete the installation with the default options selected, click 'yes', then click 'next' twice
-	4. The JDK and JRE will install to 'C:\Program Files\Java\jdk1.8.0' and 'C:\Program Files\Java\jre8' respectively.
+	4. On Microsoft Windows, the JDK and JRE will install to 'C:\Program Files\Java\jdk1.8.0' and 'C:\Program Files\Java\jre8' respectively.
 	5. Click 'Finish' to complete the installation and close the installer.
 
 Configure Maven
@@ -82,7 +82,7 @@ Configure Maven
 	2. Open the zip archived 'apache-maven-3.2.2' file folder by double-clicking zip file
 	3. Right click on the folder that is presented in Windows Explorer, and select the 'copy' option in the dropdown menu.
 	4. Open a second Windows explorer folder window, browse to 'C:\Program Files\', right click within the file folder in any blank space, and then select the 'paste' option in order to paste the folder into this location.
-	5. Click 'continue' on any security prompts 
+	5. Click 'continue' on any security prompts
 	6. Finish the file transfer process and close the zip folder and second windows explorer folder window.
 
 Configure Git
@@ -93,7 +93,7 @@ Configure Git
 	3. As security warnings prompt the user, click 'Run' to accept.
 	4. Accept any UAC warnings by clicking 'Yes'.
 	5. Click 'Next' twice.
-	6. Click 'Next' to install to the default location (C:\Program Files (x86)\Git\).
+	6. Click 'Next' to install to the default location. On Microsoft Windows, it is (C:\Program Files (x86)\Git\).
 	7. Review the select components panel and click next to accept the defaults
 	8. Click 'Next' to set the start menu folder option as "Git" (the default location).
 	9. During installation process, when presented with the window labeled 'Adjusting your PATH environment' select the option to "Use Git from the Windows Command Prompt".
@@ -121,18 +121,18 @@ Set Environment Variables in Windows
 		- ;C:\Program Files\Java\jdk1.8.0;
 		- ;C:\Program Files\Java\jre8;
 		- ;C:\Program Files\apache-maven-3.2.2\bin;
-		(Verify that the environment variable paths for Git are already installed) 
+		(Verify that the environment variable paths for Git are already installed)
 	6. Select the 'OK' button within the 'Edit System Variable' window
 	7. Within the 'Environment Variables' window, select the 'New...' button below the 'System Variables' list.
 	8. Within the 'New System Variable' window, type "JAVA_HOME" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value' field, type the full path to the JDK directory (C:\Program Files\Java\jdk1.8.0)
 	9. Select the 'Ok' button within the 'New System Variable' window.
-	10. Within the 'Environment Variables' window, select the 'New' button below the 'System Variables' list. 
+	10. Within the 'Environment Variables' window, select the 'New' button below the 'System Variables' list.
 	11. Within the 'New System Variable' window, type "JRE_HOME" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value:' field, type the full path to the Java JRE directory (C:\Program Files\Java\jre8)
 	12. Select the 'Ok' button within the 'New System Variable Window'.
 	13. Within the 'Environment Variables' window, select the 'New...' button below the 'System Variables' list.
 	14. Within the 'New System Variable' window, type "TE_BASE" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value:' field, type the full path to the TE_BASE directory ('C:\TE_BASE' is the default).
 	15. Select the 'Ok' button within the 'New System Variable' window.
-	16. This process completes the configuration process for setting environment variables in Windows. At the end of this process, the following items should be accounted for in the PATH section of the system's Environment Variables. Please note that depending on the system, these may be slightly different, and that they are only being included as a reference. 
+	16. This process completes the configuration process for setting environment variables in Windows. At the end of this process, the following items should be accounted for in the PATH section of the system's Environment Variables. Please note that depending on the system, these may be slightly different, and that they are only being included as a reference.
 
 		- ;C:\Program Files\Java\jdk1.8.0;
 		- ;C:\Program Files\Java\jre8;
@@ -184,7 +184,7 @@ The TE code is located in GitHub: https://github.com/opengeospatial/teamengine. 
 
 	In Unix:
 	$ > git clone https://github.com/opengeospatial/teamengine.git
-	
+
 	In Windows:
 	c:\repo> git clone https://github.com/opengeospatial/teamengine.git
 
@@ -228,7 +228,7 @@ Build TE Source
 Ensure you are in the working directory of teamengine::
 
 	$ cd repo/teamengine
-	
+
 Build with MAVEN:
 
 	In Unix::
@@ -240,11 +240,11 @@ Build with MAVEN:
 		 c:\repo\teamengine\> mvn install
 
 It will take few minutes to install, and then a success message will appear after the install::
-	
+
    ...
    [INFO] ------------------------------------------------------------------------
    [INFO] Reactor Summary:
-   [INFO] 
+   [INFO]
    [INFO] TEAM Engine ....................................... SUCCESS [15.912s]
    [INFO] TEAM Engine - Tomcat Realm ........................ SUCCESS [0.617s]
    [INFO] TEAM Engine - Shared Resources .................... SUCCESS [0.317s]
@@ -258,18 +258,18 @@ It will take few minutes to install, and then a success message will appear afte
    [INFO] Finished at: Wed Apr 17 06:42:15 EDT 2013
    [INFO] Final Memory: 20M/81M
    [INFO] ------------------------------------------------------------------------
-   
+
 
 Under each directory  a **target** folder was created, which contains the build folder for each artifact.
 The folder **teamengine-console** contains the directory::
-	
+
 	-- target
 		|--  teamengine-console-4.1-base.tar.gz
 		|--  teamengine-console-4.1-base.zip
 		|--  teamengine-console-4.1-bin.tar.gz
     	|--  teamengine-console-4.1-bin.zip
 
-	
+
 Prepare TE BASE
 ---------------
 
@@ -280,7 +280,7 @@ In Unix::
 	 $ > unzip ~/repo/teamengine/teamengine-console/target/teamengine-console-4.1-base.zip -d $TE_BASE
 
 In Windows::
-	
+
 	 Browse in Windows Explorer to c:\repo\teamengine\teamengine-console-4.1-base.zip and copy the contents to c:\TE_BASE
 
 
@@ -312,20 +312,20 @@ Select a local directory for TE_BASE::
 You can configure TE_BASE system property or environment variable. For example::
 
 	$ export TE_BASE=~/TE_BASE
-	
-Unzip teamengine-console-4.1-base.zip in the TE_BASE directory::	
-	
+
+Unzip teamengine-console-4.1-base.zip in the TE_BASE directory::
+
 	$ unzip ~/repo/teamengine/teamengine-console/target/teamengine-console-4.1-base.zip -d $TE_BASE
-	
+
 
 Run TE in console
 -----------------
 
-When running **MAVEN install** the file ``teamengine-console-4.1-bin.zip`` was created under the 
-**teamengine-console/target**. 
+When running **MAVEN install** the file ``teamengine-console-4.1-bin.zip`` was created under the
+**teamengine-console/target**.
 
 Unzip the zip archive to a new directory **~$/te-install** by conducting the following actions::
-(Note: Be aware of the difference in TE_BASE and te-install and the use of uppercase and underscore versus lowercase and hyphens, as the directions are case-sensitive) 
+(Note: Be aware of the difference in TE_BASE and te-install and the use of uppercase and underscore versus lowercase and hyphens, as the directions are case-sensitive)
 
 	In Unix::
 
@@ -345,9 +345,9 @@ The **te-install** dir now looks like this::
 	|-- bin
 	|-- lib
 	|-- resources
-	
+
 Run the example tests::
-	
+
 	In Unix:
 	$ cd $TE_BASE/scripts/
 	$ ~/te-install/bin/unix/test.sh -source=note.ctl
@@ -399,20 +399,20 @@ Go the project folder and run mvn package::
 	cd ~/repo/ets-resources
 	mvn package
 
-A target folder is created that contains the required libs and scripts.	
+A target folder is created that contains the required libs and scripts.
 
 Copy libs and test suites in TE_BASE
 ------------------------------------
 
-Scripts are located under ets-resources\14.04.16\target\bin 
+Scripts are located under ets-resources\14.04.16\target\bin
 Several environment variables must be set first (this can be done in the setenv script if desired):
 
 	- TE_BASE: A file system path that refers to the TEAM-engine instance directory.
 	- ETS_SRC: A file system path that refers to a directory containing the Git repositories; (a repository will be cloned into here if it doesn't already exist).
-	- JAVA_HOME: Refers to a JDK installation directory.	
+	- JAVA_HOME: Refers to a JDK installation directory.
 
 Example commands of how to install the tests are:
-	
+
 	In Unix:
 	$ ~/te-install/bin/unix/export-ctl.sh c:\path-to-the-file\ctl-scripts-release.csv
 
@@ -465,29 +465,29 @@ Example of TestNG Tests
 =======================
 
 For KML 2.2:
-	
+
 	In Unix::
 
-		$ ~/te-install/bin/unix/test.sh -source=kml22/2.2/kml22-suite.ctl 
+		$ ~/te-install/bin/unix/test.sh -source=kml22/2.2/kml22-suite.ctl
 
 	In Windows:
 
 		Change directory to c:\ and type the following command::
 
 			c:\> te-install\bin\windows\test.bat -source=c:\TE_BASE\scripts\kml22\2.2\kml22-suite.ctl
-		
+
 		Click Start in order to execute the test
 
-For GML 3.2.1::	
-	
+For GML 3.2.1::
+
 	In Unix::
 
-		$ ~/te-install/bin/unix/test.sh -source=gml/3.2.1/gml-suite.ctl 
-	
+		$ ~/te-install/bin/unix/test.sh -source=gml/3.2.1/gml-suite.ctl
+
 	In Windows:
 
 		Change directory to c:\ and type the following command::
-			
+
 			c:\> te-install\bin\windows\test.bat -source=c:\TE_BASE\scripts\gml\3.2.1\gml-suite.ctl
 
 Input the following URL to test a GML schema::
@@ -512,11 +512,11 @@ The result should be pass::
           Passed: 0 | Failed: 0 | Skipped: 2
       GML Documents
           Passed: 0 | Failed: 0 | Skipped: 16
-      
-      
+
+
          See detailed test report in the TE_BASE/users/demo/s0005/html/ directory.
       Test tns:Main Passed
-      
+
 Running the tests in headless mode
 ==================================
 
@@ -524,9 +524,9 @@ It is possible to run the tests in a headless, unattended manner, by providing f
 responses to all the forms the test normally inquires the user to fill.
 
 Form files are specified via the ``-form`` parameter, more than one form can be provided using
-multiple ``-form`` parameters. For example, the WMS 1.1.1 tests can be run with the following 
-command:: 
-    
+multiple ``-form`` parameters. For example, the WMS 1.1.1 tests can be run with the following
+command::
+
      $ ~/te-install/bin/unix/test.sh -source=wms/1.1.1/ctl/functions.xml -source=wms/1.1.1/ctl/wms.xml
                                      -form=$forms/wms-1.1.1.xml -form=forms/yes.xml
 
@@ -547,21 +547,21 @@ Where ``forms/wms-1.1.1.xml`` is::
      </values>
 
 and ``forms/yes.xml`` is::
- 
+
      <?xml version="1.0" encoding="UTF-8"?>
      <values>
        <value key="submit">yes</value>
        <value key="answer">yes</value>
      </values>
 
-The form files are used by TEAM Engine in the same order as provided on the command line. 
+The form files are used by TEAM Engine in the same order as provided on the command line.
 In case that the test requires filling more forms than provided on the command line, the last provided form is
 going to be used multiple times: for example, in the WMS 1.1.1 case, the test will ask the user to visually
 confirm visual relationships between two maps, the ``yes.xml`` form will be used for all those
 requests.
 
 After the test is invoked via command line, the console output will retrieve the information of the forms before providing the result of the test.
- 
+
 For example::
 
       jul 12, 2015 2:44:16 PM com.occamlab.te.TECore setFormResults
@@ -577,12 +577,12 @@ For example::
          <value key="free">free</value>
          <value key="B_BOX_CONSTRAINT">eitherbboxconstraint</value>
       </values>
-      
+
       Testing suite wms:main_wms in Test Mode with defaultResult of Pass ...
       ...
       Testing wms:wmsops-getmap-params-bbox-2 type Mandatory in Test Mode with defaultResult Pass (s0004/d275e678_1)...
          Assertion: When a GetMap request uses decimal values for the BBOX parameter, then the response is valid.
-         
+
       Jul 12, 2015 2:44:20 PM com.occamlab.te.TECore setFormResults
       INFO: Setting form results:
        <?xml version="1.0" encoding="UTF-8"?>
@@ -591,8 +591,8 @@ For example::
         <value key="answer">yes</value>
       </values>
             Test wms:wmsops-getmap-params-bbox-2 Passed
-      
-      
+
+
 
 Run a Test via REST
 -------------------
@@ -621,18 +621,18 @@ TEAM Engine provides three different types of result formats for test runs. The 
 | ZIP containing HTML files | Accept: application/zip     |
 +---------------------------+-----------------------------+
 
-The test run arguments are summarized in Table 2 - Test run arguments. 
-The Obligation column can have the following values:  M (mandatory), O (optional), or C (conditional). 
+The test run arguments are summarized in Table 2 - Test run arguments.
+The Obligation column can have the following values:  M (mandatory), O (optional), or C (conditional).
 
 Table - Test run arguments
 
           (Name, Value,Obligation)
 
-          (iut,URI/ File, M)	
+          (iut,URI/ File, M)
 
-          (ics,CSV or Int,O)	
+          (ics,CSV or Int,O)
 
-          (sch,URI/ File,M)	
+          (sch,URI/ File,M)
 
 
 * iut: A URI that refers to the implementation under test or metadata about it. Ampersand ('&') characters must be percent-encoded as '%26'.
@@ -641,10 +641,10 @@ Table - Test run arguments
 
 * sch: A URI that refers to the schematron. Ampersand ('&') characters must be percent-encoded as '%26' and when select ics=3 at that time it is mandatory.
 
-          In GET Request: 
+          In GET Request:
           iut and sch are URI's
 
-          In POST Request: 
+          In POST Request:
           iut and sch are keys of the files attached in the POST Body
 
           To test GET API::
@@ -653,10 +653,10 @@ Table - Test run arguments
 
           To test POST API:
           Whenever a user wants to test a Metadata file against a given Schematron (both given as a input by the user) with the help of the Teamengine's REST POST API::
-          
-          	curl -X POST --header "Content-Type:multipart/form-data" -F "iut=@path/to/XML" 
+
+          	curl -X POST --header "Content-Type:multipart/form-data" -F "iut=@path/to/XML"
           	-F "sch=@path/to/Schematorn" http://teamengineProjectURI/rest/suites/testName/1.0/run
-          
+
           path/to/XML is the path to the Metadata file  and path/to/Schematorn is the path to the Schematron file.
 
 Build TEAM Engine as Web application
@@ -665,29 +665,29 @@ Build TEAM Engine as Web application
 Create a dedicated Tomcat instance
 ==================================
 
-The example here shows the process for a GNU/Linux environment. 
+The example here shows the process for a GNU/Linux environment.
 
 Select a folder for CATALINA_BASE::
 
 	$ mkdir ~/CATALINA_BASE
-	
+
 Create structure::
-	
+
 	$ cd ~/CATALINA_BASE
 	$ mkdir bin conf logs temp webapps work
-	
+
 Copy catalina.sh from $CATALINA_HOME/bin (this is tomcat/bin)::
 
 	$ cp ~/tomcat/bin/catalina.sh bin/
-	
-Copy configuration files from $CATALINA_HOME/conf (this is tomcat/conf)::	
+
+Copy configuration files from $CATALINA_HOME/conf (this is tomcat/conf)::
 
 	$ cp -r ~/tomcat/conf ~/CATALINA_BASE/
-	
+
 Create a setenv.sh in bin::
 
 	$ touch setenv.sh
-	
+
 And copy the following in setenv.sh::
 
 	cat bin/setenv.sh
@@ -695,11 +695,11 @@ And copy the following in setenv.sh::
 	## path to java jdk
 	## JAVA_HOME=/usr/local/java/jdk7
 	## export JAVA_HOME
-	 
+
 	 ## path to tomcat installation to use
 	CATALINA_HOME=~/tomcat
 	export CATALINA_HOME
-	 
+
 	 ## path to server instance to use
 	CATALINA_BASE=~/CATALINA_BASE
 	export CATALINA_BASE
@@ -745,7 +745,7 @@ Create the contents of the file by copying the following text into the setenv.ba
 Click on the save icon
 
 
-	
+
 CATALINA_BASE directory should like the following::
 
 	CATALINA_BASE/
@@ -770,7 +770,7 @@ CATALINA_BASE directory should like the following::
 
 Build a WAR file
 ----------------
-A war file with all the libraries can be build by running a modified maven profile. 
+A war file with all the libraries can be build by running a modified maven profile.
 
 Copy or edit the maven settings in '\apache-maven-3.2.1\conf\settings.xml' and input the correct ets-resources version. For example 04.04.16::
 
@@ -797,7 +797,7 @@ Save the updated file to the user desktop, and then copy into the 'apache-maven-
 
 
 Browse to the teamengine local source code repository::
-	
+
 	In Unix:
 	$ cd ~/repo/teamengine/
 
@@ -805,10 +805,10 @@ Browse to the teamengine local source code repository::
 	Change directory to c:\repo\teamengine
 
 Run the maven profile::
-	
+
 	In Unix:
 	$ mvn -P ogc.cite package
-	
+
 	In Windows:
 	c:\> mvn -P ogc.cite package
 
@@ -825,18 +825,18 @@ The war file should be available at::
 	/repo/teamengine/teamengine-web/target/teamengine.war
 
 Move the war file to CATALINA_BASE/webapps::
-	
+
 	In Unix::
 
 		$ cp ~/repo/teamengine/teamengine-web/target/teamengine.war ~/CATALINA_BASE/webapps/
-	
+
 	In Windows:
-	
+
 		Browse using Windows Explorer to c:\repo\teamengine\teamengine-web\target
 		Copy 'teamengine.war' file into c:\CATALINA_BASE\webapps
 
 Move needed common libs to 	~/CATALINA_BASE/libs/::
-	
+
 	In Unix::
 
 		$ cd ~/repo/teamengine/teamengine-web/target
@@ -844,20 +844,20 @@ Move needed common libs to 	~/CATALINA_BASE/libs/::
 		$ cp *.jar ~/CATALINA_BASE/lib/
 
 	In Windows:
-		
+
 		Browse to c:\repo\teamengine\teamengine-web\target
 		Extract contents of 'teamengine-common-libs.zip' into c:\CATALINA_BASE\lib
 
 
 Start TEAM Engine::
-	
+
 	In Unix::
 
 		$ cd demo/CATALINA_BASE/bin
 		$ ./catalina.sh start
-	
+
 	In Windows::
-		
+
 		Change directory to c:\CATALINA_BASE\bin
 		Enter the following command at the prompt
 		c:\> catalina.bat start
@@ -869,17 +869,17 @@ TEAM Engine should appear when you type::
 Register a username and password if you have not done so previously. Be advised that the username and password are stored in plaintext in TE_BASE\User\ subfolders, and it is strongly advised
 not to use previous or currently utilized usernames or passwords.
 
-Once you are running Team Engine, the URL should change to http://localhost:8080/teamengine/viewsessions.jsp 
+Once you are running Team Engine, the URL should change to http://localhost:8080/teamengine/viewsessions.jsp
 This URL should be used after logging in, or the backend system could crash.
 
 
 To stop TEAM Engine type::
-	
+
 	In Unix::
 
 		$ cd demo/CATALINA_BASE/bin
 		$ ./catalina.sh stop
-	
+
 	In Windows:
 
 		Change directory to c:\CATALINA_BASE\bin
@@ -891,4 +891,3 @@ Getting Help
 ------------
 
 The CITE forum is the best place to get help: http://cite.opengeospatial.org/forum
-
