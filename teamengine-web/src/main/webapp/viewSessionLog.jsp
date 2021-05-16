@@ -182,6 +182,10 @@ if(!resDir.exists()){
 	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
 }
 if(resDir.exists()){
+    File existingResultDir = new File(resultdir + System.getProperty("file.separator") + "result");
+    if (existingResultDir.exists()) {
+        Misc.deleteDir(existingResultDir);
+    }
 core.earlHtmlReport(resultdir.toString());
 earlHtml = new  File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
 
