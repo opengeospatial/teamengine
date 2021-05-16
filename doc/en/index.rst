@@ -886,6 +886,29 @@ To stop TEAM Engine type::
 		Enter the following command at the prompt
 		c:\> catalina.bat stop
 
+Generate TE Statistics Report
+-----------------------------
+The statistics report is accessible via teamengine API and only admin can access this report. The following URL is used to get the report:
+
+[http://HOST/teamengine/rest/stats](http://HOST/teamengine/rest/stats)
+
+1. User needs to login with TE credential in generated prompt.
+2. After successful authentication, it will download the zip containing index.html and standard specific files.
+3. TE statistics has the following types of report:
+	- Number of tests executed per standard
+	- Number of tests and users executed per month 
+	- Number of users per test suite
+	- Table of test suite specific report
+
+**Following steps are required to become an admin:**
+
+1. Open file from the TE_BASE/users/${username}/user.xml 
+2. Add the \<name>admin\</name> element under the \<roles> and it should look like as below:
+	    
+        <roles>
+    	    <name>user</name>
+            <name>admin</name>
+        </roles>
 
 Getting Help
 ------------
