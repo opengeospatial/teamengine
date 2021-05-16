@@ -32,6 +32,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.functions.FunctionLibraryList;
+import net.sf.saxon.lib.Feature;
+import net.sf.saxon.lib.TraceListener;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -91,12 +93,12 @@ public class Engine {
 
         // Modify its configuration settings
         Configuration config = processor.getUnderlyingConfiguration();
-        config.setVersionWarning(false);
+        config.setConfigurationProperty(Feature.VERSION_WARNING, Boolean.FALSE);
 
         // Use our custom error listener which reports line numbers in the CTL
         // source file
         errorListener = new TeErrorListener();
-        config.setErrorListener(errorListener);
+        config.setTraceListener((TraceListener) errorListener);
 
         // Create a compiler and document builder
         compiler = processor.newXsltCompiler();
@@ -121,7 +123,9 @@ public class Engine {
         }
         liblist.addFunctionLibrary(config.getExtensionBinder("java"));
         config.setExtensionBinder("java", liblist);
-
+//        JavaExtensionLibrary javaExtensionLibrary = new JavaExtensionLibrary(config);
+//        liblist.addFunctionLibrary(javaExtensionLibrary.copy());
+//        config.addExtensionBinders(liblist);
     }
 
     /**

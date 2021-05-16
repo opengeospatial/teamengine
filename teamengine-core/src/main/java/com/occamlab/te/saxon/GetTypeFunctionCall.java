@@ -4,19 +4,21 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.expr.Expression;
-import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.expr.parser.ExpressionTool;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.om.StructuredQName;
-import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.ItemType;
 import net.sf.saxon.type.SchemaType;
 import net.sf.saxon.type.TypeHierarchy;
 import net.sf.saxon.value.SequenceType;
-import net.sf.saxon.value.Value;
 
 public class GetTypeFunctionCall extends TEFunctionCall {
     List<QName> params = null;
@@ -37,10 +39,8 @@ public class GetTypeFunctionCall extends TEFunctionCall {
 
     public SequenceIterator iterate(XPathContext context) throws XPathException {
         Expression[] argExpressions = getArguments();
-        ValueRepresentation vr = ExpressionTool.lazyEvaluate(argExpressions[0],
-                context, 1);
-        ItemType it = Value.asValue(vr).getItemType(
-                context.getConfiguration().getTypeHierarchy());
+        Sequence sequence = ExpressionTool.lazyEvaluate(argExpressions[0], context, false);
+        ItemType it = SequenceTool.getItemType(sequence, context.getConfiguration().getTypeHierarchy());
         String type = getTypeName(it);
         Value v = Value.convertJavaObjectToXPath(type,
                 SequenceType.SINGLE_STRING, context);

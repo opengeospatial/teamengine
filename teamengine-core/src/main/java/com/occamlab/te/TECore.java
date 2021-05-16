@@ -64,12 +64,13 @@ import javax.xml.transform.stream.StreamSource;
 import com.occamlab.te.form.ImageHandler;
 import com.occamlab.te.html.EarlToHtmlTransformation;
 
+import net.sf.saxon.PreparedStylesheet;
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.expr.XPathContextMajor;
-import net.sf.saxon.instruct.Executable;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Axis;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.S9APIUtils;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -266,8 +267,7 @@ public class TECore implements Runnable {
     XPathContext context = null;
     if (test.usesContext()) {
       XsltExecutable xe = engine.loadExecutable(test, sourcesName);
-      Executable ex = xe.getUnderlyingCompiledStylesheet()
-              .getExecutable();
+      PreparedStylesheet ex = xe.getUnderlyingCompiledStylesheet();
       context = new XPathContextMajor(contextNode.getUnderlyingNode(), ex);
     }
     return context;
@@ -2366,7 +2366,8 @@ public class TECore implements Runnable {
     formTransformer.setParameter(new QName("action"), new XdmAtomicValue(
             getTestServletURL()));
     StringWriter sw = new StringWriter();
-    Serializer serializer = new Serializer();
+    Processor processor = new Processor(false);
+    Serializer serializer = processor.newSerializer();
     serializer.setOutputWriter(sw);
     serializer.setOutputProperty(Serializer.Property.OMIT_XML_DECLARATION,
             "yes");

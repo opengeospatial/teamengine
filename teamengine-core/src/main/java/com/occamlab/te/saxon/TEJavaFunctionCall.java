@@ -3,19 +3,20 @@ package com.occamlab.te.saxon;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.Expression;
-import net.sf.saxon.expr.ExpressionTool;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.EmptyIterator;
+import net.sf.saxon.expr.parser.ExpressionTool;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.om.StructuredQName;
-import net.sf.saxon.om.ValueRepresentation;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.tree.iter.EmptyIterator;
 import net.sf.saxon.value.ObjectValue;
 import net.sf.saxon.value.SequenceType;
-import net.sf.saxon.value.Value;
 
 import com.occamlab.te.TEClassLoader;
 import com.occamlab.te.TECore;
@@ -35,8 +36,7 @@ public class TEJavaFunctionCall extends TEFunctionCall {
 
     public SequenceIterator iterate(XPathContext context) throws XPathException {
         Controller controller = context.getController();
-        ObjectValue ov = (ObjectValue) controller.getParameter("{" + Test.TE_NS
-                + "}core");
+        ObjectValue<?> ov = (ObjectValue<?>) controller.getParameter(new StructuredQName("", Test.TE_NS, "core"));
         TECore core = (TECore) ov.getObject();
         TEClassLoader cl = core.getEngine().getClassLoader(
                 core.getOpts().getSourcesName());
@@ -75,7 +75,7 @@ public class TEJavaFunctionCall extends TEFunctionCall {
         if (fe.usesContext()) {
             m = methods[argExpressions.length + 1];
             types = m.getParameterTypes();
-            ValueRepresentation vr = context.getContextItem();
+            Item item = context.getContextItem();
             javaArgs[0] = Value.asValue(vr).convertToJava(types[0], context);
             argsIndex = 1;
         } else {
@@ -84,8 +84,8 @@ public class TEJavaFunctionCall extends TEFunctionCall {
             argsIndex = 0;
         }
         for (int i = 0; i < argExpressions.length; i++) {
-            ValueRepresentation vr = ExpressionTool.lazyEvaluate(
-                    argExpressions[i], context, 1);
+            Sequence sequence = ExpressionTool.lazyEvaluate(
+                    argExpressions[i], context, false);
             javaArgs[argsIndex] = Value.asValue(vr).convertToJava(
                     types[argsIndex], context);
             argsIndex++;

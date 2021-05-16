@@ -181,10 +181,9 @@ File earlHtml = null;
 if(!resDir.exists()){
 	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
 }
-if(resDir.exists()){
+earlHtml = new File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
+if(resDir.exists() && !earlHtml.exists()){
 core.earlHtmlReport(resultdir.toString());
-earlHtml = new  File(resultdir + System.getProperty("file.separator") + "result" + System.getProperty("file.separator") + "index.html");
-
 }
 /* if ( htmlReportDir.isDirectory()) { */
 %>

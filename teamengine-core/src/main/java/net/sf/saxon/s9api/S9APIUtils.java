@@ -28,6 +28,6 @@ public class S9APIUtils {
     public static void setTransformerParam(XsltTransformer xt, QName param,
             String value) throws SaxonApiException {
         xt.setParameter(param,
-                XdmItem.newAtomicValue(value, ItemType.ANY_ATOMIC_VALUE));
+        		new XdmAtomicValue(value, ItemType.ANY_ATOMIC_VALUE));
     }
 }

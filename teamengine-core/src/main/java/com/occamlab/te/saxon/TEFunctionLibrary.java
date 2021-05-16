@@ -6,7 +6,9 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.StaticContext;
 import net.sf.saxon.functions.FunctionLibrary;
+import net.sf.saxon.om.Function;
 import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.trans.SymbolicName.F;
 import net.sf.saxon.trans.XPathException;
 
 import com.occamlab.te.Test;
@@ -24,8 +26,8 @@ public class TEFunctionLibrary implements FunctionLibrary {
 
     public Expression bind(StructuredQName functionName,
             Expression[] staticArgs, StaticContext env) throws XPathException {
-        if (functionName.getNamespaceURI().equals(Test.TE_NS)
-                && functionName.getLocalName().equals("get-type")) {
+        if (functionName.getURI().equals(Test.TE_NS)
+                && functionName.getLocalPart().equals("get-type")) {
             return new GetTypeFunctionCall(functionName, staticArgs, env);
         }
 
@@ -74,4 +76,17 @@ public class TEFunctionLibrary implements FunctionLibrary {
         return false;
     }
 
+    public boolean isAvailable(F functionName) {
+        return false;
+    }
+
+    public Expression bind(F functionName, Expression[] staticArgs,
+            StaticContext env, List<String> reasons) {
+        return null;
+    }
+
+    public Function getFunctionItem(F functionName, StaticContext staticContext)
+            throws XPathException {
+        return null;
+    }
 }

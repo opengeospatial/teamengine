@@ -22,8 +22,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opengis.cite.saxon</groupId>
-      <artifactId>saxon9</artifactId>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
       <version>${saxon.version}</version>
     </dependency>
     <dependency>
