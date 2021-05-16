@@ -88,7 +88,8 @@
                   out.println("</tr>");
                   
                   for (int i = 0; i < dirs.length; i++) {
-                    if (new File(new File(userdir, dirs[i]), "session.xml").exists()) {
+                	  File sessionFile = new File(new File(userdir, dirs[i]), "session.xml");
+                    if (sessionFile.exists() && sessionFile.length() != 0) {
                       TestSession s = new TestSession();
                       s.load(userdir, dirs[i]);
                       testData.add(s);
