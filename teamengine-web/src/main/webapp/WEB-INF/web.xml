@@ -120,6 +120,14 @@
     <servlet-name>emailLog</servlet-name>
     <url-pattern>/emailLog</url-pattern>
   </servlet-mapping>
+  <filter>
+    <filter-name>ReportFilter</filter-name>
+    <filter-class>com.occamlab.te.web.AuthorizeTestngReportFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ReportFilter</filter-name>
+    <url-pattern>/reports/*</url-pattern>
+  </filter-mapping>
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>user-specific</web-resource-name>
