@@ -908,6 +908,7 @@ public class TECore implements Runnable {
         //restore previous verdict if the result isn't worse
         if (this.verdict <= oldVerdict) {
             this.verdict = oldVerdict;
+            test.setResult(verdict);
   }
 
         return test.getResult();
