@@ -144,7 +144,7 @@ public class TestSuiteSetResource {
 
             StringBuilder etsURI = new StringBuilder();
             etsURI.append(reqUriInfo.getBaseUri());
-            etsURI.append(this.reqUriInfo.getPath());
+            etsURI.append(this.reqUriInfo.getPath()).append("/");
             etsURI.append(etsController.getCode()).append("/");
 
             testSuiteRestUri.setTextContent(etsURI.toString());
@@ -174,7 +174,7 @@ public class TestSuiteSetResource {
         for (TestSuiteController etsController : etsControllers) {
             StringBuilder etsURI = new StringBuilder();
             etsURI.append(reqUriInfo.getBaseUri());
-            etsURI.append(this.reqUriInfo.getPath());
+            etsURI.append(this.reqUriInfo.getPath()).append("/");
             etsURI.append(etsController.getCode()).append("/");
             
             Map<String, String> testSuiteInfoMap = new HashMap<String, String>();
