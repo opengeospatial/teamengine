@@ -32,6 +32,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -142,12 +143,9 @@ public class TestSuiteSetResource {
 
             Element testSuiteRestUri = xmlDoc.createElement("endpoint");
 
-            StringBuilder etsURI = new StringBuilder();
-            etsURI.append(reqUriInfo.getBaseUri());
-            etsURI.append(this.reqUriInfo.getPath());
-            etsURI.append(etsController.getCode()).append("/");
-
-            testSuiteRestUri.setTextContent(etsURI.toString());
+            UriBuilder etsURI = reqUriInfo.getRequestUriBuilder();
+            etsURI.path(etsController.getCode());
+            testSuiteRestUri.setTextContent(etsURI.build().toString());
             testSuite.appendChild(testSuiteRestUri);
             
             Element testSuiteEtsCode = xmlDoc.createElement("etscode");
