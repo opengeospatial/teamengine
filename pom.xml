@@ -86,7 +86,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
-    <saxon.version>9.0.0.8</saxon.version>
+    <saxon.version>10.0</saxon.version>
   </properties>
 
   <modules>
