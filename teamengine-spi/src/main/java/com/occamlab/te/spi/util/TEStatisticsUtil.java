@@ -878,12 +878,8 @@ public class TEStatisticsUtil {
         byte[] tempBuffer = new byte[1024];
 
         for (File file : files) {
-            String simpleFilePath = file.getAbsolutePath();
-            FileInputStream in = new FileInputStream(simpleFilePath);
-
-            int index = simpleFilePath.lastIndexOf("\\");
-            simpleFilePath = simpleFilePath.substring(index + 1);
-            out.putNextEntry(new ZipEntry(simpleFilePath));
+            FileInputStream in = new FileInputStream(file.getAbsolutePath());
+            out.putNextEntry(new ZipEntry(file.getName()));
 
             // Transfer from the file to the ZIP file
             int length;
