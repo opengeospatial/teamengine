@@ -25,6 +25,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -36,6 +41,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
+
+import com.occamlab.te.util.Utils;
 
 /**
  *
@@ -84,7 +91,7 @@ public class HtmlReport {
                     throws FileNotFoundException {
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        String resourceDir = cl.getResource( "com/occamlab/te/earl/lib" ).getPath();
+		URL resourceDirUrl = cl.getResource("com/occamlab/te/earl/lib");
         String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
 
         File htmlOutput = new File( outputDir, "result" );
@@ -102,7 +109,7 @@ public class HtmlReport {
             transformer.transform( new StreamSource( earlResult ), new StreamResult( outputStream ) );
             // Foritfy Mod: Close the outputStream releasing its resources
             outputStream.close();
-            FileUtils.copyDirectory( new File( resourceDir ), htmlOutput );
+            Utils.copyResourceDir(resourceDirUrl, htmlOutput);
         } catch ( Exception e ) {
             LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
             throw new RuntimeException( e );
@@ -125,7 +132,7 @@ public class HtmlReport {
     public static void zipDir(File zipFile, File dirObj) throws Exception {
         // File dirObj = new File(dir);
         if (!dirObj.isDirectory()) {
-            System.err.println(dirObj.getName() + " is not a directory");
+        	LOGR.severe(dirObj.getName() + " is not a directory");
             System.exit(1);
         }
 
@@ -134,7 +141,7 @@ public class HtmlReport {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
                     zipFile));
 
-            System.out.println("Creating : " + zipFile);
+            LOGR.fine("Creating : " + zipFile);
 
             addDir(dirObj, out);
             // Complete the ZIP file
@@ -165,9 +172,9 @@ public class HtmlReport {
 
             FileInputStream in = new FileInputStream(
                     dirList[i].getAbsolutePath());
-            System.out.println(" Adding: " + dirList[i].getAbsolutePath());
+            LOGR.fine(" Adding: " + dirList[i].getAbsolutePath());
 
-            out.putNextEntry(new ZipEntry(dirList[i].getAbsolutePath()));
+            out.putNextEntry(new ZipEntry(dirList[i].getName()));
 
             // Transfer from the file to the ZIP file
             int len;

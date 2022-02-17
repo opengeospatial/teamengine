@@ -9,16 +9,22 @@
 package com.occamlab.te.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -39,6 +46,8 @@ import org.xml.sax.InputSource;
 public class Utils {
     private static Logger jlogger = Logger
             .getLogger("com.occamlab.te.util.Utils");
+
+	private static String JAR_URI_PREFIX = "jar:file:";
 
     /**
      * Returns a random string of a certain length
@@ -222,5 +231,46 @@ public class Utils {
             return prefixes.iterator();
         }
     }
+    
+    public static void copyResourceDir(URL resourceDirUrl, File destDir) throws IOException {
+
+        String resourceDirUrlString = resourceDirUrl.toString();
+        String resourceDir = resourceDirUrl.getPath();
+        
+		int indexOfExcMark = resourceDirUrlString.indexOf("!");
+		
+		if (resourceDir.startsWith(JAR_URI_PREFIX) &&  indexOfExcMark > -1) {
+			try {
+				copyResourcesFromJar(new JarFile(resourceDir.substring(JAR_URI_PREFIX.length(), indexOfExcMark)), resourceDir.substring(indexOfExcMark + 2), destDir);
+			} catch (IOException e) {
+	            jlogger.log( Level.SEVERE, "Could not copy resources from jar.", e );
+			}
+		} else {
+            FileUtils.copyDirectory( new File( resourceDir ), destDir );
+		}
+    }
+
+	private static void copyResourcesFromJar(JarFile jarFile, String jarDir, File htmlOutput) throws IOException {
+		for (Enumeration<JarEntry> jarEntries = jarFile.entries(); jarEntries.hasMoreElements();) {
+			JarEntry jarEntry = jarEntries.nextElement();
+			if (jarEntry.getName().startsWith(jarDir + "/") && !jarEntry.isDirectory()) {
+				File dest = new File(htmlOutput.getAbsolutePath() + "/" + jarEntry.getName().substring(jarDir.length() + 1));
+				File parent = dest.getParentFile();
+				if (parent != null) {
+					parent.mkdirs();
+				}
+				try (FileOutputStream out = new FileOutputStream(dest); InputStream in = jarFile.getInputStream(jarEntry)) {
+					byte[] buffer = new byte[8 * 1024];
+
+					int s = 0;
+					while ((s = in.read(buffer)) > 0) {
+						out.write(buffer, 0, s);
+					}
+				} catch (IOException e) {
+					throw new IOException("Could not copy resource from jar file: " + jarEntry.getName(), e);
+				}
+			}
+		}
+	}
 
 }
