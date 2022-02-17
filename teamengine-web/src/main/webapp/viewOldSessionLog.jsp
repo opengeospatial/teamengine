@@ -7,13 +7,13 @@ Config Conf;
 DocumentBuilderImpl DB;
 Templates ViewLogTemplates;
 public void jspInit() {
-	try {
-		Conf = new Config();
-		File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewoldlog.xsl");
-		ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
-	} catch (Exception e) {
-		e.printStackTrace(System.out);
-	}
+    try {
+        Conf = new Config();
+        File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewoldlog.xsl");
+        ViewLogTemplates = ViewLog.transformerFactory.newTemplates(new StreamSource(stylesheet));
+    } catch (Exception e) {
+        e.printStackTrace(System.out);
+    }
 }
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -27,58 +27,62 @@ public void jspInit() {
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>			
-		<title>Test Session Results</title>
-		<script>
-		var checkStopSession="<%=request.getParameter("stop")%>";
-		if(checkStopSession == "true"){
-			alert("Session was stopped!!!");
-		}
-		
-			function toggleAll(testnum, state) {
-			  for (key in document.images) {
-			    var image = document.images[key];
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>            
+        <title>Test Session Results</title>
+        <script>
+        var checkStopSession="<%=request.getParameter("stop")%>";
+        if(checkStopSession == "true"){
+            alert("Session was stopped!!!");
+        }
+        
+            function toggleAll(testnum, state) {
+              for (key in document.images) {
+                var image = document.images[key];
                             if (image.name) {
-			      if (image.name.substring(0, 5 + testnum.length) == "image" + testnum) {
-			        image.src = "images/" + (state ? "minus.png" : "plus.png");
+                  if (image.name.substring(0, 5 + testnum.length) == "image" + testnum) {
+                    image.src = "images/" + (state ? "minus.png" : "plus.png");
                                 var div = document.getElementById('test' + image.name.substring(5));
-			        div.style.display = state ? "block" : "none";
-			      }
-			    }
-			  }
-			}
-			function toggle(testnum, e) {
-			  var evt = e || window.event;
-			  if (document.images['image' + testnum].src.indexOf('minus') > 0) {
-			    if (evt.ctrlKey) {
-			      toggleAll(testnum, false);
-			    } else {
-			      document.images['image' + testnum].src = 'images/plus.png';
-			      document.getElementById('test' + testnum).style.display = "none";
-			    }
-			  } else {
-			    if (evt.ctrlKey) {
-			      toggleAll(testnum, true);
-			    } else {
-			      document.images['image' + testnum].src = 'images/minus.png';
-			      document.getElementById('test' + testnum).style.display = "block";
-			    }
-			  }
-			}
-			function deleteSession() {
-				if (confirm("Are you sure you want to delete session <%=request.getParameter("session")%>?")) {
-					window.location = "deleteSession?session=<%=request.getParameter("session")%>"
-				}
-			}
-		</script>		
-	</head>
-	<body>
-		<%@ include file="header.jsp" %>
-		<h2>Results for session <%=request.getParameter("session")%></h2>
+                    div.style.display = state ? "block" : "none";
+                  }
+                }
+              }
+            }
+            function toggle(testnum, e) {
+              var evt = e || window.event;
+              if (document.images['image' + testnum].src.indexOf('minus') > 0) {
+                if (evt.ctrlKey) {
+                  toggleAll(testnum, false);
+                } else {
+                  document.images['image' + testnum].src = 'images/plus.png';
+                  document.getElementById('test' + testnum).style.display = "none";
+                }
+              } else {
+                if (evt.ctrlKey) {
+                  toggleAll(testnum, true);
+                } else {
+                  document.images['image' + testnum].src = 'images/minus.png';
+                  document.getElementById('test' + testnum).style.display = "block";
+                }
+              }
+            }
+            function deleteSession() {
+                if (confirm("Are you sure you want to delete session <%=request.getParameter("session")%>?")) {
+                    window.location = "deleteSession?session=<%=request.getParameter("session")%>"
+                }
+            }
+        </script>        
+    </head>
+    <body>
+        <%@ include file="header.jsp" %>
+        <h2>Results for session <%=request.getParameter("session")%></h2>
 <%
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
+      if (sessionId == null || sessionId.isEmpty()) {
+          response.sendRedirect("viewSessions.jsp");
+          return;
+      }
       TestSession ts = new TestSession();
       ts.load(userlog, sessionId);
       String suiteName = "null";
@@ -86,24 +90,24 @@ public void jspInit() {
       SuiteEntry suiteEntry = null;
       String sourceIdKey = "";
       Map<String, List<ProfileEntry>> profileInfos;
-      for(String key : Conf.getSuites().keySet()) {  	  
-	      String onlySourceName = sourcesName.substring(0,sourcesName.lastIndexOf("_"));
-    	  if(key.contains(onlySourceName)){
-    		  sourceIdKey = key;
-    		 suiteEntry = Conf.getSuites().get(key);
-    	  }
+      for(String key : Conf.getSuites().keySet()) {        
+          String onlySourceName = sourcesName.substring(0,sourcesName.lastIndexOf("_"));
+          if(key.contains(onlySourceName)){
+              sourceIdKey = key;
+             suiteEntry = Conf.getSuites().get(key);
+          }
       }
       if (sourcesName == null) {
           suiteName = "error: sourcesName is null";
       } else {
           SuiteEntry se = Conf.getSuites().get(sourcesName);
           if (se == null) {
-        	  if(suiteEntry != null){
-        		  String title = suiteEntry.getTitle();
+              if(suiteEntry != null){
+                  String title = suiteEntry.getTitle();
                   suiteName = (title == null) ? "error: suiteEntry title is null" : title;
-        	  } else {
-             		suiteName = "error: suitEntry is null";
-        	  }
+              } else {
+                     suiteName = "error: suitEntry is null";
+              }
           } else {
               String title = se.getTitle();
               suiteName = (title == null) ? "error: suiteEntry title is null" : title;
@@ -122,20 +126,20 @@ public void jspInit() {
         int i = 0;
         
         if(Conf.getProfiles().get(ts.getSourcesName()) == null){
-        	sourceId = sourceIdKey;
+            sourceId = sourceIdKey;
         } else {
-        	sourceId = ts.getSourcesName();
+            sourceId = ts.getSourcesName();
         }
-	      for (ProfileEntry profile : Conf.getProfiles().get(sourceId)) {
-	          out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
-	          if (ts.getProfiles().contains(profile.getId())) {
-	        	  String path = sessionId + "/" + profile.getLocalName();
+          for (ProfileEntry profile : Conf.getProfiles().get(sourceId)) {
+              out.println("<h3>Profile: " + profile.getTitle() + "</h3>");
+              if (ts.getProfiles().contains(profile.getId())) {
+                  String path = sessionId + "/" + profile.getLocalName();
               complete = ViewLog.view_log(suiteName,userlog, path, tests, ViewLogTemplates, out, (i+2));
-				      out.println("<br/>");
+                      out.println("<br/>");
               profileParams += "&amp;" + "profile_" + Integer.toString(i) + "=" + URLEncoder.encode(profile.getId(), "UTF-8");
               i++;
-		      }
-	      }
+              }
+          }
       }
 %>
 
@@ -147,7 +151,7 @@ if ( htmlReportDir.isDirectory()) {
 %>
     <p>
     See the <a href="<%=request.getContextPath()%>/reports/<%=request.getRemoteUser()%>/<%=sessionId%>/html/">detailed test report</a>.
- 	</p>
+     </p>
 <% } %>
 
 <%--
@@ -160,20 +164,20 @@ if ( htmlReportDir.isDirectory()) {
         out.println("<input type=\"button\" value=\"Resume executing this session\" onclick=\"window.location = 'test.jsp?mode=resume&amp;session=" + sessionId + "'\"/>");
       }
 --%>
-		<br/>
-		<input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%><%=profileParams%>'"/>
+        <br/>
+        <input type="button" value="Execute this session again" onclick="window.location = 'test.jsp?mode=retest&amp;session=<%=request.getParameter("session")%><%=profileParams%>'"/>
 <%
       boolean hasCache = ViewLog.hasCache();
       if (hasCache) {
           out.print(  "<input type=\"button\" value=\"Redo using cached values\" onclick=\"window.location = 'test.jsp?mode=cache&amp;session=" + sessionId + profileParams + "'\"/>");
       }
 %>
-		<input type="button" value="Delete this session" onclick="deleteSession()"/>
-		<input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
-<!-- 		<input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>  -->
-<%--		<input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/> --%>
-		<br/>
+        <input type="button" value="Delete this session" onclick="deleteSession()"/>
+        <input type="button" value="Download log Files" onclick="window.location = 'downloadLog?session=<%=request.getParameter("session")%>'"/>
+<!--         <input type="button" value="Create execution log report file" onclick="window.location = 'prettyPrintLogs?session=<%=request.getParameter("session")%>'"/>  -->
+<%--        <input type="button" value="Email log Files" onclick="window.location = 'emailLog?session=<%=request.getParameter("session")%>'"/> --%>
+        <br/>
     <p><a href="viewSessions.jsp">Sessions list</a></p>
-		<%@ include file="footer.jsp" %>				
-	</body>
+        <%@ include file="footer.jsp" %>                
+    </body>
 </html>
