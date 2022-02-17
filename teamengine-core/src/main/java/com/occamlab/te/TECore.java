@@ -1997,7 +1997,13 @@ public class TECore implements Runnable {
 
       OutputStream os = uc.getOutputStream();
       os.write(bytes);
+    } else {
+      for (int i = 0; i < headers.size(); ++i) {
+        String[] header = headers.get(i);
+        uc.setRequestProperty(header[0], header[1]);
+      }
     }
+
     return uc;
   }
 
