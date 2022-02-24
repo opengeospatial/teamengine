@@ -78,6 +78,10 @@ String organization = request.getParameter("organization");
 					showerror("Organization is required.");
 					return;
 				}
+				if (!form.elements["acceptPrivacy"].checked) {
+					showerror("Please accept the terms of the OGC Privacy Policy");
+					return;
+				}
 <% if (!request.isSecure()) { %>
 				if (!form.elements["disclaimer"].checked) {
 					showerror("Please acknowledge that you have read the warning below by checking the box.");
@@ -96,6 +100,7 @@ String organization = request.getParameter("organization");
 				form.elements["repeat_password"].value = "";
 				form.elements["email"].value = "";
 				form.elements["organization"].value = "";
+				form.elements["acceptPrivacy"].checked = false;
 			}
 		</script>
 	</head>
@@ -141,6 +146,9 @@ if ("duplicate".equals(request.getParameter("error"))) {
 					<tr>
 						<td>Organization:</td>
 						<td><input name="organization" type="text" value="<%= organization == null ? "" : organization %>"/></td>
+					</tr>
+					<tr>
+						<td><input name="acceptPrivacy" type="checkbox" />I agree to the terms of the OGC <a href="https://www.ogc.org/ogc/policies/privacy">Privacy Policy</a></td>
 					</tr>
 				</table>
 <% if (!request.isSecure()) { %>
