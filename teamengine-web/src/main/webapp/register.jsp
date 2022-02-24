@@ -148,7 +148,7 @@ if ("duplicate".equals(request.getParameter("error"))) {
 						<td><input name="organization" type="text" value="<%= organization == null ? "" : organization %>"/></td>
 					</tr>
 					<tr>
-						<td><input name="acceptPrivacy" type="checkbox" />I agree to the terms of the OGC <a href="https://www.opengeospatial.org/ogc/policies/privacy">Privacy Policy</a></td>
+						<td><input name="acceptPrivacy" type="checkbox" />I agree to the terms of the OGC <a href="https://www.ogc.org/ogc/policies/privacy">Privacy Policy</a></td>
 					</tr>
 				</table>
 <% if (!request.isSecure()) { %>
