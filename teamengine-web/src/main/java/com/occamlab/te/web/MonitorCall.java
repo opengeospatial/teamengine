@@ -1,3 +1,10 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.occamlab.te.web;
 
 import java.io.File;
@@ -14,7 +21,7 @@ import net.sf.saxon.expr.XPathContext;
  * configured to modify the response before forwarding it to the requester. A
  * monitor may also perform simple coverage reporting by keeping track of which
  * service capabilities were invoked by the client (for GET requests only).
- * 
+ *
  */
 public class MonitorCall {
     XPathContext context;
@@ -119,7 +126,7 @@ public class MonitorCall {
 
     /**
      * Determines which server capabilities are invoked by this query.
-     * 
+     *
      * @param query
      *            The (decoded) query string extracted from the request URI.
      */

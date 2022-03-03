@@ -1,4 +1,10 @@
-/****************************************************************************
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *****************************************************************************
 
  The Original Code is TEAM Engine.
 
@@ -7,7 +13,7 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): 
+ Contributor(s):
  	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
@@ -31,7 +37,7 @@ import com.occamlab.te.util.Misc;
 
 /**
  * Processes (GET method) requests to view a test log.
- * 
+ *
  */
 public class ViewLogServlet extends HttpServlet {
 

@@ -22,6 +22,7 @@
     <html>
         <head>
             <title>Executing Tests</title>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
             <script>
                 var LONG_TIMEOUT = 4000;
                 var SHORT_TIMEOUT = 1000;
@@ -43,6 +44,10 @@
                     var d = new Date();
                 <%
 mode = request.getParameter("mode");
+if (mode == null || mode.isEmpty()) {
+    response.sendRedirect("viewSessions.jsp");
+    return;
+}
 test = request.getParameter("test");
 sessionId = request.getParameter("session");
 paramMap = request.getParameterMap();
@@ -167,8 +172,24 @@ if (mode.equals("retest") || mode.equals("resume") || mode.equals("cache")) {
                 %>
                     window.location = url + "&stop=" + stop + "&t=" + d.getTime();
                 }
+                
+             // Validate the inputs.
+                function validateIutInputs(iut_uri, iut_doc) {
+        			var iuturi = window.frames[1].window.document.getElementById(iut_uri).value;
+        			var iutdoc = window.frames[1].window.document.getElementById(iut_doc).value;
+        			if ((iutdoc == undefined || iutdoc == null || iutdoc == "")
+        					&& (iuturi == undefined || iuturi == null || iuturi == "")) {
+        				alert("Capability URL or document should not be empty.");
+        				window.frames[1].window.document.getElementById(iut_uri).focus();
+        				return false;
+        			}
+        			if (iutdoc != null && iutdoc != "" && iuturi != null && iuturi != "") {
+        				alert("Provide only one input either capability URL or document!");
+        				return false;
+        			}
+        		}
             </script>
-        </head>
+	</head>
 	<frameset onload="start()" rows="102,*">
             <frame name="te_test_controls" src="testControls.html">
                 <frame name="te_test_panel" src="executing.html">

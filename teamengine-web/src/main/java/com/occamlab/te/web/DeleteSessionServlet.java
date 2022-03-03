@@ -1,4 +1,10 @@
-/****************************************************************************
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *****************************************************************************
 
  The Original Code is TEAM Engine.
 
@@ -9,7 +15,8 @@
 
  Contributor(s): No additional contributors to date
 
- ****************************************************************************/
+ ***************************************************************************
+ */
 package com.occamlab.te.web;
 
 import java.io.File;
@@ -23,7 +30,7 @@ import com.occamlab.te.util.Misc;
 
 /**
  * Processes a request to delete an existing test session.
- * 
+ *
  */
 public class DeleteSessionServlet extends HttpServlet {
 

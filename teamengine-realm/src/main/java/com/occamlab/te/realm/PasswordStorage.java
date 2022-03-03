@@ -1,3 +1,11 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package com.occamlab.te.realm;
 
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +35,7 @@ import javax.xml.bind.DatatypeConverter;
  * <li><em>salt</em> - the salt (base64 encoded)</li>
  * <li><em>hash</em> - the PBKDF2 output (base64 encoded)</li>
  * </ul>
- * 
+ *
  * @see <a href="https://github.com/defuse/password-hashing">Secure Password
  *      Storage v2.0</a>
  */
@@ -74,7 +82,7 @@ public class PasswordStorage {
      * Creates a password digest using the PBKDF2 key derivation function
      * (64,000 iterations of SHA1 by default) with a cryptographically-random
      * salt.
-     * 
+     *
      * @param password
      *            The submitted password.
      * @return A hash value in the following format:
@@ -104,13 +112,13 @@ public class PasswordStorage {
 
     /**
      * Checks a submitted password against the expected hash value.
-     * 
+     *
      * @param password
      *            The submitted password.
      * @param correctHash
      *            The expected hash value.
      * @return true if the provided password is correct; false otherwise.
-     * 
+     *
      * @throws CannotPerformOperationException
      *             If password verification failed for some reason.
      * @throws InvalidHashException

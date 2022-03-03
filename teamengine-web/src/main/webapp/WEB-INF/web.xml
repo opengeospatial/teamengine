@@ -121,12 +121,12 @@
     <url-pattern>/emailLog</url-pattern>
   </servlet-mapping>
   <filter>
-    <filter-name>AuthenticationFilter</filter-name>
-    <filter-class>com.occamlab.te.realm.RestAuthenticationFilter</filter-class>
+    <filter-name>ReportFilter</filter-name>
+    <filter-class>com.occamlab.te.web.AuthorizeTestngReportFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>AuthenticationFilter</filter-name>
-    <url-pattern>/rest/*</url-pattern>
+    <filter-name>ReportFilter</filter-name>
+    <url-pattern>/reports/*</url-pattern>
   </filter-mapping>
   <security-constraint>
     <web-resource-collection>

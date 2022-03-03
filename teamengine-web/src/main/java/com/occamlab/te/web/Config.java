@@ -1,15 +1,21 @@
-
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
 /****************************************************************************
  The Original Code is TEAM Engine.
- 
+
  The Initial Developer of the Original Code is Northrop Grumman Corporation
  jointly with The National Technology Alliance.  Portions created by
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
- 
- Contributor(s): 
+
+ Contributor(s):
  	C. Heazel (WiSC): Added Fortify adjudication changes
- 
+
  ****************************************************************************/
 package com.occamlab.te.web;
 

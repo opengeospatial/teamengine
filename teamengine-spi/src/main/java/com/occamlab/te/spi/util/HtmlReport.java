@@ -1,4 +1,10 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * ********************************************************************
  *
  * Version Date: March 26, 2018
@@ -19,6 +25,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -31,10 +42,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
 
+import com.occamlab.te.util.Utils;
+
 /**
- * 
- * This class is used to process HTML result. 
- * It will transform EARL result into HTML report 
+ *
+ * This class is used to process HTML result.
+ * It will transform EARL result into HTML report
  * and return the HTML result with zip file.
  *
  * Contributor(s):
@@ -48,7 +61,7 @@ public class HtmlReport {
 	/**
 	 * This method will return the HTML result with zip file.
 	 * @param outputDirectory
-	 * 
+	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
@@ -61,24 +74,24 @@ public class HtmlReport {
             LOGR.log( Level.SEVERE, "Could not create zip file with html results.", e );
 		}
 		return htmlResultFile;
-		
+
 	}
-	
+
 	/**
      * Convert EARL result into HTML report.
-     * 
+     *
      * @param outputDir
      * 		Location of the test result.
-     * @return 
+     * @return
      * 		Return the output file.
      * @throws FileNotFoundException
-     * 		Throws exception if file is not available. 
+     * 		Throws exception if file is not available.
      */
     public static File earlHtmlReport( String outputDir )
                     throws FileNotFoundException {
 
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        String resourceDir = cl.getResource( "com/occamlab/te/earl/lib" ).getPath();
+		URL resourceDirUrl = cl.getResource("com/occamlab/te/earl/lib");
         String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
 
         File htmlOutput = new File( outputDir, "result" );
@@ -96,7 +109,7 @@ public class HtmlReport {
             transformer.transform( new StreamSource( earlResult ), new StreamResult( outputStream ) );
             // Foritfy Mod: Close the outputStream releasing its resources
             outputStream.close();
-            FileUtils.copyDirectory( new File( resourceDir ), htmlOutput );
+            Utils.copyResourceDir(resourceDirUrl, htmlOutput);
         } catch ( Exception e ) {
             LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
             throw new RuntimeException( e );
@@ -106,7 +119,7 @@ public class HtmlReport {
         }
         return htmlOutput;
     }
-    
+
     /**
      *  Zips the directory and all of it's sub directories
      * @param zipFile
@@ -119,7 +132,7 @@ public class HtmlReport {
     public static void zipDir(File zipFile, File dirObj) throws Exception {
         // File dirObj = new File(dir);
         if (!dirObj.isDirectory()) {
-            System.err.println(dirObj.getName() + " is not a directory");
+        	LOGR.severe(dirObj.getName() + " is not a directory");
             System.exit(1);
         }
 
@@ -128,7 +141,7 @@ public class HtmlReport {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
                     zipFile));
 
-            System.out.println("Creating : " + zipFile);
+            LOGR.fine("Creating : " + zipFile);
 
             addDir(dirObj, out);
             // Complete the ZIP file
@@ -159,9 +172,9 @@ public class HtmlReport {
 
             FileInputStream in = new FileInputStream(
                     dirList[i].getAbsolutePath());
-            System.out.println(" Adding: " + dirList[i].getAbsolutePath());
+            LOGR.fine(" Adding: " + dirList[i].getAbsolutePath());
 
-            out.putNextEntry(new ZipEntry(dirList[i].getAbsolutePath()));
+            out.putNextEntry(new ZipEntry(dirList[i].getName()));
 
             // Transfer from the file to the ZIP file
             int len;

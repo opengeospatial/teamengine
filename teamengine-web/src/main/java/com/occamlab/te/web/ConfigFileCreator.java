@@ -1,7 +1,13 @@
-/**
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * **************************************************************************
  *
- * Contributor(s): 
+ * Contributor(s):
  *	C. Heazel (WiSC): Added Fortify adjudication changes
  *
  ***************************************************************************
@@ -40,9 +46,9 @@ import org.w3c.dom.Node;
  * For example, two tests using Organization/name = 'OGC', will appear both
  * under the 'OGC' organization. IF no tests exist under TE_BASE/scripts , still
  * creates a config file with two elements config/scripts.
- * 
+ *
  * If a previous config file exists, it will get deleted.
- * 
+ *
  */
 public class ConfigFileCreator {
 
@@ -69,7 +75,7 @@ public class ConfigFileCreator {
 	/**
 	 * Creates the main config file. IF <code>tebase</code> is not found it will
 	 * throw a <code>TEBaseNotFoundException</code>.
-	 * 
+	 *
 	 * @param tebase
 	 */
 	public void create(String tebase) throws TEException {
@@ -87,7 +93,7 @@ public class ConfigFileCreator {
 
 	/**
 	 * Creates the main config file.
-	 * 
+	 *
 	 * @param tebase
 	 */
 	public void create(File tebase) throws TEException {
@@ -113,7 +119,7 @@ public class ConfigFileCreator {
 	 * Process the the tests under the TEBASE folder, and creates an integrated
 	 * config.xml. If no tests are found, it stills create a basic config file
 	 * with two elements configs/scripts.
-	 * 
+	 *
 	 * @param tebase
 	 *            - path to TEBASE. Expected to have under TEBASE/scripts
 	 */
@@ -238,7 +244,7 @@ public class ConfigFileCreator {
 
 	/**
 	 * Returns the all config file found under a directory
-	 * 
+	 *
 	 * @param dir
 	 * @return A list of files found. Length = 0 if not found files.
 	 */

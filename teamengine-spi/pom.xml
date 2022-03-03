@@ -61,47 +61,21 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
-      <version>1.19</version>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-multipart</artifactId>
-      <version>1.19</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
-      <scope>provided</scope>
+      <version>${jersey.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-core</artifactId>
-      <version>3.1.0</version>
-      <exclusions>
-        <!-- http://commons.apache.org/proper/commons-csv/ -->
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-csv</artifactId>
-        </exclusion>
-        <!-- http://commons.apache.org/proper/commons-lang/ -->
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.5</version>
 	</dependency>
-    <!-- SLF4J logging facade is used by Jena -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.21</version>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -114,7 +88,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>1.10.19</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -122,6 +95,10 @@
       <artifactId>guice</artifactId>
       <version>4.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
     </dependency>
   </dependencies>
 

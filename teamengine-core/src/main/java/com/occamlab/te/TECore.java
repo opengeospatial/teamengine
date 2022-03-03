@@ -214,7 +214,7 @@ public class TECore implements Runnable {
   public static String Clause = "";
   public static String Purpose = "";
   public static ArrayList<String> rootTestName = new ArrayList<String>();
-  public static Document userInputs = null;
+  public Document userInputs = null;
   public Boolean supportHtmlReport = false;
 
   public final ImageHandler imageHandler;
@@ -366,6 +366,14 @@ public class TECore implements Runnable {
   }
 
   public void reexecute_test(String testPath) throws Exception {
+    File deleteExistingResultDir = new File(opts.getLogDir() + File.separator + testPath + File.separator + "result");
+    if (deleteExistingResultDir.exists()) {
+       Misc.deleteDir(deleteExistingResultDir);
+    }
+    File deleteExistingTestngDir = new File(opts.getLogDir() + File.separator + testPath + File.separator + "testng");
+    if (deleteExistingTestngDir.exists()) {
+        Misc.deleteDir(deleteExistingTestngDir);
+    }
     Document log = LogUtils.readLog(opts.getLogDir(), testPath);
     String testId = LogUtils.getTestIdFromLog(log);
     TestEntry test = index.getTest(testId);
@@ -908,6 +916,7 @@ public class TECore implements Runnable {
         //restore previous verdict if the result isn't worse
         if (this.verdict <= oldVerdict) {
             this.verdict = oldVerdict;
+            test.setResult(verdict);
   }
 
         return test.getResult();
@@ -1988,7 +1997,13 @@ public class TECore implements Runnable {
 
       OutputStream os = uc.getOutputStream();
       os.write(bytes);
+    } else {
+      for (int i = 0; i < headers.size(); ++i) {
+        String[] header = headers.get(i);
+        uc.setRequestProperty(header[0], header[1]);
+      }
     }
+
     return uc;
   }
 

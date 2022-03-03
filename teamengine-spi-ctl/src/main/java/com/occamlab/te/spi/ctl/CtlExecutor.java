@@ -1,3 +1,11 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
+ 
 package com.occamlab.te.spi.ctl;
 
 import com.occamlab.te.CtlEarlReporter;
@@ -115,7 +123,7 @@ public class CtlExecutor implements TestRunExecutor {
         }
         File resultsDir = new File(runOpts.getLogDir(), runOpts.getSessionId());
         File testLog = new File(resultsDir, "report_logs.xml");
-        
+
         CtlEarlReporter report = new CtlEarlReporter();
         try{
         	report.generateEarlReport (resultsDir, testLog, suiteName, this.testInputs);
@@ -173,12 +181,12 @@ public class CtlExecutor implements TestRunExecutor {
         }
         return runOpts;
     }
-    
+
     /**
      * Returns the test results in the specified format. The default media type
      * is "application/xml", but "application/rdf+xml" (RDF/XML) is also
      * supported.
-     * 
+     *
      * @param mediaType
      *            The media type of the test results (XML or RDF/XML).
      * @param outputDirectory
@@ -194,7 +202,7 @@ public class CtlExecutor implements TestRunExecutor {
         if(contentType.endsWith("rdf+xml") || contentType.endsWith("rdf+earl")){
         	fileName = "earl-results.rdf";
         } else if(contentType.endsWith("zip")){
-        	
+
         File htmlResult = HtmlReport.getHtmlResultZip(outputDirectory);
         fileName = "result.zip";
         } else{
@@ -206,12 +214,12 @@ public class CtlExecutor implements TestRunExecutor {
         }
         return resultsFile;
     }
-    
+
     /**
      * Gets the preferred media type for the test results as indicated by the
      * value of the "acceptMediaType" key in the given properties file. The
      * default value is "application/xml".
-     * 
+     *
      * @param testRunArgs
      *            An XML properties file containing test run arguments.
      * @return The preferred media type.
@@ -233,5 +241,5 @@ public class CtlExecutor implements TestRunExecutor {
         }
         return mediaType;
     }
-    
+
 }

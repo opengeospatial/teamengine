@@ -1,4 +1,10 @@
-/****************************************************************************
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *****************************************************************************
 
  The Original Code is TEAM Engine.
 
@@ -7,7 +13,7 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): 
+ Contributor(s):
  	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
@@ -72,7 +78,7 @@ import com.occamlab.te.util.StringUtils;
 
 /**
  * Main request handler.
- * 
+ *
  */
 public class TestServlet extends HttpServlet {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
@@ -94,12 +100,12 @@ public class TestServlet extends HttpServlet {
      */
     public void init() throws ServletException {
         try {
-           
-            
-            
+
+
+
             String path = getServletContext().getInitParameter("teConfigFile");
-           
-           
+
+
           //create main config file when TE restarts
             String tebase = path.split("config")[0];
             File teBasePath=new File(tebase);
@@ -116,9 +122,9 @@ public class TestServlet extends HttpServlet {
             }
             ConfigFileCreator creator = new ConfigFileCreator();
             if(null!=resorcePath && resorcePath.exists()){
-            creator.create(tebase); 
+            creator.create(tebase);
             //delete workdir when TE restarts
-            
+
             String workDir = path.split("config")[0] + "work";
             FileUtils.deleteDirectory(new File(workDir));
             LOGR.info("Deleting  the work dir at:"+workDir);
@@ -133,7 +139,7 @@ public class TestServlet extends HttpServlet {
             // DB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 // End Fortify Mod
 
-                // Forify Mod: prevent external entity injection 
+                // Forify Mod: prevent external entity injection
             TransformerFactory tf = TransformerFactory.newInstance();
             tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             identityTransformer = tf.newTransformer();
@@ -218,9 +224,9 @@ public class TestServlet extends HttpServlet {
             throw new ServletException(e);
         }
     }
-    
-   
-    
+
+
+
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         process(request, response);
