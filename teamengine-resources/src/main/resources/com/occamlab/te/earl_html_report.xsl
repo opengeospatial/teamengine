@@ -497,11 +497,7 @@
               <td>
                 <xsl:variable name="message">
                   <xsl:variable name="msg">
-                    <xsl:call-template name="string-replace-all">
-                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                      <xsl:with-param name="replace" select="'['" />
-                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                    </xsl:call-template>
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
                   </xsl:variable>
                   <xsl:choose>
                     <xsl:when test="substring-before($msg,'expected [')">
@@ -537,11 +533,7 @@
               <td>
                 <xsl:variable name="message">
                   <xsl:variable name="msg">
-                    <xsl:call-template name="string-replace-all">
-                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                      <xsl:with-param name="replace" select="'['" />
-                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                    </xsl:call-template>
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
                   </xsl:variable>
                   <xsl:choose>
                     <xsl:when test="substring-before($msg,'expected [')">
@@ -574,11 +566,7 @@
               <td>
                 <xsl:variable name="message">
                   <xsl:variable name="msg">
-                    <xsl:call-template name="string-replace-all">
-                      <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                      <xsl:with-param name="replace" select="'['" />
-                      <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                    </xsl:call-template>
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
                   </xsl:variable>
                   <xsl:choose>
                     <xsl:when test="substring-before($msg,'expected [')">
@@ -790,11 +778,7 @@
                         <td>
                           <xsl:variable name="message">
                             <xsl:variable name="msg">
-                              <xsl:call-template name="string-replace-all">
-                                <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                                <xsl:with-param name="replace" select="'['" />
-                                <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                              </xsl:call-template>
+                                <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
                             </xsl:variable>
                             <xsl:choose>
                               <xsl:when test="substring-before($msg,'expected [')">
@@ -1000,11 +984,7 @@
                 <td>
                   <xsl:variable name="message">
                     <xsl:variable name="msg">
-                      <xsl:call-template name="string-replace-all">
-                        <xsl:with-param name="text" select="earl:result/earl:TestResult/dct:description" />
-                        <xsl:with-param name="replace" select="'['" />
-                        <xsl:with-param name="by" select="'&lt;br&gt;['" />
-                      </xsl:call-template>
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
                     </xsl:variable>
                     <xsl:choose>
                       <xsl:when test="substring-before($msg,'expected [')">
