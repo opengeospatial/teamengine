@@ -140,6 +140,7 @@
       <url-pattern>/sessionDeleted.jsp</url-pattern>
       <url-pattern>/test.jsp</url-pattern>
       <url-pattern>/viewSessionLog.jsp</url-pattern>
+      <url-pattern>/viewOldSessionLog.jsp</url-pattern>
       <url-pattern>/viewSessions.jsp</url-pattern>
       <url-pattern>/viewTest.jsp</url-pattern>
       <url-pattern>/viewTestLog.jsp</url-pattern>
