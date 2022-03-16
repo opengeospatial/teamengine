@@ -109,6 +109,8 @@ public class CtlEarlReporter {
     
     private Boolean areCoreConformanceClassesPassed = true;
 
+    private String tmpDir = System.getProperty("java.io.tmpdir");
+    
     public CtlEarlReporter() {
         this.earlModel = ModelFactory.createDefaultModel();
         totalPassCount = 0;
@@ -609,15 +611,18 @@ public class CtlEarlReporter {
             int first = baseUrl.indexOf( System.getProperty( "file.separator" ) );
             int second = baseUrl.indexOf( System.getProperty( "file.separator" ), first + 1 );
             logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
-        } else if ( decodedBaseURL.contains( "temp" ) ) {
-            String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "temp" ) );
-            logtestcall = baseUrl.substring( baseUrl.indexOf( System.getProperty( "file.separator" ) ) + 1,
+        } else if ( decodedBaseURL.startsWith(tmpDir) ) {
+            String baseUrl = decodedBaseURL.replace(tmpDir, "");
+            logtestcall = baseUrl.substring( 0,
                                              baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
         } else if ( decodedBaseURL.contains( "unittest" ) ) {
             // for Unit test only
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "unittest" ) );
             logtestcall = baseUrl.substring( baseUrl.indexOf( "/" ) + 1,
                                              baseUrl.lastIndexOf( "/" ) );
+        }
+        if ( logtestcall.startsWith(System.getProperty( "file.separator" ))) {
+            logtestcall = logtestcall.substring(1);
         }
         if ( logtestcall.contains( "\\" ) ) {
             logtestcall = logtestcall.replace( "\\", "/" );
