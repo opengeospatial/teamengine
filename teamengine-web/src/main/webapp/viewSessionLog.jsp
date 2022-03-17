@@ -32,6 +32,7 @@ public void jspInit() {
 
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <%@page import="java.net.URLEncoder"%>
+<%@ page errorPage="error.jsp" %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -111,8 +112,12 @@ public void jspInit() {
       File userlog = new File(Conf.getUsersDir(), request.getRemoteUser());
       String sessionId = request.getParameter("session");
       TestSession ts = new TestSession();
-      ts.load(userlog, sessionId);
       String suiteName = "null";
+      try {
+          ts.load(userlog, sessionId);
+      } catch(Exception e) {
+    	  throw new Exception("Session invalid.");
+      }
       String sourcesName = ts.getSourcesName();
       SuiteEntry suiteEntry = null;
       String sourceIdKey = "";
