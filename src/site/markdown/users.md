@@ -258,6 +258,12 @@ is unpacked into the lib directory in the last step. In some cases it may be nec
 to add other (transitive) dependencies. The Tomcat instance does not need to be restarted 
 to enable the test suite--it should be available immediately.
 
+#### Authentication 
+
+Authentication is activated for the REST API. Users need to send their username and password along with any request to the REST API using the HTTP "basic" authentication scheme. The Teamengine login credentials are used for the authentication. The following example shows a curl request with the necessary authorization header:
+
+curl 'http://localhost:8081/teamengine/rest/suites/$your_test_suite$/run' -H 'Authorization: Basic $your_encoded_credentials$' 
+
 #### Output formats
 
 ##### EARL (RDF/XML)

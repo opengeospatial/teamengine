@@ -29,7 +29,7 @@ public class AlterSuiteParametersListener implements IAlterSuiteListener {
 
     private final static Logger LOGR = Logger.getLogger(AlterSuiteParametersListener.class.getName());
     private Document testRunArgs;
-    private UUID testRunId = UUID.randomUUID();
+    private String testRunId = UUID.randomUUID().toString();
 
     /**
      * Sets the test run arguments from entries in a properties document.
@@ -50,7 +50,7 @@ public class AlterSuiteParametersListener implements IAlterSuiteListener {
      * @param testRunId
      *            A universally unique identifier (128-bit value).
      */
-    public void setTestRunId(UUID testRunId) {
+    public void setTestRunId(String testRunId) {
         this.testRunId = testRunId;
     }
 
