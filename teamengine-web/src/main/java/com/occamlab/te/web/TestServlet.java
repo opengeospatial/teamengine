@@ -174,8 +174,10 @@ public class TestServlet extends HttpServlet {
                 String sourcesName = sourceEntry.getKey();
                 LOGR.fine("TestServlet - Processing Test Suite: " + sourcesName);
                 setupOpts.setSourcesName(sourcesName);
+                // Fortify Mod: addSource now validated its arguments.
+                //   Added a boolean to hold the returened status.
                 for (File source : sourceEntry.getValue()) {
-                    setupOpts.addSource(source);
+                    boolean b = setupOpts.addSource(source);
                 }
                 Index index = Generator.generateXsl(setupOpts);
                 indexes.put(sourcesName, index);

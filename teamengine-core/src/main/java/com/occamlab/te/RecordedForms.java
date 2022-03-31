@@ -17,7 +17,7 @@ public class RecordedForms {
   /**
    * Returns true if no pre-recorded forms are found
    * 
-   * @return
+   * @return boolean
    */
   public boolean isEmpty() {
     return files.isEmpty();

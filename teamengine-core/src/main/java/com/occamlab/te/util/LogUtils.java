@@ -1,8 +1,12 @@
 /**
  * **************************************************************************
  *
+ * Version Date: January 24, 2018
+ *
  * Contributor(s): 
- *	C. Heazel (WiSC): Added Fortify adjudication changes
+ *	C. Heazel (WiSC): 
+ *          Added Fortify adjudication changes
+ *          Changed session id format to UUID
  *
  ***************************************************************************
  */
@@ -31,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.UUID;
 
 import javax.xml.XMLConstants; // Addition for Fortify modifications
 import javax.xml.namespace.QName;
@@ -59,6 +64,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.occamlab.te.TECore;
+import com.occamlab.te.util.TEPath;    // Fortify Mod
+
 
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmNode;
@@ -83,6 +90,11 @@ public class LogUtils {
             throws Exception {
         if (logDir != null) {
             File dir = new File(logDir, callpath);
+            // Fortify Mod: use TEPath to validate the path to the log file
+            TEPath tpath = new TEPath(dir.getAbsolutePath());
+            if( ! tpath.isValid() ) {
+                return null;
+                } 
             String path=logDir.toString() + "/" + callpath.split("/")[0];
             System.setProperty("PATH", path);
             dir.mkdir();
@@ -360,6 +372,13 @@ public class LogUtils {
      */
     public static Document makeTestList(File logdir, String path,
             List<List<QName>> excludes) throws Exception {
+        // Fortify Mod: validate logdir and path
+        // If they don't form a valid path, throw an error
+        File tfile = new File(logdir, path);
+        TEPath tpath = new TEPath(tfile.getAbsolutePath());
+        if(! tpath.isValid()) {
+            throw new IllegalArgumentException("Illegal path = " + tfile.getAbsolutePath());
+            }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
 	   // Fortify Mod: Disable entity expansion to foil External Entity Injections
@@ -494,16 +513,10 @@ public class LogUtils {
      * Generates a session identifier. The value corresponds to the name of a
      * sub-directory (session) in the root test log directory.
      * 
-     * @return a session id string ("s0001" by default, unless the session
-     *         sub-directory already exists).
+     * @return a session id string
      */
     public static String generateSessionId(File logDir) {
-        int i = 1;
-        String session = "s0001";
-        while (new File(logDir, session).exists() && i < 10000) {
-            i++;
-            session = "s" + Integer.toString(10000 + i).substring(1);
-        }
+        String session = UUID.randomUUID().toString();
         return session;
     }
 
@@ -519,6 +532,19 @@ public class LogUtils {
      */
     public static void createFullReportLog(String sessionLogDir)
             throws Exception {
+        LOGR.log(Level.WARNING, "Creating report log for " + sessionLogDir);
+        // Fortify Mod: validate sessionLogDir argument
+        TEPath tpath = new TEPath(sessionLogDir);
+        if( ! tpath.isValid() ) {
+            throw new IllegalArgumentException("Illegal path = " + tpath.toString());
+            }
+        // Make sure the session log directory exits 
+        File dir = new File(sessionLogDir);
+        if( ! dir.exists() ) {
+            if( ! dir.mkdir() ) {
+                throw new RuntimeException("Unable to create report log directory " + sessionLogDir);
+            }
+        }
         File xml_logs_report_file = new File(sessionLogDir + File.separator
                 + "report_logs.xml");
         if (xml_logs_report_file.exists()) {
@@ -527,6 +553,7 @@ public class LogUtils {
         }
         xml_logs_report_file = new File(sessionLogDir + File.separator
                 + "report_logs.xml");
+        // xml_logs_report_file = new File("C:\\TE_BASE\\users\\cheazel\\dummy\\report_logs.xml");
         OutputStream report_logs = new FileOutputStream(xml_logs_report_file);
         List<File> files = null;
         Document result = null;

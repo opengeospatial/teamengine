@@ -1,3 +1,10 @@
+/**
+ *
+ * Contributor(s):
+ *     C. Heazel: WiSC Enterprises - Modifications to adjudicate Fortify issues
+ *        February 26, 2018
+ *
+*/
 package com.occamlab.te;
 
 import static org.junit.Assert.*;
@@ -58,7 +65,9 @@ public class TECoreTest {
     private Index getTestIndex(File ctlFile) throws Throwable {
         assertTrue(ctlFile.exists());
         SetupOptions setupOptions = new SetupOptions();
-        setupOptions.addSource(ctlFile);
+        // Fortify Mod: addSource now returns a boolean indicating that
+        // the ctlFile is at a valid location.
+        assertTrue("Invalid path to ctl file: " + ctlFile.getAbsolutePath(), setupOptions.addSource(ctlFile));
         Index testIndex = Generator.generateXsl(setupOptions);
         assertNotNull(testIndex);
         return testIndex;

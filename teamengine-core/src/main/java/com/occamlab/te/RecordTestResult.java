@@ -14,6 +14,7 @@ import static com.occamlab.te.TECore.getResultDescription;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.index.TestEntry;
 import com.occamlab.te.util.Constants;
+import com.occamlab.te.util.TEPath; // Addition for Fortify modifications
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -120,6 +121,7 @@ public class RecordTestResult {
   }
   /**
    * Save all recording into file.
+   * If the dirPath argument is null, then don't record.
    *
    * @param suite
    * @param dirPath
@@ -127,7 +129,14 @@ public class RecordTestResult {
    */
 
   public void saveRecordingData(SuiteEntry suite, File dirPath) throws Exception {
-    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    // Fortify Mod: make sure that dirPath is a legal path
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("Invalid argument to saveRecordingData: dirPath = " + dirPath.getAbsolutePath());
+        }
+    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+
       try {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.doc);
@@ -141,7 +150,7 @@ public class RecordTestResult {
         idTransform.setOutputProperty(OutputKeys.ENCODING, UT_F8);
         // Declare document is well indented
         idTransform.setOutputProperty(OutputKeys.INDENT, YES);
-        OutputStream report_logs = new FileOutputStream(new File(dirPath + Constants.tmp_File));
+        OutputStream report_logs = new FileOutputStream(new File(dirPath.getAbsolutePath() + Constants.tmp_File));
         Result output = new StreamResult(report_logs);
         //transform the output in xml.
         idTransform.transform(source, output);
@@ -150,9 +159,9 @@ public class RecordTestResult {
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
         // Read the xml data from file
-        bufferedReader = new BufferedReader(new FileReader(dirPath + Constants.tmp_File));
+        bufferedReader = new BufferedReader(new FileReader(dirPath.getAbsolutePath() + Constants.tmp_File));
         // Create a xml file for saving the data.
-        bufferedWriter = new BufferedWriter(new FileWriter(dirPath + Constants.result_logxml));
+        bufferedWriter = new BufferedWriter(new FileWriter(dirPath.getAbsolutePath() + Constants.result_logxml));
         String dataString = "";
         //Read the data from file.
         while ((dataString = bufferedReader.readLine()) != null) {
@@ -168,7 +177,7 @@ public class RecordTestResult {
         TECore.methodCount=0;
         TECore.rootTestName.clear();
         // Check file exists
-        File file = new File(dirPath + Constants.tmp_File);
+        File file = new File(dirPath.getAbsolutePath() + Constants.tmp_File);
         if (file.exists()) {
           // Delete file if exists
           file.delete();
@@ -179,8 +188,23 @@ public class RecordTestResult {
     }
   }
   
+  /**
+   * Save recording clause into file.
+   * If the dirPath argument is null, then don't record.
+   *
+   * @param suite
+   * @param dirPath
+   * @throws Exception
+   */
+
   public void saveRecordingClause(SuiteEntry suite, File dirPath) throws Exception {
-    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    // Fortify Mod: make sure that dirPath is a legal path
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
+    }
+    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
       try {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.docClause);
@@ -194,7 +218,7 @@ public class RecordTestResult {
         idTransform.setOutputProperty(OutputKeys.ENCODING, UT_F8);
         // Declare document is well indented
         idTransform.setOutputProperty(OutputKeys.INDENT, YES);
-        OutputStream report_logs = new FileOutputStream(new File(dirPath + Constants.tmp_File));
+        OutputStream report_logs = new FileOutputStream(new File(dirPath.getAbsolutePath() + Constants.tmp_File));
         Result output = new StreamResult(report_logs);
         //transform the output in xml.
         idTransform.transform(source, output);
@@ -203,9 +227,9 @@ public class RecordTestResult {
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
         // Read the xml data from file
-        bufferedReader = new BufferedReader(new FileReader(dirPath + Constants.tmp_File));
+        bufferedReader = new BufferedReader(new FileReader(dirPath.getAbsolutePath() + Constants.tmp_File));
         // Create a xml file for saving the data.
-        bufferedWriter = new BufferedWriter(new FileWriter(dirPath + Constants.result_clausexml));
+        bufferedWriter = new BufferedWriter(new FileWriter(dirPath.getAbsolutePath() + Constants.result_clausexml));
         String dataString = "";
         //Read the data from file.
         while ((dataString = bufferedReader.readLine()) != null) {
@@ -219,7 +243,7 @@ public class RecordTestResult {
         bufferedReader.close();
         bufferedWriter.close();
         // Check file exists
-        File file = new File(dirPath + Constants.tmp_File);
+        File file = new File(dirPath.getAbsolutePath() + Constants.tmp_File);
         if (file.exists()) {
           // Delete file if exists
           file.delete();
@@ -265,7 +289,7 @@ public class RecordTestResult {
    * @param element
    * @param name
    * @param value
-   * @return 
+   * @return Node
    */
   
   public static Node getMethodElements(Document doc, Element element, String name, String value) {
@@ -276,13 +300,21 @@ public class RecordTestResult {
 
   /**
    * Store start test detail into file.
+   * Recording is disabled if dirPath argument is null
+   *
    * @param test
    * @param dirPath
    * @throws java.lang.Exception
    */
   public void storeStartTestDetail(TestEntry test, File dirPath) throws Exception {
+    // Fortify Mod: make sure that dirPath is a legal path
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
+    }
     // Check recording enable
-    if (A_TRUE.equals(System.getProperty(RECORD))) {
+    if (dirPath != null && A_TRUE.equals(System.getProperty(RECORD))) {
       //Check test No
       if (TECore.testCount != 0) {
         JSONObject objBeforeTest = new JSONObject();
@@ -290,7 +322,7 @@ public class RecordTestResult {
         objBeforeTest.put(RESULT, "");
         // write the data into file in form of json
         OutputStreamWriter writerBefore = new OutputStreamWriter(
-                new FileOutputStream(dirPath + Constants.TEST_RESULTTXT, true), UT_F8);
+                new FileOutputStream(dirPath.getAbsolutePath() + Constants.TEST_RESULTTXT, true), UT_F8);
         try (BufferedWriter fbwBefore = new BufferedWriter(writerBefore)) {
           fbwBefore.write(objBeforeTest.toString());
           fbwBefore.newLine();
@@ -307,6 +339,8 @@ public class RecordTestResult {
   
   /**
    * Save test detail into file.
+   * If the dirPath parameter is null, then don't record
+   *
    * @param test
    * @param verdict
    * @param dirPath
@@ -315,8 +349,16 @@ public class RecordTestResult {
    * @throws java.lang.Exception
    */
   public void storeFinalTestDetail(TestEntry test, int verdict, DateFormat dateFormat, Calendar cal, File dirPath) throws Exception {
+    // Fortify Mod: make sure that dirPath is a legal path
+    // Note: a null dirPath is tolerated
+    if( dirPath != null ) {
+        TEPath tpath = new TEPath(dirPath.getAbsolutePath());
+        if( ! tpath.isValid() ) 
+            throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
+}
+    // Check recording enable
     // Check recording is enable
-    if (A_TRUE.equals(System.getProperty(RECORD))) {
+    if (dirPath != null && A_TRUE.equals(System.getProperty(RECORD))) {
       // match test name
       if (!TECore.nameOfTest.equals(test.getName())) {
         String result="";
@@ -331,7 +373,7 @@ public class RecordTestResult {
         obj.put(TIME, dateFormat.format(cal.getTime()));
         // write the data into file in form of json
         OutputStreamWriter writer = new OutputStreamWriter(
-                new FileOutputStream(dirPath + Constants.TEST_RESULTTXT, true), UT_F8);
+                new FileOutputStream(dirPath.getAbsolutePath() + Constants.TEST_RESULTTXT, true), UT_F8);
         try (BufferedWriter fbw = new BufferedWriter(writer)) {
           fbw.write(obj.toString());
           fbw.newLine();
