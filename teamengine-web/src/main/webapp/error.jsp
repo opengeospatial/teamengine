@@ -7,7 +7,7 @@
   <body>
      <div id="error">
     <%
-      String error = exception.getMeesage();
+      String error = exception.getMessage();
      
          
     %>
