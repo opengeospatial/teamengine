@@ -26,8 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.catalina.Realm;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
@@ -37,6 +39,7 @@ import org.w3c.dom.NodeList;
 
 import com.occamlab.te.realm.PasswordStorage.CannotPerformOperationException;
 import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
+import com.occamlab.te.util.TEPath;  // Fortify addition
 
 /**
  * A custom Tomcat Realm implementation that reads user information from an XML
@@ -156,19 +159,20 @@ public class PBKDF2Realm extends RealmBase {
      * @param root
      *            A String specifying a directory location (TE_BASE/users).
      */
-     // Fortify Mod: make private since it does not appear to be used
-     // Also is dangerous to allow canges to rootPath without validation.
-    private void setRoot(String root) {
-        rootPath = root;
+     // Fortify Mod: validate root path
+    public boolean setRoot(String root) {
+        if( root == null ) return false;
+        TEPath tpath = new TEPath( root );
+        if( tpath.isValid() ) {
+            this.rootPath = root;
+            return true;
+            }
+        return false;
     }
 
     private GenericPrincipal readPrincipal(String username) {
         List<String> roles = new ArrayList<String>();
-        // NOTE: rootPath was always null prior to change in initialization
-        File usersdir = new File(rootPath);
-        if (!usersdir.isDirectory()) {
-            usersdir = new File(System.getProperty("TE_BASE"), "users");
-        }
+        File usersdir = new File(System.getProperty("TE_BASE"), "users");
         File userfile = new File(new File(usersdir, username), "user.xml");
         if (!userfile.canRead()) {
             return null;
