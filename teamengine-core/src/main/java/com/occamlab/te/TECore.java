@@ -232,7 +232,7 @@ public class TECore implements Runnable {
     this.recordedForms = new RecordedForms(opts.getRecordedForms());
     this.testPath = opts.getSessionId();
     this.out = System.out;
-    this.imageHandler = new ImageHandler(opts.testLogDir, opts.sessionId);
+    this.imageHandler = new ImageHandler(opts.getLogDir(), opts.getSessionId());
   }
 
   public TestEntry getParentTest() {
