@@ -2556,10 +2556,16 @@ public class TECore implements Runnable {
     // Fortify Mod: Changed to a private method so that the value of the
     // outputDir parameter can be managed.  
     // Note: that there is no indication that this method is ever called.
-    private void earlHtmlReport( String outputDir ) {
-      EarlToHtmlTransformation earlToHtml = new EarlToHtmlTransformation();
-      earlToHtml.earlHtmlReport( outputDir );
-    }
+	public boolean earlHtmlReport(String outputDir) {
+		TEPath tpath = new TEPath(outputDir);
+		if (!tpath.isValid()) {
+			System.out.println("ViewLog Error: Invalid log file name " + outputDir);
+			return false;
+		}
+		EarlToHtmlTransformation earlToHtml = new EarlToHtmlTransformation();
+		earlToHtml.earlHtmlReport(outputDir);
+		return true;
+	}
 
   /**
 	 * This method is used to extract the test input into

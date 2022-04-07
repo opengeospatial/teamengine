@@ -76,13 +76,17 @@ public class ViewLog {
       return null;
     }
   }
-
-  // Fortify Mod: Made private to protect the integrity of the arguments
-  //  No external invocations were identified.
-  private static boolean view_log(String suiteName, File logdir, String session,
+  
+  public static boolean view_log(String suiteName, File logdir, String session,
           ArrayList tests, Templates templates, Writer out, int testnum)
           throws Exception {
-    hasCache = false;
+	//Fortify mod: Validate logDir path
+	TEPath tpath = new TEPath(logdir.getAbsolutePath());
+	if(! tpath.isValid() ) {
+	    System.out.println("ViewLog Error: Invalid log file name " + logdir);
+	    return false;
+	}
+	hasCache = false;
     Transformer t = templates.newTransformer();
     t.setParameter("sessionDir", session);
     t.setParameter("TESTNAME", suiteName);
