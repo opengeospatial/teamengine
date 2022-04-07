@@ -1836,10 +1836,19 @@ public class TECore implements Runnable {
     Transformer t = tf.newTransformer();
 
     // Open the URLConnection
-    URLConnection uc = new URL(sUrl).openConnection();
-    if (uc instanceof HttpURLConnection) {
-      ((HttpURLConnection) uc).setRequestMethod(method);
-    }
+	URLConnection uc = new URL(sUrl).openConnection();
+	if (uc instanceof HttpURLConnection) {
+		HttpURLConnection httpUc = (HttpURLConnection) uc;
+		httpUc.setRequestMethod(method);
+		boolean redirect = checkForRedirect(httpUc);
+		if (redirect) {
+			String redirectURL = httpUc.getHeaderField("Location");
+			uc = new URL(redirectURL).openConnection();
+			if (uc instanceof HttpURLConnection) {
+				((HttpURLConnection)uc).setRequestMethod(method);
+			}
+		}
+	}
 
     // POST setup (XML payload and header information)
     if (method.equals("POST") || method.equals("PUT")) {
@@ -2575,6 +2584,17 @@ public class TECore implements Runnable {
 			}
 		}
 		return inputMap;
+	}
+	
+	private boolean checkForRedirect(HttpURLConnection conn) throws IOException {
+		int status = conn.getResponseCode();
+		if (status != HttpURLConnection.HTTP_OK) {
+			if (status == HttpURLConnection.HTTP_MOVED_TEMP
+				|| status == HttpURLConnection.HTTP_MOVED_PERM
+					|| status == HttpURLConnection.HTTP_SEE_OTHER)
+			return true;
+		}
+		return false;
 	}
 	
   /**
