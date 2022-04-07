@@ -39,7 +39,6 @@ import org.w3c.dom.NodeList;
 
 import com.occamlab.te.realm.PasswordStorage.CannotPerformOperationException;
 import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
-import com.occamlab.te.util.TEPath;  // Fortify addition
 
 /**
  * A custom Tomcat Realm implementation that reads user information from an XML
@@ -150,24 +149,6 @@ public class PBKDF2Realm extends RealmBase {
     @Override
     protected String getName() {
         return "UserFilesRealm";
-    }
-
-    /**
-     * Sets the location of the root users directory. This is specified by the
-     * "root" attribute of the Realm element in the context definition.
-     *
-     * @param root
-     *            A String specifying a directory location (TE_BASE/users).
-     */
-     // Fortify Mod: validate root path
-    public boolean setRoot(String root) {
-        if( root == null ) return false;
-        TEPath tpath = new TEPath( root );
-        if( tpath.isValid() ) {
-            this.rootPath = root;
-            return true;
-            }
-        return false;
     }
 
     private GenericPrincipal readPrincipal(String username) {

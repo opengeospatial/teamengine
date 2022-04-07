@@ -56,10 +56,6 @@ public class RestAuthenticationFilter implements Filter {
                 String root = System.getProperty("TE_BASE") + "/users";
                 
                 PBKDF2Realm pbkdf2Realm = new PBKDF2Realm();
-                boolean validRootPath = pbkdf2Realm.setRoot(root);
-                if(!validRootPath) {
-                	serverError(response);
-                }
                 GenericPrincipal principal = (GenericPrincipal) pbkdf2Realm.authenticate(username, password);
                 
                 if (null != principal) {
