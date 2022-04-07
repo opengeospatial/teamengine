@@ -56,6 +56,8 @@ public class TEPathTest {
         if(te_install == null) te_install = te_base;
         String te_build = System.getenv("TE_BUILD");
         if(te_build == null) te_build = te_base;
+        String user_home = System.getenv("HOME");
+        if(user_home == null) user_home = te_base;
         
         // Valid paths - not Operating System dependent
 	validpath1 = te_base;

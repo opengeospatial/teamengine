@@ -324,6 +324,7 @@ public class TEPath implements Path {
     	if(tpath.startsWith(te_install)) valid = true; 
     	if(tpath.startsWith(tmpdir)) valid = true;
     	if(tpath.startsWith(te_build)) valid = true;
+    	if(tpath.startsWith(user_home)) valid = true;
     	
     	// These are never allowed
     	if(tpath.startsWith("c:\\Windows")) valid = false; 
