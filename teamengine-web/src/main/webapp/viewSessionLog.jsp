@@ -187,8 +187,6 @@ File earlHtml = null;
 if(!resDir.exists()){
 	resDir = new File(userLog.toString() + System.getProperty("file.separator") + sessionId );
 }
-<%-- Fortify Mod: validate resultdir.--%>
-<%-- Note that resDir will always be within the resultdir directory --%>
 tpath = new TEPath(resultdir);
 if(resDir.exists() && tpath.isValid()) {
     File existingResultDir = new File(resultdir + System.getProperty("file.separator") + "result");
