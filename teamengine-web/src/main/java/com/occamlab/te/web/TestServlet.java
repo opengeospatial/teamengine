@@ -361,7 +361,11 @@ public class TestServlet extends HttpServlet {
                 opts.setBaseURI(baseURL.toString());
                 TECore core = new TECore(engine, indexes.get(opts
                         .getSourcesName()), opts);
-                String servletURL = request.getRequestURL().toString();
+                String scheme = request.getHeader("x-scheme");
+                if( scheme == null) {
+                	scheme = "http";
+                }
+                String servletURL = scheme  + "://"  + request.getServerName() + (request.getServerPort() != 80 ? ":" + request.getServerPort() : "") +  request.getRequestURI();
                 LOGR.fine("Request URL is " + servletURL);
                 core.setTestServletURL(servletURL);
                 MonitorServlet.setBaseServletURL(servletURL.substring(0,
