@@ -38,7 +38,7 @@ The latest release is recommended.
 The following sources include documentation about how to install the tests, run TEAM Engine via the 
 command line or as a web application in a Java servlet container.
 
-* An extensive tutorial can be found in the [doc folder](https://github.com/opengeospatial/teamengine/blob/master/doc/en/index.rst). 
+* An extensive tutorial can be found in the [doc folder](https://github.com/opengeospatial/teamengine/blob/master/src/site/doc/en/index.rst). 
 
 * A _Getting Started Guide_ is available at the [project documentation website](http://opengeospatial.github.io/teamengine/). 
 This can also be created by generating the site documentation (which includes a PDF 
