@@ -487,6 +487,8 @@ public class TECore implements Runnable {
             + " ");
         if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
             out.println(MSG_FAIL);
+	} else if (result == TECore.WARNING) {
+	    out.println(MSG_WARNING);
         } else if (result == TECore.BEST_PRACTICE) {
             out.println(MSG_BEST_PRACTICE);
     } else {
@@ -552,6 +554,8 @@ public class TECore implements Runnable {
                     summary = MSG_FAIL;
                 } else if (verdict == TECore.BEST_PRACTICE) {
                     summary = MSG_BEST_PRACTICE;
+		} else if (verdict == TECore.WARNING) {
+		    summary = MSG_WARNING;
                 } else if (verdict == TECore.SKIPPED) {
                     summary = MSG_SKIPPED;
         } else {
@@ -573,6 +577,8 @@ public class TECore implements Runnable {
                 summary = MSG_FAIL;
             } else if (result == TECore.BEST_PRACTICE) {
                 summary = MSG_BEST_PRACTICE;
+	    } else if (verdict == TECore.WARNING) {
+		summary = MSG_WARNING;
             } else if (verdict == TECore.SKIPPED) {
                 summary = MSG_SKIPPED;
       } else {
@@ -916,7 +922,6 @@ public class TECore implements Runnable {
         //restore previous verdict if the result isn't worse
         if (this.verdict <= oldVerdict) {
             this.verdict = oldVerdict;
-            test.setResult(verdict);
   }
 
         return test.getResult();
@@ -1057,7 +1062,7 @@ public class TECore implements Runnable {
     String oldTestPath = testPath;
     testPath += "/" + callId;
     try{
-        this.verdict = executeTest(test, S9APIUtils.makeNode(params), context);
+        this.verdict = Math.max(verdict, executeTest(test, S9APIUtils.makeNode(params), context));
     } catch(Exception e){
     	
     } finally {
