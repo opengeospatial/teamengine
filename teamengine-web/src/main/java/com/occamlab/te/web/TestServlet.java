@@ -84,6 +84,7 @@ public class TestServlet extends HttpServlet {
     public static final String CTL_NS = "http://www.occamlab.com/ctl";
     /** Alias is declared in the web app Context element. */
     private static final String ABOUT_ALIAS = "about/";
+	private static final String X_FORWARDED_PROTO = "X-Forwarded-Proto";
 
     private static Logger LOGR = Logger
             .getLogger("com.occamlab.te.web.TestServlet");
@@ -361,7 +362,7 @@ public class TestServlet extends HttpServlet {
                 opts.setBaseURI(baseURL.toString());
                 TECore core = new TECore(engine, indexes.get(opts
                         .getSourcesName()), opts);
-                String scheme = request.getHeader("x-scheme");
+                String scheme = request.getHeader(X_FORWARDED_PROTO);
                 if( scheme == null) {
                 	scheme = "http";
                 }
