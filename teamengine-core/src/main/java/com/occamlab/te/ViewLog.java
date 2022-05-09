@@ -7,7 +7,8 @@
  Northrop Grumman Corporation are Copyright (C) 2005-2006, Northrop
  Grumman Corporation. All Rights Reserved.
 
- Contributor(s): No additional contributors to date
+ Contributor(s): 
+    Charles Heazel (WiSC): Modifications to address Fortify issues
 
  ****************************************************************************/
 package com.occamlab.te;
@@ -35,6 +36,7 @@ import org.w3c.dom.NodeList;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.LogUtils;
 import com.occamlab.te.util.Misc;
+import com.occamlab.te.util.TEPath;    // Fortify addition
 
 /**
  * Presents a test log for display.
@@ -47,8 +49,15 @@ public class ViewLog {
   public static TransformerFactory transformerFactory = TransformerFactory
           .newInstance();
 
+  // Fortify Mod: validate the path-related arguments
   public static boolean view_log(String suiteName, File logdir, String session,
           ArrayList tests, Templates templates, Writer out) throws Exception {
+    String tfile = new String( logdir.getAbsolutePath() + "/" + session );
+    TEPath tpath = new TEPath(tfile);
+    if(! tpath.isValid() ) {
+        System.out.println("ViewLog Error: Invalid log file name " + tfile);
+        return false;
+        }
     return view_log(suiteName, logdir, session, tests, templates, out, 1);
   }
 
@@ -67,11 +76,17 @@ public class ViewLog {
       return null;
     }
   }
-
+  
   public static boolean view_log(String suiteName, File logdir, String session,
           ArrayList tests, Templates templates, Writer out, int testnum)
           throws Exception {
-    hasCache = false;
+	//Fortify mod: Validate logDir path
+	TEPath tpath = new TEPath(logdir.getAbsolutePath());
+	if(! tpath.isValid() ) {
+	    System.out.println("ViewLog Error: Invalid log file name " + logdir);
+	    return false;
+	}
+	hasCache = false;
     Transformer t = templates.newTransformer();
     t.setParameter("sessionDir", session);
     t.setParameter("TESTNAME", suiteName);

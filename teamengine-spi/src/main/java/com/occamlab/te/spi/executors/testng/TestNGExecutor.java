@@ -4,6 +4,12 @@
  * the License.  You may obtain a copy of the License at:
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
+
+ *
+ *  Contributor(s):
+ *     Charles Heazel (WiSC): Modified to address Fortify issues
+ *     Mods deferred until dependency on core is resolved.
+ *         February 26, 2018
  */
 package com.occamlab.te.spi.executors.testng;
 

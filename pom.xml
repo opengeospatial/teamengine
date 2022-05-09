@@ -80,8 +80,12 @@
       <url>https://github.com/aaime</url>
       <timezone>Europe/Italy</timezone>
     </developer>
+    <developer>
+      <name>Chuck Heazel</name>
+      <email>cheazel {AT} wiscenterprises {DOT} com</email>
+      <timezone>US/Eastern</timezone>
+    </developer>
   </developers>
-
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

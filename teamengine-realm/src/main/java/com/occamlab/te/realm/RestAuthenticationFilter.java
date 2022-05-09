@@ -56,7 +56,6 @@ public class RestAuthenticationFilter implements Filter {
                 String root = System.getProperty("TE_BASE") + "/users";
                 
                 PBKDF2Realm pbkdf2Realm = new PBKDF2Realm();
-                pbkdf2Realm.setRoot(root);
                 GenericPrincipal principal = (GenericPrincipal) pbkdf2Realm.authenticate(username, password);
                 
                 if (null != principal) {
@@ -94,6 +93,13 @@ public class RestAuthenticationFilter implements Filter {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setHeader("WWW-Authenticate", "Basic realm=\"Insert credentials\"");
             httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+    
+    private void serverError(ServletResponse response) {
+        if (response instanceof HttpServletResponse) {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

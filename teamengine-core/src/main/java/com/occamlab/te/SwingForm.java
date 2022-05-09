@@ -232,7 +232,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                 try {
                     URL target = e.getURL();
                     if (target == null) {
-                        target = new URL(new URL(core.opts.baseURI),
+                        target = new URL(new URL(core.opts.getBaseURI()),
                                 e.getDescription());
                     }
                     if (this == popupForm) {

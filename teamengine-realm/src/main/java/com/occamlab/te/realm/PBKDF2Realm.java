@@ -26,8 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.catalina.Realm;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
@@ -62,11 +64,18 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
  *
  * @see <a href="https://github.com/defuse/password-hashing">Secure Password
  *      Storage v2.0</a>
+ *
+ * <p>
+ * Modified to address Fortity path manipulation errors by C. Heazel
+ * February 26, 2018
+ * </p>
  */
 public class PBKDF2Realm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
-    private String rootPath = null;
+    // Fortify Mod: initialize rootPath
+    // private String rootPath = null;
+    private String rootPath = System.getProperty("TE_BASE");
     private DocumentBuilder DB = null;
     private HashMap<String, Principal> principals = new HashMap<String, Principal>();
 
@@ -142,23 +151,9 @@ public class PBKDF2Realm extends RealmBase {
         return "UserFilesRealm";
     }
 
-    /**
-     * Sets the location of the root users directory. This is specified by the
-     * "root" attribute of the Realm element in the context definition.
-     *
-     * @param root
-     *            A String specifying a directory location (TE_BASE/users).
-     */
-    public void setRoot(String root) {
-        rootPath = root;
-    }
-
     private GenericPrincipal readPrincipal(String username) {
         List<String> roles = new ArrayList<String>();
-        File usersdir = new File(rootPath);
-        if (!usersdir.isDirectory()) {
-            usersdir = new File(System.getProperty("TE_BASE"), "users");
-        }
+        File usersdir = new File(System.getProperty("TE_BASE"), "users");
         File userfile = new File(new File(usersdir, username), "user.xml");
         if (!userfile.canRead()) {
             return null;

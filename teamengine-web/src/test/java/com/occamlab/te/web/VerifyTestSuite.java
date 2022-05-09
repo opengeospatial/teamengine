@@ -4,7 +4,12 @@
  * the License.  You may obtain a copy of the License at:
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- */
+
+ *
+ *  Contributor(s):
+ *    Chuck Heazel (WiSC): Modified to address Fortify issues
+ *       February 26, 2018
+*/
 package com.occamlab.te.web;
 
 import static org.junit.Assert.assertEquals;
@@ -111,7 +116,9 @@ public class VerifyTestSuite {
         this.kvpTestParam = "input=4";
         URL ctlScript = getClass().getResource("/tebase/scripts/num-parity.ctl");
         File ctlFile = new File(ctlScript.toURI());
-        this.setupOpts.addSource(ctlFile);
+        // Fortify Mod: addSource now validates its' argument.
+        //    Added boolean to handle the return status.
+        boolean b = this.setupOpts.addSource(ctlFile);
         QName startingTest = new QName(EX_NS, "num-parity-main", "ex");
         this.runOpts.setTestName(startingTest.toString());
         this.runOpts.addParam(this.kvpTestParam);

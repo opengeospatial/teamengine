@@ -4,9 +4,12 @@ import java.io.File;
 
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
+import com.occamlab.te.util.TEPath;    // Fortify Mod:
 
 /**
  * Provides utility methods for managing a collection of CTL test suites.
+ *
+ * C. Heazel: modified to address Fortify issues 1/24/18
  * 
  */
 public class ListSuites {
@@ -20,9 +23,10 @@ public class ListSuites {
                 File scriptsDir = new File(
                         SetupOptions.getBaseConfigDirectory(), "scripts");
                 File f = new File(scriptsDir, args[i].substring(8));
-                if (f.exists()) {
-                    setupOpts.addSource(f);
-                } else {
+                // Fortify Mod: make sure that the -source argument 
+                //              is not pointing to an illegal location
+                // if (f.exists()) {
+                if (! f.exists() || ! setupOpts.addSource(f)) {
                     System.out.println("Error: Can't find CTL script(s) at "
                             + f.getAbsolutePath());
                     return;

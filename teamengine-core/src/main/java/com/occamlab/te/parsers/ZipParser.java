@@ -5,10 +5,10 @@
  *
  * Contributor(s):
  *    C. Heazel (WiSC) Modifications to address Fortify issues
- *
- * ********************************************************************
- */
 
+ *    Chuck Heazel (WiSC): Modifications to address Fortify issues
+ *         Made parse() and saveZipFile() private to discourage their use.
+ */
 package com.occamlab.te.parsers;
 
 import java.io.File;
@@ -101,7 +101,8 @@ public class ZipParser {
      * @return a DOM Document representing the manifest of items in the archive.
      * @throws Throwable
      */
-    public static Document parse(URLConnection uc, Element instruction,
+// Fortify Mod: made private
+    private static Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Throwable {
         return parse(uc.getInputStream(), instruction, logger);
     }
@@ -190,7 +191,9 @@ public class ZipParser {
      *            this parser
      * @return a DOM Document representing the manifest of items in the archive.
      */
-    public Document saveZipFile(String filepath, Document instruction)
+
+// Fortify Mod - made private
+    private Document saveZipFile(String filepath, Document instruction)
             throws Exception {
 
         // Get a connection to the Zip file
