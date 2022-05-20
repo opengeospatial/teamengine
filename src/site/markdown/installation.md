@@ -175,3 +175,11 @@ directory can be modified to provide site-specific content:
 - **site/welcome.txt**: The main text.
 - **site/footer.txt**: Footer content.
 - **site/title.html**: Title of the web application
+
+### TEAM Engine behind a reverse proxy
+
+If you run TEAM Engine behind a reverse proxy using HTTPS, you will need to configure your proxy as described in the following:
+
+Configure your proxy to add the **x-forwarded-proto** header, with value **https**, to any requests that are forwarded to the TEAM Engine. 
+
+ 
