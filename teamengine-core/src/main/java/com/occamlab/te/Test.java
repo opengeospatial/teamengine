@@ -240,8 +240,13 @@ public class Test {
             session = System.getProperty("team.session");
         }
         // CMH - changed session format to UUID.
-        if (session == null) {
-            session = UUID.randomUUID().toString();
+        // BPR - changed back to previous format
+        if (session == null) {           
+        	if (logDir == null) {
+                session = "s0001";
+            } else {
+                session = LogUtils.generateSessionId(logDir);
+            }
         }
         // runtimeOptions mod
         rslt = runOpts.setSessionId(session);

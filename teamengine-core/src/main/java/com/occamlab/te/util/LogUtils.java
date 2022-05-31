@@ -516,7 +516,12 @@ public class LogUtils {
      * @return a session id string
      */
     public static String generateSessionId(File logDir) {
-        String session = UUID.randomUUID().toString();
+        int i = 1;
+        String session = "s0001";
+        while (new File(logDir, session).exists() && i < 10000) {
+            i++;
+            session = "s" + Integer.toString(10000 + i).substring(1);
+        }
         return session;
     }
 
