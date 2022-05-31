@@ -100,7 +100,7 @@ public class RuntimeOptions {
     private int mode = Test.TEST_MODE;
     private File testLogDir = null;
     private File workDir = null;
-    private String sessionId = UUID.randomUUID().toString();
+    private String sessionId;
     private String testName = "";
     private String suiteName = "";
     private String sourcesName = "default";
@@ -215,12 +215,11 @@ public class RuntimeOptions {
     // Validate the sessionId argument then update the runtime parameter
     public boolean setSessionId(String sessionId) {
         jLogger.log(Level.INFO, "RuntimeOptions: Setting session to " + sessionId);
-        if( sessionId == null ) return false;
-        if( Pattern.matches( UUID_PATTERN, sessionId )) {
-            this.sessionId = sessionId;
-            return true;
-            }
-        return false;
+        if( sessionId == null ) { 
+        	return false;        
+        }
+        this.sessionId = sessionId;
+        return true;
     }
 
     public String getSuiteName() {
