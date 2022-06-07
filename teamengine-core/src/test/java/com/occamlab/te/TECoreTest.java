@@ -33,6 +33,7 @@ public class TECoreTest {
         index = new Index();
         runOpts = new RuntimeOptions();
         runOpts.setLogDir(null);
+        runOpts.setSessionId("s0001");
     }
 
     @Test
