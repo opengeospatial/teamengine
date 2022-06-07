@@ -2,6 +2,8 @@ package com.occamlab.te.util;
 
 import static org.junit.Assert.*;
 
+import java.nio.file.Paths;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,7 +50,7 @@ public class TEPathTest {
         //  Use the same system properties and environment variables as TEPath.java
  
         String te_base = System.getProperty("TE_BASE");
-        if(te_base == null) te_base = System.getenv("TE_BASE");
+        if(te_base == null) te_base = System.getProperty("java.io.tmpdir");
         String tmpdir = System.getProperty("java.io.tmpdir");
         if(tmpdir == null) tmpdir = te_base;
         String te_install = System.getProperty("TE_INSTALL");
@@ -56,14 +58,14 @@ public class TEPathTest {
         if(te_install == null) te_install = te_base;
         String te_build = System.getenv("TE_BUILD");
         if(te_build == null) te_build = te_base;
-        String user_home = System.getenv("HOME");
+        String user_home = System.getProperty("user.home");
         if(user_home == null) user_home = te_base;
         
         // Valid paths - not Operating System dependent
 	validpath1 = te_base;
 	validpath2 = tmpdir;
 	validpath3 = te_install;
-	validpath4 = te_build;
+	validpath4 = user_home;
 
         // Invalid paths - not Operating System dependent 
         // (none currently defined)
@@ -80,7 +82,7 @@ public class TEPathTest {
             }
         if(separator.equals("\\")) {
             validpath5 = validpath1.concat("\\foo-bar");        // Valid path name 
-            invalidpath1 = validpath1.concat("\\..\\Windows");  // Navigation up the tree is not allowed
+            invalidpath1 = validpath4.concat("\\..\\Windows");  // Navigation up the tree is not allowed
             invalidpath2 = "c:\\Windows\\Boot";                 // Forbidden path
             invalidpath3 = "C:\\Windows\\foo-bar";              // Forbidden path
             invalidpath4 = "c:\\Windows\\foo-bar";              // Forbidden path

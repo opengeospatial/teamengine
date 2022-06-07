@@ -84,14 +84,14 @@ public class TEPath implements Path {
         // Team Engine Build directory (needed for unit testing)
         if( te_build == null ) {
             stmp = System.getenv("TE_BUILD");
-            if(stmp == null) stmp = te_base.toString();
+            if(stmp == null) stmp = Paths.get("").toFile().getAbsolutePath();
             te_build = Paths.get( stmp );
             }
 
         // User Home directory
         if( user_home == null ) {
-            stmp = System.getenv("HOME");
-            if(stmp == null) stmp = te_base.toString();
+            stmp = System.getProperty("user.home");
+            if(stmp == null) stmp = tmpdir.toString();
             user_home = Paths.get( stmp );
             }
 
