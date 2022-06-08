@@ -175,3 +175,7 @@ directory can be modified to provide site-specific content:
 - **site/welcome.txt**: The main text.
 - **site/footer.txt**: Footer content.
 - **site/title.html**: Title of the web application
+
+## Using a proxy
+
+It is recommended to enable [HSTS](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) in proxy configuration when using TEAM Engine behind a reverse proxy.
