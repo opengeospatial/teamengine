@@ -134,7 +134,7 @@
   </filter>
   <filter-mapping>
     <filter-name>AuthenticationFilter</filter-name>
-    <url-pattern>/rest/*</url-pattern>
+    <url-pattern>/rest/suites/*</url-pattern>
   </filter-mapping>
   <security-constraint>
     <web-resource-collection>
