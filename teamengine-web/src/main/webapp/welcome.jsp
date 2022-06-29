@@ -9,6 +9,13 @@
 <div>
   <%@include file="site/welcome.html" %>
  
+  
+		<%
+		    if (user != null && user.length() > 0) {
+		    	out.println("<a href=\"viewSessions.jsp\">View sessions</a>");
+		    	out.println("<br />");
+		    }
+		%>
  
   <section id="noColumn">
 	       <h1>Available Test Suites</h1>
