@@ -26,7 +26,7 @@ public class ListSuites {
                 // Fortify Mod: make sure that the -source argument 
                 //              is not pointing to an illegal location
                 // if (f.exists()) {
-                if (! f.exists() || ! setupOpts.addSource(f)) {
+                if (! f.exists() || ! setupOpts.addSourceWithValidation(f)) {
                     System.out.println("Error: Can't find CTL script(s) at "
                             + f.getAbsolutePath());
                     return;

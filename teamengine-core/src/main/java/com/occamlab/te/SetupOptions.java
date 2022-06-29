@@ -179,12 +179,24 @@ public class SetupOptions {
 
   /**
    * Adds a file system resource to the collection of known scripts.
+   *
+     * @param source
+     *            A File object representing a file or directory.
+     * @deprecated Use {@link SetupOptions#addSourceWithValidation(File source)} instead
+   */
+  @Deprecated
+  public void addSource(File source) {
+    this.sources.add(source);
+  }
+  
+  /**
+   * Adds a file system resource to the collection of known scripts.
    * Fortify Mod: validate the argument and return success or failure
    *
      * @param source
      *            A File object representing a file or directory.
    */
-  public boolean addSource(File source) {
+  public boolean addSourceWithValidation(File source) {
     // Fortify Mod: validate that source is on a valid path
     if(source != null) {
         TEPath tpath = new TEPath( source.getAbsolutePath());

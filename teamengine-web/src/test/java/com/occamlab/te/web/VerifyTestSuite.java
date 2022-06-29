@@ -118,7 +118,7 @@ public class VerifyTestSuite {
         File ctlFile = new File(ctlScript.toURI());
         // Fortify Mod: addSource now validates its' argument.
         //    Added boolean to handle the return status.
-        boolean b = this.setupOpts.addSource(ctlFile);
+        boolean b = this.setupOpts.addSourceWithValidation(ctlFile);
         QName startingTest = new QName(EX_NS, "num-parity-main", "ex");
         this.runOpts.setTestName(startingTest.toString());
         this.runOpts.addParam(this.kvpTestParam);

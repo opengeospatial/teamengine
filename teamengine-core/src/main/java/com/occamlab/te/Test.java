@@ -158,7 +158,7 @@ public class Test {
                 }
                 // Fortify Mod: Validate the sourceFile.  It must both exist
                 // and pass validation by setupOptions
-                if (! sourceFile.exists() || ! setupOpts.addSource(sourceFile)){
+                if (! sourceFile.exists() || ! setupOpts.addSourceWithValidation(sourceFile)){
                     System.out.println("Error: Cannot find CTL script(s) at "
                             + sourceFile.getAbsolutePath());
                     return;
