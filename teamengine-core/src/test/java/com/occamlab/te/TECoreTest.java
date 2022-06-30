@@ -66,7 +66,7 @@ public class TECoreTest {
         SetupOptions setupOptions = new SetupOptions();
         // Fortify Mod: addSource now returns a boolean indicating that
         // the ctlFile is at a valid location.
-        assertTrue("Invalid path to ctl file: " + ctlFile.getAbsolutePath(), setupOptions.addSource(ctlFile));
+        assertTrue("Invalid path to ctl file: " + ctlFile.getAbsolutePath(), setupOptions.addSourceWithValidation(ctlFile));
         Index testIndex = Generator.generateXsl(setupOptions);
         assertNotNull(testIndex);
         return testIndex;

@@ -177,7 +177,7 @@ public class TestServlet extends HttpServlet {
                 // Fortify Mod: addSource now validated its arguments.
                 //   Added a boolean to hold the returened status.
                 for (File source : sourceEntry.getValue()) {
-                    boolean b = setupOpts.addSource(source);
+                    boolean b = setupOpts.addSourceWithValidation(source);
                 }
                 Index index = Generator.generateXsl(setupOpts);
                 indexes.put(sourcesName, index);
