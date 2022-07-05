@@ -15,6 +15,7 @@
         <include>com.sun.jersey:jersey-*</include>
         <include>org.apache.derby:derby</include>
         <include>org.opengis.cite.teamengine:teamengine-realm</include>
+        <include>xerces:xercesImpl</include>
       </includes>
       <scope>runtime</scope>
       <useProjectArtifact>false</useProjectArtifact>
