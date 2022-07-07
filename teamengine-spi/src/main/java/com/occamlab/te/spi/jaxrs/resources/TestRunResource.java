@@ -373,7 +373,7 @@ public class TestRunResource {
                                    String preferredMediaType ) {
         
         List<String> authCredentials = this.headers.getRequestHeader("Authorization");
-        String logDir = System.getProperty("TE_BASE") + "\\users\\" + TestRunUtils.getUserName(authCredentials) + "\\rest";
+        String logDir = System.getProperty("TE_BASE") + System.getProperty( "file.separator" ) + "users"  + System.getProperty( "file.separator" ) + TestRunUtils.getUserName(authCredentials) + System.getProperty( "file.separator" ) + "rest";
         
         if (null != logDir) {
             String sessionId = LogUtils.generateSessionId(new File(logDir));
