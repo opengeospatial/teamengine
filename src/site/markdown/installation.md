@@ -126,7 +126,7 @@ The recommended JVM options for the Tomcat instance are shown below.
 Note that the maximum memory heap size (`-Xmx`) may need to be increased
 as the number of concurrent users increases.
 
-`CATALINA_OPTS="-server -Xmx1024m -XX:MaxPermSize=128m -DTE_BASE=$TE_BASE -Dderby.system.home=$DERBY_DATA"`
+`CATALINA_OPTS="-server -Xmx1024m -XX:MaxPermSize=128m -DTE_BASE=$TE_BASE -Dderby.system.home=$DERBY_DATA -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"`
 
 Unpack the contents of the teamengine-common-libs archive into the
 CATALINA_BASE/lib directory. Deploy the `teamengine.war` component by
