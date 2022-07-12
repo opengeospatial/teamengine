@@ -25,11 +25,13 @@
 
   <properties>
     <soapui.test.fail.ignore>false</soapui.test.fail.ignore>
-    <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
+    <soapui.teamengine.endpoint>https://cite.ogc.org/te2</soapui.teamengine.endpoint>
+    <soapui.teamengine.user>ogctest</soapui.teamengine.user>
+    <soapui.teamengine.password>ogctest</soapui.teamengine.password>
     <soapui.testng.ets.code>wfs20</soapui.testng.ets.code>
-    <soapui.testng.iut>http://cite.deegree.org/deegree-webservices-3.4.5/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
-    <soapui.ctl.ets.code>wms</soapui.ctl.ets.code>
-    <soapui.ctl.iut>http://cite.deegree.org/deegree-webservices-3.4.5/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
+    <soapui.testng.iut>https://cite.deegree.org/deegree-webservices-3.4.30/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
+    <soapui.ctl.ets.code>wms13</soapui.ctl.ets.code>
+    <soapui.ctl.iut>https://cite.deegree.org/deegree-webservices-3.4.30/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
   </properties>
 
   <build>
@@ -55,6 +57,8 @@
             <testFailIgnore>${soapui.test.fail.ignore}</testFailIgnore>
             <projectProperties>
               <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
+              <value>teamengine.user=${soapui.teamengine.user}</value>
+              <value>teamengine.password=${soapui.teamengine.password}</value>
               <value>testng.ets.code=${soapui.testng.ets.code}</value>
               <value>testng.iut=${soapui.testng.iut}</value>
               <value>ctl.ets.code=${soapui.ctl.ets.code}</value>
