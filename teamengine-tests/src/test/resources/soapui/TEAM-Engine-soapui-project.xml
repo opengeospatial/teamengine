@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="1476c0be-8f92-4fc1-9925-9543b4950036" activeEnvironment="Default" name="TEAM Engine" resourceRoot="" soapui-version="5.5.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="1476c0be-8f92-4fc1-9925-9543b4950036" activeEnvironment="Default" name="TEAM Engine" resourceRoot="" soapui-version="5.7.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config">
   <con:settings/>
   <con:testSuite id="190b308a-ad99-456c-a418-5482414ca4fb" name="REST API">
     <con:settings/>
@@ -28,7 +28,11 @@
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -44,7 +48,7 @@
         <con:config method="GET" xsi:type="con:HttpRequest" id="c00ebb3d-78bd-4029-aaf3-0eb17f2df8f1" name="REST interface available" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
-            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xhtml+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>            
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Accept" value="application/xhtml+xml" xmlns="http://eviware.com/soapui/config"/></con:setting>
           </con:settings>
           <con:endpoint>${#Project#teamengine.endpoint}/rest/suites</con:endpoint>
           <con:request/>
@@ -68,7 +72,11 @@
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -96,7 +104,11 @@
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -134,7 +146,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -176,7 +192,11 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -218,7 +238,11 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -262,7 +286,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -306,7 +334,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -333,16 +365,28 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
-            <con:configuration><scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
-assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText></con:configuration>
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
           </con:assertion>
           <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
-            <con:configuration><path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-exists(/rdf:RDF)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration>
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -386,7 +430,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -413,7 +461,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -457,7 +509,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -470,11 +526,7 @@ exists(/rdf:RDF)</path>
           </con:parameters>
         </con:config>
       </con:testStep>
-      <con:properties>
-        
-        
-        
-      </con:properties>
+      <con:properties></con:properties>
     </con:testCase>
     <con:testCase id="207ef815-d51d-4ebd-ac1b-63954543a5f7" failOnError="false" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="CTL" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword="">
       <con:settings/>
@@ -507,7 +559,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -535,7 +591,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -573,7 +633,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -615,7 +679,11 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -657,7 +725,11 @@ assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].index
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -701,7 +773,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -745,7 +821,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -772,16 +852,28 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:assertion type="GroovyScriptAssertion" id="629ba75e-5de4-4ef0-914e-e270ee356a82" name="Content-Type is application/rdf+xml">
-            <con:configuration><scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
-assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText></con:configuration>
+            <con:configuration>
+              <scriptText>def headers = messageExchange.responseHeaders["Content-Type"]
+assert headers != null &amp;&amp; headers[0] != null &amp;&amp; headers[0].indexOf( "application/rdf+xml" ) != -1</scriptText>
+            </con:configuration>
           </con:assertion>
           <con:assertion type="XPath Match" id="2959234b-0df0-483a-a5e7-14b3628a0ccb" name="Root element rdf:RDF available">
-            <con:configuration><path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+            <con:configuration>
+              <path>declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-exists(/rdf:RDF)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration>
+exists(/rdf:RDF)</path>
+              <content>true</content>
+              <allowWildcards>false</allowWildcards>
+              <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+              <ignoreComments>false</ignoreComments>
+            </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -825,7 +917,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -847,10 +943,16 @@ exists(/rdf:RDF)</path>
           <con:endpoint>${#Project#teamengine.endpoint}/rest/suites/${#Project#ctl.ets.code}/run</con:endpoint>
           <con:request/>
           <con:assertion type="Valid HTTP Status Codes" id="0b7f5046-5ac7-41d0-829e-17315ac969ba" name="Valid HTTP Status Codes">
-            <con:configuration><codes>406</codes></con:configuration>
+            <con:configuration>
+              <codes>406</codes>
+            </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -894,7 +996,11 @@ exists(/rdf:RDF)</path>
             </con:configuration>
           </con:assertion>
           <con:credentials>
-            <con:authType>No Authorization</con:authType>
+            <con:username>${#Project#teamengine.user}</con:username>
+            <con:password>${#Project#teamengine.password}</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
           </con:credentials>
           <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
           <con:jmsPropertyConfig/>
@@ -907,20 +1013,40 @@ exists(/rdf:RDF)</path>
           </con:parameters>
         </con:config>
       </con:testStep>
-      <con:properties>
-        
-        
-        
-      </con:properties>
+      <con:properties></con:properties>
     </con:testCase>
     <con:properties/>
   </con:testSuite>
   <con:properties>
     <con:property>
       <con:name>teamengine.endpoint</con:name>
-      <con:value>http://cite.opengeospatial.org/te2</con:value>
+      <con:value>https://cite.ogc.org/te2</con:value>
     </con:property>
-  <con:property><con:name>testng.ets.code</con:name><con:value>wfs20</con:value></con:property><con:property><con:name>testng.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.5/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value></con:property><con:property><con:name>ctl.ets.code</con:name><con:value>wms</con:value></con:property><con:property><con:name>ctl.iut</con:name><con:value>http://cite.deegree.org/deegree-webservices-3.4.5/services/wms130?request=GetCapabilities&amp;service=WMS</con:value></con:property></con:properties>
+    <con:property>
+      <con:name>teamengine.user</con:name>
+      <con:value>ogctest</con:value>
+    </con:property>
+    <con:property>
+      <con:name>teamengine.password</con:name>
+      <con:value>ogctest</con:value>
+    </con:property>
+    <con:property>
+      <con:name>testng.ets.code</con:name>
+      <con:value>wfs20</con:value>
+    </con:property>
+    <con:property>
+      <con:name>testng.iut</con:name>
+      <con:value>https://cite.deegree.org/deegree-webservices-3.4.30/services/wfs200?service=WFS&amp;request=GetCapabilities</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ctl.ets.code</con:name>
+      <con:value>wms13</con:value>
+    </con:property>
+    <con:property>
+      <con:name>ctl.iut</con:name>
+      <con:value>https://cite.deegree.org/deegree-webservices-3.4.30/services/wms130?request=GetCapabilities&amp;service=WMS</con:value>
+    </con:property>
+  </con:properties>
   <con:wssContainer/>
   <con:oAuth2ProfileContainer/>
   <con:oAuth1ProfileContainer/>
