@@ -150,6 +150,7 @@
             WEB-INF/lib/asm-*.jar,
             WEB-INF/lib/derby-*.jar,
             WEB-INF/lib/xercesImpl-*.jar,
+            WEB-INF/lib/xml-apis-*.jar,
           </packagingExcludes>
           <archive>
             <manifest>
