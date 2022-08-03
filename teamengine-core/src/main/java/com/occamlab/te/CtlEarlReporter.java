@@ -606,8 +606,14 @@ public class CtlEarlReporter {
     }
 
     private String parseLogTestCall( String logtestcall, String decodedBaseURL ) {
-        if ( decodedBaseURL.contains( "users" ) ) {
+        if ( decodedBaseURL.contains( "users" ) && !decodedBaseURL.contains( "rest" )) {
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "users" ) );
+            int first = baseUrl.indexOf( System.getProperty( "file.separator" ) );
+            int second = baseUrl.indexOf( System.getProperty( "file.separator" ), first + 1 );
+            logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
+        } else if (decodedBaseURL.contains( "rest" )) {
+            String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "users" ) );
+            baseUrl = baseUrl.replace("rest" + System.getProperty( "file.separator" ), "");
             int first = baseUrl.indexOf( System.getProperty( "file.separator" ) );
             int second = baseUrl.indexOf( System.getProperty( "file.separator" ), first + 1 );
             logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
