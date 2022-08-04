@@ -17,7 +17,7 @@
  	C. Heazel (WiSC): Added Fortify adjudication changes
 
  ****************************************************************************/
-package com.occamlab.te.web;
+package com.occamlab.te.config;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,6 +53,9 @@ public class Config {
                                                   // list of versions
     private Map<String, List<String>> revisionMap; // Key is org_std_ver, value
                                                    // is a list of revisions
+    private Map<String, List<String>> conformanceClassMap; // Key is testname, value is a
+	   // list of conformance classes
+    
     private Map<String, SuiteEntry> suites; // Key is org_std_ver_rev, value is
                                             // a SuiteEntry
     private Map<String, List<ProfileEntry>> profiles; // Key is org_std_ver_rev,
@@ -85,6 +88,7 @@ public class Config {
             standardMap = new HashMap<String, List<String>>();
             versionMap = new HashMap<String, List<String>>();
             revisionMap = new HashMap<String, List<String>>();
+            conformanceClassMap = new HashMap<String, List<String>>();
             suites = new HashMap<String, SuiteEntry>();
             profiles = new HashMap<String, List<ProfileEntry>>();
             sources = new HashMap<String, List<File>>();
@@ -117,14 +121,14 @@ public class Config {
                         SuiteEntry suite = new SuiteEntry();
                         Element suiteEl = DomUtils.getElementByTagName(
                                 versionEl, "suite");
-                        String namespaceUri = DomUtils.getElementByTagName(
+                        String suiteNamespaceUri = DomUtils.getElementByTagName(
                                 suiteEl, "namespace-uri").getTextContent();
-                        String prefix = DomUtils.getElementByTagName(suiteEl,
+                        String suitePrefix = DomUtils.getElementByTagName(suiteEl,
                                 "prefix").getTextContent();
-                        String localName = DomUtils.getElementByTagName(
+                        String suiteLocalName = DomUtils.getElementByTagName(
                                 suiteEl, "local-name").getTextContent();
-                        suite.setQName(new QName(namespaceUri, localName,
-                                prefix));
+                        suite.setQName(new QName(suiteNamespaceUri, suiteLocalName,
+                                suitePrefix));
                         suite.setTitle(DomUtils.getElementByTagName(suiteEl,
                                 "title").getTextContent());
                         Element descEl = DomUtils.getElementByTagName(suiteEl,
@@ -198,14 +202,14 @@ public class Config {
                                 for (Element profileEl : DomUtils
                                         .getElementsByTagName(el, "profile")) {
                                     ProfileEntry profile = new ProfileEntry();
-                                    namespaceUri = DomUtils
+                                    String namespaceUri = DomUtils
                                             .getElementByTagName(profileEl,
                                                     "namespace-uri")
                                             .getTextContent();
-                                    prefix = DomUtils.getElementByTagName(
+                                    String prefix = DomUtils.getElementByTagName(
                                             profileEl, "prefix")
                                             .getTextContent();
-                                    localName = DomUtils.getElementByTagName(
+                                    String localName = DomUtils.getElementByTagName(
                                             profileEl, "local-name")
                                             .getTextContent();
                                     profile.setQName(new QName(namespaceUri,
@@ -218,6 +222,19 @@ public class Config {
                                 }
                                 profiles.put(key, profileList);
                             }
+                        }
+                        
+                        ArrayList<String> ccList = new ArrayList<String>(); // Conformance class list.
+                        Element conformanceClasses = DomUtils.getElementByTagName(suiteEl, "BasicConformanceClasses");
+                        
+                        if(null != conformanceClasses){
+                            for (Element ccElement : DomUtils.getChildElements(conformanceClasses)) {
+                                if (ccElement.getNodeName().equals("conformanceClass")) {
+                                    String confClass = ccElement.getTextContent();
+                                    ccList.add(confClass);
+                                }
+                            }
+                            conformanceClassMap.put(suiteLocalName, ccList);
                         }
                     }
                 }
@@ -259,6 +276,10 @@ public class Config {
         return revisionMap;
     }
 
+    public Map<String, List<String>> getConformanceClassMap() {
+        return conformanceClassMap;
+    }
+    
     public Map<String, List<File>> getSources() {
         return sources;
     }

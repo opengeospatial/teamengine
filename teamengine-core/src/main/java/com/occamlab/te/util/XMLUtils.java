@@ -7,7 +7,7 @@
  ***
  *
  */
-package com.occamlab.te.web;
+package com.occamlab.te.util;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;

@@ -31,6 +31,9 @@ import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
 
+import com.occamlab.te.RuntimeOptions;
+import com.occamlab.te.SetupOptions;
+
 /**
  * The purpose of this class is
  * 
@@ -73,7 +76,7 @@ public class DocumentationHelper {
      * @param logDir
      *            existing logs directory
      */
-    public void prettyPrintsReport(File logDir) throws Exception {
+    public File prettyPrintsReport(File logDir) throws Exception {
         if ((!logDir.exists()) || (!logDir.isDirectory())) {
             throw new Exception("Error: LOGDIR " + logDir.getAbsolutePath()
                     + " seems not a valid directory. ");
@@ -81,6 +84,7 @@ public class DocumentationHelper {
         File html_logs_report_file = new File(logDir.getAbsolutePath()
                 + File.separator + "report.html");
         prettyPrintsReport(logDir, html_logs_report_file);
+        return html_logs_report_file;
     }
 
     /**
@@ -180,6 +184,57 @@ public class DocumentationHelper {
         fos.close();
         System.out.println("Report file \""
                 + html_output_report_file.getAbsolutePath() + "\" created!");
+    }
+
+    public static void main(String[] args) throws Exception {
+        SetupOptions setupOpts = new SetupOptions();
+        File scriptsDir = new File(SetupOptions.getBaseConfigDirectory(), "scripts");
+        String cmd = "java com.occamlab.te.util.DocumentationHelper";
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("-source=")) {
+                File f = new File(scriptsDir, args[i].substring(8));
+                // Fortify Mod: make sure that the -source argument 
+                //              is not pointing to an illegal location
+                if (! f.exists() || ! setupOpts.addSourceWithValidation(f)) {
+                    System.out.println("Error: Can't find CTL script(s) at "
+                            + f.getAbsolutePath());
+                    return;
+                }
+            } else if (args[i].startsWith("-cmd=")) {
+              cmd = args[i].substring(5);
+            } else if (args[i].equals("-h") || args[i].equals("-help") || args[i].equals("-?")) {
+                syntax(cmd);
+                return;
+            }
+        }
+        
+        if (setupOpts.getSources().isEmpty()) {
+        	syntax(cmd);
+        	return;
+        }
+        
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        DocumentationHelper docCode = new DocumentationHelper(
+                cl.getResource("com/occamlab/te/PseudoCTLDocumentation.xsl"));
+        File html_output_documentation_file = new File(
+        		setupOpts.getWorkDir().getAbsolutePath() + File.separator
+                        + "documentation.html");
+        if (html_output_documentation_file.exists())
+            throw new Exception(
+                    "Error: Documentation file already exists, check the file "
+                            + html_output_documentation_file
+                                    .getAbsolutePath() + " ");
+        FileOutputStream fos = new FileOutputStream(html_output_documentation_file);
+        docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(), fos);
+        fos.close();
+        System.out.println("Test documentation file \""
+                + html_output_documentation_file.getAbsolutePath()
+                + "\" created!");
+    }
+    
+    static void syntax(String cmd) {
+        System.out.println("Generates documentation of tests.\n");
+        System.out.println(cmd + " -source=ctlfile|dir");
     }
 
 }

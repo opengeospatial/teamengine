@@ -12,7 +12,7 @@
  *
  ***************************************************************************
  */
-package com.occamlab.te.web;
+package com.occamlab.te.config;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,12 +32,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.XMLConstants; // Addition for Fortify modifications
 
-import net.sf.saxon.expr.FirstItemExpression;
-
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import com.occamlab.te.SetupOptions;
+import com.occamlab.te.util.XMLUtils;
 
 /**
  * Creates the main Config File reading the tests under TE_BASE/scripts config
@@ -78,7 +79,7 @@ public class ConfigFileCreator {
 	 *
 	 * @param tebase
 	 */
-	public void create(String tebase) throws TEException {
+	public void create(String tebase) throws TEConfigException {
 		File f = new File(tebase);
 		if (f.exists()) {
 			try {
@@ -96,7 +97,7 @@ public class ConfigFileCreator {
 	 *
 	 * @param tebase
 	 */
-	public void create(File tebase) throws TEException {
+	public void create(File tebase) throws TEConfigException {
 		try {
 			create(tebase.toString() + File.separator);
 		} catch (Exception e) {
@@ -108,10 +109,9 @@ public class ConfigFileCreator {
 		File f = new File(tebase + "config.xml");
 		if (f.exists()) {
 			f.delete();
-			LOGR.info("Old onfig file removed " + f);
+			LOGR.info("Old config file removed " + f);
 		} else {
-			LOGR.info("Config file not removed, since there was no file at "
-					+ f);
+			LOGR.info("Config file not removed, since there was no file at " + f);
 		}
 	}
 
@@ -149,8 +149,8 @@ public class ConfigFileCreator {
 
 		if (dir.isDirectory() && !dir.getName().startsWith(".")) {
 			List<File> configFiles = getConfigFiles(dir);
-			for (Iterator iterator = configFiles.iterator(); iterator.hasNext();) {
-				File file = (File) iterator.next();
+			for (Iterator<File> iterator = configFiles.iterator(); iterator.hasNext();) {
+				File file = iterator.next();
 				processTestConfigFile(file);
 			}
 		}
@@ -158,8 +158,13 @@ public class ConfigFileCreator {
 	}
 
 	private void processTestConfigFile(File configFile) {
+		String configFilePath = null;
+		Document docTest = null;
 		if (configFile != null) {
-			Document docTest = getDocument(configFile);
+			configFilePath = configFile.getAbsolutePath();
+			docTest = getDocument(configFile);
+		}
+		if (docTest != null) {
 			Node orgInTest = XMLUtils.getFirstNode(docTest,
 					"/organization/name[1]");
 			String org = orgInTest.getTextContent();
@@ -203,7 +208,7 @@ public class ConfigFileCreator {
 					+ " to config file");
 		} else {
 			LOGR.config("No config file was found in dir "
-					+ configFile.getAbsolutePath()
+					+ configFilePath
 					+ ". It was not registered in the main config file.");
 		}
 	}
@@ -233,7 +238,6 @@ public class ConfigFileCreator {
 
 	public Document getDocument(File xml) {
 		try {
-
 			Document doc = builder.parse(xml);
 			return doc;
 		} catch (Exception e) {
@@ -263,4 +267,8 @@ public class ConfigFileCreator {
 		return configFiles;
 	}
 
+    public static void main(String[] args) throws Exception {
+    	new SetupOptions();
+        (new ConfigFileCreator()).create(SetupOptions.getBaseConfigDirectory());
+    }
 }

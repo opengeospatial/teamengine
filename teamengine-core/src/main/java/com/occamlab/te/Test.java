@@ -11,7 +11,7 @@
  2009         F. Vitale     vitale@imaa.cnr.it
  2018         C. Heazel     cheazel@wiscenterprisesl.com
 
- MOdifications: 
+ Modifications: 
  2/14/18
     - Addressed path manipulation vulnerabilities and general cleanup.
     - Identified Issues which need further discussion.
@@ -21,22 +21,22 @@
 package com.occamlab.te;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.UUID;
 
-import javax.xml.transform.Templates;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.occamlab.te.index.Index;
-import com.occamlab.te.util.DocumentationHelper;
 import com.occamlab.te.util.LogUtils;
-import com.occamlab.te.util.Misc;
 
 /**
  * 
@@ -52,7 +52,6 @@ public class Test {
 
     public static final int DOC_MODE = 4;
     public static final int CHECK_MODE = 5;
-    public static final int PRETTYLOG_MODE = 6;
 
     public static final String XSL_NS = "http://www.w3.org/1999/XSL/Transform";
     public static final String TE_NS = "http://www.occamlab.com/te";
@@ -127,30 +126,33 @@ public class Test {
      * @throws Exception
      */
     public void execute(String[] args) throws Exception {
+        @SuppressWarnings("unused") boolean rslt;
 
         // Copy work directory from setup options to runtime
         File workDir = setupOpts.getWorkDir();
-        boolean rslt = runOpts.setWorkDir(workDir);
+        rslt = runOpts.setWorkDir(workDir);
 
         // Initialize the rest of the test context
         String cmd = "java com.occamlab.te.Test";
         File logDir = runOpts.getLogDir();
         String session = null;
+        boolean hasSessionArg = false;
         int mode = TEST_MODE;
-        File sourceFile = null;
 
         // Parse arguments from command-line
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (arg.startsWith("-cmd=")) {
                 cmd = arg.substring(5);
-                }
+	        } else if (arg.equals("-h") || arg.equals("-help") || arg.equals("-?")) {
+	            syntax(cmd);
+	            return;
             // The path to the test script.  If the file name is not an absolute
             // path then it must be under the Scripts directory.
             // Issue: should we restrict the range of valid paths for source files? 
-            else if (arg.startsWith("-source=")) {
+	        } else if (arg.startsWith("-source=")) {
                 String sourcePath = arg.substring(8);
-                sourceFile = new File(sourcePath);
+                File sourceFile = new File(sourcePath);
                 if (!sourceFile.isAbsolute()) {
                     File scriptsDir = new File(
                             SetupOptions.getBaseConfigDirectory(), "scripts");
@@ -163,9 +165,21 @@ public class Test {
                             + sourceFile.getAbsolutePath());
                     return;
                 }
-            // runtimeOptions mod
+            } else if (args[i].startsWith("-logdir=")) {
+            	String path = args[i].substring(8);
+                File file = new File(path);
+                if (file.isAbsolute()) {
+                	logDir = file;
+                } else {
+                	logDir = new File(SetupOptions.getBaseConfigDirectory(), path);
+                }
+                if (! logDir.exists() || !runOpts.setLogDir(logDir)) {
+                    System.out.println("Error: Cannot use logdir " + logDir.getAbsolutePath());
+                    return;
+                }
             } else if (arg.startsWith("-session=")) {
                 // Issue: session is not validated but it is used as part of a file path.
+            	hasSessionArg = true;
                 session = arg.substring(9);
             } else if (arg.startsWith("-base=")) {
                 rslt = runOpts.setBaseURI(arg.substring(6));
@@ -187,8 +201,6 @@ public class Test {
                 mode = DOC_MODE;
             } else if (arg.equals("-mode=check")) {
                 mode = CHECK_MODE;
-            } else if (arg.equals("-mode=pplogs")) {
-                mode = PRETTYLOG_MODE;
             } else if (arg.equals("-mode=cache")) {
                 mode = REDO_FROM_CACHE_MODE;
             } else if (arg.startsWith("-mode=")) {
@@ -199,8 +211,25 @@ public class Test {
             } else if ((arg.startsWith("-form="))) {
               rslt = runOpts.addRecordedForm(arg.substring(6));
             } else if (!arg.startsWith("-")) {
-                if (mode == RETEST_MODE) {
-                    rslt = runOpts.addTestPath(arg);
+                if (mode == RETEST_MODE || mode == REDO_FROM_CACHE_MODE) {
+                	if (hasSessionArg) {
+                		if (arg.startsWith(session)) {
+                			rslt = runOpts.addTestPath(arg);
+                		} else {
+                			rslt = runOpts.addTestPath(session + "/" + arg);
+                		}
+                	} else {
+                		int slash = (arg).indexOf("/");
+                		if (slash >= 0) {
+                			if (session == null) {
+                				session = arg.substring(0, slash);
+                			} else if (!arg.substring(0, slash).equals(session)) {
+                                System.out.println("Each test path must be within the same session.");
+                                return;
+                			}
+               				rslt = runOpts.addTestPath(arg);
+                		}
+                	}
                 } else {
                     System.out.println("Unrecognized parameter \"" + arg
                             + "\"");
@@ -210,28 +239,29 @@ public class Test {
                         .println("Unrecognized parameter \"" + arg + "\"");
             }
         }
-
+        
         // Set mode
         rslt = runOpts.setMode(mode);
-
-        // Syntax checks
-        if ((mode == RETEST_MODE && (logDir == null || session == null))
-                || (mode == RESUME_MODE && (logDir == null || session == null))) {
-            syntax(cmd);
-            return;
+        rslt = runOpts.setSessionId(session);
+        
+        if (mode == RETEST_MODE || mode == RESUME_MODE || mode == REDO_FROM_CACHE_MODE) {
+        	if (logDir == null || session == null) {
+	            syntax(cmd);
+	            return;
+        	}
+        	if (setupOpts.getSources().isEmpty()) {
+        		loadSources();
+        	}
         }
-        if (mode == REDO_FROM_CACHE_MODE && (logDir == null || session == null)) {
-            syntax(cmd);
+    
+        // Syntax checks
+        if (setupOpts.getSources().isEmpty()) {
+            System.out
+            .println("Error: At least one -source parameter is required");
             return;
         }
         if (runOpts.getProfiles().size() > 0 && logDir == null) {
-            System.out
-                    .println("Error: A -logdir parameter is required for testing profiles");
-            return;
-        }
-        if (mode == PRETTYLOG_MODE && logDir == null) {
-            System.out
-                    .println("Error: A -logdir parameter is required to create report");
+            System.out.println("Error: A -logdir parameter is required for testing profiles");
             return;
         }
 
@@ -247,105 +277,48 @@ public class Test {
             } else {
                 session = LogUtils.generateSessionId(logDir);
             }
+            rslt = runOpts.setSessionId(session);
         }
-        // runtimeOptions mod
-        rslt = runOpts.setSessionId(session);
+
         Thread.currentThread().setName("TEAM Engine");
-        Index masterIndex = null;
+        Index masterIndex = new Index();
         File indexFile = null;
         if (logDir != null && session != null) {
             File dir = new File(logDir, runOpts.getSessionId());
             indexFile = new File(dir, "index.xml");
         }
 
-        if (mode == DOC_MODE) {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            DocumentationHelper docCode = new DocumentationHelper(
-                    cl.getResource("com/occamlab/te/PseudoCTLDocumentation.xsl"));
-            File html_output_documentation_file = new File(
-                    workDir.getAbsolutePath() + File.separator
-                            + "documentation.html");
-            if (html_output_documentation_file.exists())
-                throw new Exception(
-                        "Error: Documentation file already exists, check the file "
-                                + html_output_documentation_file
-                                        .getAbsolutePath() + " ");
-            // Fortify Mod: Close the FileOutputStream and release its resources
-            // docCode.generateDocumentation(setupOpts.getSources().get(0)
-            //        .getAbsolutePath(), new FileOutputStream(
-            //        html_output_documentation_file));
-            FileOutputStream fos = new FileOutputStream(html_output_documentation_file);
-            docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(), fos);
-            fos.close();
-            System.out.println("Test documentation file \""
-                    + html_output_documentation_file.getAbsolutePath()
-                    + "\" created!");
-            return;
+        boolean regenerate = false;
+        
+        if (mode == TEST_MODE || mode == CHECK_MODE) {
+            regenerate = true;
+        } else if (mode == DOC_MODE) {
+        	masterIndex = Generator.generateDocXsl(setupOpts);
+        } else {
+            if (indexFile == null || !indexFile.canRead()) {
+                System.out.println("Error: Can't read index file.");
+                regenerate = true;
+            } else {
+            	masterIndex = new Index(indexFile);
+	            if (masterIndex.outOfDate()) {
+	                System.out.println("Warning: Scripts have changed since this session was first executed.");
+	                if (mode == REDO_FROM_CACHE_MODE) {
+	                    System.out.println("Regenerating masterIndex from source scripts");
+	                	regenerate = true;
+	                }
+	            }
+            }
         }
 
-        if (mode == PRETTYLOG_MODE) {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            DocumentationHelper docLogs = new DocumentationHelper(
-                    cl.getResource("com/occamlab/te/test_report_html.xsl"));
-            docLogs.prettyPrintsReport(logDir);
-            return;
-        }
-        if (mode == TEST_MODE || mode == CHECK_MODE) {
+        if (regenerate) {
             masterIndex = Generator.generateXsl(setupOpts);
             if (indexFile != null) {
                 masterIndex.persist(indexFile);
             }
-        } else if (mode == REDO_FROM_CACHE_MODE) {
-            boolean regenerate = false;
-            // Fortify Mod: indexFile may be null.  Check for it
-            // if (indexFile.canRead()) {
-            if (indexFile != null && indexFile.canRead()) {
-                masterIndex = new Index(indexFile);
-                if (masterIndex.outOfDate()) {
-                    System.out
-                            .println("Warning: Scripts have changed since this session was first executed.");
-                    regenerate = true;
-                }
-            } else {
-                System.out.println("Error: Can't read index file.");
-                regenerate = true;
-            }
-            if (regenerate) {
-                System.out
-                        .println("Regenerating masterIndex from source scripts");
-                masterIndex = Generator.generateXsl(setupOpts);
-                if (indexFile != null) {
-                    masterIndex.persist(indexFile);
-                }
-            }
-        } else {
-            // Fortify Mod: indexFile may be null.  Check for it.
-            if (indexFile == null) {
-                System.out.println("Error: Can't read index file.");
-                return;
-            }
-            if (!indexFile.canRead()) {
-                System.out.println("Error: Can't read index file.");
-                return;
-            }
-            masterIndex = new Index(indexFile);
-            if (masterIndex.outOfDate()) {
-                System.out
-                        .println("Warning: Scripts have changed since this session was first executed.");
-            }
         }
-
+        
         if (mode == REDO_FROM_CACHE_MODE) {
-            File stylesheet = Misc
-                    .getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
-            Templates ViewLogTemplates = ViewLog.transformerFactory
-                    .newTemplates(new StreamSource(stylesheet));
-            File userlog = logDir;
-            StringWriter sw = new StringWriter();
-            String testName=null;
-            ViewLog.view_log(testName,userlog, session, new ArrayList<String>(),
-                    ViewLogTemplates, sw);
-            boolean hasCache = ViewLog.hasCache();
+            boolean hasCache = ViewLog.checkCache(logDir, session);
             if (!hasCache) {
                 File dir = new File(logDir, runOpts.getSessionId());
                 throw new Exception("Error: no cache for "
@@ -355,9 +328,19 @@ public class Test {
 
         // Fortify Mod: Make sure masterIndex is not null
         // masterIndex.setElements(null);
-        if( masterIndex != null) masterIndex.setElements(null);
-        else masterIndex = new Index();
-        TEClassLoader cl = new TEClassLoader(findResourcesDirectory(sourceFile));
+        if( masterIndex != null) {
+        	masterIndex.setElements(null);
+        } else {
+        	masterIndex = new Index();
+        }
+        List<File> resourcesDirs = new ArrayList<File>();
+        for (File sourceFile : setupOpts.getSources()) {
+        	File resourcesDir = findResourcesDirectory(sourceFile);
+        	if (!resourcesDirs.contains(resourcesDir)) {
+        		resourcesDirs.add(resourcesDir);
+        	}
+        }
+        TEClassLoader cl = new TEClassLoader(resourcesDirs);
         Engine engine = new Engine(masterIndex, setupOpts.getSourcesName(), cl);
 
         if (setupOpts.isPreload() || mode == CHECK_MODE) {
@@ -368,6 +351,10 @@ public class Test {
             LOGR.fine(runOpts.toString());
         }
 
+        if (mode == TEST_MODE) {
+        	saveSources();
+        }
+        
         if (mode != CHECK_MODE) {
             TECore core = new TECore(engine, masterIndex, runOpts);
             core.execute();
@@ -412,36 +399,37 @@ public class Test {
         System.out.println();
         System.out.println("Test mode:");
         System.out.println("  Use to start a test session.\n");
-        System.out.println("  " + cmd
-                + " [-mode=test] [-source=ctlfile|dir]...");
-        System.out.println("  [-session=session] [-base=baseURI]");
-        System.out
-                .println("    [-suite=qname|-test=qname [@param-name=value] ...] [-profile=qname|*] ...\n");
-        System.out.println("    qname=[namespace_uri,|prefix:]local_name]\n");
+        System.out.println("  " + cmd + " [-mode=test] -source=ctlfile|dir ...");
+        System.out.println("    [-logdir=dir] [-session=session] [-base=baseURI]");
+        System.out.println("    -suite=qname [-profile=qname|*] ... | -test=qname [@param-name=value] ...\n");
+        System.out.println("    qname=[namespace_uri,|prefix:]local_name\n");
         System.out.println("Resume mode:");
-        System.out
-                .println("  Use to resume a test session that was interrupted before completion.\n");
-        System.out.println("  " + cmd
-                + " -mode=resume -logdir=dir -session=session\n");
+        System.out.println("  Use to resume a test session that was interrupted before completion.\n");
+        System.out.println("  " + cmd + " -mode=resume [-logdir=dir] -session=session\n");
         System.out.println("Retest mode:");
         System.out.println("  Use to reexecute individual tests.\n");
-        System.out
-                .println("  "
-                        + cmd
-                        + " -mode=retest -logdir=dir -session=session testpath1 [testpath2] ...\n");
+        System.out.println("  " + cmd + " -mode=retest [-logdir=dir] testpath1 [testpath2] ...\n");
+        System.out.println("Redo From Cache Mode:");
+        System.out.println("  Use to rerun tests with cached server responses when the test has changed.\n");
+        System.out.println("  " + cmd + "-mode=cache [-logdir=dir] [-session=session] [testpath1 [testpath2]]\n");
+        System.out.println("  Warning: Test changes may make cached server responses invalid.\n");
+        System.out.println("Check mode:");
+        System.out.println("  Use to validate source files.\n");
+        System.out.println("  " + cmd + " -mode=check -source=ctlfile|dir ...\n");
         System.out.println("Doc mode:");
-        System.out.println("  Use to generate documentation of tests.\n");
-        System.out
-                .println("  "
-                        + cmd
-                        + " -mode=doc -source=<main ctl file> [-suite=[{namespace_uri,|prefix:}]suite_name]\n");
-        System.out.println("PPLogs mode:");
-        System.out
-                .println("  Pretty Print Logs mode is used to generate a readable HTML report of execution.\n");
-        System.out.println("  " + cmd
-                + " -mode=pplogs -logdir=<dir of a session log>  \n");
-        System.out.println("  " + cmd
-                + "-mode=cache -logdir=dir -session=session\n");
+        System.out.println("  Use to visit all subtests and generate log files without executing them.\n");
+        System.out.println("  " + cmd + " -mode=doc -source=ctlfile|dir ... [-suite=qname]\n");
+        
+        /* 
+         * Doc mode once again behaves as it originally did in https://sourceforge.net/p/teamengine/code/1
+         * The entry point for the PseudoCTLDocumentation generator (which was called with -mode=doc starting with
+         * https://sourceforge.net/p/teamengine/code/459) is now the main method of DocumentationHelper.
+         */
+        
+        /* 
+         * The entry point for the PrettyPrintLogs functionality which was called with -mode=pplogs
+         * is now in the main method of ViewLog and is activated with its -html parameter.
+         */
     }
 
     /**
@@ -463,10 +451,47 @@ public class Test {
             return "Doc Mode";
         case 5:
             return "Check Mode";
-        case 6:
-            return "Pretty Log Mode";
         default:
             return "Invalid Mode";
         }
+    }
+    
+    private void saveSources() {
+    	if (runOpts.getLogDir() != null && runOpts.getSessionId() != null) {
+	    	File sessionDir = new File(runOpts.getLogDir(), runOpts.getSessionId());
+	    	File sourcesFile = new File(sessionDir, "sources.xml");
+	    	try (PrintWriter writer = new PrintWriter(sourcesFile)) {
+		    	writer.println("<sources>");
+		    	for (File file : setupOpts.getSources()) {
+		    		writer.println("<source>" + file.getPath() + "</source>");
+		    	}
+		    	writer.println("</sources>");
+	    	} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+    	}
+    }
+    
+    private void loadSources() {
+    	if (runOpts.getLogDir() != null && runOpts.getSessionId() != null) {
+	    	File sessionDir = new File(runOpts.getLogDir(), runOpts.getSessionId());
+	    	File sourcesFile = new File(sessionDir, "sources.xml");
+	        if (sourcesFile.exists()) {
+				try {
+		            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		            dbf.setExpandEntityReferences(false);
+					DocumentBuilder db = dbf.newDocumentBuilder();
+		            Document doc = db.parse(sourcesFile);
+		            NodeList nl = doc.getElementsByTagName("source");
+		            for (int i = 0; i < nl.getLength(); i++) {
+		                String sourcePath = nl.item(i).getTextContent();
+		                File sourceFile = new File(sourcePath);
+		                setupOpts.addSourceWithValidation(sourceFile);
+		            }
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	        }
+    	}
     }
 }

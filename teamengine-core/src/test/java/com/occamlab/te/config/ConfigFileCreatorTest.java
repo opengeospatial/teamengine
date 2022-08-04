@@ -5,7 +5,7 @@
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.occamlab.te.web;
+package com.occamlab.te.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +25,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.occamlab.te.util.XMLUtils;
 
 public class ConfigFileCreatorTest {
     private File classp;
@@ -161,7 +163,7 @@ public class ConfigFileCreatorTest {
         ConfigFileCreator configFileCreator = new ConfigFileCreator();
         try {
             configFileCreator.create(tebase);
-        } catch (TEException e) {
+        } catch (TEConfigException e) {
             assertEquals("com.occamlab.te.web.TEBaseNotFoundException", e.getClass().getName());
             return;
 
