@@ -6,15 +6,6 @@ the test harness: a command shell, the web application, or a REST-like API.
 
 ## Command shell
 
-When a test is executed a Java applet will popup and display a form for the user 
-to fill in with the details of the implementation to be tested. The user completes 
-the form and in some cases will need to perform visual inspection and fill in other 
-forms. There are two ways to run a test: interactively or non-interactively by 
-providing the form responses in a file.
-
-
-### Running a test suite interactively
-
 The console application (teamengine-console-\${project.version}-bin.zip)
 includes shell scripts for running test suites in Windows and Unix-like
 (Bash shell) environments. Unpack the archive into a convenient location
@@ -32,33 +23,59 @@ the particulars of the operating system in use. Once this is done,
 change to the appropriate script directory (TE_HOME/bin/{unix,windows})
 or add it to the system path.
 
-![warning](./images/warn-16px.png) **Warning:** If a test suite requires any
-supporting libraries that are not included with the core distribution,
-these must be added to the TE_BASE/resources/lib directory.
+### Listing test suites
 
-To view a brief summary of a test suite, run the `listsuites` script and
-specify the location of the root CTL script (relative to
-TE\_BASE/scripts).
+Assuming that test scripts and a main config.xml file have been installed
+in TE_BASE as specified in the [Installation](./installation.html) instructions,  
+use the `listsuites` shell script to list the test suites that are available.
 
-    > listsuites -source=note.ctl
+    > listsuites
 
-    Suite note:note-test ({http://example.net/note-test}note-test)
-    Sample test suite
-    Checks the content of a note.
+    Source: C:\te-build\TE_BASE\scripts\gml32\3.2.1\ctl
+      Suite tns:ets-gml32-1.29 ({http://www.opengis.net/cite/iso19136}ets-gml32-1.29)
+      Title: GML 3.2 Conformance Test Suite - Application Schemas
+      Description: This executable test suite (ETS) validates GML application
+         schemas or data in accord with ISO 19136:2007.
+    
+    
+    Source: C:\te-build\TE_BASE\scripts\wms13\1.3.0\ctl
+      Suite wms-1.3.0:ets-wms13-auto ({https://cite.opengeospatial.org/wms-1.3.0/src/ctl}ets-wms13-auto)
+      Title: Web Map Service (WMS) 1.3.0
+      Description: Validates that a WMS 1.3.0 is compliant.
+    
+      Suite wms-1.3.0:ets-wms13 ({https://cite.opengeospatial.org/wms-1.3.0/src/ctl}ets-wms13)
+      Title: Web Map Service (WMS) 1.3.0
+      Description: Validates that a WMS 1.3.0 is compliant.
+    
 
-To execute a test suite, run the `test` script and specify the location
-of the root CTL script (this contains the ctl:suite element); the file
-reference may be an absolute filesystem location or relative to
-TE\_BASE/scripts. The test results will be written to a subdirectory
+### Executing a test suite interactively
+
+To execute a test suite, use the `test` shell script.  Pass it the source directory
+containing ctl files, either as an absolute filesystem location or relative to TE\_BASE/scripts.
+If more than one test suite exists for the source directory, pass in the suite name as well.
+
+    > test -source=wms13\1.3.0\ctl -suite=wms-1.3.0:ets-wms13
+
+    ...
+    Testing suite wms-1.3.0:ets-wms13 in Test Mode with defaultResult of Pass ...
+    ******************************************************************************************************************************
+       Testing main:main type Mandatory in Test Mode with defaultResult Pass (s0023)...
+          Assertion: The implementation under test complies with the WMS 1.3.0 specification.
+    ******************************************************************************************************************************
+          Testing main:data-independent type Mandatory in Test Mode with defaultResult Pass (s0023/d7152e18184_1)...
+             Context: WMS_Capabilities element
+             Assertion: Dataset independent request behaves properly.
+    ******************************************************************************************************************************
+             Testing interactive:interactive type Mandatory in Test Mode with defaultResult Pass (s0023/d7152e18184_1/d7152e18295_1)...
+                Context: WMS_Capabilities element
+                Assertion: The tests that require user interaction behave properly.
+    ...
+
+    
+The test results will be written to a subdirectory
 *sNNNN* created in TE\_BASE/users/*username*/.
 
-    > test -source=note.ctl
-
-    Testing suite note:note-test in Test Mode with defaultResult of Pass ...
-    Testing note:main type Mandatory in Test Mode with defaultResult Pass (s0002)
-    ...
-    
-### Running a test suite non-interactively
+### Executing a test suite non-interactively
 
 It is possible to run the tests in a headless, unattended manner by providing 
 files containing the form responses. Form files are specified via the ``-form`` 
@@ -66,7 +83,7 @@ parameter, more than one form can be provided using multiple ``-form`` parameter
 For example, the WMS 1.1.1 tests can be run with the following command:
     
      $ test.sh -source=wms/1.1.1/ctl/ \
-       -form=$forms/wms-1.1.1.xml \
+       -form=forms/wms-1.1.1.xml \
        -form=forms/yes.xml
 
 Where ``forms/wms-1.1.1.xml`` is:
@@ -136,6 +153,78 @@ For example:
       </values>
             Test wms:wmsops-getmap-params-bbox-2 Passed
       
+
+### Reviewing test suite results
+
+As you execute a test suite with the test shell script, test results will
+be written to the console window.  However, the output may be interspersed with
+log meesages that make the results hard to read.  For a simple overview of the
+session results, use the `viewlog` shell script.  Pass it the name of your session directory.
+
+    > viewlog -session=s0023
+    
+    Test main:main type Mandatory (s0023) Failed (InheritedFailure)
+       Test main:data-independent type Mandatory (s0023/d7152e18184_1) Failed (InheritedFailure)
+          Test interactive:interactive type Mandatory (s0023/d7152e18184_1/d7152e18295_1) Passed
+             Test interactive:exceptions-inimage type Mandatory (s0023/d7152e18184_1/d7152e18295_1/d7152e1351_1) Passed
+             Test interactive:fees-and-access-constraints type Mandatory (s0023/d7152e18184_1/d7152e18295_1/d7152e1354_1) Passed
+          Test basic_elements:basic_elements type Mandatory (s0023/d7152e18184_1/d7152e18297_1) Passed
+             Test basic_elements:version-negotiation type Mandatory (s0023/d7152e18184_1/d7152e18297_1/d7152e496_1) Passed
+                Test basic_elements:negotiate-no-version type Mandatory (s0023/d7152e18184_1/d7152e18297_1/d7152e496_1/d7152e514_1) Passed
+                Test basic_elements:negotiate-basic_elements-version type Mandatory (s0023/d7152e18184_1/d7152e18297_1/d7152e496_1/d7152e516_1) Passed
+                Test basic_elements:negotiate-higher-version type Mandatory (s0023/d7152e18184_1/d7152e18297_1/d7152e496_1/d7152e518_1) Passed
+                    Test basic_elements:negotiate-lower-version type Mandatory (s0023/d7152e18184_1/d7152e18297_1/d7152e496_1/d7152e520_1) Passed
+    ...
+		    
+For a more detailed log of an individual test, pass the complete path of a test to the viewlog script.
+
+    > viewlog s0023/d7152e18203_1/d7152e12205_1/d7152e12250_1/d7152e12314_1
+    
+    Test basic:bbox-exponential type Mandatory default result Passed (s0023/d7152e18203_1/d7152e12205_1/d7152e12250_1/d7152e12314_1)
+    
+    Assertion: When a GetMap request uses exponential notation values for the BBOX parameter, then the response is valid.
+    
+    Context:
+       Label:
+       Value: WMS_Capabilities element
+    
+    Request d7152e12390_1:
+       Method: get
+       URL: http://localhost:8080/geoserver/ows?SERVICE=WMS&&LaYeRs=,,,,,,,&FoRmAt=image%2Fpng&CrS=CRS:84&VeRsIoN=1.3.0&WiDtH=400&StYlEs=&HeIgHt=200&BbOx=-0.005,-0.0025,0.005,0.0025&ReQuEsT=GetMap
+       Response from parser parsers:ImageParser:
+    
+       Messages from parser parsers:ImageParser:
+            No image handlers available for the data stream. null
+    
+    
+    Request d7152e12461_1:
+       Method: get
+       URL: http://localhost:8080/geoserver/ows?SERVICE=WMS&&VeRsIoN=1.3.0&HeIgHt=200&WiDtH=400&CrS=CRS:84&LaYeRs=,,,,,,,&StYlEs=&FoRmAt=image%2Fpng&ReQuEsT=GetMap&BbOx=-.0005E1,-25E-4,%2B05E-3,.00025E%2B1
+       Response from parser parsers:ImageParser:
+    
+       Messages from parser parsers:ImageParser:
+            No image handlers available for the data stream. null
+    
+    
+    Message d7152e12533_1:
+       Error: The image produced using exponential notation in the bbox is not the same as the image produced without using exponential notation.
+    
+    Result: Failed
+    
+It's also possible to generate reports of the session results.
+
+For the "Pretty Print" report, pass in the session directory and use -pp
+
+    > viewlog -session=s0023 -pp
+    
+    Generated C:\te-build\TE_BASE\users\adam\s0023\report.html
+    
+For EARL and HTML results, pass in the session directory and use -html
+
+    > viewlog -session=s0023 -html
+    
+    Generated EARL report C:\te-build\TE_BASE\users\adam\s0023\earl-results.rdf
+    Generated HTML report C:\te-build\TE_BASE\users\adam\s0023\result\index.html
 
 ## Web application
 
