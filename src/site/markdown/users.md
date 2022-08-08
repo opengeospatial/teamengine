@@ -6,7 +6,7 @@ the test harness: a command shell, the web application, or a REST-like API.
 
 ## Command shell
 
-The console application (teamengine-console-\${project.version}-bin.zip)
+The console application bin archive (teamengine-console-${project.version}-bin.zip)
 includes shell scripts for running test suites in Windows and Unix-like
 (Bash shell) environments. Unpack the archive into a convenient location
 (TE_HOME); the contents are as shown below.
@@ -17,17 +17,28 @@ includes shell scripts for running test suites in Windows and Unix-like
       |-- resources/  # classpath resources (schemas, etc.)
 
 
+The console application base archive (teamengine-console-${project.version}-base.zip)
+contains the initial contents of a teamengine instance directory.
+The archive should be unpacked into another convenient location (TE_BASE),
+as specified in the [Installation](./installation.html) instructions.
+Test scripts should be installed in the TE_BASE/scripts directory.
+
 If desired, set the value of the `TE_BASE` environment variable in the
 `setenv` script; otherwise set it for the user environment according to
 the particulars of the operating system in use. Once this is done,
 change to the appropriate script directory (TE_HOME/bin/{unix,windows})
 or add it to the system path.
 
+Generate the main config file in TE_BASE using the `config` shell script.
+This aggregates the config files for the inidividual test suites into one.
+
+    > config
+   
+    INFO: SUCCESSFULLY created config.xml at C:\te-build\TE_BASE\config.xml
+
 ### Listing test suites
 
-Assuming that test scripts and a main config.xml file have been installed
-in TE_BASE as specified in the [Installation](./installation.html) instructions,  
-use the `listsuites` shell script to list the test suites that are available.
+Use the `listsuites` shell script to list the test suites that are available.
 
     > listsuites
 
