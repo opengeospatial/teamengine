@@ -136,7 +136,10 @@ public class TEClassLoader extends ClassLoader {
             }
         }
         if (c == null) {
-            c = cl.loadClass(name);
+            try {
+	            c = cl.loadClass(name);
+            } catch (ClassNotFoundException e) {
+            }
         }
         if (c == null) {
             c = readClass(name);
