@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+## 5.5.1 (2022-08-23)
+- [#548](https://github.com/opengeospatial/teamengine/issues/548): REST API: Test run against CTL based test suite does not return test result
+- [#544](https://github.com/opengeospatial/teamengine/issues/544): TEAM Engine cannot be started without setting java property javax.xml.parsers.DocumentBuilderFactory
+- [#545](https://github.com/opengeospatial/teamengine/issues/545): View Sessions button appears at unexpected position
+- [#551](https://github.com/opengeospatial/teamengine/pull/551): Set commons-codec to v1.11
+- [#546](https://github.com/opengeospatial/teamengine/pull/546): Add credentials to SoapUI project
+
 ## 5.5 (2022-07-07)
 - [#541](https://github.com/opengeospatial/teamengine/issues/541): REST API: Test run with Accept application/zip returns 404
 - [#542](https://github.com/opengeospatial/teamengine/issues/542): REST API: Test runs with CTL based test suites return 500
