@@ -1858,6 +1858,10 @@ public class TECore implements Runnable {
 			if (uc instanceof HttpURLConnection) {
 				((HttpURLConnection)uc).setRequestMethod(method);
 			}
+		} else {
+			//https://github.com/opengeospatial/teamengine/issues/553
+			//need to re-connect, as the check for redirects already opened the connection
+			uc = new URL(sUrl).openConnection();
 		}
 	}
 
