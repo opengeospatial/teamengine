@@ -5,30 +5,31 @@ pipeline {
     jdk 'JDK 8'
   }
   stages {
-    stage('Preparation') {
+    stage('Initialize') {
       steps{
-        deleteDir()
-        sh 'git clone git@github.com:opengeospatial/teamengine.git .'
+        sh '''
+          echo "PATH = ${PATH}"
+          echo "M2_HOME = ${M2_HOME}"
+        '''
+        sh 'mvn --version'
       }
     }
     stage('Release') {
       steps{
-        sh 'mvn --version'
-        sh 'mvn -Dresume=false -DdryRun=true release:prepare -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}'
-        sh 'mvn -Dresume=false release:prepare release:perform -Psign-artifacts-with-ogc -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}'
+        sh 'mvn -Dresume=false -DdryRun=true release:prepare -Psign-artifacts-with-ogc,integration-tests,docker -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}'
+        sh 'mvn -Dresume=false release:prepare release:perform -Psign-artifacts-with-ogc,integration-tests,docker -DreleaseVersion=${releaseVersion} -DdevelopmentVersion=${developmentVersion}'
       }
     }
     stage('Publication of site') {
       steps{
-        sh 'mvn --version'
         sh 'git checkout ${releaseVersion}'
         sh 'mvn clean install site site:stage scm-publish:publish-scm'
       }
     }
     stage('Results') {
       steps{
-        junit '**/target/surefire-reports/TEST-*.xml'
-        archive 'target/*'
+        archiveArtifacts artifacts: 'target/*', allowEmptyArchive: true
+        deleteDir()
       }
     }
   }
