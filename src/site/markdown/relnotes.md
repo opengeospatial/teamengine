@@ -1,7 +1,10 @@
 Release Notes
 =============
 
-## 5.5.1 (2022-08-23)
+## 5.5.2 (2022-08-26)
+- [#553](https://github.com/opengeospatial/teamengine/issues/553): WFS 1.0 and WCS 2.0 test suites fail with IllegalStateException: Already connected
+
+## 5.5.1 (2022-08-12)
 - [#548](https://github.com/opengeospatial/teamengine/issues/548): REST API: Test run against CTL based test suite does not return test result
 - [#544](https://github.com/opengeospatial/teamengine/issues/544): TEAM Engine cannot be started without setting java property javax.xml.parsers.DocumentBuilderFactory
 - [#545](https://github.com/opengeospatial/teamengine/issues/545): View Sessions button appears at unexpected position
