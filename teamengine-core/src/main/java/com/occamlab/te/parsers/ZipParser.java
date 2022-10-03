@@ -11,13 +11,7 @@
  */
 package com.occamlab.te.parsers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.InputStream;
-
+import java.io.*;
 import java.net.URLConnection;
 
 import java.util.logging.Level;
@@ -149,8 +143,11 @@ public class ZipParser {
                 subdir = filename.substring(0, filename.lastIndexOf("/"));
             else if (filename.lastIndexOf("\\") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("\\"));
-            new File(path + "/" + subdir).mkdirs();
+            new File(path, subdir).mkdirs();
             File outFile = new File(path, filename);
+            if (!outFile.toPath().normalize().startsWith(path)) {
+                throw new IOException("Bad zip entry");
+            }
             if (outFile.isDirectory())
                 continue;
             OutputStream out = new FileOutputStream(outFile);
@@ -246,8 +243,11 @@ public class ZipParser {
                 subdir = filename.substring(0, filename.lastIndexOf("/"));
             else if (filename.lastIndexOf("\\") != -1)
                 subdir = filename.substring(0, filename.lastIndexOf("\\"));
-            new File(path + "/" + subdir).mkdirs();
+            new File(path, subdir).mkdirs();
             File outFile = new File(path, filename);
+            if (!outFile.toPath().normalize().startsWith(path)) {
+                throw new IOException("Bad zip entry");
+            }
             if (outFile.isDirectory())
                 continue;
             OutputStream out = new FileOutputStream(outFile);
