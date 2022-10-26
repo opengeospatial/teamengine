@@ -239,7 +239,7 @@ public class Utils {
         
 		int indexOfExcMark = resourceDirUrlString.indexOf("!");
 		
-		if (resourceDir.startsWith(JAR_URI_PREFIX) &&  indexOfExcMark > -1) {
+		if (resourceDirUrlString.startsWith(JAR_URI_PREFIX) &&  indexOfExcMark > -1) {
 			try {
 				copyResourcesFromJar(new JarFile(resourceDir.substring(JAR_URI_PREFIX.length(), indexOfExcMark)), resourceDir.substring(indexOfExcMark + 2), destDir);
 			} catch (IOException e) {
