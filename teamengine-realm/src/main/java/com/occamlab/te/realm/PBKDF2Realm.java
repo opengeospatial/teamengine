@@ -77,7 +77,7 @@ public class PBKDF2Realm extends RealmBase {
     // private String rootPath = null;
     private String rootPath = System.getProperty("TE_BASE");
     private DocumentBuilder DB = null;
-    private HashMap<String, Principal> principals = new HashMap<String, Principal>();
+    private HashMap<String, Principal> principals = UserGenericPrincipal.getInstance().getPrincipals();
 
     public String getRoot() {
         return rootPath;
@@ -224,4 +224,5 @@ public class PBKDF2Realm extends RealmBase {
         }
         return principal;
     }
+    
 }
