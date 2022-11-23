@@ -241,7 +241,7 @@ public class Utils {
 		
 		if (resourceDirUrlString.startsWith(JAR_URI_PREFIX) &&  indexOfExcMark > -1) {
 			try {
-				copyResourcesFromJar(new JarFile(resourceDir.substring(JAR_URI_PREFIX.length(), indexOfExcMark)), resourceDir.substring(indexOfExcMark + 2), destDir);
+                copyResourcesFromJar(new JarFile(resourceDirUrlString.substring(JAR_URI_PREFIX.length(), indexOfExcMark)), resourceDirUrlString.substring(indexOfExcMark + 2), destDir);
 			} catch (IOException e) {
 	            jlogger.log( Level.SEVERE, "Could not copy resources from jar.", e );
 			}
