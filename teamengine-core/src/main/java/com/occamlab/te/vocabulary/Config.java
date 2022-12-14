@@ -15,23 +15,31 @@
 package com.occamlab.te.vocabulary;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Reads the test harness configuration file at TE_BASE/config.xml.
  */
 public class Config {
+	
+	private static final Logger LOGR = Logger.getLogger(Config.class.getName());
 
     /** Location of base configuration directory (TE_BASE) */
     private File baseDir;
@@ -61,28 +69,31 @@ public class Config {
         if (null == basePath) {
           basePath = System.getProperty("user.home")
                   + System.getProperty("file.separator") + "teamengine";
-        }
-    	
-        this.baseDir = new File(basePath);
+        }    	
+        this.baseDir = new File(basePath);        
+        File configFileExternal = new File(this.baseDir, "config.xml");        
+        NodeList organizationNodes = null;        
+		try {
+			organizationNodes = getOrganizations(configFileExternal);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			LOGR.log(Level.SEVERE, String.format("Could not parse config file from path: %s.", configFileExternal.getAbsolutePath()), e);
+			return;
+		}		
         try {
-                // Fortify Mod: prevent external entity injection
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setExpandEntityReferences(false);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            // DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = db.parse(new File(this.baseDir, "config.xml"));
-            Element configElem = (Element) (doc.getElementsByTagName("config")
-                    .item(0));
-            // use TE_BASE/scripts so no need to move ETS resources
-            this.resourcesDir = getScriptsDir();
+            // use TE_BASE/scripts so no need to move ETS resources TODO: is this used?
+        	try {
+                this.resourcesDir = getScriptsDir();
+			} catch (Exception e) {
+				LOGR.log(Level.WARNING, "Could not get directory for scripts. TE_BASE not set.");
+			}
             organizationList = new ArrayList<String>();
             standardMap = new HashMap<String, List<String>>();
             versionMap = new HashMap<String, List<String>>();
             revisionMap = new HashMap<String, List<String>>();
             conformanceClassMap = new HashMap<String, List<String>>();
-            String suiteLocalName = null;
-            for (Element organizationEl : getElementsByTagName(
-                    configElem, "organization")) {
+            String suiteLocalName = null;			
+            for (int i = 0; i < organizationNodes.getLength(); i++) {
+				Node organizationEl = organizationNodes.item(i);
                 String organization = getElementByTagName(
                         organizationEl, "name").getTextContent();
 
@@ -131,7 +142,7 @@ public class Config {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+			LOGR.log(Level.SEVERE, "Could not extract infos from config file.", e);
         }
     }
 
@@ -226,4 +237,31 @@ public class Config {
         }
         return list;
     }
+
+	private NodeList getOrganizations(File configFile) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setExpandEntityReferences(false);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = null;
+        NodeList organizations = null;
+        if(configFile.exists()) {
+        	doc = db.parse(configFile);
+            Element configElem = (Element) (doc.getElementsByTagName("config")
+                    .item(0));
+            organizations = configElem.getElementsByTagName("organization");
+        } else {
+        	//get config from classpath
+
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            InputStream configFileStream = cl.getResourceAsStream("config.xml");
+            try {
+            	doc = db.parse(configFileStream);				
+            	//config files from test suite class paths start directly with "organization" element
+            	organizations = doc.getElementsByTagName("organization");
+			} catch (IllegalArgumentException e) {
+				LOGR.log(Level.SEVERE, "Could not parse config file from class path.", e);
+			}
+        }
+		return organizations;
+	}
 }
