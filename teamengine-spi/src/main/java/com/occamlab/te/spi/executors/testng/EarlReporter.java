@@ -216,6 +216,69 @@ public class EarlReporter implements IReporter {
     }
 
     /**
+     * Initializes the test results graph with basic information about the
+     * assertor (earl:Assertor) and test subject (earl:TestSubject).
+     *
+     * @param suite
+     *            Information about the test suite.
+     * @return An RDF Model containing EARL statements.
+     */
+    public Model initializeModel(XmlSuite suite) {
+        Model model = ModelFactory.createDefaultModel();
+        Map<String, String> nsBindings = new HashMap<>();
+        nsBindings.put("earl", EARL.NS_URI);
+        nsBindings.put("dct", DCTerms.NS);
+        nsBindings.put("cite", CITE.NS_URI);
+        nsBindings.put("http", HTTP.NS_URI);
+        nsBindings.put("cnt", CONTENT.NS_URI);
+        model.setNsPrefixes(nsBindings);
+        suiteName = suite.getName();
+        this.testRun = model.createResource(CITE.TestRun);
+        this.testRun.addProperty(DCTerms.title, suiteName);
+        String nowUTC = ZonedDateTime.now(ZoneId.of("Z")).format(DateTimeFormatter.ISO_INSTANT);
+        this.testRun.addProperty(DCTerms.created, nowUTC);
+        this.assertor = model.createResource("https://github.com/opengeospatial/teamengine",
+                EARL.Assertor);
+        this.assertor.addProperty(DCTerms.title, "OGC TEAM Engine", this.langCode);
+        this.assertor.addProperty(DCTerms.description,
+                "Official test harness of the OGC conformance testing program (CITE).",
+                this.langCode);
+        Map<String, String> params = suite.getAllParameters();
+        String iut = params.get("iut");
+        if (null == iut) {
+            // non-default parameter refers to test subject--use first URI value
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                try {
+                    URI uri = URI.create(param.getValue());
+                    iut = uri.toString();
+                } catch (IllegalArgumentException e) {
+                    continue;
+                }
+            }
+        }
+        if (null == iut) {
+            throw new NullPointerException(
+                    "Unable to find URI reference for IUT in test run parameters.");
+        }
+        this.testSubject = model.createResource(iut, EARL.TestSubject);
+        return model;
+    }
+    
+    public void addTopLevelFailure(Model earl, String message) {
+        Resource assertion = earl.createResource("assert-" + ++this.resultCount,
+                EARL.Assertion);
+        assertion.addProperty(EARL.mode, EARL.AutomaticMode);
+        assertion.addProperty(EARL.assertedBy, this.assertor);
+        assertion.addProperty(EARL.subject, this.testSubject);
+        // link earl:TestResult to earl:Assertion
+        Resource earlResult = earl.createResource("result-" + this.resultCount,
+                EARL.TestResult);
+        earlResult.addProperty(DCTerms.description, message);
+        earlResult.addProperty(EARL.outcome, EARL.Fail);
+    	
+    }
+
+    /**
      * Adds the list of conformance classes to the TestRun resource. A
      * conformance class corresponds to a {@literal <test>} tag in the TestNG
      * suite definition; it is represented as an earl:TestRequirement resource.
