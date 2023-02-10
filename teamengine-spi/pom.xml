@@ -38,7 +38,7 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>7.7.0</version>
+      <version>6.9.10</version>
       <exclusions>
         <!-- alternative YAML syntax for specifying a test suite -->
         <exclusion>
