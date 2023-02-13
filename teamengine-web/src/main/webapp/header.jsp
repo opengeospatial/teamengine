@@ -16,7 +16,7 @@
 		    if (user != null && user.length() > 0) {
 		        out.println("\t\t<div style=\"position: absolute; right:20px; top:25px; background-color: white; padding: 3px; border-style: inset\">");
 		        out.println("\t\t\tUser: " + user + "<br/>");
-		        out.println("\t\t\t<a href=\"logout\">Logout</a>");
+		        out.println("\t\t\t<a href=\"logout\">Logout</a>\t\t\t" + " <b> | </b> <a href=\"changePassword.jsp\">Change Password</a>");
 		        out.println("\t\t</div>");
 		    } else {
 		        out.println("<div style=\"position: absolute; right:20px; top:44px; font-family:Verdana, sans-serif; font-size:1em; margin:0.2em;\">");

@@ -11,6 +11,14 @@
     <param-name>appVersion</param-name>
     <param-value>${project.version}</param-value>
   </context-param>
+  <filter>  
+  <filter-name>clearVerificationCode</filter-name>  
+  <filter-class>com.occamlab.te.web.listeners.ClearVerificationCode</filter-class>  
+  </filter>  
+  <filter-mapping>  
+  <filter-name>clearVerificationCode</filter-name>  
+  <url-pattern>/viewSessions.jsp</url-pattern>  
+  </filter-mapping>
   <servlet>
     <servlet-name>test</servlet-name>
     <servlet-class>com.occamlab.te.web.TestServlet</servlet-class>
@@ -40,6 +48,18 @@
   <servlet>
     <servlet-name>prettyPrintLogs</servlet-name>
     <servlet-class>com.occamlab.te.web.PrettyPrintLogsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>resetPasswordHandler</servlet-name>
+    <servlet-class>com.occamlab.te.web.ResetPasswordHandler</servlet-class>  
+  </servlet>
+  <servlet>
+    <servlet-name>updatePasswordHandler</servlet-name>
+    <servlet-class>com.occamlab.te.web.ResetPasswordHandler</servlet-class>  
+  </servlet>
+  <servlet>
+    <servlet-name>changePasswordHandler</servlet-name>
+    <servlet-class>com.occamlab.te.web.ChangePasswordHandler</servlet-class>  
   </servlet>
   <servlet>
     <servlet-name>emailLog</servlet-name>
@@ -101,6 +121,18 @@
     <url-pattern>/registrationHandler</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>resetPasswordHandler</servlet-name>
+    <url-pattern>/resetPasswordHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updatePasswordHandler</servlet-name>
+    <url-pattern>/updatePasswordHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>changePasswordHandler</servlet-name>
+    <url-pattern>/changePasswordHandler</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>logout</servlet-name>
     <url-pattern>/logout</url-pattern>
   </servlet-mapping>
@@ -150,6 +182,7 @@
       <url-pattern>/viewSessionLog.jsp</url-pattern>
       <url-pattern>/viewOldSessionLog.jsp</url-pattern>
       <url-pattern>/viewSessions.jsp</url-pattern>
+      <url-pattern>/changePassword.jsp</url-pattern>
       <url-pattern>/viewTest.jsp</url-pattern>
       <url-pattern>/viewTestLog.jsp</url-pattern>
       <url-pattern>/emailLog.jsp</url-pattern>
