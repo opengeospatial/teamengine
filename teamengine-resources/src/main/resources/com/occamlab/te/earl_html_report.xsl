@@ -876,20 +876,40 @@
                       </tr>
                       <xsl:choose>
                         <xsl:when test="$requestMethod='POST'">
-                          <tr>
-                            <td>URL:</td>
-                            <td>
-                              <xsl:value-of select="substring-before($input_url, '?')" />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Body:</td>
-                            <td>
-                              <pre class="brush: xml;">
-                                <xsl:value-of select="$requestURI" />
-                              </pre>
-                            </td>
-                          </tr>
+                            <xsl:choose>
+                                <xsl:when test="contains($requestURI, '%POSTURL-SEPARATOR%')">
+                                  <tr>
+                                    <td>URL:</td>
+                                    <td>
+                                      <xsl:value-of select="substring-before($requestURI, '%POSTURL-SEPARATOR%')" />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Body:</td>
+                                    <td>
+                                      <pre class="brush: xml;">
+                                        <xsl:value-of select="substring-after($requestURI, '%POSTURL-SEPARATOR%')" />
+                                      </pre>
+                                    </td>
+                                  </tr>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                  <tr>
+                                    <td>URL:</td>
+                                    <td>
+                                      <xsl:value-of select="substring-before($requestURI, '?')" />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Body:</td>
+                                    <td>
+                                      <pre class="brush: xml;">
+                                        <xsl:value-of select="$requestURI" />
+                                      </pre>
+                                    </td>
+                                  </tr>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:when>
                         <xsl:when test="starts-with($requestURI, 'http')">
                           <tr>

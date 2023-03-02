@@ -84,7 +84,9 @@ public class EarlReporter implements IReporter {
     private Resource assertor;
     private Resource testSubject;
     private static final String REQ_ATTR = "request";
+    private static final String REQ_POST_ATTR = "post-request";
     private static final String RSP_ATTR = "response";
+	private static final String POST_SEPARATOR = "%POSTURL-SEPARATOR%";
     private Model earlModel;
     private String suiteName;
     private Config config;
@@ -416,13 +418,18 @@ public class EarlReporter implements IReporter {
             return;
         // keep it simple for now
         String reqVal = tngResult.getAttribute(REQ_ATTR).toString();
+        Object reqPostValObj = tngResult.getAttribute(REQ_POST_ATTR);
+        String reqPostVal = "";
+        if(reqPostValObj != null) {
+        	reqPostVal = reqPostValObj.toString();
+        }
         String httpMethod = (reqVal.startsWith("<")) ? HttpMethod.POST : HttpMethod.GET;
         Resource httpReq = this.earlModel.createResource(HTTP.Request);
         httpReq.addProperty(HTTP.methodName, httpMethod);
         if (httpMethod.equals(HttpMethod.GET)) {
             httpReq.addProperty(HTTP.requestURI, reqVal);
         } else {
-        	httpReq.addProperty(HTTP.requestURI, reqVal);
+        	httpReq.addProperty(HTTP.requestURI, reqPostVal + POST_SEPARATOR + reqVal);
             Resource reqContent = this.earlModel.createResource(CONTENT.ContentAsXML);
             // XML content may be truncated and hence not well-formed
             reqContent.addProperty(CONTENT.rest, reqVal);
