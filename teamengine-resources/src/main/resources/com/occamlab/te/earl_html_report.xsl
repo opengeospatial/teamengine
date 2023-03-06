@@ -196,6 +196,12 @@
               <br />
               Result:
               <br />
+              <xsl:choose>
+                  <xsl:when
+                          test="count(/rdf:RDF/earl:TestResult) = 1 ">
+                             <xsl:value-of select="/rdf:RDF/earl:TestResult/dct:description" />
+                          </xsl:when>
+                          <xsl:otherwise>
               <xsl:variable name="status">
                 <xsl:choose>
                   <xsl:when
@@ -271,6 +277,8 @@
                   </div>
                 </xsl:if>
               </xsl:for-each>
+                          </xsl:otherwise>
+                    </xsl:choose>
             </font>
           </h3>
           <table border="1">
