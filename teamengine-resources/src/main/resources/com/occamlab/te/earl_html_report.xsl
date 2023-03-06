@@ -495,8 +495,24 @@
                 </xsl:element>
               </td>
               <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:when test="substring-after($msg,':')">
+                      <xsl:value-of select="substring-after($msg, ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:variable>
                 <p>
-                  <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                  <xsl:value-of select="$message" />
                 </p>
               </td>
             </tr>
@@ -515,8 +531,21 @@
                 </xsl:element>
               </td>
               <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:variable>
                 <p>
-                  <xsl:value-of select="earl:result/earl:TestResult/dct:description"/>
+                  <xsl:value-of select="$message" />
                 </p>
               </td>
             </tr>
@@ -535,8 +564,24 @@
                 </xsl:element>
               </td>
               <td>
+                <xsl:variable name="message">
+                  <xsl:variable name="msg">
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                  </xsl:variable>
+                  <xsl:choose>
+                    <xsl:when test="substring-before($msg,'expected [')">
+                      <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                    </xsl:when>
+                    <xsl:when test="substring-after($msg,':')">
+                      <xsl:value-of select="substring-after($msg, ':')" />
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$msg" />
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:variable>
                 <p>
-                  <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                  <xsl:value-of select="$message" />
                 </p>
               </td>
             </tr>
@@ -731,8 +776,21 @@
                       <tr>
                         <td>Reason of Failure:</td>
                         <td>
+                          <xsl:variable name="message">
+                            <xsl:variable name="msg">
+                                <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                            </xsl:variable>
+                            <xsl:choose>
+                              <xsl:when test="substring-before($msg,'expected [')">
+                                <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="$msg" />
+                              </xsl:otherwise>
+                            </xsl:choose>
+                          </xsl:variable>
                           <p>
-                            <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                            <xsl:value-of select="$message" />
                           </p>
                         </td>
                       </tr>
@@ -924,8 +982,21 @@
               <tr>
                 <td>Reason of Failure:</td>
                 <td>
+                  <xsl:variable name="message">
+                    <xsl:variable name="msg">
+                      <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                    </xsl:variable>
+                    <xsl:choose>
+                      <xsl:when test="substring-before($msg,'expected [')">
+                        <xsl:value-of select="substring-after(substring-before($msg,'expected ['), ':')" />
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$msg" />
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:variable>
                   <p>
-                    <xsl:value-of select="earl:result/earl:TestResult/dct:description" />
+                    <xsl:value-of select="$message" />
                   </p>
                 </td>
               </tr>
