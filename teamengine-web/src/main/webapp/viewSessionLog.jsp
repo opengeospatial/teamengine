@@ -1,7 +1,7 @@
 <%@ page
  language="java"
  session="false"
- import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, java.io.BufferedReader, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration, com.occamlab.te.util.TEPath"
+ import="javax.xml.parsers.*, javax.xml.transform.*, javax.xml.transform.dom.*, java.io.BufferedReader, javax.xml.transform.stream.*, java.io.Writer, java.io.File, java.util.*, com.occamlab.te.*, com.occamlab.te.config.*, com.occamlab.te.index.*, com.occamlab.te.util.Misc, com.occamlab.te.web.*, net.sf.saxon.dom.DocumentBuilderImpl, net.sf.saxon.FeatureKeys, net.sf.saxon.Configuration, com.occamlab.te.util.TEPath"
 %><%!
 Config Conf;
 TECore core;

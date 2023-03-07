@@ -13,6 +13,8 @@ import javax.xml.namespace.QName;
 
 public class ConfigFileBuilder {
 
+	/* Build an example master teamengine config file.
+	 * To aggregate config files from several ETSs into a master config file, use ConfigFileCreator instead. */
     public static void main(String[] args) throws Exception {
         String home = "";
         String scriptsDir = "webapps/teamengine/WEB-INF/scripts";

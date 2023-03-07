@@ -13,8 +13,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.FileUtils;
-
 import com.occamlab.te.util.Utils;
 
 /**
@@ -29,7 +27,7 @@ public class EarlToHtmlTransformation {
      *
      * @param outputDir
      */
-    public void earlHtmlReport( String outputDir ) {
+    public File earlHtmlReport( String outputDir ) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		URL resourceDirUrl = cl.getResource("com/occamlab/te/earl/lib");
         String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
@@ -53,13 +51,15 @@ public class EarlToHtmlTransformation {
                 transformer.transform( new StreamSource( earlResult ), new StreamResult( fo ) );
                 fo.close();
                 Utils.copyResourceDir(resourceDirUrl, htmlOutput);
+                return htmlOutput;
             }
         } catch ( Exception e ) {
             LOGR.log( SEVERE, "Transformation of EARL to HTML failed.", e );
         }
+        return null;
     }
 
-    private File findEarlResultFile( String outputDir ) {
+    public File findEarlResultFile( String outputDir ) {
         File testngDir = new File( outputDir, "testng" );
         if ( !testngDir.exists() ) {
             return new File( outputDir, "earl-results.rdf" );

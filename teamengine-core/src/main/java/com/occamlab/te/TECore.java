@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
@@ -170,6 +171,7 @@ public class TECore implements Runnable {
   volatile boolean threadComplete = false;
   volatile boolean stop = false;
   volatile ByteArrayOutputStream threadOutput;
+  private Stack<String> fnCallStack;
     public static final int CONTINUE = -1;
     public static final int BEST_PRACTICE = 0;
     public static final int PASS = 1;
@@ -217,7 +219,7 @@ public class TECore implements Runnable {
   public static ArrayList<String> rootTestName = new ArrayList<String>();
   public Document userInputs = null;
   public Boolean supportHtmlReport = false;
-
+  
   public final ImageHandler imageHandler;
 
   public TECore() {
@@ -233,6 +235,7 @@ public class TECore implements Runnable {
     this.testPath = opts.getSessionId();
     this.out = System.out;
     this.imageHandler = new ImageHandler(opts.getLogDir(), opts.getSessionId());
+    this.fnCallStack = new Stack<String>();
   }
 
   public TestEntry getParentTest() {
@@ -265,7 +268,7 @@ public class TECore implements Runnable {
   XPathContext getXPathContext(TestEntry test, String sourcesName,
           XdmNode contextNode) throws Exception {
     XPathContext context = null;
-    if (test.usesContext()) {
+    if (test.usesContext() && contextNode != null) {
       XsltExecutable xe = engine.loadExecutable(test, sourcesName);
       Executable ex = xe.getUnderlyingCompiledStylesheet()
               .getExecutable();
@@ -292,7 +295,7 @@ public class TECore implements Runnable {
         for (String testPath : opts.getTestPaths()) {
           reexecute_test(testPath);
         }
-      } else if (mode == Test.TEST_MODE) {
+      } else if (mode == Test.TEST_MODE || mode == Test.DOC_MODE) {
         String testName = opts.getTestName();
         if (! testName.isEmpty() ) {
           // NOTE: getContextNode() always returns null
@@ -800,7 +803,7 @@ public class TECore implements Runnable {
     PrintWriter oldLogger = logger;
     if (opts.getLogDir() != null) {
             logger = createLog();
-            logger.println("<log>");
+            logger.println("<log mode=\"" + opts.getMode() + "\">");
             logger.print("<starttest ");
             logger.print("local-name=\"" + test.getLocalName() + "\" ");
             logger.print("prefix=\"" + test.getPrefix() + "\" ");
@@ -1227,9 +1230,24 @@ public class TECore implements Runnable {
           }
         }
         if (valid) {
-          return executeXSLFunction(context, fe, params);
+          if (opts.getMode() == Test.DOC_MODE) {	
+            if (fnCallStack.contains(key)) {
+              return null;
+            } else {
+              fnCallStack.add(key);
+              Object result = executeXSLFunction(context, fe, params);
+              fnCallStack.pop();
+              return result;
+            }
+          } else {
+        	return executeXSLFunction(context, fe, params);
+          }
         }
       }
+    }
+    
+    if (opts.getMode() == Test.DOC_MODE) {
+    	return null;
     }
 
     for (FunctionEntry fe : functions) {

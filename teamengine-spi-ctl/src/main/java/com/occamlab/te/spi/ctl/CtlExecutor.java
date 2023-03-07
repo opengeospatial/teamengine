@@ -110,7 +110,7 @@ public class CtlExecutor implements TestRunExecutor {
               se = masterIndex.getSuite(it.next());
             }
             suiteName = se.getTitle();
-            TEClassLoader defaultLoader = new TEClassLoader(null);
+            TEClassLoader defaultLoader = new TEClassLoader();
             Engine engine = new Engine(masterIndex,
                     setupOpts.getSourcesName(), defaultLoader);
             TECore ctlRunner = new TECore(engine, masterIndex, runOpts);

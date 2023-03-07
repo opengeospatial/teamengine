@@ -18,21 +18,39 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TEClassLoader extends ClassLoader {
-    File resourcesDir;
+	List<File> resourcesDirs;
     ClassLoader cl;
     HashSet<String> registeredClasses;
     private static Logger logger = Logger
             .getLogger("com.occamlab.te.TEClassLoader");
-
+    
+    private static List<File> resourcesDirsList(File resourcesDir) {
+    	List<File> resourcesDirs = new ArrayList<File>();
+    	if (resourcesDir != null) {
+    		resourcesDirs.add(resourcesDir);
+    	}
+    	return resourcesDirs;
+    }
+    
+    public TEClassLoader() {
+    	this(resourcesDirsList(null));
+    }
+    
     public TEClassLoader(File resourcesDir) {
-        this.resourcesDir = resourcesDir;
+    	this(resourcesDirsList(resourcesDir));
+    }
+    
+    public TEClassLoader(List<File> resourcesDirs) {
+        this.resourcesDirs = resourcesDirs;
         cl = Thread.currentThread().getContextClassLoader();
         registeredClasses = new HashSet<String>();
         registeredClasses.add("com.occamlab.te.parsers.HTTPParser");
@@ -44,7 +62,7 @@ public class TEClassLoader extends ClassLoader {
     }
 
     public URL getResource(String name) {
-        if (resourcesDir != null) {
+        for (File resourcesDir : resourcesDirs) {
             File f = new File(resourcesDir, name);
             try {
                 return f.toURI().toURL();
@@ -56,7 +74,7 @@ public class TEClassLoader extends ClassLoader {
     }
 
     public InputStream getResourceAsStream(String name) {
-        if (resourcesDir != null) {
+        if (resourcesDirs.size() > 0) {
             URL u = getResource(name);
             if (u != null) {
                 try {
@@ -71,7 +89,7 @@ public class TEClassLoader extends ClassLoader {
     public Enumeration<URL> getResources(String name) throws IOException {
         Enumeration<URL> resources = cl.getResources(name);
         URL u = getResource(name);
-        if (resourcesDir != null && u != null) {
+        if (resourcesDirs.size() > 0 && u != null) {
             Vector<URL> v = new Vector<URL>();
             v.add(u);
             while (resources.hasMoreElements()) {
@@ -118,7 +136,10 @@ public class TEClassLoader extends ClassLoader {
             }
         }
         if (c == null) {
-            c = cl.loadClass(name);
+            try {
+	            c = cl.loadClass(name);
+            } catch (ClassNotFoundException e) {
+            }
         }
         if (c == null) {
             c = readClass(name);

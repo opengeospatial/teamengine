@@ -202,8 +202,7 @@ public class RuntimeOptions {
            mode != Test.RESUME_MODE &&
            mode != Test.REDO_FROM_CACHE_MODE &&
            mode != Test.DOC_MODE &&
-           mode != Test.CHECK_MODE &&
-           mode != Test.PRETTYLOG_MODE) return false;
+           mode != Test.CHECK_MODE) return false;
         this.mode = mode;
         return true;
     }

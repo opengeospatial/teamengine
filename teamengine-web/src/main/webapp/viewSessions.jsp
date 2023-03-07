@@ -2,7 +2,7 @@
 <%@ page
   language="java"
   session="false"
-  import="java.io.File, javax.xml.parsers.*, java.util.Arrays, com.occamlab.te.web.*, java.util.List, java.util.ArrayList"
+  import="java.io.File, javax.xml.parsers.*, java.util.Arrays, com.occamlab.te.config.*, com.occamlab.te.web.*, java.util.List, java.util.ArrayList"
 %><%!
   Config Conf;
   DocumentBuilder DB;

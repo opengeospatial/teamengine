@@ -53,9 +53,9 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import com.occamlab.te.config.Config;
 import com.occamlab.te.vocabulary.CITE;
 import com.occamlab.te.vocabulary.CONTENT;
-import com.occamlab.te.vocabulary.Config;
 import com.occamlab.te.vocabulary.EARL;
 import com.occamlab.te.vocabulary.HTTP;
 

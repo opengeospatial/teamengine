@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.occamlab.te.config.Config;
 import com.occamlab.te.realm.PasswordStorage;
 
 import java.io.File;
