@@ -1,5 +1,5 @@
 <%@ page language="java" session="false"
-	import="java.util.*,com.occamlab.te.index.*,com.occamlab.te.web.*"%><%!
+	import="java.util.*,com.occamlab.te.index.*,com.occamlab.te.config.*,com.occamlab.te.web.*"%><%!
 	Config Conf = null;
 	List<String> organizationList = null;
 	Map<String, List<String>> standardMap = null;
