@@ -97,7 +97,7 @@ As a good practice, we would suggest to create different Subtests that include t
 		</ctl:code>
 	</ctl:test>
 	
-Now, if assertion 2 would evaluate to true, the following HTML report would	be generated:
+Now, if assertion 2 would evaluate to true, the following HTML report would be generated:
 
 ![TestNG results summary](images/ctl-subtests-good-practice.png)
 
