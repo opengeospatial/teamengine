@@ -26,6 +26,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.occamlab.te.config.ConfigFileCreator;
+import com.occamlab.te.config.TEConfigException;
+import com.occamlab.te.util.XMLUtils;
+
 public class ConfigFileCreatorTest {
     private File classp;
     private DocumentBuilder builder;
@@ -161,8 +165,8 @@ public class ConfigFileCreatorTest {
         ConfigFileCreator configFileCreator = new ConfigFileCreator();
         try {
             configFileCreator.create(tebase);
-        } catch (TEException e) {
-            assertEquals("com.occamlab.te.web.TEBaseNotFoundException", e.getClass().getName());
+        } catch (TEConfigException e) {
+            assertEquals("com.occamlab.te.config.TEBaseNotFoundException", e.getClass().getName());
             return;
 
         }

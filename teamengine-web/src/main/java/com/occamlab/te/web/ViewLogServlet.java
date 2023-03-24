@@ -33,6 +33,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import com.occamlab.te.ViewLog;
+import com.occamlab.te.config.Config;
 import com.occamlab.te.util.Misc;
 
 /**

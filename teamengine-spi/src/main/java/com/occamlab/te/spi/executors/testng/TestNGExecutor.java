@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +34,10 @@ import java.util.logging.Logger;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 
+import org.apache.jena.rdf.model.Model;
+import org.testng.IReporter;
 import org.testng.TestNG;
+import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -162,7 +166,24 @@ public class TestNGExecutor implements TestRunExecutor {
         listener.setTestRunArgs(testRunArgs);
         listener.setTestRunId(runId);
         driver.addAlterSuiteListener(listener);
-        driver.run();
+        try {
+            driver.run();
+		} catch (Exception e) {
+			XmlSuite suite = new org.testng.xml.XmlSuite();
+			suite.setSuiteFiles(Arrays.asList(new String[] {this.testngConfig.toString()}));
+			suite.setParameters(argsMap);
+			EarlReporter earlReporter = new EarlReporter();
+			Model model = earlReporter.initializeModel(suite);
+			earlReporter.addTestInputs(model, argsMap);
+			earlReporter.addTopLevelFailure(model, e.getMessage());
+			try {
+				earlReporter.writeModel(model, runDir, true);
+			} catch (IOException e1) {
+	            LOGR.log(Level.SEVERE, "Error writing default model: " + e.getMessage());
+			}
+            LOGR.log(Level.SEVERE, "Error while running: " + e.getMessage());
+            throw e;
+		}
         Source source = null;
         try {
             File resultsFile = getResultsFile(getPreferredMediaType(testRunArgs), driver.getOutputDirectory());

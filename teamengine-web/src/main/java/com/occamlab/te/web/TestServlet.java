@@ -69,6 +69,8 @@ import com.occamlab.te.SetupOptions;
 import com.occamlab.te.TEClassLoader;
 import com.occamlab.te.TECore;
 import com.occamlab.te.Test;
+import com.occamlab.te.config.Config;
+import com.occamlab.te.config.ConfigFileCreator;
 import com.occamlab.te.index.Index;
 import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.util.DomUtils;

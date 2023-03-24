@@ -66,6 +66,18 @@ public class Generator {
     }
 
     /**
+     * Generates the XSLT stylesheets for running in doc mode.
+     * 
+     * @param opts
+     *            Static configuration settings.
+     * @return A master Index object that describes the resulting stylesheets.
+     * @throws Exception
+     */
+    public static Index generateDocXsl(SetupOptions opts) throws Exception {
+    	return generateXsl(opts, "com/occamlab/te/generate_dxsl.xsl", true);
+    }
+    
+    /**
      * Generates the XSLT stylesheets that constitute an executable test suite
      * (ETS).
      * 
@@ -75,6 +87,10 @@ public class Generator {
      * @throws Exception
      */
     public static Index generateXsl(SetupOptions opts) throws Exception {
+    	return generateXsl(opts, "com/occamlab/te/generate_xsl.xsl", false);
+    }
+    
+    private static Index generateXsl(SetupOptions opts, String generatorStylesheetResource, boolean docMode) throws Exception {
         Index masterIndex = new Index();
 
         // Create CTL validator
@@ -92,7 +108,7 @@ public class Generator {
                 Boolean.TRUE);
         XsltCompiler generatorCompiler = processor.newXsltCompiler();
         XsltExecutable generatorXsltExecutable = generatorCompiler.compile(
-                new StreamSource(Misc.getResourceURL("com/occamlab/te/generate_xsl.xsl")));
+                new StreamSource(Misc.getResourceURL(generatorStylesheetResource)));
         XsltTransformer generatorTransformer = generatorXsltExecutable.load();
 
         // Create a list of CTL sources (may be files or dirs)
@@ -113,6 +129,9 @@ public class Generator {
             LOGR.log(Level.FINE, "Processing CTL source files in {0}",
                     source.getAbsolutePath());
             String encodedName = createEncodedName(source);
+            if (docMode) {
+            	encodedName += "d";
+            }
             File workingDir = new File(opts.getWorkDir(), encodedName);
             if (!workingDir.exists() && !workingDir.mkdir()) {
                 LOGR.log(Level.WARNING,
@@ -146,7 +165,7 @@ public class Generator {
         // resolve xinclude elements but omit xml:base attributes
         SAXParser parser = XMLParserUtils.createXIncludeAwareSAXParser(false);
 
-        File generatorStylesheet = Misc.getResourceAsFile("com/occamlab/te/generate_xsl.xsl");
+        File generatorStylesheet = Misc.getResourceAsFile(generatorStylesheetResource);
         
         // Process each CTL source file
         for (int i = 0; i < sourceFiles.size(); i++) {

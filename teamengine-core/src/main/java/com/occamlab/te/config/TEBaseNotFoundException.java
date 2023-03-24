@@ -5,9 +5,7 @@
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.occamlab.te.web;
-
-import java.nio.file.Path;
+package com.occamlab.te.config;
 
 /**
  * Exception thrown when TE_BASE is not found.
@@ -15,7 +13,7 @@ import java.nio.file.Path;
  * @author lbermudez
  *
  */
-public class TEBaseNotFoundException extends TEException {
+public class TEBaseNotFoundException extends TEConfigException {
 
 	/**
 	 * The <code>path</code> does not exist.
