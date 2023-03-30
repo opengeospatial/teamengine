@@ -151,6 +151,7 @@
             WEB-INF/lib/derby-*.jar,
             WEB-INF/lib/xercesImpl-*.jar,
             WEB-INF/lib/xml-apis-*.jar,
+            WEB-INF/lib/xml-resolver-*.jar,
           </packagingExcludes>
           <archive>
             <manifest>
