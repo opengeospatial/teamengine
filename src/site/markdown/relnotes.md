@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+## 5.6 (2023-03-31)
+- [#552](https://github.com/opengeospatial/teamengine/pull/552): Console application updates
+- [#558](https://github.com/opengeospatial/teamengine/issues/558): Some test suites display java.lang.AssertionError in HTML report
+- [#559](https://github.com/opengeospatial/teamengine/issues/559): Enhance EARL/HTML report to be generated when iut is not reachable
+- [#560](https://github.com/opengeospatial/teamengine/issues/560): Create best practice documentation for failures caused by nested CTL tests
+- [#561](https://github.com/opengeospatial/teamengine/issues/561): Implement consideration of config.xml on classpath
+- [#555](https://github.com/opengeospatial/teamengine/issues/555): Wrong URL in HTML reports for test using POST requests
+- [#569](https://github.com/opengeospatial/teamengine/pull/569): Bump commons-fileupload from 1.3.3 to 1.5 in /teamengine-web
+- [#557](https://github.com/opengeospatial/teamengine/pull/557): [SECURITY] Fix Zip Slip Vulnerability
+
 ## 5.5.2 (2022-08-26)
 - [#553](https://github.com/opengeospatial/teamengine/issues/553): WFS 1.0 and WCS 2.0 test suites fail with IllegalStateException: Already connected
 
