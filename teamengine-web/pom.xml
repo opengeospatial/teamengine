@@ -98,6 +98,10 @@
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opengis.cite</groupId>
+      <artifactId>schema-utils</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -152,6 +156,7 @@
             WEB-INF/lib/xercesImpl-*.jar,
             WEB-INF/lib/xml-apis-*.jar,
             WEB-INF/lib/xml-resolver-*.jar,
+            WEB-INF/lib/schema-utils-*.jar,
           </packagingExcludes>
           <archive>
             <manifest>

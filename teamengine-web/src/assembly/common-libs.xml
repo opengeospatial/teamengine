@@ -18,6 +18,7 @@
         <include>xerces:xercesImpl</include>
         <include>xml-apis:xml-apis</include>
         <include>xml-resolver:xml-resolver</include>
+        <include>org.opengis.cite:schema-utils</include>
       </includes>
       <scope>runtime</scope>
       <useProjectArtifact>false</useProjectArtifact>
