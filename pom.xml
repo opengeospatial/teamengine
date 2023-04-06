@@ -92,7 +92,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <saxon.version>9.0.0.8</saxon.version>
     <jersey.version>1.19</jersey.version>
-    <mockito.version>1.10.19</mockito.version>
+    <mockito.version>5.2.0</mockito.version>
   </properties>
 
   <modules>
