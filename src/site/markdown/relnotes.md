@@ -1,6 +1,9 @@
 Release Notes
 =============
 
+## 5.6.1 (2023-04-14)
+- [#572](https://github.com/opengeospatial/teamengine/pull/572): Fix a bug resulting from loading order of xml-resolver and schema-utils
+
 ## 5.6 (2023-03-31)
 - [#552](https://github.com/opengeospatial/teamengine/pull/552): Console application updates
 - [#558](https://github.com/opengeospatial/teamengine/issues/558): Some test suites display java.lang.AssertionError in HTML report
