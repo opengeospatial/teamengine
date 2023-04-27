@@ -59,6 +59,8 @@ import com.occamlab.te.vocabulary.CONTENT;
 import com.occamlab.te.vocabulary.EARL;
 import com.occamlab.te.vocabulary.HTTP;
 
+import static java.lang.Integer.valueOf;
+
 
 /**
  * A reporter that creates and serializes an RDF graph containing the test
@@ -105,9 +107,9 @@ public class EarlReporter implements IReporter {
             addTestRequirements(model, suite.getXmlSuite().getTests());
             addTestInputs(model, suite.getXmlSuite().getAllParameters());
             TestRunSummary summary = new TestRunSummary(suite);
-            this.testRun.addLiteral(CITE.testsPassed, new Integer(summary.getTotalPassed()));
-            this.testRun.addLiteral(CITE.testsFailed, new Integer(summary.getTotalFailed()));
-            this.testRun.addLiteral(CITE.testsSkipped, new Integer(summary.getTotalSkipped()));
+            this.testRun.addLiteral(CITE.testsPassed, valueOf(summary.getTotalPassed()));
+            this.testRun.addLiteral(CITE.testsFailed, valueOf(summary.getTotalFailed()));
+            this.testRun.addLiteral(CITE.testsSkipped, valueOf(summary.getTotalSkipped()));
             Literal duration = model.createTypedLiteral(summary.getTotalDuration(),
                     XSDDatatype.XSDduration);
             this.testRun.addLiteral(DCTerms.extent, duration);
@@ -150,9 +152,9 @@ public class EarlReporter implements IReporter {
             int nPassed = testContext.getPassedTests().size();
             int nSkipped = testContext.getSkippedTests().size();
             int nFailed = testContext.getFailedTests().size();
-            testReq.addLiteral(CITE.testsPassed, new Integer(nPassed));
-            testReq.addLiteral(CITE.testsFailed, new Integer(nFailed));
-            testReq.addLiteral(CITE.testsSkipped, new Integer(nSkipped));
+            testReq.addLiteral(CITE.testsPassed, valueOf(nPassed));
+            testReq.addLiteral(CITE.testsFailed, valueOf(nFailed));
+            testReq.addLiteral(CITE.testsSkipped, valueOf(nSkipped));
             if (nPassed + nFailed == 0) {
                 testReq.addProperty(DCTerms.description,
                         "A precondition was not met. All tests in this set were skipped.");

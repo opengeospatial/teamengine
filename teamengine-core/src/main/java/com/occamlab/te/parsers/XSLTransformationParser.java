@@ -29,6 +29,9 @@ import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
 import com.occamlab.te.util.URLConnectionUtils;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public class XSLTransformationParser {
 
     private static final Logger LOGR = Logger
@@ -48,8 +51,8 @@ public class XSLTransformationParser {
         tf = TransformerFactory.newInstance();
         defaultProperties = new HashMap<String, String>();
         defaultParams = new HashMap<String, String>();
-        defaultIgnoreErrors = new Boolean(false);
-        defaultIgnoreWarnings = new Boolean(true);
+        defaultIgnoreErrors = FALSE;
+        defaultIgnoreWarnings = TRUE;
     }
 
     public XSLTransformationParser(Node node) throws Exception {

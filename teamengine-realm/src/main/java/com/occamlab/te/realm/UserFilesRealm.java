@@ -53,6 +53,7 @@ import org.w3c.dom.NodeList;
  *
  * @deprecated Superseded by {@link PBKDF2Realm}.
  */
+@Deprecated
 public class UserFilesRealm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(UserFilesRealm.class.getName());

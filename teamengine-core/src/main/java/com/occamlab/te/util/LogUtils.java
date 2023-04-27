@@ -70,6 +70,8 @@ import com.occamlab.te.util.TEPath;    // Fortify Mod
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmNode;
 
+import static java.lang.Long.valueOf;
+
 public class LogUtils {
 
     private static final Logger LOGR = Logger.getLogger(LogUtils.class
@@ -135,7 +137,7 @@ public class LogUtils {
                 // The log may not have been closed properly.
                 // Try again with a closing </log> tag
                 RandomAccessFile raf = new RandomAccessFile(f, "r");
-                int l = new Long(raf.length()).intValue();
+                int l = valueOf(raf.length()).intValue();
                 byte[] buf = new byte[l + 8];
                 raf.read(buf);
                 raf.close();

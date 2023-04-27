@@ -57,6 +57,8 @@ import com.occamlab.te.vocabulary.CONTENT;
 import com.occamlab.te.vocabulary.EARL;
 import com.occamlab.te.vocabulary.HTTP;
 
+import static java.lang.Integer.valueOf;
+
 public class CtlEarlReporter {
 
     private static final Logger LOG = Logger.getLogger( CtlEarlReporter.class.getName() );
@@ -188,14 +190,14 @@ public class CtlEarlReporter {
         }
 
         this.testRun.addProperty( CITE.requirements, this.reqs );
-        this.testRun.addLiteral( CITE.testsPassed, new Integer( this.totalPassCount ) );
-        this.testRun.addLiteral( CITE.testsFailed, new Integer( this.totalFailCount ) );
-        this.testRun.addLiteral( CITE.testsSkipped, new Integer( this.totalSkipCount ) );
-        this.testRun.addLiteral( CITE.testsContinue, new Integer( this.totalContinueCount ) );
-        this.testRun.addLiteral( CITE.testsBestPractice, new Integer( this.totalBestPracticeCount ) );
-        this.testRun.addLiteral( CITE.testsNotTested, new Integer( this.totalNotTestedCount ) );
-        this.testRun.addLiteral( CITE.testsWarning, new Integer( this.totalWarningCount ) );
-        this.testRun.addLiteral( CITE.testsInheritedFailure, new Integer( this.totalInheritedFailureCount ) );
+        this.testRun.addLiteral( CITE.testsPassed, valueOf( this.totalPassCount ) );
+        this.testRun.addLiteral( CITE.testsFailed, valueOf( this.totalFailCount ) );
+        this.testRun.addLiteral( CITE.testsSkipped, valueOf( this.totalSkipCount ) );
+        this.testRun.addLiteral( CITE.testsContinue, valueOf( this.totalContinueCount ) );
+        this.testRun.addLiteral( CITE.testsBestPractice, valueOf( this.totalBestPracticeCount ) );
+        this.testRun.addLiteral( CITE.testsNotTested, valueOf( this.totalNotTestedCount ) );
+        this.testRun.addLiteral( CITE.testsWarning, valueOf( this.totalWarningCount ) );
+        this.testRun.addLiteral( CITE.testsInheritedFailure, valueOf( this.totalInheritedFailureCount ) );
         this.testRun.addLiteral( CITE.testSuiteType, "ctl" );
         this.testRun.addLiteral( CITE.areCoreConformanceClassesPassed, areCoreConformanceClassesPassed );
 
@@ -233,14 +235,14 @@ public class CtlEarlReporter {
                 processTestResults( model, logElements, logList, conformanceClass, null );
 
                 Resource testReq = model.createResource( conformanceClass );
-                testReq.addLiteral( CITE.testsPassed, new Integer( this.cPassCount ) );
-                testReq.addLiteral( CITE.testsFailed, new Integer( this.cFailCount ) );
-                testReq.addLiteral( CITE.testsSkipped, new Integer( this.cSkipCount ) );
-                testReq.addLiteral( CITE.testsContinue, new Integer( this.cContinueCount ) );
-                testReq.addLiteral( CITE.testsBestPractice, new Integer( this.cBestPracticeCount ) );
-                testReq.addLiteral( CITE.testsNotTested, new Integer( this.cNotTestedCount ) );
-                testReq.addLiteral( CITE.testsWarning, new Integer( this.cWarningCount ) );
-                testReq.addLiteral( CITE.testsInheritedFailure, new Integer( this.cInheritedFailureCount ) );
+                testReq.addLiteral( CITE.testsPassed, valueOf( this.cPassCount ) );
+                testReq.addLiteral( CITE.testsFailed, valueOf( this.cFailCount ) );
+                testReq.addLiteral( CITE.testsSkipped, valueOf( this.cSkipCount ) );
+                testReq.addLiteral( CITE.testsContinue, valueOf( this.cContinueCount ) );
+                testReq.addLiteral( CITE.testsBestPractice, valueOf( this.cBestPracticeCount ) );
+                testReq.addLiteral( CITE.testsNotTested, valueOf( this.cNotTestedCount ) );
+                testReq.addLiteral( CITE.testsWarning, valueOf( this.cWarningCount ) );
+                testReq.addLiteral( CITE.testsInheritedFailure, valueOf( this.cInheritedFailureCount ) );
                 if(testInfo.isBasic){
                   if(cFailCount > 0 || cInheritedFailureCount > 0){
                     areCoreConformanceClassesPassed = false;
