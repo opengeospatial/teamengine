@@ -13,7 +13,6 @@
     <dependencySet>
       <includes>
         <include>com.sun.jersey:jersey-*</include>
-        <include>org.apache.derby:derby</include>
         <include>org.opengis.cite.teamengine:teamengine-realm</include>
         <include>xerces:xercesImpl</include>
         <include>xml-apis:xml-apis</include>
@@ -24,13 +23,6 @@
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <useTransitiveFiltering>true</useTransitiveFiltering>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>javax.ws.rs:jsr311*</include>
-      </includes>
-      <scope>provided</scope>
-      <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>
   </dependencySets>
 </assembly>
