@@ -59,7 +59,7 @@ public class ImageParserTest {
         Element countElem = (Element) result.getElementsByTagNameNS(PARSERS_NS,
                 "count").item(0);
         int pixelCount = Integer.parseInt(countElem.getTextContent().trim());
-        assertEquals("Unexpected number of transparent pixels.", pixelCount, 0);
+        assertEquals("Unexpected number of transparent pixels.", 0, pixelCount);
     }
 
     @Test
