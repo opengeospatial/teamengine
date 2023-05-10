@@ -47,7 +47,7 @@
       <version>${jersey.version}</version>
       <scope>runtime</scope>
     </dependency>
-    // TODO: Shall be removed as servlet api v6 is not supported.
+    <!-- TODO: Shall be removed as servlet api v6 is not supported. -->
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
@@ -76,7 +76,7 @@
       <version>6.0.0</version>
       <scope>provided</scope>
     </dependency>
-    // TODO: Shall be removed as soon as commons-fileupload is replaced.
+    <!-- TODO: Shall be removed as soon as commons-fileupload is replaced. -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
