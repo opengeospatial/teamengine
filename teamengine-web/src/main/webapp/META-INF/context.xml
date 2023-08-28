@@ -1,5 +1,4 @@
-<Context reloadable="true" processTlds="false"
-  aliases="/docs=${TE_BASE}/resources/docs,/about=${TE_BASE}/scripts,/reports=${TE_BASE}/users,/site=${TE_BASE}/resources/site">
+<Context reloadable="true" processTlds="false">
 
   <Realm className="com.occamlab.te.realm.PBKDF2Realm" root="${TE_BASE}/users"/>
 
@@ -18,6 +17,18 @@
           <PreResources base="${TE_BASE}/resources/lib"
                         className="org.apache.catalina.webresources.DirResourceSet"
                         webAppMount="/WEB-INF/classes"/>
+          <PreResources base="${TE_BASE}/resources/docs"
+                        className="org.apache.catalina.webresources.DirResourceSet"
+                        webAppMount="/docs"/>
+          <PreResources base="${TE_BASE}/scripts"
+                        className="org.apache.catalina.webresources.DirResourceSet"
+                        webAppMount="/about"/>
+          <PreResources base="${TE_BASE}/users"
+                        className="org.apache.catalina.webresources.DirResourceSet"
+                        webAppMount="/reports"/>
+          <PreResources base="${TE_BASE}/resources/site"
+                        className="org.apache.catalina.webresources.DirResourceSet"
+                        webAppMount="/site"/>
   </Resources>
   <!-- improve startup time -->
   <JarScanner scanClassPath="false" />
