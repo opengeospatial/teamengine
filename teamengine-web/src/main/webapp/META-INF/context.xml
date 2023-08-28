@@ -6,7 +6,7 @@
             auth="Container" 
             description="Derby database for EPSG geodetic parameters"
             driverClassName="org.apache.derby.jdbc.EmbeddedDriver" 
-            maxActive="8" maxIdle="4"  
+            maxTotal="8" maxIdle="4"
             username="" password=""
             url="jdbc:derby:EPSG/7.09;create=true" />
 
