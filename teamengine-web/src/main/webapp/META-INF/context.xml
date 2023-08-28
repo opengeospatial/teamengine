@@ -1,6 +1,6 @@
 <Context reloadable="true" processTlds="false">
 
-  <Realm className="com.occamlab.te.realm.PBKDF2Realm" root="${TE_BASE}/users"/>
+  <Realm className="com.occamlab.te.realm.PBKDF2Realm"/>
 
   <Resource name="jdbc/EPSG" type="javax.sql.DataSource" 
             auth="Container" 

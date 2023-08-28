@@ -73,15 +73,8 @@ import com.occamlab.te.realm.PasswordStorage.InvalidHashException;
 public class PBKDF2Realm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
-    // Fortify Mod: initialize rootPath
-    // private String rootPath = null;
-    private String rootPath = System.getProperty("TE_BASE");
     private DocumentBuilder DB = null;
     private HashMap<String, Principal> principals = new HashMap<String, Principal>();
-
-    public String getRoot() {
-        return rootPath;
-    }
 
     /**
      * Return the Principal associated with the specified username and
