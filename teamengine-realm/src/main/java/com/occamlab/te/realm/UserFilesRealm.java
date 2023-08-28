@@ -198,9 +198,4 @@ public class UserFilesRealm extends RealmBase {
         }
         return principal;
     }
-
-    @Override
-    protected String getName() {
-        return "UserFilesRealm";
-    }
 }

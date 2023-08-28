@@ -146,11 +146,6 @@ public class PBKDF2Realm extends RealmBase {
         return principal;
     }
 
-    @Override
-    protected String getName() {
-        return "UserFilesRealm";
-    }
-
     private GenericPrincipal readPrincipal(String username) {
         List<String> roles = new ArrayList<String>();
         File usersdir = new File(System.getProperty("TE_BASE"), "users");
