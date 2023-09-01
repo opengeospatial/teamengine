@@ -44,7 +44,7 @@ import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
 import com.occamlab.te.spi.util.TestRunUtils;
 import com.occamlab.te.util.LogUtils;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * A controller resource that provides the results of a test run. An XML representation of the results is obtained using

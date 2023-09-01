@@ -12,7 +12,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>com.sun.jersey:jersey-*</include>
+        <include>org.glassfish.jersey.*:jersey-*</include>
         <include>org.opengis.cite.teamengine:teamengine-realm</include>
         <include>xerces:xercesImpl</include>
         <include>xml-apis:xml-apis</include>
