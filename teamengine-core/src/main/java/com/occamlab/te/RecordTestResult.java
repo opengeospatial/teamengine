@@ -348,7 +348,7 @@ public class RecordTestResult {
    * @param dateFormat
    * @throws java.lang.Exception
    */
-  public void storeFinalTestDetail(TestEntry test, int verdict, DateFormat dateFormat, Calendar cal, File dirPath) throws Exception {
+  public void storeFinalTestDetail(TestEntry test, DateFormat dateFormat, Calendar cal, File dirPath) throws Exception {
     // Fortify Mod: make sure that dirPath is a legal path
     // Note: a null dirPath is tolerated
     if( dirPath != null ) {
@@ -364,10 +364,10 @@ public class RecordTestResult {
         String result="";
         JSONObject obj = new JSONObject();
         obj.put(NAME, test.getName());
-        if(getResultDescription(verdict).contains("Inherited")&&test.getName().contains("GetMap")){
+        if(getResultDescription(test.getResult()).contains("Inherited")&&test.getName().contains("GetMap")){
           result="Passed";
         }else{
-          result=getResultDescription(verdict);
+          result=getResultDescription(test.getResult());
         }
         obj.put(RESULT, result);
         obj.put(TIME, dateFormat.format(cal.getTime()));
