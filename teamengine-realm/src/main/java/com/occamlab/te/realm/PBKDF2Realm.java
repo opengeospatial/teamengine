@@ -76,6 +76,8 @@ public class PBKDF2Realm extends RealmBase {
     private DocumentBuilder DB = null;
     private HashMap<String, Principal> principals = new HashMap<String, Principal>();
 
+    private String password;
+
     /**
      * Return the Principal associated with the specified username and
      * credentials, if one exists in the user data store; otherwise return null.
@@ -85,7 +87,7 @@ public class PBKDF2Realm extends RealmBase {
         GenericPrincipal principal = (GenericPrincipal) getPrincipal(username);
         if (null != principal) {
             try {
-                if (!PasswordStorage.verifyPassword(credentials, principal.getPassword())) {
+                if (!PasswordStorage.verifyPassword(credentials, password)) {
                     principal = null;
                 }
             } catch (CannotPerformOperationException | InvalidHashException e) {
@@ -102,7 +104,7 @@ public class PBKDF2Realm extends RealmBase {
         if (principal == null) {
             return null;
         } else {
-            return principal.getPassword();
+            return password;
         }
     }
 
@@ -159,14 +161,14 @@ public class PBKDF2Realm extends RealmBase {
         }
         Element userElement = (Element) (userInfo.getElementsByTagName("user").item(0));
         Element passwordElement = (Element) (userElement.getElementsByTagName("password").item(0));
-        String password = passwordElement.getTextContent();
+        password = passwordElement.getTextContent();
         Element rolesElement = (Element) (userElement.getElementsByTagName("roles").item(0));
         NodeList roleElements = rolesElement.getElementsByTagName("name");
         for (int i = 0; i < roleElements.getLength(); i++) {
             String name = ((Element) roleElements.item(i)).getTextContent();
             roles.add(name);
         }
-        GenericPrincipal principal = createGenericPrincipal(username, password, roles);
+        GenericPrincipal principal = createGenericPrincipal(username, roles);
         return principal;
     }
 
@@ -175,15 +177,13 @@ public class PBKDF2Realm extends RealmBase {
      *
      * @param username
      *            The username for this user.
-     * @param password
-     *            The authentication credentials for this user.
      * @param roles
      *            The set of roles (specified using String values) associated
      *            with this user.
      * @return A GenericPrincipal for use by this Realm implementation.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    GenericPrincipal createGenericPrincipal(String username, String password, List<String> roles) {
+    GenericPrincipal createGenericPrincipal(String username, List<String> roles) {
         Class klass = null;
         try {
             klass = Class.forName("org.apache.catalina.realm.GenericPrincipal");
@@ -194,8 +194,8 @@ public class PBKDF2Realm extends RealmBase {
         }
         Constructor[] ctors = klass.getConstructors();
         Class firstParamType = ctors[0].getParameterTypes()[0];
-        Class[] paramTypes = new Class[] { Realm.class, String.class, String.class, List.class };
-        Object[] ctorArgs = new Object[] { this, username, password, roles };
+        Class[] paramTypes = new Class[] { Realm.class, String.class, List.class };
+        Object[] ctorArgs = new Object[] { this, username, roles };
         GenericPrincipal principal = null;
         try {
             if (Realm.class.isAssignableFrom(firstParamType)) {
