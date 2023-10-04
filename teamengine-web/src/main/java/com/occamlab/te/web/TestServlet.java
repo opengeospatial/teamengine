@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -54,10 +54,10 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileItemFactory;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -245,13 +245,13 @@ public class TestServlet extends HttpServlet {
             throws ServletException {
         try {
             FileItemFactory ffactory;
-            ServletFileUpload upload;
+            JakartaServletFileUpload upload;
             List<FileItem> items = null;
             HashMap<String, String> params = new HashMap<String, String>();
-            boolean multipart = ServletFileUpload.isMultipartContent(request);
+            boolean multipart = JakartaServletFileUpload.isMultipartContent(request);
             if (multipart) {
-                ffactory = new DiskFileItemFactory();
-                upload = new ServletFileUpload(ffactory);
+                ffactory = new DiskFileItemFactory.Builder().get();
+                upload = new JakartaServletFileUpload(ffactory);
                 items = upload.parseRequest(request);
                 Iterator<FileItem> iter = items.iterator();
                 while (iter.hasNext()) {
@@ -437,7 +437,7 @@ public class TestServlet extends HttpServlet {
                             File uploadedFile = new File(tempDir,
                                     StringUtils.getFilenameFromString(item
                                             .getName()));
-                            item.write(uploadedFile);
+                            item.write(uploadedFile.toPath());
                             Element valueElement = doc.createElement("value");
                             String key = item.getFieldName();
                             valueElement.setAttribute("key", key);
