@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Bag;
