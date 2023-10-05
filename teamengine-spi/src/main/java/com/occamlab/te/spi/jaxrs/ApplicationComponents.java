@@ -14,12 +14,12 @@ import org.glassfish.jersey.server.ResourceConfig;
  * this class defines the components of a JAX-RS application and is used to
  * configure a runtime environment such as a web container.
  *
- * @see javax.ws.rs.core.Application
+ * @see org.glassfish.jersey.server.ResourceConfig
  */
 public class ApplicationComponents extends ResourceConfig {
 
     /**
-     * Default constructor scans for root resource classes in the
+     * Scans for root resource classes in the
      * <code>com.occamlab.te.spi.jaxrs.resources</code> package (or a
      * sub-package).
      */
