@@ -890,8 +890,11 @@
                       <xsl:if test=" $testSuiteType = 'testng'">
                         <xsl:variable name="testName"
                                       select="testng:testSuiteName(//rdf:RDF/cite:TestRun/dct:title, 'title')" />
+                        <xsl:variable name="testVersion"
+                                      select="testng:testSuiteName(//rdf:RDF/cite:TestRun/dct:title, 'version')" />
                         <xsl:call-template name="link-javadoc">
                           <xsl:with-param name="ets-code" select="$testName" />
+                          <xsl:with-param name="ets-version" select="$testVersion" />
                           <xsl:with-param name="testClassPath" select="$test_uris" />
                         </xsl:call-template>
                         <hr />
@@ -1061,9 +1064,10 @@
 
   <xsl:template name="link-javadoc">
     <xsl:param name="ets-code" />
+    <xsl:param name="ets-version" />
     <xsl:param name="testClassPath" />
-    <xsl:variable name="apidocs" select="concat('http://opengeospatial.github.io/ets-',$ets-code,'/apidocs/')" />
-    <xsl:variable name="url" select="concat($apidocs, $testClassPath)" />
+    <xsl:variable name="apidocs" select="concat('../../../../about/',$ets-code,'/',$ets-version,'/site/apidocs/')" />
+    <xsl:variable name="url" select="concat($apidocs, substring-before($testClassPath, '#'),'.html#', substring-after($testClassPath, '#'))" />
     <xsl:text> | </xsl:text>
     <a target="_blank" href="{$url}">Details &#8599;</a>
   </xsl:template>
