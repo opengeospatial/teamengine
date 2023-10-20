@@ -74,7 +74,7 @@ public class PBKDF2Realm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
     private DocumentBuilder DB = null;
-    private HashMap<String, Principal> principals = new HashMap<String, Principal>();
+    private final HashMap<String, Principal> principals = new HashMap<String, Principal>();
 
     private String password;
 
@@ -139,6 +139,10 @@ public class PBKDF2Realm extends RealmBase {
             }
         }
         return principal;
+    }
+
+    void setPassword(String password) {
+        this.password = password;
     }
 
     private GenericPrincipal readPrincipal(String username) {
