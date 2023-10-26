@@ -139,15 +139,11 @@
       <dependency>
         <groupId>org.apache.jena</groupId>
         <artifactId>jena-core</artifactId>
-        <version>3.1.0</version>
+        <version>4.9.0</version>
         <exclusions>
           <exclusion>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
