@@ -48,7 +48,7 @@ public class ImageParserTest {
 
     @Test
     public void parsePNG_noAlphaChannel() throws SAXException, IOException {
-        URL url = getClass().getResource("/img/square-white.png");
+        URL url = getClass().getResource("/img/square-white-no-transparency.png");
         Document instruct = docBuilder.parse(getClass().getResourceAsStream(
                 "/img/model-argb-transparent.xml"));
         StringWriter strWriter = new StringWriter();
