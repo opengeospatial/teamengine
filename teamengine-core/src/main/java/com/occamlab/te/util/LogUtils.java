@@ -99,7 +99,7 @@ public class LogUtils {
                 } 
             String path=logDir.toString() + "/" + callpath.split("/")[0];
             System.setProperty("PATH", path);
-            dir.mkdir();
+            dir.mkdirs();
             File f = new File(dir, "log.xml");
             f.delete();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
@@ -549,7 +549,9 @@ public class LogUtils {
         File dir = new File(sessionLogDir);
         if( ! dir.exists() ) {
             if( ! dir.mkdir() ) {
-                throw new RuntimeException("Unable to create report log directory " + sessionLogDir);
+                if(! dir.mkdirs()) {
+                    throw new RuntimeException("Unable to create report log directory " + sessionLogDir);
+                }
             }
         }
         File xml_logs_report_file = new File(sessionLogDir + File.separator
