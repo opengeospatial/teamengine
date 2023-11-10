@@ -434,7 +434,7 @@
         <plugin>
           <groupId>com.smartbear.soapui</groupId>
           <artifactId>soapui-maven-plugin</artifactId>
-          <version>5.7.0</version>
+          <version>5.7.2</version>
         </plugin>
         <plugin>
           <groupId>com.spotify</groupId>
