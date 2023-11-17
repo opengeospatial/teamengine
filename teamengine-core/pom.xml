@@ -78,8 +78,8 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.xmlmatchers</groupId>
-      <artifactId>xml-matchers</artifactId>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-matchers</artifactId>
     </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
@@ -89,12 +89,10 @@
     <dependency>
       <groupId>nl.jqno.equalsverifier</groupId>
       <artifactId>equalsverifier</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-core</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>xml-apis</groupId>

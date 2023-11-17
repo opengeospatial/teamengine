@@ -1,20 +1,16 @@
 package com.occamlab.te;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.xmlmatchers.XmlMatchers.hasXPath;
-import static org.xmlmatchers.transform.XmlConverters.the;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
+import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.namespace.NamespaceContext;
-
 import org.junit.Test;
-import org.xmlmatchers.XmlMatchers;
-import org.xmlmatchers.namespace.SimpleNamespaceContext;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -42,20 +38,20 @@ public class CtlEarlReporterTest {
 
         ctlEarlReporter.generateEarlReport( earlReport, reportStream, testSuiteName, parames );
 
-        assertThat( the( earlReport.toString() ), hasXPath( "/rdf:RDF", nsContext() ) );
-        assertThat( the( earlReport.toString() ),
-                    hasXPath( "count(//earl:TestRequirement)", equalTo( "4" ), nsContext() ) );
-        assertThat( the( earlReport.toString() ),
-                    hasXPath( "//earl:TestRequirement[@rdf:about='queryable']/cite:isBasic", equalTo( "false" ), nsContext() ) );
-        assertThat( the( earlReport.toString() ),
-                    hasXPath( "//earl:TestRequirement[@rdf:about='basic']/cite:isBasic", equalTo( "true" ), nsContext() ) );
+        assertThat(earlReport.toString(), hasXPath("/rdf:RDF").withNamespaceContext(nsContext()));
+        assertThat(earlReport.toString(),
+                hasXPath("count(//earl:TestRequirement)", equalTo("4")).withNamespaceContext(nsContext()));
+        assertThat(earlReport.toString(),
+                hasXPath("//earl:TestRequirement[@rdf:about='queryable']/cite:isBasic", equalTo("false")).withNamespaceContext(nsContext()));
+        assertThat(earlReport.toString(),
+                hasXPath("//earl:TestRequirement[@rdf:about='basic']/cite:isBasic", equalTo("true")).withNamespaceContext(nsContext()));
     }
 
-    private NamespaceContext nsContext() {
-        SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-        nsContext = nsContext.withBinding( "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#" );
-        nsContext = nsContext.withBinding( "earl", "http://www.w3.org/ns/earl#" );
-        nsContext = nsContext.withBinding( "cite", "http://cite.opengeospatial.org/" );
+    private Map<String, String> nsContext() {
+        Map<String, String> nsContext = new HashMap<>();
+        nsContext.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        nsContext.put("earl", "http://www.w3.org/ns/earl#");
+        nsContext.put("cite", "http://cite.opengeospatial.org/");
         return nsContext;
     }
 
