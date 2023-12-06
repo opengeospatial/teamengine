@@ -78,7 +78,7 @@ public class TestSuiteSetResource {
      *         syntax).
      */
     @GET
-    @Produces("application/xhtml+xml; charset='utf-8'")
+    @Produces("application/xhtml+xml; charset=utf-8")
     public Source listTestSuites() {
         Document xhtmlDoc = readTemplate();
         if (null == xhtmlDoc) {
@@ -118,7 +118,7 @@ public class TestSuiteSetResource {
      *         collection (an XML document).
      */
     @GET
-    @Produces("application/xml; charset='utf-8'")
+    @Produces("application/xml; charset=utf-8")
     public Source listTestSuitesAsXML() {
         Document xmlDoc = this.docBuilder.newDocument();
 

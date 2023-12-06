@@ -53,7 +53,7 @@ public class TestSuiteOverviewResource {
      *      HTML-Compatible XHTML Documents</a>
      */
     @GET
-    @Produces("text/html; charset='utf-8'")
+    @Produces("text/html; charset=utf-8")
     public InputStream getTestSuiteDescriptionAsHTML(@PathParam("etsCode") String etsCode) {
         InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_TEXT_HTML);
 
@@ -75,7 +75,7 @@ public class TestSuiteOverviewResource {
      *         <code>/doc/{etsCode}/{etsVersion}/overview.xml</code>).
      */
     @GET
-    @Produces("application/xml; charset='utf-8'")
+    @Produces("application/xml; charset=utf-8")
     public InputStream getTestSuiteDescriptionAsXML(@PathParam("etsCode") String etsCode) {
         InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_XML);
 
