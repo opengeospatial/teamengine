@@ -44,7 +44,7 @@ is always recommended):
 In order to use the archetype and build the resulting test suite a [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/) 
 (JDK) and [Apache Maven](https://maven.apache.org/) must be installed:
 
-* JDK 7 or higher
+* JDK 17 or higher
 * Apache Maven 3.0 or higher
 
 To create a new test suite open a command shell (terminal window) and invoke the interactive 

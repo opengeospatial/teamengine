@@ -56,7 +56,7 @@ Download Required Software
 
 In order to build Team Engine and the OGC tests you will need the following software:
 
-- **Java 8**: Download the Java Development Kit (JDK) 8, from `here <https://www.oracle.com/uk/java/technologies/javase/javase-jdk8-downloads.html>`_. Alternatively, you may download the `Red Hat OpenJDK 8 <https://developers.redhat.com/products/openjdk/download>`_.
+- **Java 17**: Download the Java Development Kit (JDK) 17. OpenJDK is recommended.
 - Maven: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
 - **Git 1.8**: Download Git-SCM version 1.9.4 from `here <http://git-scm.com/download/win>`_.
 - **Apache Tomcat 7.0.52**: Download Apache Tomcat version 7.0.52 from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
@@ -72,7 +72,7 @@ Configure Java
 	1. Browse to the downloaded file location and locate the installation file
 	2. Execute installation file from download location on the local workstation
 	3. Complete the installation with the default options selected, click 'yes', then click 'next' twice
-	4. On Microsoft Windows, the JDK and JRE will install to 'C:\Program Files\Java\jdk1.8.0' and 'C:\Program Files\Java\jre8' respectively.
+	4. On Microsoft Windows, the JDK and JRE will install to 'C:\Program Files\Java\jdk1.17.0' and 'C:\Program Files\Java\jre17' respectively.
 	5. Click 'Finish' to complete the installation and close the installer.
 
 Configure Maven
@@ -118,24 +118,24 @@ Set Environment Variables in Windows
 	4. Within the 'Edit System Variable' window, add the full path of the JDK directory, JRE directory, and Maven directory to the end of the existing contents of the PATH variable value. Note: Please ensure that the end of the list and new additions are separated via a semi-colon. (For example: ...;Variable_a;..)
 	5. The program paths for these installed software programs, should be added to the path:
 
-		- ;C:\Program Files\Java\jdk1.8.0;
-		- ;C:\Program Files\Java\jre8;
+		- ;C:\Program Files\Java\jdk1.17.0;
+		- ;C:\Program Files\Java\jre17;
 		- ;C:\Program Files\apache-maven-3.2.2\bin;
 		(Verify that the environment variable paths for Git are already installed)
 	6. Select the 'OK' button within the 'Edit System Variable' window
 	7. Within the 'Environment Variables' window, select the 'New...' button below the 'System Variables' list.
-	8. Within the 'New System Variable' window, type "JAVA_HOME" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value' field, type the full path to the JDK directory (C:\Program Files\Java\jdk1.8.0)
+	8. Within the 'New System Variable' window, type "JAVA_HOME" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value' field, type the full path to the JDK directory (C:\Program Files\Java\jdk1.17.0)
 	9. Select the 'Ok' button within the 'New System Variable' window.
 	10. Within the 'Environment Variables' window, select the 'New' button below the 'System Variables' list.
-	11. Within the 'New System Variable' window, type "JRE_HOME" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value:' field, type the full path to the Java JRE directory (C:\Program Files\Java\jre8)
+	11. Within the 'New System Variable' window, type "JRE_HOME" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value:' field, type the full path to the Java JRE directory (C:\Program Files\Java\jre17)
 	12. Select the 'Ok' button within the 'New System Variable Window'.
 	13. Within the 'Environment Variables' window, select the 'New...' button below the 'System Variables' list.
 	14. Within the 'New System Variable' window, type "TE_BASE" (without quotation marks) within the 'Variable Name:' field. Within the 'Variable Value:' field, type the full path to the TE_BASE directory ('C:\TE_BASE' is the default).
 	15. Select the 'Ok' button within the 'New System Variable' window.
 	16. This process completes the configuration process for setting environment variables in Windows. At the end of this process, the following items should be accounted for in the PATH section of the system's Environment Variables. Please note that depending on the system, these may be slightly different, and that they are only being included as a reference.
 
-		- ;C:\Program Files\Java\jdk1.8.0;
-		- ;C:\Program Files\Java\jre8;
+		- ;C:\Program Files\Java\jdk1.17.0;
+		- ;C:\Program Files\Java\jre17;
 		- ;C:\Program Files\apache-maven-3.2.2\bin;
 		- ;C:\Program Files (x86)\Git\cmd;
 
@@ -693,7 +693,7 @@ And copy the following in setenv.sh::
 	cat bin/setenv.sh
 	!/bin/sh
 	## path to java jdk
-	## JAVA_HOME=/usr/local/java/jdk7
+	## JAVA_HOME=/usr/local/java/jdk17
 	## export JAVA_HOME
 
 	 ## path to tomcat installation to use
@@ -730,7 +730,7 @@ Create Set Environment File:
 Create the contents of the file by copying the following text into the setenv.bat file within the text editor::
 
 	rem path to java jdk
-	set JAVA_HOME=c:\Program Files\Java\jdk1.8.0
+	set JAVA_HOME=C:\Program Files\Java\jdk1.17.0
 
 	rem path to tomcat install to use
 	set CATALINA_HOME=c:\apache-tomcat-7.0.52

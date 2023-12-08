@@ -17,7 +17,7 @@ tutorial.
 
 ### Prerequisites
 
-- **Java 8**: Download the Java Development Kit (JDK) 8, from <https://www.oracle.com/uk/java/technologies/javase/javase-jdk8-downloads.html>. Alternatively, you may download the Red Hat OpenJDK 8 <https://developers.redhat.com/products/openjdk/download>.
+- **Java 17**: Download the Java Development Kit (JDK) 17. OpenJDK is recommended.
 - **Apache Maven**: Download the latest release from <https://maven.apache.org/download.cgi>.
 - **Git**: Download the Git version control system (version 1.8 or newer) from <https://git-scm.com/download/>
 - **Apache Tomcat 7**: TEAM Engine has been tested with Tomcat 7.0; the latest release is available
@@ -96,8 +96,7 @@ directory.
 
 #### System requirements
 
--   Java runtime: Oracle JDK 8 - [latest JDK
-    release](http://www.oracle.com/technetwork/java/javase/downloads/)
+-   Java runtime: JDK 17
 -   Servlet container: Apache Tomcat 7.0 - [latest Tomcat
     release](http://tomcat.apache.org/download-70.cgi)
 
