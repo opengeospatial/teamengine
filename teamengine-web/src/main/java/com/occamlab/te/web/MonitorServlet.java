@@ -215,7 +215,7 @@ public class MonitorServlet extends HttpServlet {
             for (Entry<String, List<String>> entry : responseHeaders.entrySet()) {
                 String key = entry.getKey();
                 if (key != null) {
-                    if (key.length() == 0) {
+                    if (key.isEmpty()) {
                         // do nothing
                     } else if (key.equalsIgnoreCase("Transfer-Encoding")) {
                         // do nothing
@@ -226,6 +226,9 @@ public class MonitorServlet extends HttpServlet {
                     }
                 }
             }
+
+            // Support of CORS: Allow requests from all domains.
+            response.setHeader("Access-Control-Allow-Origin", "*");
 
             if (mc.getModifiesResponse()) {
                 LOGR.log(Level.FINE, DomUtils.serializeNode(eResponse));
