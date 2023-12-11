@@ -59,7 +59,7 @@ In order to build Team Engine and the OGC tests you will need the following soft
 - **Java 17**: Download the Java Development Kit (JDK) 17. OpenJDK is recommended.
 - Maven: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
 - **Git 1.8**: Download Git-SCM version 1.9.4 from `here <http://git-scm.com/download/win>`_.
-- **Apache Tomcat 7.0.52**: Download Apache Tomcat version 7.0.52 from `here <http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/>`_.
+- **Apache Tomcat 10.1**: Download Apache Tomcat version 10.1.
 
 
 Configuring Prerequisite Software
@@ -155,11 +155,11 @@ Completing the Installation of Prerequisite Software
 		- echo %TE_BASE% : this will print the full path to TE_BASE
 		- echo %JAVA_HOME% : this will print the full path to the JDK installation location
 		- echo %JRE_HOME% : this will print the full path to the JRE installation location
-	6. Change directory (cd) to the folder: 'C:\apache-tomcat-7.0.52\bin' and then launch the Tomcat service by entering the following command: 'startup.bat'.
+	6. Change directory (cd) to the folder: 'C:\apache-tomcat-10.1\bin' and then launch the Tomcat service by entering the following command: 'startup.bat'.
 	7. Open web browser window, and type the following URL (Uniform Resource Locator): http://localhost:8080 or http://127.0.0.1:8080 and you should be able to see the Apache Tomcat/7.0.52 Welcome Page.
 	8. Note: If there are any problems with the JRE_HOME shown in the command prompt, double check the System Environment Variables for the JRE_HOME entry declared in the System Environment Variable settings.
 	9. Close the web browser window.
-	10. In the command prompt, ensuring you are in the working directory 'C:\apache-tomcat-7.0.52\bin', shutdown Tomcat by entering the following command: 'shutdown.bat'.
+	10. In the command prompt, ensuring you are in the working directory 'C:\apache-tomcat-10.1\bin', shutdown Tomcat by entering the following command: 'shutdown.bat'.
 	11. Running these commands will ensure that all of the pre-requisite software is installed correctly, and will allow you to verify that the Java JDK and JRE were installed to the correct directory.
 	12. Now that the configuration is complete, close any open programs and restart the workstation.
 
@@ -718,9 +718,9 @@ Create the Directory Structure:
 
 Populating File Directories:
 
-	Copy catalina.bat file from c:\apache-tomcat-7.0.52\bin into c:\CATALINA_BASE\bin
+	Copy catalina.bat file from c:\apache-tomcat-10.1\bin into c:\CATALINA_BASE\bin
 
-	Copy all of the files from c:\apache-tomcat-7.0.52\conf and then paste them into c:\CATALINA_BASE\conf
+	Copy all of the files from c:\apache-tomcat-10.1\conf and then paste them into c:\CATALINA_BASE\conf
 
 Create Set Environment File:
 
@@ -733,7 +733,7 @@ Create the contents of the file by copying the following text into the setenv.ba
 	set JAVA_HOME=C:\Program Files\Java\jdk1.17.0
 
 	rem path to tomcat install to use
-	set CATALINA_HOME=c:\apache-tomcat-7.0.52
+	set CATALINA_HOME=c:\apache-tomcat-10.1
 
 	rem path to server instance to use
 	set CATALINA_BASE=c:\CATALINA_BASE

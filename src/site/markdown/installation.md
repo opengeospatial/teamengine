@@ -20,8 +20,7 @@ tutorial.
 - **Java 17**: Download the Java Development Kit (JDK) 17. OpenJDK is recommended.
 - **Apache Maven**: Download the latest release from <https://maven.apache.org/download.cgi>.
 - **Git**: Download the Git version control system (version 1.8 or newer) from <https://git-scm.com/download/>
-- **Apache Tomcat 7**: TEAM Engine has been tested with Tomcat 7.0; the latest release is available
-from <http://tomcat.apache.org/download-70.cgi>.
+- **Apache Tomcat 10.1**: TEAM Engine requires Tomcat 10.1.
 
 ### Get the source code
 
@@ -97,12 +96,11 @@ directory.
 #### System requirements
 
 -   Java runtime: JDK 17
--   Servlet container: Apache Tomcat 7.0 - [latest Tomcat
-    release](http://tomcat.apache.org/download-70.cgi)
+-   Servlet container: Apache Tomcat 10.1
 
 #### Create a dedicated Tomcat instance
 
-Apache Tomcat 7.0 is a supported servlet container. It is **strongly**
+Apache Tomcat 10.1 is a supported servlet container. It is **strongly**
 recommended that a dedicated Tomcat instance be created to host the
 teamengine application. That is, keep the location of the instance-specific
 data--referred to as `CATALINA_BASE` in the Tomcat documentation--separate
