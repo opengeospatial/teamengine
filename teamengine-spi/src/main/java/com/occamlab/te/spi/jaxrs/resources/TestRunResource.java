@@ -125,6 +125,13 @@ public class TestRunResource {
     public Response handleGetZip( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion )
                             throws IOException {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
+        if(params instanceof ImmutableMultivaluedMap<?, ?>) {
+            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<String, String>();
+            for (String key : params.keySet()) {
+                newMultivaluedMap.put(key, params.get(key));
+            }
+            params = newMultivaluedMap;
+        }
         Source results = executeTestRun( etsCode, params, APPLICATION_ZIP );
 
         String htmlOutput = results.getSystemId().toString();
