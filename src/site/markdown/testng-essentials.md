@@ -41,11 +41,11 @@ is always recommended):
     artifactId: ets-archetype-testng
     version: 2.5
 
-In order to use the archetype and build the resulting test suite a [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/) 
+In order to use the archetype and build the resulting test suite a Java Development Kit 
 (JDK) and [Apache Maven](https://maven.apache.org/) must be installed:
 
-* JDK 17 or higher
-* Apache Maven 3.0 or higher
+* JDK 17
+* Apache Maven 3.9
 
 To create a new test suite open a command shell (terminal window) and invoke the interactive 
 __archetype:generate__ goal. It is necessary to specify the `ets-code` property at this point, 

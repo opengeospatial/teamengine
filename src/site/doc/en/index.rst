@@ -57,8 +57,8 @@ Download Required Software
 In order to build Team Engine and the OGC tests you will need the following software:
 
 - **Java 17**: Download the Java Development Kit (JDK) 17. OpenJDK is recommended.
-- Maven: It has been tested with Maven 2.2.1 and **Maven 3.2.2**: Download Maven version 3.2.2 from `here <http://apache.mesi.com.ar/maven/maven-3/3.2.2/binaries/apache-maven-3.2.2-bin.zip>`_.
-- **Git 1.8**: Download Git-SCM version 1.9.4 from `here <http://git-scm.com/download/win>`_.
+- Maven: Download Maven version 3.9.
+- **Git**: Download Git SCM.
 - **Apache Tomcat 10.1**: Download Apache Tomcat version 10.1.
 
 

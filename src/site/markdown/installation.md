@@ -19,7 +19,7 @@ tutorial.
 
 - **Java 17**: Download the Java Development Kit (JDK) 17. OpenJDK is recommended.
 - **Apache Maven**: Download the latest release from <https://maven.apache.org/download.cgi>.
-- **Git**: Download the Git version control system (version 1.8 or newer) from <https://git-scm.com/download/>
+- **Git**: Download Git SCM.
 - **Apache Tomcat 10.1**: TEAM Engine requires Tomcat 10.1.
 
 ### Get the source code
@@ -30,7 +30,7 @@ Use Git to clone the repository and checkout a branch or a tagged release as ind
     git clone https://github.com/opengeospatial/teamengine.git
     git checkout ${project.version}
 
-[Apache Maven](http://maven.apache.org/) 3.2.5 or later is required to build the teamengine
+[Apache Maven](http://maven.apache.org/) 3.9 is required to build the TEAM Engine
 code base, which currently consists of the following modules:
 
 - **teamengine-core**: Main CTL script processor

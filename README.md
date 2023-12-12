@@ -17,7 +17,7 @@ An installation is maintained by the OGC at http://cite.opengeospatial.org/teame
 
 ### How to build
 
-[Apache Maven](http://maven.apache.org/) 3.2.5 or higher is required to build TEAM Engine. 
+[Apache Maven](http://maven.apache.org/) 3.9 is required to build TEAM Engine. 
 The latest release is recommended.
 
 * Clone the repository:
