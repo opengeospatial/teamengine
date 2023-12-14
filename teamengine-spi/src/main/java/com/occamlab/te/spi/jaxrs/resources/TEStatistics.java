@@ -42,7 +42,7 @@ public class TEStatistics {
     static Logger logger = Logger.getLogger(TEStatistics.class.getName());
 
     @GET
-    @Produces("application/zip;qs=0.25;charset='utf-8'")
+    @Produces("application/zip;qs=0.25;charset=utf-8")
     public Response generateStatisticsReport() throws IOException {
         Source results = generateStatisticsReports();
         String htmlOutput = results.getSystemId().toString();
