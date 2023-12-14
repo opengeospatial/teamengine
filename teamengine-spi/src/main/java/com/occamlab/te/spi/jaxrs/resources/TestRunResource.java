@@ -125,13 +125,7 @@ public class TestRunResource {
     public Response handleGetZip( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion )
                             throws IOException {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        if(params instanceof ImmutableMultivaluedMap<?, ?>) {
-            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<String, String>();
-            for (String key : params.keySet()) {
-                newMultivaluedMap.put(key, params.get(key));
-            }
-            params = newMultivaluedMap;
-        }
+        params = toMutableMultivaluedMap(params);
         Source results = executeTestRun( etsCode, params, APPLICATION_ZIP );
 
         String htmlOutput = results.getSystemId().toString();
@@ -313,13 +307,7 @@ public class TestRunResource {
 
     private Source handleGet( String etsCode, String etsVersion, String preferredMediaType ) {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
-        if(params instanceof ImmutableMultivaluedMap<?, ?>) {
-            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<String, String>();
-            for (String key : params.keySet()) {
-                newMultivaluedMap.put(key, params.get(key));
-            }
-            params = newMultivaluedMap;
-        }
+        params = toMutableMultivaluedMap(params);
         if ( LOGR.isLoggable( Level.FINE ) ) {
             StringBuilder msg = new StringBuilder( TEST_RUN_ARGUMENTS );
             msg.append( etsCode ).append( "/" ).append( etsVersion ).append( "\n" );
@@ -488,5 +476,23 @@ public class TestRunResource {
         propsDoc.appendChild( docElem );
         return propsDoc;
     }
+
+    /**
+     * Checks if the input MulivalueMap is immutable. If this is the case, 
+     * a new mutable MultivaluedHashMap is created containing the values of the input map.
+     * 
+     * @param multivaluedMap A MultivalueMap
+     * @return A mutable MultivalueMap
+     */
+    private MultivaluedMap<String, String> toMutableMultivaluedMap(MultivaluedMap<String, String> multivaluedMap) {
+        if(multivaluedMap instanceof ImmutableMultivaluedMap<?, ?>) {
+            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<String, String>();
+            for (String key : multivaluedMap.keySet()) {
+                newMultivaluedMap.put(key, multivaluedMap.get(key));
+            }
+            multivaluedMap = newMultivaluedMap;
+        }
+        return multivaluedMap;
+	}
 
 }
