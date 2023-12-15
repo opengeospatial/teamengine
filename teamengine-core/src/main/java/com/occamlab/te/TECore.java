@@ -151,7 +151,6 @@ public class TECore implements Runnable {
   int defaultResult = PASS; // Default result for current test
   ArrayList<String> media = new ArrayList<>();
   public File dirPath;
-  private int verdict; //Test verdict for current test
   Document prevLog = null; // Log document for current test from previous test
   // execution (resume and retest modes only)
   // Log document for suite to enable use of getLogCache by profile test
@@ -282,6 +281,7 @@ public class TECore implements Runnable {
     try {
       TestEntry grandParent = new TestEntry();
       grandParent.setType("Mandatory");
+      grandParent.setResult(CONTINUE);
       testStack.push(grandParent);
       String sessionId = opts.getSessionId();
       int mode = opts.getMode();
@@ -552,20 +552,8 @@ public class TECore implements Runnable {
               + suite.getPrefix() + ":" + suite.getLocalName() + " ");
       String summary = "Not complete";
       if ("yes".equals(baseTest.getAttribute("complete"))) {
-        int baseResult = Integer.parseInt(baseTest
-                .getAttribute("result"));
-                if (baseResult == TECore.FAIL
-                        || baseResult == TECore.INHERITED_FAILURE) {
-                    summary = MSG_FAIL;
-                } else if (verdict == TECore.BEST_PRACTICE) {
-                    summary = MSG_BEST_PRACTICE;
-		} else if (verdict == TECore.WARNING) {
-		    summary = MSG_WARNING;
-                } else if (verdict == TECore.SKIPPED) {
-                    summary = MSG_SKIPPED;
-        } else {
-                    summary = MSG_PASS;
-        }
+        int baseResult = Integer.parseInt(baseTest.getAttribute("result"));
+        summary = getResultDescription(baseResult);
       }
       out.println(summary);
       setIndentLevel(1);
@@ -578,17 +566,7 @@ public class TECore implements Runnable {
               kvps, null);
       out.print("Profile " + profile.getPrefix() + ":"
               + profile.getLocalName() + " ");
-            if (result == TECore.FAIL || result == TECore.INHERITED_FAILURE) {
-                summary = MSG_FAIL;
-            } else if (result == TECore.BEST_PRACTICE) {
-                summary = MSG_BEST_PRACTICE;
-	    } else if (verdict == TECore.WARNING) {
-		summary = MSG_WARNING;
-            } else if (verdict == TECore.SKIPPED) {
-                summary = MSG_SKIPPED;
-      } else {
-                summary = MSG_PASS;
-      }
+      summary = getResultDescription(result);
       out.println(summary);
     } else {
       if (required) {
@@ -722,7 +700,6 @@ public class TECore implements Runnable {
    */
   public int executeTest(TestEntry test, XdmNode params, XPathContext context)
           throws Exception {
-    testStack.push(test);
     testType = test.getType();
     // It is possible to get here without setting testPath.  Make sure it is set.
     if(testPath == null) testPath = opts.getSessionId();
@@ -832,13 +809,15 @@ public class TECore implements Runnable {
             logger.flush();
         }
 
-        int oldVerdict = this.verdict;
-        test.setResult(PASS);
+    test.setResult(CONTINUE);
     RecordTestResult recordTestResult = new RecordTestResult();
     recordTestResult.storeStartTestDetail(test, dirPath);
-    this.verdict = defaultResult;
     try {
+      testStack.push(test);
       executeTemplate(test, params, context);
+      if (test.getResult() == CONTINUE) {
+    	  test.setResult(defaultResult);
+      }
     } catch (SaxonApiException e) {
       jlogger.log( SEVERE, e.getMessage());
       DateFormat dateFormat = new SimpleDateFormat(Constants.YYYY_M_MDD_H_HMMSS);
@@ -877,15 +856,10 @@ public class TECore implements Runnable {
         logger.println("<exception><![CDATA[" + e.getMessage()
                 + "]]></exception>");
       }
-            this.verdict = FAIL;
-      if (!testStack.isEmpty()) {
-        testStack.pop();
-      }
+      test.setResult(FAIL);
     } finally{
-        // Check if verdict was already set by a failing subtest
-        if (test.getResult() != INHERITED_FAILURE) {
-            test.setResult(verdict);
-        }
+        updateParentTestResult(test);
+        testStack.pop();
     if (logger != null) {
             logger.println("<endtest result=\"" + test.getResult() + "\"/>");
 
@@ -919,7 +893,7 @@ public class TECore implements Runnable {
     Calendar cal = Calendar.getInstance();
     out.println(indent + "Test " + test.getName() + " "
                 + getResultDescription(test.getResult()));
-    recordTestResult.storeFinalTestDetail(test, verdict, dateFormat, cal, dirPath);
+    recordTestResult.storeFinalTestDetail(test, dateFormat, cal, dirPath);
     if (LOGR.isLoggable( FINE)) {
             String msg = String
                     .format("Executed test %s - Verdict: %s",
@@ -927,11 +901,6 @@ public class TECore implements Runnable {
                             getResultDescription(test.getResult()));
       LOGR.log( FINE, msg);
     }
-
-        //restore previous verdict if the result isn't worse
-        if (this.verdict <= oldVerdict) {
-            this.verdict = oldVerdict;
-  }
 
         return test.getResult();
     }
@@ -1052,37 +1021,31 @@ public class TECore implements Runnable {
       Document doc = LogUtils.readLog(opts.getLogDir(), testPath + "/"
               + callId);
       int result = LogUtils.getResultFromLog(doc);
-      // TODO revise the following
-      if (result >= 0) {
-        out.println(indent + "Test " + test.getName() + " "
-                + getResultDescription(result));
-                if (result == WARNING) {
-          warning();
-                } else if (result == CONTINUE) {
+      if (result == CONTINUE) {
           throw new IllegalStateException(
                   "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
-                } else if (result != PASS) {
-          inheritedFailure();
-        }
+      } else {
+        out.println(indent + "Test " + test.getName() + " " + getResultDescription(result));
+        test.setResult(result);
+        updateParentTestResult(test);
         return;
       }
     }
 
     String oldTestPath = testPath;
     testPath += "/" + callId;
+    int result = CONTINUE;
     try{
-        this.verdict = Math.max(verdict, executeTest(test, S9APIUtils.makeNode(params), context));
+    	result = executeTest(test, S9APIUtils.makeNode(params), context);
     } catch(Exception e){
     	
     } finally {
     	testPath = oldTestPath;
     }
-        if (this.verdict == CONTINUE) {
+    if (result == CONTINUE) {
       throw new IllegalStateException(
               "Error: 'continue' is not allowed when a test is called using 'call-test' instruction");
     }
-    updateParentTestResult(test);
-    testStack.pop();
   }
 
   /**
@@ -1115,15 +1078,18 @@ public class TECore implements Runnable {
             parentTest.setResult(INHERITED_FAILURE);
         break;
         case SKIPPED:
-        if (!parentTest.getType().equalsIgnoreCase("Optional")) {
-                parentTest.setResult(INHERITED_FAILURE);
+        if (currTest.getType().equalsIgnoreCase("Mandatory")) {
+            parentTest.setResult(INHERITED_FAILURE);
         }
         break;
       default:
+      	parentTest.setResult(Integer.max(currTest.getResult(), parentTest.getResult()));
         break;
     }
   }
 
+  /* ctl:repeat-test is not documented and is not used in any https://github.com/opengeospatial ETS */
+  /*
   public void repeatTest(XPathContext context, String localName,
           String NamespaceURI, NodeInfo params, String callId, int count,
           int pause) throws Exception {
@@ -1191,6 +1157,7 @@ public class TECore implements Runnable {
     }
 
   }
+  */
 
   public NodeInfo executeXSLFunction(XPathContext context, FunctionEntry fe,
           NodeInfo params) throws Exception {
@@ -1339,54 +1306,51 @@ public class TECore implements Runnable {
   }
 
   public void _continue() {
-        this.verdict = CONTINUE;
+	  testStack.peek().setResult(CONTINUE);
   }
 
   public void bestPractice() {
-        if (verdict < BEST_PRACTICE) {
-            verdict = BEST_PRACTICE;
-    }
+	  if (testStack.peek().getResult() < BEST_PRACTICE) {
+		  testStack.peek().setResult(BEST_PRACTICE);
+	  }
   }
 
   public void notTested() {
-        if (verdict < NOT_TESTED) {
-            verdict = NOT_TESTED;
-    }
+	  if (testStack.peek().getResult() < NOT_TESTED) {
+		  testStack.peek().setResult(NOT_TESTED);
+	  }
   }
 
   public void skipped() {
-        if (verdict < SKIPPED) {
-            verdict = SKIPPED;
-    }
+	  if (testStack.peek().getResult() < SKIPPED) {
+		  testStack.peek().setResult(SKIPPED);
+	  }
   }
 
-  /**
-   * A test with defaultResult of BEST_PRACTICE.
-   */
   public void pass() {
-        if (verdict < PASS) {
-            verdict = PASS;
-    }
+	  if (testStack.peek().getResult() < PASS) {
+		  testStack.peek().setResult(PASS);
+	  }
   }
 
   public void warning() {
-        if (verdict < WARNING) {
-            verdict = WARNING;
-    }
+	  if (testStack.peek().getResult() < WARNING) {
+		  testStack.peek().setResult(WARNING);
+	  }
   }
 
   public void inheritedFailure() {
-        if (verdict < INHERITED_FAILURE) {
-            verdict = INHERITED_FAILURE;
-    }
+	  if (testStack.peek().getResult() < INHERITED_FAILURE) {
+		  testStack.peek().setResult(INHERITED_FAILURE);
+	  }
   }
 
   public void fail() {
-        this.verdict = FAIL;
-    }
+	  testStack.peek().setResult(FAIL);
+  }
 
   public String getResult() {
-    return getResultDescription(verdict);
+    return getResultDescription(testStack.getLast().getResult());
   }
 
   public String getMode() {

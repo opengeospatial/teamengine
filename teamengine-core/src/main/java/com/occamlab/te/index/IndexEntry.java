@@ -18,6 +18,9 @@ public class IndexEntry implements NamedEntry {
     }
 
     public String getName() {
+    	if (qname == null) {
+    		return null;
+    	}
         String prefix = qname.getPrefix();
         if (prefix == null) {
             return qname.getLocalPart();
