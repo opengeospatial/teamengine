@@ -83,7 +83,7 @@ public class RecordTestResult {
    */
   public void recordingStartCheck(SuiteEntry suite) throws Exception {
     // Check suite variable is not empty and get suite local name.
-    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
       //Create a document builder for storing the data.
       TECore.icFactory = DocumentBuilderFactory.newInstance();
       // Fortify Mod: prevent external entity injection
@@ -102,7 +102,7 @@ public class RecordTestResult {
   }
 
   public void recordingStartClause(SuiteEntry suite) throws Exception{
-    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
       //Create a document builder for storing the data.
       TECore.icFactoryClause = DocumentBuilderFactory.newInstance();
       // Fortify Mod: prevent external entity injection
@@ -135,7 +135,7 @@ public class RecordTestResult {
         if( ! tpath.isValid() ) 
             throw new IllegalArgumentException("Invalid argument to saveRecordingData: dirPath = " + dirPath.getAbsolutePath());
         }
-    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
 
       try {
         //Create a Source for saving the data.
@@ -204,7 +204,7 @@ public class RecordTestResult {
         if( ! tpath.isValid() ) 
             throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
     }
-    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
       try {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.docClause);

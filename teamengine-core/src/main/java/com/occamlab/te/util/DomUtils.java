@@ -136,7 +136,7 @@ public class DomUtils {
             if (childChildren.getLength() > 0) {
                 // Recurse for all children
                 boolean okDownThere = checkCommentNodes(child, str);
-                if (okDownThere == true) {
+                if (okDownThere) {
                     return true;
                 }
             }

@@ -333,7 +333,7 @@ public class TEPath implements Path {
     	if(tpath.startsWith("/bin")) valid = false; 
     	if(tpath.startsWith("/usr/bin")) valid = false; 
     	
-    	if(valid == false){
+    	if(!valid){
            jlogger.warning("TEPATH Invalid Path: " + arg1.toString());
     	}
     	return(valid);

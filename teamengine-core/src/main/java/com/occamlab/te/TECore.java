@@ -340,7 +340,7 @@ public class TECore implements Runnable {
                 + File.separator + opts.getSessionId());
         File resultsDir = new File(opts.getLogDir(),
 				opts.getSessionId());
-        if(supportHtmlReport == true){
+        if(supportHtmlReport){
         Map<String, String> testInputMap = new HashMap<String, String>();
         testInputMap = extractTestInputs(userInputs, opts);
         

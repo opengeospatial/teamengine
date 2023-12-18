@@ -300,7 +300,7 @@ public class XMLValidatingParser {
 		if (error_count > 0) {
 			String s = (null != parserConfig) ? parserConfig
 					.getAttribute("ignoreErrors") : "false";
-			if (s.length() == 0 || Boolean.parseBoolean(s) == false) {
+			if (s.length() == 0 || !Boolean.parseBoolean(s)) {
 				resultDoc = null;
 			}
 		}
@@ -308,7 +308,7 @@ public class XMLValidatingParser {
 		if (warning_count > 0) {
 			String s = (null != parserConfig) ? parserConfig
 					.getAttribute("ignoreWarnings") : "true";
-			if (s.length() > 0 && Boolean.parseBoolean(s) == false) {
+			if (s.length() > 0 && !Boolean.parseBoolean(s)) {
 				resultDoc = null;
 			}
 		}
