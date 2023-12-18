@@ -164,7 +164,7 @@ public class Engine {
             throws Exception {
         String key = sourcesName + "," + entry.getId();
         if (entry instanceof FunctionEntry) {
-            key += "_" + Integer.toString(((FunctionEntry) entry).getMinArgs());
+            key += "_" + ((FunctionEntry) entry).getMinArgs();
         }
         XsltExecutable executable = loadedExecutables.get(key);
         while (executable == null) {

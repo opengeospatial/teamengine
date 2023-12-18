@@ -810,7 +810,7 @@ public class TECore implements Runnable {
             logger.print("namespace-uri=\"" + test.getNamespaceURI() + "\" ");
             logger.print("type=\"" + test.getType() + "\" ");
             logger.print("defaultResult=\""
-                    + Integer.toString(test.getDefaultResult()) + "\" ");
+                    + test.getDefaultResult() + "\" ");
             logger.print("path=\"" + testPath + "\" ");
             logger.println("file=\"" + test.getTemplateFile().getAbsolutePath()
                     + "\">");
@@ -891,7 +891,7 @@ public class TECore implements Runnable {
 
             if(test.isConformanceClass()){
                 logger.println("<conformanceClass name=\"" + test.getLocalName() + "\"" + " isBasic=\""
-                                + Boolean.toString( test.isBasic() ) + "\"" + " result=\"" + test.getResult()
+                                + test.isBasic() + "\"" + " result=\"" + test.getResult()
                                 + "\" />");
             	supportHtmlReport = true;
             }

@@ -80,7 +80,7 @@ public class MonitorServlet extends HttpServlet {
 
     static public String allocateMonitorUrl(String url) {
         String monitorUrl = baseServletURL + "/" + servletName + "/"
-                + Integer.toString(monitorUrlSeq);
+                + monitorUrlSeq;
         monitorUrlSeq++;
         MonitorCall mc = new MonitorCall(url);
         monitors.put(monitorUrl, mc);
@@ -267,7 +267,7 @@ public class MonitorServlet extends HttpServlet {
                 XdmNode paramsNode = builder.build(new DOMSource(doc));
                 monitorCallSeq++;
                 String callId = mc.getCallId() + "_"
-                        + Integer.toString(monitorCallSeq);
+                        + monitorCallSeq;
                 core.callTest(mc.getContext(), mc.getLocalName(),
                         mc.getNamespaceURI(), paramsNode.getUnderlyingNode(),
                         callId);

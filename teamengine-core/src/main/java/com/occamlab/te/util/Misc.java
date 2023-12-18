@@ -129,7 +129,7 @@ public class Misc {
         }
         String argsDesc = Integer.toString(minArgs);
         if (maxArgs > minArgs) {
-            argsDesc += " to " + Integer.toString(maxArgs) + " argument";
+            argsDesc += " to " + maxArgs + " argument";
         }
         if (minArgs > 1 || maxArgs > 1) {
             argsDesc += "s";
