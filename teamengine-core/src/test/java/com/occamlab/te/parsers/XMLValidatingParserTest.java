@@ -2,7 +2,6 @@ package com.occamlab.te.parsers;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;

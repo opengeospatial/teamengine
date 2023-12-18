@@ -31,7 +31,6 @@ import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
 
-import com.occamlab.te.RuntimeOptions;
 import com.occamlab.te.SetupOptions;
 
 /**

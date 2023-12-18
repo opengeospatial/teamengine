@@ -24,10 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.UUID;
+
 import com.occamlab.te.util.TEPath;  // Fortify addition
-import com.occamlab.te.util.LogUtils;
-import java.util.regex.Pattern;      // Supports UUID validation
 
 import net.sf.saxon.s9api.XdmNode;
 

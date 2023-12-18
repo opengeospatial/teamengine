@@ -2,9 +2,6 @@ package com.occamlab.te.util;
 
 import static org.junit.Assert.*;
 
-import java.nio.file.Paths;
-
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
