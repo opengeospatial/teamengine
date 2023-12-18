@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+## 5.7 (2023-12-18)
+- [#603](https://github.com/opengeospatial/teamengine/pull/603): Add CORS header in process method of MonitorServlet
+- [#593](https://github.com/opengeospatial/teamengine/pull/593): Fix test result logic for results other than PASS/FAIL.
+
 ## 5.6.1 (2023-04-14)
 - [#572](https://github.com/opengeospatial/teamengine/pull/572): Fix a bug resulting from loading order of xml-resolver and schema-utils
 
