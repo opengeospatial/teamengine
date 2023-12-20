@@ -44,13 +44,13 @@ public class SoapUtils {
 
     /**
      * A method to get the SOAP message from the input stream.
+     * author Simone Gianfranceschi
      * 
      * @param in
      *            the input stream to be used to get the SOAP message.
      * 
      * @return the SOAP message
      * 
-     * @author Simone Gianfranceschi
      */
     public static Document getSOAPMessage(InputStream in) throws Exception {
         /*
@@ -76,13 +76,13 @@ public class SoapUtils {
 
     /**
      * A method to extract the content of the SOAP body.
+     * author Simone Gianfranceschi
      * 
      * @param soapMessage
      *            the SOAP message.
      * 
      * @return the content of the body of the input SOAP message.
      * 
-     * @author Simone Gianfranceschi
      */
     public static Document getSoapBody(Document soapMessage) throws Exception {
         Element envelope = soapMessage.getDocumentElement();
@@ -98,6 +98,7 @@ public class SoapUtils {
 
     /**
      * A method to copy namespaces declarations.
+     * author Simone Gianfranceschi
      * 
      * @param source
      *            the source message containing the namespaces to be copied on
@@ -105,7 +106,6 @@ public class SoapUtils {
      * @param target
      *            the target message.
      * 
-     * @author Simone Gianfranceschi
      */
     public static void addNSdeclarations(Element source, Element target)
             throws Exception {
@@ -126,6 +126,7 @@ public class SoapUtils {
 
     /**
      * A method to create a SOAP message and retrieve it as byte.
+     * author Simone Gianfranceschi
      * 
      * @param version
      *            the SOAP version to be used (1.1 or 1.2).
@@ -138,7 +139,6 @@ public class SoapUtils {
      * 
      * @return The created SOAP message as byte.
      * 
-     * @author Simone Gianfranceschi
      */
     public static byte[] getSoapMessageAsByte(String version,
             List headerBlocks, Element body, String encoding) throws Exception {
@@ -161,6 +161,7 @@ public class SoapUtils {
     /**
      * A method to create a SOAP message. The SOAP message, including the Header
      * is created and returned as DOM Document.
+     * author Simone Gianfranceschi
      * 
      * @param version
      *            the SOAP version to be used (1.1 or 1.2).
@@ -171,7 +172,6 @@ public class SoapUtils {
      * 
      * @return The created SOAP message as document.
      * 
-     * @author Simone Gianfranceschi
      */
     public static Document createSoapMessage(String version, List headerBlocks,
             Element body) throws Exception {

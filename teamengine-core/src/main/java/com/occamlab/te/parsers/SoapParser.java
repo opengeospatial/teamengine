@@ -40,6 +40,7 @@ public class SoapParser {
 
     /**
      * A method to parse and valdate the response of a SOAP server.
+     * author Simone Gianfranceschi
      * 
      * @param uc
      *            the URL Connection to be used to retrieve the SOAP message.
@@ -51,7 +52,6 @@ public class SoapParser {
      * @return null if there were errors, the parsed document otherwise: it can
      *         be the SOAP message, the SOAP message body content or a SOAP fult
      * 
-     * @author Simone Gianfranceschi
      */
     public Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
@@ -109,6 +109,7 @@ public class SoapParser {
 
     /**
      * A method to parse and valdate the response of a SOAP server.
+     * author Simone Gianfranceschi
      * 
      * @param xml
      *            the SOAP message to retrieve and validate. May be an
@@ -121,7 +122,6 @@ public class SoapParser {
      * @return null if there were errors, the parsed document otherwise: it can
      *         be the SOAP message, the SOAP message body content or a SOAP fult
      * 
-     * @author Simone Gianfranceschi
      */
     private Document parse(Object xml, Element instruction, PrintWriter logger)
             throws Exception {
@@ -181,13 +181,13 @@ public class SoapParser {
      * A method to validate the SOAP message received. The message is validated
      * against the propoer SOAP Schema (1.1 or 1.2 depending on the namespace of
      * the incoming message)
+     * author Simone Gianfranceschi
      * 
      * @param soapMessage
      *            the SOAP message to validate.
      * @param eh
      *            the error handler.
      * 
-     * @author Simone Gianfranceschi
      */
     private void validateSoapMessage(Document soapMessage, ErrorHandler eh)
             throws Exception {
@@ -219,10 +219,11 @@ public class SoapParser {
     /**
      * A method to check if the message received is a SOAP fault.
      * 
+     * author Simone Gianfranceschi
+     * 
      * @param soapMessage
      *            the SOAP message to check.
      * 
-     * @author Simone Gianfranceschi
      */
     private boolean isSoapFault(Document soapMessage) throws Exception {
         Element faultElement = DomUtils.getElementByTagNameNS(soapMessage,
@@ -243,6 +244,7 @@ public class SoapParser {
     /**
      * A method to parse a SOAP fault. It checks the namespace and invoke the
      * correct SOAP 1.1 or 1.2 Fault parser.
+     * author Simone Gianfranceschi
      * 
      * @param soapMessage
      *            the SOAP fault message to parse
@@ -252,7 +254,6 @@ public class SoapParser {
      * 
      * @return the parsed document otherwise
      * 
-     * @author Simone Gianfranceschi
      */
     private Document parseSoapFault(Document soapMessage, PrintWriter logger)
             throws Exception {
@@ -268,6 +269,7 @@ public class SoapParser {
 
     /**
      * A method to parse a SOAP 1.1 fault message.
+     * author Simone Gianfranceschi
      * 
      * @param soapMessage
      *            the SOAP 1.1 fault message to parse
@@ -277,7 +279,6 @@ public class SoapParser {
      * 
      * @return void
      * 
-     * @author Simone Gianfranceschi
      */
     private void parseSoap11Fault(Document soapMessage, PrintWriter logger)
             throws Exception {
@@ -304,7 +305,8 @@ public class SoapParser {
 
     /**
      * A method to parse a SOAP 1.2 fault message.
-     * 
+     * author Simone Gianfranceschi
+     *
      * @param soapMessage
      *            the SOAP 1.2 fault message to parse
      * 
@@ -313,7 +315,6 @@ public class SoapParser {
      * 
      * @return void
      * 
-     * @author Simone Gianfranceschi
      */
     private void parseSoap12Fault(Document soapMessage, PrintWriter logger)
             throws Exception {

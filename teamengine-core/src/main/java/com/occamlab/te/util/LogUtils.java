@@ -531,11 +531,11 @@ public class LogUtils {
      * Generate a file in logDir refererring all logfiles. Create a file called
      * "report_logs.xml" in the log folder that includes all logs listed inside
      * the directory.
+     * author F.Vitale vitale@imaa.cnr.it
      * 
      * @param sessionLogDir
      *            considered log directory
      * @throws Exception
-     * @author F.Vitale vitale@imaa.cnr.it
      */
     public static void createFullReportLog(String sessionLogDir)
             throws Exception {

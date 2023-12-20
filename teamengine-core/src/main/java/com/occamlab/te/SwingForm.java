@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
 import com.occamlab.te.util.DomUtils;
 
 /**
- * Swing-based form created from the content of a <ctl:form> element. This is
+ * Swing-based form created from the content of a &lt;ctl:form&gt; element. This is
  * produced when not running the test harness in a web application context.
  */
 public class SwingForm extends JFrame implements HyperlinkListener {
