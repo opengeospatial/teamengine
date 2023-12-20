@@ -136,37 +136,6 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
-      <xsl:when test="$testName-Version = 'specVersion'">
-        <xsl:variable name="testTitle">
-          <xsl:choose>
-            <xsl:when test="contains($testTitle, 'SNAPSHOT')">
-              <xsl:call-template name="substring-before-after">
-                <xsl:with-param name="getString" select="'before'"/>
-                <xsl:with-param name="string" select="$testTitle"/>
-                <xsl:with-param name="delimiter" select="$delimiters"/>
-              </xsl:call-template>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="$testTitle"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:variable>
-        <xsl:variable name="testName">
-          <xsl:call-template name="substring-before-after">
-            <xsl:with-param name="getString" select="'before'"/>
-            <xsl:with-param name="string" select="$testTitle"/>
-            <xsl:with-param name="delimiter" select="$delimiters"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:variable name="specVersion">
-          <xsl:call-template name="substring-before-after">
-            <xsl:with-param name="getString" select="'after'"/>
-            <xsl:with-param name="string" select="$testName"/>
-            <xsl:with-param name="delimiter" select="$delimiters"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:value-of select="$specVersion"/>
-      </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="'NULL'"/>
       </xsl:otherwise>
@@ -934,11 +903,11 @@
                       <xsl:if test=" $testSuiteType = 'testng'">
                         <xsl:variable name="testName"
                                       select="testng:testSuiteName(//rdf:RDF/cite:TestRun/dct:title, 'title')"/>
-                        <xsl:variable name="specVersion"
-                                      select="testng:testSuiteName(//rdf:RDF/cite:TestRun/dct:title, 'specVersion')"/>
+                        <xsl:variable name="webDirPath"
+                                      select="//rdf:RDF/cite:TestRun/cite:webDirPath"/>
                         <xsl:call-template name="link-javadoc">
                           <xsl:with-param name="ets-code" select="$testName"/>
-                          <xsl:with-param name="spec-version" select="$specVersion"/>
+                          <xsl:with-param name="webDirPath" select="$webDirPath"/>
                           <xsl:with-param name="testClassPath" select="$test_uris"/>
                         </xsl:call-template>
                         <hr/>
@@ -1108,9 +1077,9 @@
 
   <xsl:template name="link-javadoc">
     <xsl:param name="ets-code"/>
-    <xsl:param name="spec-version"/>
+    <xsl:param name="webDirPath"/>
     <xsl:param name="testClassPath"/>
-    <xsl:variable name="apidocs" select="concat('../../../../about/',$ets-code,'/',$spec-version,'/site/apidocs/')"/>
+    <xsl:variable name="apidocs" select="concat('../../../../about/',$webDirPath,'/apidocs/')"/>
     <xsl:variable name="url"
                   select="concat($apidocs, substring-before($testClassPath, '#'),'.html#', substring-after($testClassPath, '#'))"/>
     <xsl:text>|</xsl:text>
