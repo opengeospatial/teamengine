@@ -32,8 +32,10 @@ public class VerifyBasicXMLReporter {
     public void createCustomXMLReporter() {
         BasicXMLReporter iut = new BasicXMLReporter();
         XMLReporter result = iut.createCustomXMLReporter();
-        Assert.assertEquals("Unexpected stackTraceOutputMethod", XMLReporterConfig.STACKTRACE_NONE,
-                result.getStackTraceOutputMethod());
-        Assert.assertNull("Expected null outputDirectory", result.getOutputDirectory());
+        Assert.assertEquals("Unexpected configuration of stackTraceOutput", XMLReporterConfig.StackTraceLevels.NONE,
+                result.getConfig().getStackTraceOutput());
+        Assert.assertTrue("Unexpected configuration of generateTestResultAttributes", result.getConfig().isGenerateTestResultAttributes());
+        Assert.assertTrue("Unexpected configuration of generateGroupsAttribute", result.getConfig().isGenerateGroupsAttribute());
+        Assert.assertNull("Expected null outputDirectory", result.getConfig().getOutputDirectory());
     }
 }

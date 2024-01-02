@@ -227,7 +227,7 @@
       <dependency>
         <groupId>org.testng</groupId>
         <artifactId>testng</artifactId>
-        <version>6.9.10</version>
+        <version>7.9.0</version>
       </dependency>
       <dependency>
         <groupId>jakarta.ws.rs</groupId>
