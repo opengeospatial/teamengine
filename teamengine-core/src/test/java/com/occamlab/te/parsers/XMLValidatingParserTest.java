@@ -45,7 +45,7 @@ public class XMLValidatingParserTest {
 		final UrlSchemaSupplier expectedSupplier = new UrlSchemaSupplier(expectedResource);
 		XMLValidatingParser iut = new XMLValidatingParser(schemaRefs);
 		assertNotNull(iut);
-		assertEquals(Arrays.asList(expectedSupplier), iut.schemaList);
+		assertEquals(List.of(expectedSupplier), iut.schemaList);
 	}
 
 	@Test

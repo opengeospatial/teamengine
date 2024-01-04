@@ -10,7 +10,6 @@ package com.occamlab.te.spi.jaxrs.resources;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -330,7 +329,7 @@ public class TestRunResource {
             LOGR.fine( msg.toString() );
         }
         Map<String, List<String>> args = new HashMap<>();
-        args.put( "iut", Arrays.asList( entityBody.toURI().toString() ) );
+        args.put( "iut", Collections.singletonList(entityBody.toURI().toString()));
         return executeTestRun( etsCode, args, preferredMediaType );
     }
 
@@ -347,7 +346,7 @@ public class TestRunResource {
             msg.append( FILE_LOCATION + entityBody.getAbsolutePath() );
             LOGR.fine( msg.toString() );
         }
-        args.put( "iut", Arrays.asList( entityBody.toURI().toString() ) );
+        args.put( "iut", Collections.singletonList(entityBody.toURI().toString()));
         if ( null != schBody ) {
             if ( !schBody.exists() || schBody.length() == 0 ) {
                 throw new WebApplicationException( 400 );
@@ -359,7 +358,7 @@ public class TestRunResource {
                 msg.append( FILE_LOCATION + schBody.getAbsolutePath() );
                 LOGR.fine( msg.toString() );
             }
-            args.put( "sch", Arrays.asList( schBody.toURI().toString() ) );
+            args.put( "sch", Collections.singletonList(schBody.toURI().toString()));
         }
         return executeTestRun( etsCode, args, preferredMediaType );
     }
@@ -384,11 +383,11 @@ public class TestRunResource {
         if (null != logDir) {
             String sessionId = LogUtils.generateSessionId(new File(logDir));
             
-            testRunArgs.put("logDir", Arrays.asList(logDir));
-            testRunArgs.put("sessionId", Arrays.asList(sessionId));
+            testRunArgs.put("logDir", List.of(logDir));
+            testRunArgs.put("sessionId", Collections.singletonList(sessionId));
         }
         
-        testRunArgs.put( "acceptMediaType", Arrays.asList( preferredMediaType ) );
+        testRunArgs.put( "acceptMediaType", Collections.singletonList(preferredMediaType));
         if ( LOGR.isLoggable( Level.FINE ) ) {
             StringBuilder msg = new StringBuilder( "Test run arguments - " );
             msg.append( etsCode ).append( "/" );
@@ -400,7 +399,7 @@ public class TestRunResource {
         }
         TestSuiteController controller = findController( etsCode );
         
-        testRunArgs.put("sourcesId", Arrays.asList(TestRunUtils.getSourcesId(controller)));
+        testRunArgs.put("sourcesId", List.of(TestRunUtils.getSourcesId(controller)));
         Document xmlArgs = readTestRunArguments( testRunArgs );
         Source testResults = null;
         try {
