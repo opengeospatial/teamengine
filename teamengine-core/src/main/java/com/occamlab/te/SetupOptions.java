@@ -54,7 +54,7 @@ public class SetupOptions {
   boolean preload = false;
   File workDir = null;
   String sourcesName = "default";
-  ArrayList<File> sources = new ArrayList<File>();
+  ArrayList<File> sources = new ArrayList<>();
   private static Logger jLogger = Logger.getLogger("com.occamlab.te.SetupOptions");
 
   /**

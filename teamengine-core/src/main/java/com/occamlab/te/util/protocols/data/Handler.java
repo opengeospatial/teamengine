@@ -145,7 +145,7 @@ public class Handler extends URLStreamHandler {
     }
 
     private static String[] cleanup(String[] ss) {
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         for (String s : ss) {
             if (s.length() > 0) {
                 list.add(s);

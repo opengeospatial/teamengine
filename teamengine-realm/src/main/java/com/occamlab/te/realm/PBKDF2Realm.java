@@ -74,7 +74,7 @@ public class PBKDF2Realm extends RealmBase {
 
     private static final Logger LOGR = Logger.getLogger(PBKDF2Realm.class.getName());
     private DocumentBuilder DB = null;
-    private final HashMap<String, Principal> principals = new HashMap<String, Principal>();
+    private final HashMap<String, Principal> principals = new HashMap<>();
 
     private String password;
 
@@ -146,7 +146,7 @@ public class PBKDF2Realm extends RealmBase {
     }
 
     private GenericPrincipal readPrincipal(String username) {
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         File usersdir = new File(System.getProperty("TE_BASE"), "users");
         File userfile = new File(new File(usersdir, username), "user.xml");
         if (!userfile.canRead()) {

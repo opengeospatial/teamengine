@@ -253,7 +253,7 @@ public class ConfigFileCreator {
 	 */
 	private List<File> getConfigFiles(File dir) {
 		String[] extensions = { "xml" };
-		List<File> configFiles = new ArrayList<File>();
+		List<File> configFiles = new ArrayList<>();
 
 		Collection<File> files = FileUtils.listFiles(dir, extensions, true);
 		for (Iterator<File> iterator = files.iterator(); iterator.hasNext();) {

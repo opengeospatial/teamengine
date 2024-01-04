@@ -45,7 +45,7 @@ public class ConfigFileBuilder {
             resourcesDir = scriptsDir;
         }
 
-        SortedSet<ConfigEntry> configs = new TreeSet<ConfigEntry>(
+        SortedSet<ConfigEntry> configs = new TreeSet<>(
                 new ConfigComparator());
 
         File[] scriptDirs = new File(".").listFiles();
@@ -125,10 +125,10 @@ public class ConfigFileBuilder {
                             && config.organization.equals(organization)
                             && config.standard.equals(standard)
                             && config.version.equals(version)) {
-                        List<QName> profiles = new ArrayList<QName>();
-                        List<String> profileTitles = new ArrayList<String>();
-                        List<String> profileDescriptions = new ArrayList<String>();
-                        List<File> sources = new ArrayList<File>();
+                        List<QName> profiles = new ArrayList<>();
+                        List<String> profileTitles = new ArrayList<>();
+                        List<String> profileDescriptions = new ArrayList<>();
+                        List<File> sources = new ArrayList<>();
                         while (config != null && config.suite == null) {
                             profiles.addAll(config.profiles);
                             profileTitles.addAll(config.profileTitles);

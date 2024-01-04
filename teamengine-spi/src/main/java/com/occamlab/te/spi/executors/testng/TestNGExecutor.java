@@ -266,7 +266,7 @@ public class TestNGExecutor implements TestRunExecutor {
             driver.setTestJar(jarFile.getAbsolutePath());
             driver.setXmlPathInJar(jarPath[1].substring(1));
         } else {
-            List<String> testSuites = new ArrayList<String>();
+            List<String> testSuites = new ArrayList<>();
             File tngFile = new File(ets);
             if (tngFile.exists()) {
                 LOGR.log(Level.CONFIG, "Using TestNG config file {0}", tngFile.getAbsolutePath());
@@ -301,7 +301,7 @@ public class TestNGExecutor implements TestRunExecutor {
      *
      */
     Map<String, String> extractTestRunArguments(Document testRunArgs) {
-        Map<String, String> argsMap = new HashMap<String, String>();
+        Map<String, String> argsMap = new HashMap<>();
         if (null != testRunArgs) {
             NodeList entries = testRunArgs.getElementsByTagName("entry");
             for (int i = 0; i < entries.getLength(); i++) {

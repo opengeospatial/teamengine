@@ -85,7 +85,7 @@ public class TestSuiteRegistry {
     }
 
     private TestSuiteRegistry() {
-        this.controllers = new HashSet<TestSuiteController>();
+        this.controllers = new HashSet<>();
         loadControllers();
     }
 

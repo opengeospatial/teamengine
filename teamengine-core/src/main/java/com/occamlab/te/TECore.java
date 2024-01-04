@@ -163,11 +163,11 @@ public class TECore implements Runnable {
   volatile String formHtml; // HTML representation for an active form
   volatile Document formResults; // Holds form results until they are
   // retrieved
-  Map<String, Element> formParsers = new HashMap<String, Element>();
-  Map<Integer, Object> functionInstances = new HashMap<Integer, Object>();
-  Map<String, Object> parserInstances = new HashMap<String, Object>();
-  Map<String, Method> parserMethods = new HashMap<String, Method>();
-  LinkedList<TestEntry> testStack = new LinkedList<TestEntry>();
+  Map<String, Element> formParsers = new HashMap<>();
+  Map<Integer, Object> functionInstances = new HashMap<>();
+  Map<String, Object> parserInstances = new HashMap<>();
+  Map<String, Method> parserMethods = new HashMap<>();
+  LinkedList<TestEntry> testStack = new LinkedList<>();
   volatile boolean threadComplete = false;
   volatile boolean stop = false;
   volatile ByteArrayOutputStream threadOutput;
@@ -216,7 +216,7 @@ public class TECore implements Runnable {
   public static int rootNo = 0;
   public static String Clause = "";
   public static String Purpose = "";
-  public static ArrayList<String> rootTestName = new ArrayList<String>();
+  public static ArrayList<String> rootTestName = new ArrayList<>();
   public Document userInputs = null;
   public Boolean supportHtmlReport = false;
   
@@ -235,7 +235,7 @@ public class TECore implements Runnable {
     this.testPath = opts.getSessionId();
     this.out = System.out;
     this.imageHandler = new ImageHandler(opts.getLogDir(), opts.getSessionId());
-    this.fnCallStack = new Stack<String>();
+    this.fnCallStack = new Stack<>();
   }
 
   public TestEntry getParentTest() {
@@ -341,7 +341,7 @@ public class TECore implements Runnable {
         File resultsDir = new File(opts.getLogDir(),
 				opts.getSessionId());
         if(supportHtmlReport){
-        Map<String, String> testInputMap = new HashMap<String, String>();
+        Map<String, String> testInputMap = new HashMap<>();
         testInputMap = extractTestInputs(userInputs, opts);
         
          if (! new File(resultsDir, "testng").exists() && null != testInputMap)
@@ -464,7 +464,7 @@ public class TECore implements Runnable {
     testStack.peek().setDefaultResult(defaultResult);
     testStack.peek().setResult(defaultResult);
 
-    ArrayList<String> kvps = new ArrayList<String>();
+    ArrayList<String> kvps = new ArrayList<>();
     kvps.addAll(params);
     Document form = suite.getForm();
     if (form != null) {
@@ -529,7 +529,7 @@ public class TECore implements Runnable {
             engine.getBuilder(), log);
     TestEntry test = index.getTest(testId);
     if (suite.getStartingTest().equals(test.getQName())) {
-      ArrayList<String> kvps = new ArrayList<String>();
+      ArrayList<String> kvps = new ArrayList<>();
       kvps.addAll(baseParams);
       kvps.addAll(params);
       Document form = profile.getForm();
@@ -1788,8 +1788,8 @@ public class TECore implements Runnable {
    */
   public URLConnection build_request(Node xml) throws Exception {
     Node body = null;
-    ArrayList<String[]> headers = new ArrayList<String[]>();
-    ArrayList<Node> parts = new ArrayList<Node>();
+    ArrayList<String[]> headers = new ArrayList<>();
+    ArrayList<Node> parts = new ArrayList<>();
     String sUrl = null;
     String sParams = "";
     String method = "GET";
@@ -2611,7 +2611,7 @@ public class TECore implements Runnable {
 	 */
 	private Map<String, String> extractTestInputs(Document userInput,
 			RuntimeOptions runOpts) {
-		Map<String, String> inputMap = new HashMap<String, String>();
+		Map<String, String> inputMap = new HashMap<>();
 		if (null != userInputs) {
 			NodeList values = userInputs.getDocumentElement()
 					.getElementsByTagName("value");

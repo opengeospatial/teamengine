@@ -197,7 +197,7 @@ public class Utils {
         private Map<String, String> map;
 
         public MyNamespaceContext() {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
         }
 
         public void setNamespace(String prefix, String namespaceURI) {
@@ -220,7 +220,7 @@ public class Utils {
         }
 
         public Iterator getPrefixes(String namespaceURI) {
-            List<String> prefixes = new ArrayList<String>();
+            List<String> prefixes = new ArrayList<>();
             Set keys = map.keySet();
             for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
                 String prefix = (String) iterator.next();

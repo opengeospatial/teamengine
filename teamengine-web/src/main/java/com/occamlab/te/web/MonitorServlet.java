@@ -76,7 +76,7 @@ public class MonitorServlet extends HttpServlet {
     static String servletName;
     static int monitorCallSeq = 0;
     static int monitorUrlSeq = 0;
-    static Map<String, MonitorCall> monitors = new HashMap<String, MonitorCall>();
+    static Map<String, MonitorCall> monitors = new HashMap<>();
 
     static public String allocateMonitorUrl(String url) {
         String monitorUrl = baseServletURL + "/" + servletName + "/"
@@ -146,7 +146,7 @@ public class MonitorServlet extends HttpServlet {
     }
 
     public static String destroyMonitors(TECore core) {
-        ArrayList<String> keysToDelete = new ArrayList<String>();
+        ArrayList<String> keysToDelete = new ArrayList<>();
         for (Entry<String, MonitorCall> entry : monitors.entrySet()) {
             MonitorCall mc = entry.getValue();
             if (mc.getCore() == core) {

@@ -44,7 +44,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
     private static String popupName = Thread.currentThread().getName();
 
     private JEditorPane jedit;
-    private ArrayList<String> fileFields = new ArrayList<String>();
+    private ArrayList<String> fileFields = new ArrayList<>();
 
     private static class Invoker implements Runnable {
         String name;

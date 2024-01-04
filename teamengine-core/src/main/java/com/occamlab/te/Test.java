@@ -333,7 +333,7 @@ public class Test {
         } else {
         	masterIndex = new Index();
         }
-        List<File> resourcesDirs = new ArrayList<File>();
+        List<File> resourcesDirs = new ArrayList<>();
         for (File sourceFile : setupOpts.getSources()) {
         	File resourcesDir = findResourcesDirectory(sourceFile);
         	if (!resourcesDirs.contains(resourcesDir)) {

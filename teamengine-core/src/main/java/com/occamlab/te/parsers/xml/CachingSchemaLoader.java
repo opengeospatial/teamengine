@@ -21,12 +21,12 @@ public class CachingSchemaLoader implements SchemaLoader {
 	private final SchemaLoader wrappedLoader;
 
 	private final LoadingCache<ImmutableList<SchemaSupplier>, Schema> cache =
-			CacheBuilder.newBuilder().build(new CacheLoader<ImmutableList<SchemaSupplier>, Schema>() {
-				@Override
-				public Schema load(ImmutableList<SchemaSupplier> suppliers) throws SAXException {
-					return wrappedLoader.loadSchema(suppliers);
-				}
-			});
+			CacheBuilder.newBuilder().build(new CacheLoader<>() {
+                @Override
+                public Schema load(ImmutableList<SchemaSupplier> suppliers) throws SAXException {
+                    return wrappedLoader.loadSchema(suppliers);
+                }
+            });
 
 	/**
 	 * Constructs an instance.

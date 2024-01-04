@@ -103,16 +103,16 @@ public class Config {
             } catch (Exception e) {
                 LOGR.log(Level.WARNING, "Could not get directory for scripts. TE_BASE not set.");
             }
-            organizationList = new ArrayList<String>();
-            standardMap = new HashMap<String, List<String>>();
-            versionMap = new HashMap<String, List<String>>();
-            revisionMap = new HashMap<String, List<String>>();
-            conformanceClassMap = new HashMap<String, List<String>>();
-            suites = new HashMap<String, SuiteEntry>();
-            profiles = new HashMap<String, List<ProfileEntry>>();
-            sources = new HashMap<String, List<File>>();
-            webdirs = new HashMap<String, String>();
-            resources = new HashMap<String, File>();
+            organizationList = new ArrayList<>();
+            standardMap = new HashMap<>();
+            versionMap = new HashMap<>();
+            revisionMap = new HashMap<>();
+            conformanceClassMap = new HashMap<>();
+            suites = new HashMap<>();
+            profiles = new HashMap<>();
+            sources = new HashMap<>();
+            webdirs = new HashMap<>();
+            resources = new HashMap<>();
             
             for (int i = 0; i < organizationNodes.getLength(); i++) {
                 Node organizationEl = organizationNodes.item(i);                
@@ -120,7 +120,7 @@ public class Config {
                         organizationEl, "name").getTextContent();
                 organizationList.add(organization);
 
-                ArrayList<String> standardList = new ArrayList<String>();
+                ArrayList<String> standardList = new ArrayList<>();
                 for (Element standardEl : DomUtils.getElementsByTagName(
                         organizationEl, "standard")) {
                     String standard = DomUtils.getElementByTagName(standardEl,
@@ -128,7 +128,7 @@ public class Config {
                     standardList.add(standard);
                     standardMap.put(organization, standardList);
 
-                    ArrayList<String> versionList = new ArrayList<String>();
+                    ArrayList<String> versionList = new ArrayList<>();
                     for (Element versionEl : DomUtils.getElementsByTagName(
                             standardEl, "version")) {
                         String version = DomUtils.getElementByTagName(
@@ -167,7 +167,7 @@ public class Config {
                             }
                         }
 
-                        ArrayList<String> revisionList = new ArrayList<String>();
+                        ArrayList<String> revisionList = new ArrayList<>();
                         for (Element el : DomUtils.getChildElements(versionEl)) {
                             if (el.getNodeName().equals("revision")) {
                                 String revision = DomUtils.getElementByTagName(
@@ -179,7 +179,7 @@ public class Config {
                                 String key = revKey + "_" + revision;
                                 suites.put(key, suite);
 
-                                ArrayList<File> list = new ArrayList<File>();
+                                ArrayList<File> list = new ArrayList<>();
                                 for (Element sourceEl : DomUtils
                                         .getElementsByTagName(el, "source")) {
                                     if (getScriptsDir() == null) {
@@ -217,7 +217,7 @@ public class Config {
                                     webdirs.put(key, webdirEl.getTextContent());
                                 }
 
-                                ArrayList<ProfileEntry> profileList = new ArrayList<ProfileEntry>();
+                                ArrayList<ProfileEntry> profileList = new ArrayList<>();
                                 for (Element profileEl : DomUtils
                                         .getElementsByTagName(el, "profile")) {
                                     ProfileEntry profile = new ProfileEntry();
@@ -243,7 +243,7 @@ public class Config {
                             }
                         }
                         
-                        ArrayList<String> ccList = new ArrayList<String>(); // Conformance class list.
+                        ArrayList<String> ccList = new ArrayList<>(); // Conformance class list.
                         Element conformanceClasses = DomUtils.getElementByTagName(suiteEl, "BasicConformanceClasses");
                         
                         if(null != conformanceClasses){

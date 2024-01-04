@@ -194,7 +194,7 @@ public class ImageParser {
      */
     private static void processBufferedImage(BufferedImage buffimage,
             String formatName, NodeList nodes) throws Exception {
-        HashMap<Object, Object> bandMap = new HashMap<Object, Object>();
+        HashMap<Object, Object> bandMap = new HashMap<>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
@@ -235,7 +235,7 @@ public class ImageParser {
                         HashMap<Object, Object> sampleMap = (HashMap<Object, Object>) bandMap
                                 .get(band);
                         if (sampleMap == null && !bandMap.containsKey(band)) {
-                            sampleMap = new HashMap<Object, Object>();
+                            sampleMap = new HashMap<>();
                             bandMap.put(band, sampleMap);
                         }
                         sampleMap.put(Integer.decode(sample), valueOf(0));
@@ -534,7 +534,7 @@ public class ImageParser {
      */
     public static String getSupportedImageTypes() {
         String[] readers = ImageIO.getReaderFormatNames();
-        ArrayList<String> imageArray = new ArrayList<String>();
+        ArrayList<String> imageArray = new ArrayList<>();
         String str = "";
         for (int i = 0; i < readers.length; i++) {
             String current = readers[i].toLowerCase();

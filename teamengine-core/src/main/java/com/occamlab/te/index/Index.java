@@ -37,14 +37,14 @@ import com.occamlab.te.util.DomUtils;
 
 public class Index {
     File indexFile = null;
-    List<File> dependencies = new ArrayList<File>();
-    Map<String, List<FunctionEntry>> functionsMap = new HashMap<String, List<FunctionEntry>>();
-    Map<String, ParserEntry> parserMap = new HashMap<String, ParserEntry>();
-    Map<String, SuiteEntry> suiteMap = new HashMap<String, SuiteEntry>();
-    Map<String, ProfileEntry> profileMap = new HashMap<String, ProfileEntry>();
-    Map<String, TestEntry> testMap = new HashMap<String, TestEntry>();
+    List<File> dependencies = new ArrayList<>();
+    Map<String, List<FunctionEntry>> functionsMap = new HashMap<>();
+    Map<String, ParserEntry> parserMap = new HashMap<>();
+    Map<String, SuiteEntry> suiteMap = new HashMap<>();
+    Map<String, ProfileEntry> profileMap = new HashMap<>();
+    Map<String, TestEntry> testMap = new HashMap<>();
 
-    List<Element> elements = new ArrayList<Element>();
+    List<Element> elements = new ArrayList<>();
 
     public Index() {
     }
@@ -86,7 +86,7 @@ public class Index {
                     List<FunctionEntry> functions = functionsMap
                             .get(fe.getId());
                     if (functions == null) {
-                        functions = new ArrayList<FunctionEntry>();
+                        functions = new ArrayList<>();
                         functions.add(fe);
                         functionsMap.put(fe.getId(), functions);
                     } else {
@@ -254,7 +254,7 @@ public class Index {
         if( elements != null )
             this.elements = elements;
         else
-            this.elements = new ArrayList<Element>();
+            this.elements = new ArrayList<>();
     }
 
     public List<File> getDependencies() {

@@ -160,7 +160,7 @@ public class ViewLog {
   }
 
   public static boolean checkCache(File logdir, String session) throws Exception {
-    view_log(null, logdir, session, new ArrayList<String>(), null, new NullWriter(), 1);
+    view_log(null, logdir, session, new ArrayList<>(), null, new NullWriter(), 1);
     return hasCache;
   }
 
@@ -168,7 +168,7 @@ public class ViewLog {
     String testName = null;
     File logDir = (new RuntimeOptions()).getLogDir();
     String session = null;
-    ArrayList<String> tests = new ArrayList<String>();
+    ArrayList<String> tests = new ArrayList<>();
     String cmd = "java com.occamlab.te.ViewLog";
     String style = null;
     boolean listSessions = false;
@@ -230,7 +230,7 @@ public class ViewLog {
 		RuntimeOptions opts = new RuntimeOptions();
 		opts.setLogDir(logDir);
 		opts.setSessionId(session);
-		Map<String, String> testInputMap = new HashMap<String, String>();
+		Map<String, String> testInputMap = new HashMap<>();
 		CtlEarlReporter reporter = new CtlEarlReporter();
 		reporter.generateEarlReport(sessionDir, testLog, opts.getSourcesName(),	testInputMap);
 		EarlToHtmlTransformation earlToHtml = new EarlToHtmlTransformation();

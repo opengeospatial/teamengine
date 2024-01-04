@@ -64,7 +64,7 @@ public class XMLValidatingParser {
 	static DocumentBuilderFactory schemaValidatingDBF = null;
 	static DocumentBuilderFactory dtdValidatingDBF = null;
 	ArrayList<SchemaSupplier> schemaList = new ArrayList<>();
-	ArrayList<Object> dtdList = new ArrayList<Object>();
+	ArrayList<Object> dtdList = new ArrayList<>();
 
 	/*
 	 * For now we create a new cache per instance of XMLValidatingParser, which
@@ -383,7 +383,7 @@ public class XMLValidatingParser {
 			final Document doc, final Node instruction, final ErrorHandler errHandler)
 			throws Exception {
 		ArrayList<SchemaSupplier> schemas = new ArrayList<>();
-		ArrayList<Object> dtds = new ArrayList<Object>();
+		ArrayList<Object> dtds = new ArrayList<>();
 		schemas.addAll(schemaList);
 		dtds.addAll(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);

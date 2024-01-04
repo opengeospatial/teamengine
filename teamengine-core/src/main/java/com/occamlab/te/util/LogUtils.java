@@ -238,7 +238,7 @@ public class LogUtils {
     public static List<String> getParamListFromLog(
             net.sf.saxon.s9api.DocumentBuilder builder, Document log)
             throws Exception {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Element starttest = (Element) log.getElementsByTagName("starttest")
                 .item(0);
         for (Element param : DomUtils.getElementsByTagName(starttest, "param")) {
@@ -417,7 +417,7 @@ public class LogUtils {
             t.transform(new DOMSource(doc), new StreamResult(testListFile));
         }
         if (excludes.size() > 0) {
-            removeExcludes(doc.getDocumentElement(), new ArrayList<QName>(),
+            removeExcludes(doc.getDocumentElement(), new ArrayList<>(),
                     excludes);
             updateTestListElement(db, doc.getDocumentElement(), logdir, 0);
         }
@@ -432,7 +432,7 @@ public class LogUtils {
 
     public static Document makeTestList(File logdir, String path)
             throws Exception {
-        List<List<QName>> excludes = new ArrayList<List<QName>>();
+        List<List<QName>> excludes = new ArrayList<>();
         return makeTestList(logdir, path, excludes);
     }
 
@@ -489,7 +489,7 @@ public class LogUtils {
 
     private static void removeExcludes(Element test, List<QName> pathQName,
             List<List<QName>> excludes) throws Exception {
-        List<QName> testQName = new ArrayList<QName>();
+        List<QName> testQName = new ArrayList<>();
         testQName.addAll(pathQName);
         String namespaceURI = test.getAttribute("namespace-uri");
         String localPart = test.getAttribute("local-name");
@@ -619,7 +619,7 @@ public class LogUtils {
      */
     static private List<File> getFileListingLogs(File aStartingDir)
             throws Exception {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         File[] logfiles = aStartingDir.listFiles(new FileFilter() {
 
             @Override
@@ -640,7 +640,7 @@ public class LogUtils {
             }
         }
         List<File> allDirsList = Arrays.asList(allDirs);
-        Collections.sort(allDirsList, new Comparator<File>() {
+        Collections.sort(allDirsList, new Comparator<>() {
             public int compare(File o1, File o2) {
 
                 if (o1.lastModified() > o2.lastModified()) {

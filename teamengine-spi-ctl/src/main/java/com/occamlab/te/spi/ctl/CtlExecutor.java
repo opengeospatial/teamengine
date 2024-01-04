@@ -52,7 +52,7 @@ import org.xml.sax.SAXException;
 public class CtlExecutor implements TestRunExecutor {
 
     private final SetupOptions setupOpts;
-    private Map<String, String> testInputs = new HashMap<String, String>();
+    private Map<String, String> testInputs = new HashMap<>();
 
     /**
      * Constructs a new CtlExecutor using the given set of configuration

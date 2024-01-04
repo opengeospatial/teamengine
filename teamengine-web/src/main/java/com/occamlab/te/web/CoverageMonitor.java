@@ -112,7 +112,7 @@ public class CoverageMonitor {
     }
 
     private static Map<URI, String> createICSMap() {
-        HashMap<URI, String> icsMap = new HashMap<URI, String>();
+        HashMap<URI, String> icsMap = new HashMap<>();
         icsMap.put(URI.create("urn:wms_client_test_suite/GetCapabilities"),
                 "WMS-GetCapabilities.xml");
         icsMap.put(URI.create("urn:wms_client_test_suite/GetMap"),
@@ -157,7 +157,7 @@ public class CoverageMonitor {
      *            The (decoded) query component of a GET request.
      */
     void inspectQuery(String query) {
-        Map<String, String> qryParams = new HashMap<String, String>();
+        Map<String, String> qryParams = new HashMap<>();
         for (String param : query.split("&")) {
             String[] nvp = param.split("=");
             if(nvp.length > 1){

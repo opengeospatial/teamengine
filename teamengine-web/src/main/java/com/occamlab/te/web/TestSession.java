@@ -59,7 +59,7 @@ public class TestSession implements  Comparable<TestSession> {
      */
     public TestSession() throws Exception {
         suiteName = null;
-        profiles = new ArrayList<String>();
+        profiles = new ArrayList<>();
     }
 
     public void save(File logdir) throws Exception {

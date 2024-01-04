@@ -147,9 +147,9 @@ public class TestServlet extends HttpServlet {
             identityTransformer = tf.newTransformer();
             // identityTransformer = TransformerFactory.newInstance().newTransformer();
 
-            indexes = new HashMap<String, Index>();
+            indexes = new HashMap<>();
 
-            HashMap<String, TEClassLoader> classLoaders = new HashMap<String, TEClassLoader>();
+            HashMap<String, TEClassLoader> classLoaders = new HashMap<>();
 
             Processor processor = new Processor(false);
             processor.setConfigurationProperty(FeatureKeys.XINCLUDE,
@@ -247,7 +247,7 @@ public class TestServlet extends HttpServlet {
             FileItemFactory ffactory;
             JakartaServletFileUpload upload;
             List<FileItem> items = null;
-            HashMap<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<>();
             boolean multipart = JakartaServletFileUpload.isMultipartContent(request);
             if (multipart) {
                 ffactory = new DiskFileItemFactory.Builder().get();
@@ -294,7 +294,7 @@ public class TestServlet extends HttpServlet {
                     } else {
                         opts.addTestPath(test);
                     }
-                    for (String key : new java.util.TreeSet<String>(
+                    for (String key : new java.util.TreeSet<>(
                             params.keySet())) {
                         if (key.startsWith("profile_")) {
                             String profileId = params.get(key);
@@ -317,8 +317,8 @@ public class TestServlet extends HttpServlet {
                     opts.setSessionId(sessionid);
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
-                    ArrayList<String> profiles = new ArrayList<String>();
-                    for (String key : new java.util.TreeSet<String>(
+                    ArrayList<String> profiles = new ArrayList<>();
+                    for (String key : new java.util.TreeSet<>(
                             params.keySet())) {
                         if (key.startsWith("profile_")) {
                             String profileId = params.get(key);
@@ -340,8 +340,8 @@ public class TestServlet extends HttpServlet {
                     opts.setSessionId(sessionid);
                     opts.setSourcesName(sources);
                     opts.setSuiteName(suite.getId());
-                    ArrayList<String> profiles = new ArrayList<String>();
-                    for (String key : new java.util.TreeSet<String>(
+                    ArrayList<String> profiles = new ArrayList<>();
+                    for (String key : new java.util.TreeSet<>(
                             params.keySet())) {
                         if (key.startsWith("profile_")) {
                             String profileId = params.get(key);

@@ -329,14 +329,14 @@ public class TestRunResource {
             msg.append( FILE_LOCATION + entityBody.getAbsolutePath() );
             LOGR.fine( msg.toString() );
         }
-        Map<String, List<String>> args = new HashMap<String, List<String>>();
+        Map<String, List<String>> args = new HashMap<>();
         args.put( "iut", Arrays.asList( entityBody.toURI().toString() ) );
         return executeTestRun( etsCode, args, preferredMediaType );
     }
 
     private Source handleMultipartFormDataPost( String etsCode, String etsVersion, File entityBody, File schBody,
                                                 String preferredMediaType ) {
-        Map<String, List<String>> args = new HashMap<String, List<String>>();
+        Map<String, List<String>> args = new HashMap<>();
         if ( !entityBody.exists() || entityBody.length() == 0 ) {
             throw new WebApplicationException( 400 );
         }
@@ -487,7 +487,7 @@ public class TestRunResource {
      */
     private MultivaluedMap<String, String> toMutableMultivaluedMap(MultivaluedMap<String, String> multivaluedMap) {
         if(multivaluedMap instanceof ImmutableMultivaluedMap<?, ?>) {
-            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<String, String>();
+            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<>();
             for (String key : multivaluedMap.keySet()) {
                 newMultivaluedMap.put(key, multivaluedMap.get(key));
             }

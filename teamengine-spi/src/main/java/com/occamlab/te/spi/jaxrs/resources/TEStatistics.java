@@ -114,10 +114,10 @@ public class TEStatistics {
         Document doc = TEStatisticsUtil.parse(configFile);
 
         NodeList standardList = doc.getElementsByTagName("standard");
-        List<String> testSuitesName =  new ArrayList<String>();
+        List<String> testSuitesName = new ArrayList<>();
 
         // Tests run per test suite in current year
-        Map<String, Object> allTestSuiteRunDetails = new HashMap<String, Object>();
+        Map<String, Object> allTestSuiteRunDetails = new HashMap<>();
 
         for (Integer i = 0; i < standardList.getLength(); i++) {
             String testName = "";
@@ -149,7 +149,7 @@ public class TEStatistics {
                         TEStatisticsUtil.testSuiteRunPerMonth(testSuiteName, userDetails);
 
                 // Number of test suite status(success, failure, Incomplete) run per month.
-                Map<String, Integer> testStatus = new HashMap<String, Integer>();
+                Map<String, Integer> testStatus = new HashMap<>();
                 testStatus.put("Success", 1);
                 testStatus.put("Failure", 6);
                 testStatus.put("Incomplete", 0);
@@ -191,8 +191,8 @@ public class TEStatistics {
         ArrayList<Long> usersPerMonth = TEStatisticsUtil.usersPerMonthofCurrentYear(userDetails);
 
         // Number of users per test suite in current year.
-        Map<String, Object> numberOfUsersPerTestSuite = new HashMap<String, Object>();
-        Map<String, Object> numberOfUsersAndTestSuite = new HashMap<String, Object>();
+        Map<String, Object> numberOfUsersPerTestSuite = new HashMap<>();
+        Map<String, Object> numberOfUsersAndTestSuite = new HashMap<>();
 
         for (String testSuiteName : testSuitesName) {
             numberOfUsersPerTestSuite = TEStatisticsUtil.numberOfUsersPerTestSuite(testSuiteName, userDetails);
