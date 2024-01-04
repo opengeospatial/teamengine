@@ -26,7 +26,7 @@ public class CtlErrorHandler implements ErrorHandler {
     int WarningCount = 0;
 
     void error(String type, SAXParseException e) {
-        System.err.println(type + " at line " + +e.getLineNumber()
+        System.err.println(type + " at line " + e.getLineNumber()
                 + ", column " + e.getColumnNumber() + " of " + e.getSystemId()
                 + ":");
         System.err.println("  " + e.getMessage());
