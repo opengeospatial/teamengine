@@ -125,10 +125,8 @@ public class XSLTransformationParser {
 
     public Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
-        HashMap<String, String> properties = new HashMap<>();
-        properties.putAll(defaultProperties);
-        HashMap<String, String> params = new HashMap<>();
-        params.putAll(defaultParams);
+        HashMap<String, String> properties = new HashMap<>(defaultProperties);
+        HashMap<String, String> params = new HashMap<>(defaultParams);
         Boolean ignoreErrors = defaultIgnoreErrors;
         Boolean ignoreWarnings = defaultIgnoreWarnings;
         Templates templates = parseInstruction(instruction, properties, params,

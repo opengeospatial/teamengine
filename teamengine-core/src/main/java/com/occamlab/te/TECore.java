@@ -464,8 +464,7 @@ public class TECore implements Runnable {
     testStack.peek().setDefaultResult(defaultResult);
     testStack.peek().setResult(defaultResult);
 
-    ArrayList<String> kvps = new ArrayList<>();
-    kvps.addAll(params);
+      ArrayList<String> kvps = new ArrayList<>(params);
     Document form = suite.getForm();
     if (form != null) {
       Document results = (Document) form(form, suite.getId());

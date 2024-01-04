@@ -382,10 +382,8 @@ public class XMLValidatingParser {
 	private void validate(
 			final Document doc, final Node instruction, final ErrorHandler errHandler)
 			throws Exception {
-		ArrayList<SchemaSupplier> schemas = new ArrayList<>();
-		ArrayList<Object> dtds = new ArrayList<>();
-		schemas.addAll(schemaList);
-		dtds.addAll(dtdList);
+        ArrayList<SchemaSupplier> schemas = new ArrayList<>(schemaList);
+        ArrayList<Object> dtds = new ArrayList<>(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);
 		if (null == doc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(doc, schemas, errHandler);

@@ -489,8 +489,7 @@ public class LogUtils {
 
     private static void removeExcludes(Element test, List<QName> pathQName,
             List<List<QName>> excludes) throws Exception {
-        List<QName> testQName = new ArrayList<>();
-        testQName.addAll(pathQName);
+        List<QName> testQName = new ArrayList<>(pathQName);
         String namespaceURI = test.getAttribute("namespace-uri");
         String localPart = test.getAttribute("local-name");
         String prefix = test.getAttribute("prefix");
