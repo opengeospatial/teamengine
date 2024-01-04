@@ -640,7 +640,7 @@ public class LogUtils {
             }
         }
         List<File> allDirsList = Arrays.asList(allDirs);
-        Collections.sort(allDirsList, new Comparator<>() {
+        allDirsList.sort(new Comparator<>() {
             public int compare(File o1, File o2) {
 
                 if (o1.lastModified() > o2.lastModified()) {
