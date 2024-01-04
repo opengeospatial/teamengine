@@ -9,6 +9,7 @@ package com.occamlab.te.spi.jaxrs.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -378,7 +379,7 @@ public class TestRunResource {
                                    String preferredMediaType ) {
         
         List<String> authCredentials = this.headers.getRequestHeader("Authorization");
-        String logDir = System.getProperty("TE_BASE") + System.getProperty( "file.separator" ) + "users"  + System.getProperty( "file.separator" ) + TestRunUtils.getUserName(authCredentials) + System.getProperty( "file.separator" ) + "rest";
+        String logDir = System.getProperty("TE_BASE") + FileSystems.getDefault().getSeparator() + "users"  + FileSystems.getDefault().getSeparator() + TestRunUtils.getUserName(authCredentials) + FileSystems.getDefault().getSeparator() + "rest";
         
         if (null != logDir) {
             String sessionId = LogUtils.generateSessionId(new File(logDir));

@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.nio.file.FileSystems;
+
 /**
  * This junit test exercises the TEPath class. TEPath addresses security vulnerabilities
  * due to manipulation of the file system path.
@@ -69,7 +71,7 @@ public class TEPathTest {
 
         // Operating System dependent valid and invalid paths
        
-	String separator = System.getProperty("file.separator");
+	String separator = FileSystems.getDefault().getSeparator();
 	if(separator.equals("/")) {
             validpath5 = validpath1.concat("/foo-bar");  // Valid path name 
             invalidpath1 = validpath1.concat("/../etc"); // Navigation up the tree is not allowed

@@ -10,6 +10,7 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -86,7 +87,7 @@ public class SetupOptions {
     }
     if (null == basePath) {
       basePath = System.getProperty("user.home")
-              + System.getProperty("file.separator") + "teamengine";
+              + FileSystems.getDefault().getSeparator() + "teamengine";
     }
     File baseDir = new File(basePath);
     if (!baseDir.isDirectory()) {
