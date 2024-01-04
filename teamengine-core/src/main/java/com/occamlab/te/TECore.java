@@ -907,7 +907,7 @@ public class TECore implements Runnable {
     }
     //Create node which contain all test detail.
     if ("True".equals(System.getProperty("Record"))) {
-      mainRootElement.appendChild(recordTestResult.getMethod());
+      mainRootElement.appendChild(RecordTestResult.getMethod());
     }
     assertionMsz = "";
     pathURL = "";
@@ -2302,8 +2302,7 @@ public class TECore implements Runnable {
         Purpose = messageTrim.replace("Purpose : ", "");;
       }
       if ((rootNo != 0) && (!"".equals(Clause)) && (!"".equals(Purpose))) {
-        RecordTestResult recordTestResult = new RecordTestResult();
-        mainRootElementClause.appendChild(recordTestResult.getClause());
+        mainRootElementClause.appendChild(RecordTestResult.getClause());
         Clause = "";
         Purpose = "";
         rootNo = 0;
