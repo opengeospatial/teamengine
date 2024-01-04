@@ -54,6 +54,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import com.occamlab.te.config.Config;
+import com.occamlab.te.index.SuiteEntry;
 import com.occamlab.te.vocabulary.CITE;
 import com.occamlab.te.vocabulary.CONTENT;
 import com.occamlab.te.vocabulary.EARL;
@@ -186,8 +187,31 @@ public class EarlReporter implements IReporter {
         nsBindings.put("cnt", CONTENT.NS_URI);
         model.setNsPrefixes(nsBindings);
         suiteName = suite.getName();
+        
+        String configSuiteName = "";
+        
+        Map<String, SuiteEntry> configSuites = config.getSuites();
+        
+        for (Entry<String, SuiteEntry> configSuiteEntry : configSuites.entrySet()) {
+            String localPart = configSuiteEntry.getValue().getQName().getLocalPart();
+            if (localPart.contains(suiteName)) {
+                configSuiteName = configSuiteEntry.getKey();
+                break;
+            }
+        }
+
+        String webDirPath = "";
+
+        for (Entry<String, String> webDirEntry : config.getWebDirs().entrySet()) {
+            if (webDirEntry.getKey().equals(configSuiteName)) {
+                webDirPath = webDirEntry.getValue();
+                break;
+            }
+        }
+        
         this.testRun = model.createResource(CITE.TestRun);
         this.testRun.addProperty(DCTerms.title, suite.getName());
+        this.testRun.addProperty(CITE.webDirPath, webDirPath);
         String nowUTC = ZonedDateTime.now(ZoneId.of("Z")).format(DateTimeFormatter.ISO_INSTANT);
         this.testRun.addProperty(DCTerms.created, nowUTC);
         this.assertor = model.createResource("https://github.com/opengeospatial/teamengine",

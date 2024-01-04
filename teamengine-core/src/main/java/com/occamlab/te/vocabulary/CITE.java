@@ -73,4 +73,6 @@ public class CITE {
     public static final Property testSuiteType = model.createProperty(NS_URI + "testSuiteType");
     // Indicate the implementations passing these core conformance classes can be certified or not.
     public static final Property areCoreConformanceClassesPassed = model.createProperty(NS_URI + "areCoreConformanceClassesPassed");
+    /** webDirPath */
+    public static final Property webDirPath = model.createProperty(NS_URI + "webDirPath");
 }
