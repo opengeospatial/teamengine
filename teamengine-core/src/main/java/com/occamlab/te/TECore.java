@@ -2296,9 +2296,9 @@ public class TECore implements Runnable {
           }
         }
       } else if (messageTrim.contains("Clause")) {
-        Clause = messageTrim.replace("Clause : ", "");;
+        Clause = messageTrim.replace("Clause : ", "");
       } else {
-        Purpose = messageTrim.replace("Purpose : ", "");;
+        Purpose = messageTrim.replace("Purpose : ", "");
       }
       if ((rootNo != 0) && (!"".equals(Clause)) && (!"".equals(Purpose))) {
         mainRootElementClause.appendChild(RecordTestResult.getClause());
