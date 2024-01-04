@@ -2341,7 +2341,7 @@ public class TECore implements Runnable {
         }
       }
     }
-    return (child_e == null) ? null : child_e;
+    return child_e;
   }
 
   /**

@@ -287,7 +287,7 @@ public class CtlEarlReporter {
         String testName = starttestElements.getAttribute( "local-name" );
         int result = Integer.parseInt( endtestElements.getAttribute( "result" ) );
         Element ccElement = getElementByTagName( logElements, "conformanceClass" );
-        boolean isCC = ( ccElement != null ) ? true : false;
+        boolean isCC = ccElement != null;
         boolean isBasic = false;
         if ( ccElement != null && ccElement.hasAttribute( "isBasic" )
              && Boolean.valueOf( ccElement.getAttribute( "isBasic" ) ) ) {
