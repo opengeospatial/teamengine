@@ -1598,7 +1598,7 @@ public class TECore implements Runnable {
   static public URLConnection build_soap_request(Node xml) throws Exception {
     String sUrl = null;
     String method = "POST";
-    String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml)
+    String charset = ((Element) xml).getAttribute("charset").isEmpty() ? ((Element) xml)
             .getAttribute("charset") : "UTF-8";
     String version = ((Element) xml).getAttribute("version");
     String action = "";
@@ -1654,7 +1654,7 @@ public class TECore implements Runnable {
       uc.setRequestProperty("Accept", "text/xml");
       uc.setRequestProperty("SOAPAction", action);
       contentType = "text/xml";
-      if (!charset.equals("")) {
+      if (!charset.isEmpty()) {
         contentType = contentType + "; charset=" + charset;
       }
       uc.setRequestProperty("Content-Type", contentType);
@@ -1662,10 +1662,10 @@ public class TECore implements Runnable {
       // Handle HTTP binding for SOAP 1.2
       uc.setRequestProperty("Accept", "application/soap+xml");
       contentType = "application/soap+xml";
-      if (!charset.equals("")) {
+      if (!charset.isEmpty()) {
         contentType = contentType + "; charset=" + charset;
       }
-      if (!action.equals("")) {
+      if (!action.isEmpty()) {
         contentType = contentType + "; action=" + action;
       }
       uc.setRequestProperty("Content-Type", contentType);
@@ -1946,7 +1946,7 @@ public class TECore implements Runnable {
             if (contentType.equals("application/xml")) {
               contentType = "application/xml; charset=" + charset;
             }
-            if (contentType == null || contentType.equals("")) {
+            if (contentType == null || contentType.isEmpty()) {
               contentType = "application/octet-stream";
             }
 
@@ -2015,7 +2015,7 @@ public class TECore implements Runnable {
       // Set headers
       if (body != null) {
         String mid = ((Element) body).getAttribute("mid");
-        if (mid != null && !mid.equals("")) {
+        if (mid != null && !mid.isEmpty()) {
           if (mid.indexOf("mid:") != -1) {
             mid = mid.substring(mid.indexOf("mid:")
                     + "mid:".length());

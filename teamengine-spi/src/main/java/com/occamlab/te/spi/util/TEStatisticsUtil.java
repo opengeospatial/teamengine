@@ -155,7 +155,7 @@ public class TEStatisticsUtil {
             } else {
                 Element resultStatus = (Element) testResult.item(0);
 
-                if (resultStatus.hasAttribute("result") && !resultStatus.getAttribute("result").equals("")) {
+                if (resultStatus.hasAttribute("result") && !resultStatus.getAttribute("result").isEmpty()) {
                     return Integer.parseInt(resultStatus.getAttribute("result"));
                 } else {
                     throw new RuntimeException("The 'result' attribute not found or having the NULL value in log file.");

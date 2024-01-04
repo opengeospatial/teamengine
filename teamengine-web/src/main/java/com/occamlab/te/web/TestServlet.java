@@ -431,7 +431,7 @@ public class TestServlet extends HttpServlet {
                     Iterator iter = items.iterator();
                     while (iter.hasNext()) {
                         FileItem item = (FileItem) iter.next();
-                        if (!item.isFormField() && !item.getName().equals("")) {
+                        if (!item.isFormField() && !item.getName().isEmpty()) {
                             File tempDir = new File(URI.create(core
                                     .getTestRunDirectory()));
                             File uploadedFile = new File(tempDir,

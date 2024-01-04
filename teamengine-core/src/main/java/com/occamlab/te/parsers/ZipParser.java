@@ -73,7 +73,7 @@ public class ZipParser {
         }
 
         // Give the media type default of "application/octet-stream"
-        if (mediaType.equals("")) {
+        if (mediaType.isEmpty()) {
             mediaType = "application/octet-stream";
         }
 

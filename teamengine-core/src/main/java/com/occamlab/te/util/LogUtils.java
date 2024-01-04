@@ -203,7 +203,7 @@ public class LogUtils {
         StringBuffer out = new StringBuffer();
         char current;
 
-        if (in == null || ("".equals(in)))
+        if (in == null || (in.isEmpty()))
             return "";
         for (int i = 0; i < in.length(); i++) {
             current = in.charAt(i);
