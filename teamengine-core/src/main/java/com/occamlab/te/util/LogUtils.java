@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -97,7 +98,7 @@ public class LogUtils {
             File f = new File(dir, "log.xml");
             f.delete();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(f), "UTF-8"));
+                    new FileOutputStream(f), StandardCharsets.UTF_8));
             return new PrintWriter(writer);
         }
         return null;

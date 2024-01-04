@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -74,12 +75,8 @@ public class Misc {
     // Loads a file into memory from the classpath
     public static File getResourceAsFile(String resource) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try {
-            return new File(URLDecoder.decode(cl.getResource(resource)
-                    .getFile(), "UTF-8"));
-        } catch (UnsupportedEncodingException uee) {
-            return null;
-        }
+        return new File(URLDecoder.decode(cl.getResource(resource)
+                .getFile(), StandardCharsets.UTF_8));
     }
 
     // Loads a DOM Document from the classpath

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -19,14 +20,10 @@ public class TestRunUtils {
         String authCredential = authCredentials.get(0);
         final String encodedUserPassword = authCredential.replaceFirst("Basic" + " ", "");
         String usernameAndPassword = null;
-        
-        try {
-            byte[] decodedBytes = Base64.getDecoder().decode(encodedUserPassword);
-            usernameAndPassword = new String(decodedBytes, "UTF-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+
+        byte[] decodedBytes = Base64.getDecoder().decode(encodedUserPassword);
+        usernameAndPassword = new String(decodedBytes, StandardCharsets.UTF_8);
+
         final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
         final String username = tokenizer.nextToken();
         return username;

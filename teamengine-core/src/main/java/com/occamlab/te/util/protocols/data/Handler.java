@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import org.apache.xerces.impl.dv.util.Base64;
@@ -95,7 +96,7 @@ public class Handler extends URLStreamHandler {
                 @Override
                 public void connect() throws IOException {
                     in = new ByteArrayInputStream(decode(data,
-                            characterEncoding).getBytes("UTF-8"));
+                            characterEncoding).getBytes(StandardCharsets.UTF_8));
                 }
 
                 @Override

@@ -25,6 +25,7 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -403,7 +404,7 @@ public class TestServlet extends HttpServlet {
                 }
                 out.println(">");
                 out.print("<![CDATA[");
-                out.print(URLEncoder.encode(core.getOutput(), "UTF-8").replace(
+                out.print(URLEncoder.encode(core.getOutput(), StandardCharsets.UTF_8).replace(
                         '+', ' '));
                 out.println("]]>");
                 out.println("</status>");

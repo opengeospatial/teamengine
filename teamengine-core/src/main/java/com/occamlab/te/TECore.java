@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -859,7 +860,7 @@ public class TECore implements Runnable {
           }
         }
         OutputStreamWriter writer = new OutputStreamWriter(
-                new FileOutputStream(file, true), "UTF-8");
+                new FileOutputStream(file, true), StandardCharsets.UTF_8);
         BufferedWriter fbw = new BufferedWriter(writer);
         fbw.write(dateFormat.format(date) + " ERROR");
         fbw.newLine();

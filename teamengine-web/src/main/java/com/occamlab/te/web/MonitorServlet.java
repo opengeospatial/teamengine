@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -174,7 +175,7 @@ public class MonitorServlet extends HttpServlet {
             if (null == request.getContentType()) {
                 // check GET requests only
                 String query = null;
-                query = URLDecoder.decode(request.getQueryString(), "UTF-8");
+                query = URLDecoder.decode(request.getQueryString(), StandardCharsets.UTF_8);
                 mc.checkCoverage(query);
             }
             TECore core = mc.getCore();

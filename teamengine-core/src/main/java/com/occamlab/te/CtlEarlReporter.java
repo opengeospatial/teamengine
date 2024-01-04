@@ -266,7 +266,7 @@ public class CtlEarlReporter {
                             throws UnsupportedEncodingException {
         for ( int j = 0; j < logList.getLength(); j++ ) {
             Element logElement = (Element) logList.item( j );
-            String decodedBaseURL = java.net.URLDecoder.decode( logElement.getAttribute( "xml:base" ), "UTF-8" );
+            String decodedBaseURL = java.net.URLDecoder.decode( logElement.getAttribute( "xml:base" ), StandardCharsets.UTF_8);
             String logtestcall = parseLogTestCall( "", decodedBaseURL );
             // Check sub-testcall is matching with the <log baseURL="">
             if ( testcallPath.equals( logtestcall ) ) {

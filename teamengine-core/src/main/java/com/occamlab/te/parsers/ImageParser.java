@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 // 2011-11-15 PwD uncomment for Java 1.7 import java.nio.charset.StandardCharsets;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -132,12 +133,7 @@ public class ImageParser {
         // String base64String = Base64.encodeBase64String(imageData); this is
         // unchunked (no line breaks) which is unwieldy
         byte[] base64Data = Base64.encodeBase64Chunked(imageData);
-        // 2011-11-15 PwD uncomment for Java 1.7 String base64String = new
-        // String(base64Data, StandardCharsets.UTF_8);
-        // for Java 1.6;
-                                                               // remove for
-                                                               // Java 1.7
-        return new String(base64Data, "UTF-8");
+        return new String(base64Data, StandardCharsets.UTF_8);
     }
 
     /*

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -220,7 +221,7 @@ public class TEStatisticsUtil {
         Document doc = null;
         try {
             InputStream inputStream = new FileInputStream(configFile);
-            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+            Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             InputSource is = new InputSource(reader);
             is.setEncoding("UTF-8");
 
@@ -581,7 +582,7 @@ public class TEStatisticsUtil {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             String xmlTemplate1 = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
-            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes("UTF-8"));
+            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes(StandardCharsets.UTF_8));
             String statXsl = cl.getResource("com/occamlab/te/stats/test_suite_stats.xsl").toString();
             Transformer transformer = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)
                     .newTransformer(new StreamSource(statXsl));
@@ -810,7 +811,7 @@ public class TEStatisticsUtil {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             String xmlTemplate1 = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
-            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes("UTF-8"));
+            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes(StandardCharsets.UTF_8));
             String statXsl = cl.getResource("com/occamlab/te/stats/overall_stats.xsl").toString();
             Transformer transformer = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)
                     .newTransformer(new StreamSource(statXsl));

@@ -10,6 +10,7 @@ package com.occamlab.te.util;
 import java.io.StringReader;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -173,11 +174,7 @@ public class DomUtils {
             System.out.println("Error serializing node.  " + e.getMessage());
         }
 
-        try {
-            return baos.toString("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return baos.toString();
-        }
+        return baos.toString(StandardCharsets.UTF_8);
     }
 
     /**
