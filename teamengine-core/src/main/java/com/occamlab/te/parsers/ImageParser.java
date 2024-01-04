@@ -134,11 +134,10 @@ public class ImageParser {
         byte[] base64Data = Base64.encodeBase64Chunked(imageData);
         // 2011-11-15 PwD uncomment for Java 1.7 String base64String = new
         // String(base64Data, StandardCharsets.UTF_8);
-        String base64String = new String(base64Data, "UTF-8"); // 2011-11-15 PwD
-                                                               // for Java 1.6;
+        // for Java 1.6;
                                                                // remove for
                                                                // Java 1.7
-        return base64String;
+        return new String(base64Data, "UTF-8");
     }
 
     /*

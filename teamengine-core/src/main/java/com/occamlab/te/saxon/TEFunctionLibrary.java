@@ -37,13 +37,11 @@ public class TEFunctionLibrary implements FunctionLibrary {
             for (FunctionEntry fe : functions) {
                 if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
                     if (fe.isJava()) {
-                        TEJavaFunctionCall fc = new TEJavaFunctionCall(fe,
+                        return new TEJavaFunctionCall(fe,
                                 functionName, staticArgs, env);
-                        return fc;
                     } else {
-                        TEXSLFunctionCall fc = new TEXSLFunctionCall(fe,
+                        return new TEXSLFunctionCall(fe,
                                 functionName, staticArgs, env);
-                        return fc;
                     }
                 }
             }

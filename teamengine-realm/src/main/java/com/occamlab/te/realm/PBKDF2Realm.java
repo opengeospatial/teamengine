@@ -172,8 +172,7 @@ public class PBKDF2Realm extends RealmBase {
             String name = ((Element) roleElements.item(i)).getTextContent();
             roles.add(name);
         }
-        GenericPrincipal principal = createGenericPrincipal(username, roles);
-        return principal;
+        return createGenericPrincipal(username, roles);
     }
 
     /**

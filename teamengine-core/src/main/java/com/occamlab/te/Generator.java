@@ -269,8 +269,7 @@ public class Generator {
         String userDirURI = new File(System.getProperty("user.dir")).toURI()
                 .toString();
         fileURI = fileURI.replace(userDirURI, "");
-        String encodedName = fileURI.substring(fileURI.lastIndexOf(':') + 1)
+        return fileURI.substring(fileURI.lastIndexOf(':') + 1)
                 .replace("%20", "-").replace('/', '_');
-        return encodedName;
     }
 }

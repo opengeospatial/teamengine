@@ -607,8 +607,7 @@ public class LogUtils {
      * @throws Exception
      */
     private static List<File> getFileListing(File logDir) throws Exception {
-        List<File> result = getFileListingLogs(logDir);
-        return result;
+        return getFileListingLogs(logDir);
     }
 
     /**

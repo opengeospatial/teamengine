@@ -169,20 +169,19 @@ public class DocumentationHelper {
             System.out.println("Trying to create it!");
             LogUtils.createFullReportLog(sessionDir.getAbsolutePath());
         }
-        File html_output_report_file = prettyPrintReportFile;
-        if (html_output_report_file.exists()) {
+        if (prettyPrintReportFile.exists()) {
             System.out.println("Report file \""
-                    + html_output_report_file.getAbsolutePath() + "\" reused!");
+                    + prettyPrintReportFile.getAbsolutePath() + "\" reused!");
             return;
         }
         // Fortify Mod: Close the FileOutputStream and releaase its resources
         // prettyprint(xml_logs_report_file.toURI().toURL().toExternalForm(),
         //         new FileOutputStream(html_output_report_file));
-        FileOutputStream fos = new FileOutputStream(html_output_report_file);
+        FileOutputStream fos = new FileOutputStream(prettyPrintReportFile);
         prettyprint(xml_logs_report_file.toURI().toURL().toExternalForm(), fos);
         fos.close();
         System.out.println("Report file \""
-                + html_output_report_file.getAbsolutePath() + "\" created!");
+                + prettyPrintReportFile.getAbsolutePath() + "\" created!");
     }
 
     public static void main(String[] args) throws Exception {

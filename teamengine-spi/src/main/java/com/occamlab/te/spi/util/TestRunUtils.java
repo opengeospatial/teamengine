@@ -56,8 +56,7 @@ public class TestRunUtils {
     }
     
     public static String getSourcesId(TestSuiteController controller) {
-        String sourcesId = "OGC_" + controller.getTitle() + "_" + controller.getVersion();
-        return sourcesId;
+        return "OGC_" + controller.getTitle() + "_" + controller.getVersion();
     }
 
 }

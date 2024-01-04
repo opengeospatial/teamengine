@@ -238,8 +238,7 @@ public class ConfigFileCreator {
 
 	public Document getDocument(File xml) {
 		try {
-			Document doc = builder.parse(xml);
-			return doc;
+            return builder.parse(xml);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

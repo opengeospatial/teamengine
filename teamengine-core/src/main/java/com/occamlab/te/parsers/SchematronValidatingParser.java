@@ -268,9 +268,8 @@ public class SchematronValidatingParser {
         }
         ErrorHandler eh = new ErrorHandlerImpl("Schematron", outputLogger);
         this.configPropBuilder.put(ValidateProperty.ERROR_HANDLER, eh);
-        ValidationDriver validator = new ValidationDriver(
+        return new ValidationDriver(
                 this.configPropBuilder.toPropertyMap(), schReader);
-        return validator;
     }
 
     /**
@@ -451,9 +450,8 @@ public class SchematronValidatingParser {
     ValidationDriver createDriver(PropertyMap configProps) {
         SchemaReaderLoader loader = new SchemaReaderLoader();
         SchemaReader schReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
-        ValidationDriver validator = new ValidationDriver(configProps,
+        return new ValidationDriver(configProps,
                 schReader);
-        return validator;
     }
 
 }
