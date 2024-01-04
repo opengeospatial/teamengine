@@ -25,5 +25,5 @@ public interface TestRunExecutor {
      *
      * @see Source
      */
-    public Source execute(Document testRunArgs);
+    Source execute(Document testRunArgs);
 }

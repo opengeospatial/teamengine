@@ -22,7 +22,7 @@ public interface TestSuiteController {
      * @return A String containing an alphanumeric code value. It cannot start
      *         with a digit.
      */
-    public String getCode();
+    String getCode();
 
     /**
      * Returns the version of this ETS.
@@ -30,14 +30,14 @@ public interface TestSuiteController {
      * @return A String indicating the version; it complies with the Maven
      *         versioning scheme.
      */
-    public String getVersion();
+    String getVersion();
 
     /**
      * Returns the title of this ETS.
      *
      * @return A String denoting the title.
      */
-    public String getTitle();
+    String getTitle();
 
     /**
      * Executes a test run and returns the results.
@@ -52,5 +52,5 @@ public interface TestSuiteController {
      *             If the supplied test run arguments are invalid for any
      *             reason.
      */
-    public Source doTestRun(Document testRunArgs) throws Exception;
+    Source doTestRun(Document testRunArgs) throws Exception;
 }
