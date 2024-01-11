@@ -567,10 +567,13 @@ public class TEStatisticsUtil {
      * @param testSuiteName
      * @param year
      * @param statisticsResultDir
-     * @param listMapAsString
-     * @param testRunsPerMonth
-     * @param usersPerMonthResultList
-     * @param listNumberOfUsersPerTestInLastYear
+     * @param numberOfUsersExecutedTestSuitePerMonth
+     * @param testSuiteRunPerMonth
+     * @param successArray
+     * @param failureArray
+     * @param incompleteArray
+     * @param testSuiteStatusWithDrilldown
+     * @param testSuiteFailedTestDrillDownMap
      */
     public static void generateTestSuiteStatisticsHtmlReport(String testSuiteName, Integer year, 
             File statisticsResultDir, String numberOfUsersExecutedTestSuitePerMonth, String testSuiteRunPerMonth,
@@ -656,8 +659,6 @@ public class TEStatisticsUtil {
     /**
      * This method will create statistics or test runs per month in current year.
      * 
-     * @param testSuiteName
-     *            The name test suite with version.
      * @param sessionDetailsList
      *            Map of users sessions.
      * @return ArrayList Of Integer test count per month.
@@ -798,10 +799,10 @@ public class TEStatisticsUtil {
      * @param testSuiteNames
      * @param year
      * @param statResultDir
-     * @param listMapAsString
-     * @param testRunsPerMonth
-     * @param usersPerMonthResultList
-     * @param listNumberOfUsersPerTestInLastYear
+     * @param allTestSuiteRunDetails
+     * @param testsRunPerMonth
+     * @param usersPerMonth
+     * @param numberOfUsersAndTestSuite
      */
     public static void generateOverallStatisticsHtmlReport(List<String> testSuiteNames, Integer year, File statResultDir,
             String allTestSuiteRunDetails, String testsRunPerMonth, String usersPerMonth, String numberOfUsersAndTestSuite) {

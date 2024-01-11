@@ -52,6 +52,7 @@ public class Soap12MessageBuilder {
     /**
      * A method to get the SOAP 1.2 message. The message is created and returned
      * as DOM Document.
+     * author Simone Gianfranceschi
      * 
      * @param headerBlocks
      *            The list of header blocks to be included in the SOAP message
@@ -62,7 +63,6 @@ public class Soap12MessageBuilder {
      * 
      * @return the DOM document representing the SOAP message
      * 
-     * @author Simone Gianfranceschi
      */
     public static Document getSoapMessage(List headerBlocks, Element i_body)
             throws Exception {

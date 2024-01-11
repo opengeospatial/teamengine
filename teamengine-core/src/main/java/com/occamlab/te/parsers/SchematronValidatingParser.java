@@ -187,7 +187,7 @@ public class SchematronValidatingParser {
      * validation status (takes schematron file, not string location). New and
      * ADVANCED! (team engine can't work with overloaded methods :P)
      * 
-     * @param doc
+     * @param inputDoc
      *            The XML file to validate (Document)
      * @param schemaFile
      *            The file object of the schematron file to validate with

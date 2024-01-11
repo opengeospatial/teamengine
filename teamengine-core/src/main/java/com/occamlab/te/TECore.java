@@ -1583,18 +1583,18 @@ public class TECore implements Runnable {
      * @throws Exception
      *             the exception
    *
-     *             <soap-request version="1.1|1.2" charset="UTF-8">
-     *             <url>http://blah</url> <action>Some-URI</action> <headers>
-     *             <header MutUnderstand="true" rely="true" role="http://etc">
-     *             <t:Transaction xmlns:t="some-URI" >5</t:Transaction>
-     *             </header> </headers> <body> <m:GetLastTradePrice
-     *             xmlns:m="Some-URI"> <symbol>DEF</symbol>
-     *             </m:GetLastTradePrice> </body> <parsers:SOAPParser
-     *             return="content"> <parsers:XMLValidatingParser>
-     *             <parsers:schemas> <parsers:schema
-     *             type="url">http://blah/schema.xsd</parsers:schema>
-     *             </parsers:schemas> </parsers:XMLValidatingParser>
-     *             </parsers:SOAPParser> </soap-request>
+     *             &lt;soap-request version="1.1|1.2" charset="UTF-8"&gt;
+     *             &lt;url&gt;http://blah&lt;/url&gt; &lt;action&gt;Some-URI&lt;/action&gt; &lt;headers&gt;
+     *             &lt;header MutUnderstand="true" rely="true" role="http://etc"&gt;
+     *             &lt;t:Transaction xmlns:t="some-URI" &gt;5&lt;/t:Transaction&gt;
+     *             &lt;/header&gt; &lt;/headers&gt; &lt;body&gt; &lt;m:GetLastTradePrice
+     *             xmlns:m="Some-URI"&gt; &lt;symbol&gt;DEF&lt;/symbol&gt;
+     *             &lt;/m:GetLastTradePrice&gt; &lt;/body&gt; &lt;parsers:SOAPParser
+     *             return="content"&gt; &lt;parsers:XMLValidatingParser&gt;
+     *             &lt;parsers:schemas&gt; &lt;parsers:schema
+     *             type="url"&gt;http://blah/schema.xsd&lt;/parsers:schema&gt;
+     *             &lt;/parsers:schemas&gt; &lt;/parsers:XMLValidatingParser&gt;
+     *             &lt;/parsers:SOAPParser&gt; &lt;/soap-request&gt;
    */
   static public URLConnection build_soap_request(Node xml) throws Exception {
     String sUrl = null;
@@ -2348,7 +2348,7 @@ public class TECore implements Runnable {
    * Converts CTL input form elements to generate a Swing-based or XHTML form
    * and reports the results of processing the submitted form. The results
    * document is produced in (web context) or
-   * {@link SwingForm.CustomFormView#submitData}.
+   * {@link com.occamlab.te.SwingForm.CustomFormView#submitData(String)}.
    *
      * @param ctlForm
      *            a DOM Document representing a &lt;ctl:form&gt; element.

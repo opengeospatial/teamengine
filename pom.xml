@@ -441,11 +441,12 @@
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.4</version>
+          <version>3.6.3</version>
           <configuration>
             <docfilessubdirs>true</docfilessubdirs>
             <show>package</show>
-            <additionalparam>-Xdoclint:none</additionalparam>
+            <additionalJOption>-Xdoclint:none</additionalJOption>
+            <detectOfflineLinks>false</detectOfflineLinks>
           </configuration>
           <executions>
             <execution>

@@ -386,11 +386,11 @@ public class ImageParser {
 
     /**
      * Determines the width of the first image in an image file in pixels.
+     * author Paul Daisey added 2011-05-13 to support WMTS ETS
      * 
      * @param imageLoc
      *            the string location of the image (uri syntax expected)
      * @return int the image width in pixels, or -1 if unable.
-     * @author Paul Daisey added 2011-05-13 to support WMTS ETS
      */
     public static int getImageWidth(String imageLoc) {
 
@@ -434,11 +434,11 @@ public class ImageParser {
 
     /**
      * Determines the height of the first image in an image file in pixels.
+     * author Paul Daisey added 2011-05-13 to support WMTS ETS
      * 
      * @param imageLoc
      *            the string location of the image (uri syntax expected)
      * @return int the image width in pixels, or -1 if unable.
-     * @author Paul Daisey added 2011-05-13 to support WMTS ETS
      */
     public static int getImageHeight(String imageLoc) {
 

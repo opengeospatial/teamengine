@@ -115,14 +115,14 @@ public class DomUtils {
      * @param str
      *            the string value to match in the comment nodes
      * 
-     *            CTL declaration, if we ever want to use it <!--Sample Usage:
-     *            ctl:checkCommentNodes($xml.resp, 'complexContent')-->
-     *            <ctl:function name="ctl:checkCommentNodes"> <ctl:param
-     *            name="node"/> <ctl:param name="string"/>
-     *            <ctl:description>Checks a Node for comments that contain the
-     *            given string.</ctl:description> <ctl:java
+     *            CTL declaration, if we ever want to use it &lt;!--Sample Usage:
+     *            ctl:checkCommentNodes($xml.resp, 'complexContent')--&gt;
+     *            &lt;ctl:function name="ctl:checkCommentNodes"&gt; &lt;ctl:param
+     *            name="node"/&gt; &lt;ctl:param name="string"/&gt;
+     *            &lt;ctl:description&gt;Checks a Node for comments that contain the
+     *            given string.&lt;/ctl:description&gt; &lt;ctl:java
      *            class="com.occamlab.te.util.DomUtils"
-     *            method="checkCommentNodes"/> </ctl:function>
+     *            method="checkCommentNodes"/&gt; &lt;/ctl:function&gt;
      * 
      * @return the original Document with the update attribute nodes
      */

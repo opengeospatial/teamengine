@@ -318,9 +318,9 @@ public class XMLValidatingParser {
 	/**
 	 * A method to validate a pool of schemas outside of the request element.
 	 * 
-	 * @param Document
+	 * @param doc
 	 *            doc The file document to validate
-	 * @param Document
+	 * @param instruction
 	 *            instruction The xml encapsulated schema information (file
 	 *            locations)
 	 * @return false if there were errors, true if none.
