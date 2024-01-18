@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,7 +34,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 
 import org.apache.jena.rdf.model.Model;
-import org.testng.IReporter;
 import org.testng.TestNG;
 import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
@@ -57,7 +55,7 @@ public class TestNGExecutor implements TestRunExecutor {
 
     private static final List<String> SUPPORTED_MEDIA_TYPES = Arrays.asList( "application/xml", "application/zip", "application/rdf+xml" );
 
-    private boolean useDefaultListeners;
+    private final boolean useDefaultListeners;
 
     private File outputDir;
 
@@ -165,7 +163,7 @@ public class TestNGExecutor implements TestRunExecutor {
         AlterSuiteParametersListener listener = new AlterSuiteParametersListener();
         listener.setTestRunArgs(testRunArgs);
         listener.setTestRunId(runId);
-        driver.addAlterSuiteListener(listener);
+        driver.addListener(listener);
         try {
             driver.run();
 		} catch (Exception e) {

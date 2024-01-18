@@ -10,7 +10,6 @@ package com.occamlab.te.spi.executors.testng;
 import java.util.List;
 import org.testng.IReporter;
 import org.testng.ISuite;
-import org.testng.ReporterConfig;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.XMLReporterConfig;
 import org.testng.xml.XmlSuite;
@@ -25,7 +24,7 @@ import org.testng.xml.XmlSuite;
  */
 public final class BasicXMLReporter implements IReporter {
 
-    private XMLReporter reporter;
+    private final XMLReporter reporter;
 
     public BasicXMLReporter() {
         this.reporter = createCustomXMLReporter();
@@ -45,15 +44,11 @@ public final class BasicXMLReporter implements IReporter {
      *         test results. The document element is &lt;testng-results&gt;.
      */
     XMLReporter createCustomXMLReporter() {
-        // config data syntax: "class-name:prop1=val1,prop2=val2"
-        StringBuilder reporterConfig = new StringBuilder(
-                XMLReporter.class.getName() + ":");
-        reporterConfig.append("stackTraceOutputMethod=").append(
-                XMLReporterConfig.STACKTRACE_NONE);
-        reporterConfig.append(",").append("generateTestResultAttributes=true");
-        reporterConfig.append(",").append("generateGroupsAttribute=true");
-        ReporterConfig reporterConf = ReporterConfig.deserialize(reporterConfig
-                .toString());
-        return (XMLReporter) reporterConf.newReporterInstance();
+        XMLReporter customReporter = new XMLReporter();
+        XMLReporterConfig config = customReporter.getConfig();
+        config.setStackTraceOutput(XMLReporterConfig.StackTraceLevels.NONE);
+        config.setGenerateTestResultAttributes(true);
+        config.setGenerateGroupsAttribute(true);
+        return customReporter;
     }
 }
