@@ -14,8 +14,8 @@
 #   Requirements:
 #     - git (1.9.4)
 #     - mvn (3.2)
-#     - Java (1.6 or more)
-#     - local installation of tomcat (7.X)
+#     - Java (17)
+#     - local installation of tomcat (10.1)
 #
 #  The following values are required:
 #  - te_git_url: git url of the repository. You can use the remote one or a local one (e.g. 
@@ -35,7 +35,7 @@ te_git_url=file:///Users/lbermudez/Documents/Dropbox/github/teamengine
 #te_tag=4.0.5
 te_tag=master
 folder_to_build=/Users/lbermudez/Documents/Dropbox/software/te_build-20140925
-tomcat=/Applications/apache-tomcat-7.0.53
+tomcat=/Applications/apache-tomcat-10.1
 
 parent_dir=$(pwd)
 ## optional: contains body, header and footer for the welcome page

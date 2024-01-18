@@ -9,16 +9,15 @@ other JVM-friendly languages. It is lightweight and easy to run from the command
 as a web application. 
 
 TEAM Engine can be used to test almost any type of service or information resource. It is 
-the official test harness used by the Open Geospatial Consortium's (OGC) [compliance program](http://cite.opengeospatial.org/). 
-Visit the [project documentation website](http://opengeospatial.github.io/teamengine/) 
+the official test harness used by the Open Geospatial Consortium's (OGC) [compliance program](https://www.ogc.org/resources/compliance/). 
+Visit the [project documentation website](https://opengeospatial.github.io/teamengine/) 
 for more information.
 
-An installation is maintained by the OGC at http://cite.opengeospatial.org/teamengine/.
+An installation is maintained by the OGC at https://cite.ogc.org/teamengine/.
 
 ### How to build
 
-[Apache Maven](http://maven.apache.org/) 3.2.5 or higher is required to build TEAM Engine. 
-The latest release is recommended.
+Java 17 and [Apache Maven](http://maven.apache.org/) 3.9 are required to build TEAM Engine.
 
 * Clone the repository:
 
@@ -32,7 +31,6 @@ The latest release is recommended.
 
    `mvn install`
 
-   
 ### More information 
 
 The following sources include documentation about how to install the tests, run TEAM Engine via the 
@@ -40,7 +38,7 @@ command line or as a web application in a Java servlet container.
 
 * An extensive tutorial can be found in the [doc folder](https://github.com/opengeospatial/teamengine/blob/master/src/site/doc/en/index.rst). 
 
-* A _Getting Started Guide_ is available at the [project documentation website](http://opengeospatial.github.io/teamengine/). 
+* A _Getting Started Guide_ is available at the [project documentation website](https://opengeospatial.github.io/teamengine/). 
 This can also be created by generating the site documentation (which includes a PDF 
 document in the target/pdf directory):
 
@@ -63,12 +61,12 @@ branch, and then create a pull request
 
 ### Mailing Lists
 
-The [cite-forum](http://cite.opengeospatial.org/forum) is where software developers discuss issues 
+The [cite-forum](https://lists.ogc.org/mailman/listinfo/cite-forum) is where software developers discuss issues 
 and solutions related to OGC tests and TEAM Engine. 
 
-Contributers are expected to observe the project's [code of conduct](https://github.com/opengeospatial/teamengine/blob/master/CODE_OF_CONDUCT.md).
+Contributors are expected to observe the project's [code of conduct](https://github.com/opengeospatial/teamengine/blob/master/CODE_OF_CONDUCT.md).
 
 ### More Information
 
-Visit the [CITE website](http://cite.opengeospatial.org/) for more information about the 
+Visit the [CITE wiki](https://github.com/opengeospatial/cite/wiki) for more information about the 
 CITE program and tools.
