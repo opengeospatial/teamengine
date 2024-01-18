@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -170,7 +171,7 @@ public class SchematronValidatingParser {
             ClassLoader loader = this.getClass().getClassLoader();
             URL url = loader.getResource(schemaFile);
             this.schemaFile = new File(
-                    URLDecoder.decode(url.getFile(), "UTF-8"));
+                    URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8));
         } catch (Exception e) {
             assert false : "Entity body not found. " + e.toString();
         }
@@ -268,9 +269,8 @@ public class SchematronValidatingParser {
         }
         ErrorHandler eh = new ErrorHandlerImpl("Schematron", outputLogger);
         this.configPropBuilder.put(ValidateProperty.ERROR_HANDLER, eh);
-        ValidationDriver validator = new ValidationDriver(
+        return new ValidationDriver(
                 this.configPropBuilder.toPropertyMap(), schReader);
-        return validator;
     }
 
     /**
@@ -358,7 +358,7 @@ public class SchematronValidatingParser {
             } else if (type.equals("resource")) {
                 URL url = this.getClass().getResource(this.schemaLocation);
                 this.schemaFile = new File(URLDecoder.decode(url.getFile(),
-                        "UTF-8"));
+                        StandardCharsets.UTF_8));
             }
         }
         boolean isValid = false;
@@ -451,9 +451,8 @@ public class SchematronValidatingParser {
     ValidationDriver createDriver(PropertyMap configProps) {
         SchemaReaderLoader loader = new SchemaReaderLoader();
         SchemaReader schReader = loader.createSchemaReader(SCHEMATRON_NS_URI);
-        ValidationDriver validator = new ValidationDriver(configProps,
+        return new ValidationDriver(configProps,
                 schReader);
-        return validator;
     }
 
 }

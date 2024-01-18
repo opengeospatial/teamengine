@@ -164,7 +164,7 @@ public class TestSuiteSetResource {
     @GET
     @Produces("application/json")
     public Response listTestSuitesAsJSON() {
-        List<JSONObject> testSuiteList = new ArrayList<JSONObject>();
+        List<JSONObject> testSuiteList = new ArrayList<>();
         
         TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
         Set<TestSuiteController> etsControllers = registry.getControllers();
@@ -175,7 +175,7 @@ public class TestSuiteSetResource {
             etsURI.append(this.reqUriInfo.getPath());
             etsURI.append(etsController.getCode()).append("/");
             
-            Map<String, String> testSuiteInfoMap = new HashMap<String, String>();
+            Map<String, String> testSuiteInfoMap = new HashMap<>();
             testSuiteInfoMap.put("title", etsController.getTitle());
             testSuiteInfoMap.put("version", etsController.getVersion());
             testSuiteInfoMap.put("etsCode", etsController.getCode());
@@ -185,7 +185,7 @@ public class TestSuiteSetResource {
             
             testSuiteList.add(testSuiteInfo);
         }
-        Map<String, List<JSONObject>> testSuitesMap = new HashMap<String, List<JSONObject>>();
+        Map<String, List<JSONObject>> testSuitesMap = new HashMap<>();
         testSuitesMap.put("testSuites", testSuiteList);
 
         JSONObject testSuites = new JSONObject(testSuitesMap);

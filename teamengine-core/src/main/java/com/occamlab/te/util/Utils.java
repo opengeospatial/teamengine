@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -86,7 +87,7 @@ public class Utils {
             MessageDigest md;
             md = MessageDigest.getInstance("MD5");
             md5hash = new byte[8];
-            md.update(text.getBytes("iso-8859-1"), 0, text.length());
+            md.update(text.getBytes(StandardCharsets.ISO_8859_1), 0, text.length());
             md5hash = md.digest();
         } catch (Exception e) {
             jlogger.log(Level.SEVERE,
@@ -197,7 +198,7 @@ public class Utils {
         private Map<String, String> map;
 
         public MyNamespaceContext() {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
         }
 
         public void setNamespace(String prefix, String namespaceURI) {
@@ -220,7 +221,7 @@ public class Utils {
         }
 
         public Iterator getPrefixes(String namespaceURI) {
-            List<String> prefixes = new ArrayList<String>();
+            List<String> prefixes = new ArrayList<>();
             Set keys = map.keySet();
             for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
                 String prefix = (String) iterator.next();

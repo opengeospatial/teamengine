@@ -28,7 +28,7 @@ public class TemplateEntry extends IndexEntry {
                 setTemplateFile(new File(new URI(template.getAttribute("file"))));
             }
             NodeList nl = template.getElementsByTagName("param");
-            params = new ArrayList<QName>();
+            params = new ArrayList<>();
             for (int i = 0; i < nl.getLength(); i++) {
                 Element el = (Element) nl.item(i);
                 String prefix = el.getAttribute("prefix");

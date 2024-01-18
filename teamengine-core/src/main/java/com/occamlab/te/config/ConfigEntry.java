@@ -31,10 +31,10 @@ public final class ConfigEntry {
     public String description = null;
     public String link = null;
     public String dataLink = null;
-    public List<QName> profiles = new ArrayList<QName>();
-    public List<String> profileTitles = new ArrayList<String>();
-    public List<String> profileDescriptions = new ArrayList<String>();
-    public List<File> sources = new ArrayList<File>();
+    public List<QName> profiles = new ArrayList<>();
+    public List<String> profileTitles = new ArrayList<>();
+    public List<String> profileDescriptions = new ArrayList<>();
+    public List<File> sources = new ArrayList<>();
     public File resources;
     public String webdir;
 

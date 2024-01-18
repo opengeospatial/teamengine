@@ -2,7 +2,6 @@ package com.occamlab.te.parsers;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -46,7 +45,7 @@ public class XMLValidatingParserTest {
 		final UrlSchemaSupplier expectedSupplier = new UrlSchemaSupplier(expectedResource);
 		XMLValidatingParser iut = new XMLValidatingParser(schemaRefs);
 		assertNotNull(iut);
-		assertEquals(Arrays.asList(expectedSupplier), iut.schemaList);
+		assertEquals(List.of(expectedSupplier), iut.schemaList);
 	}
 
 	@Test

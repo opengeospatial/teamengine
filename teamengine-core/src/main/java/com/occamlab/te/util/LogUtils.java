@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,9 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.UUID;
 
-import javax.xml.XMLConstants; // Addition for Fortify modifications
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,7 +44,6 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -53,9 +51,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.XMLConstants; // Addition for Fortify modifications
-
-import net.sf.saxon.s9api.Axis;
-import net.sf.saxon.s9api.XdmNode;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -103,7 +98,7 @@ public class LogUtils {
             File f = new File(dir, "log.xml");
             f.delete();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(f), "UTF-8"));
+                    new FileOutputStream(f), StandardCharsets.UTF_8));
             return new PrintWriter(writer);
         }
         return null;
@@ -209,7 +204,7 @@ public class LogUtils {
         StringBuffer out = new StringBuffer();
         char current;
 
-        if (in == null || ("".equals(in)))
+        if (in == null || (in.isEmpty()))
             return "";
         for (int i = 0; i < in.length(); i++) {
             current = in.charAt(i);
@@ -244,7 +239,7 @@ public class LogUtils {
     public static List<String> getParamListFromLog(
             net.sf.saxon.s9api.DocumentBuilder builder, Document log)
             throws Exception {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Element starttest = (Element) log.getElementsByTagName("starttest")
                 .item(0);
         for (Element param : DomUtils.getElementsByTagName(starttest, "param")) {
@@ -423,7 +418,7 @@ public class LogUtils {
             t.transform(new DOMSource(doc), new StreamResult(testListFile));
         }
         if (excludes.size() > 0) {
-            removeExcludes(doc.getDocumentElement(), new ArrayList<QName>(),
+            removeExcludes(doc.getDocumentElement(), new ArrayList<>(),
                     excludes);
             updateTestListElement(db, doc.getDocumentElement(), logdir, 0);
         }
@@ -438,7 +433,7 @@ public class LogUtils {
 
     public static Document makeTestList(File logdir, String path)
             throws Exception {
-        List<List<QName>> excludes = new ArrayList<List<QName>>();
+        List<List<QName>> excludes = new ArrayList<>();
         return makeTestList(logdir, path, excludes);
     }
 
@@ -495,8 +490,7 @@ public class LogUtils {
 
     private static void removeExcludes(Element test, List<QName> pathQName,
             List<List<QName>> excludes) throws Exception {
-        List<QName> testQName = new ArrayList<QName>();
-        testQName.addAll(pathQName);
+        List<QName> testQName = new ArrayList<>(pathQName);
         String namespaceURI = test.getAttribute("namespace-uri");
         String localPart = test.getAttribute("local-name");
         String prefix = test.getAttribute("prefix");
@@ -613,8 +607,7 @@ public class LogUtils {
      * @throws Exception
      */
     private static List<File> getFileListing(File logDir) throws Exception {
-        List<File> result = getFileListingLogs(logDir);
-        return result;
+        return getFileListingLogs(logDir);
     }
 
     /**
@@ -626,7 +619,7 @@ public class LogUtils {
      */
     static private List<File> getFileListingLogs(File aStartingDir)
             throws Exception {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         File[] logfiles = aStartingDir.listFiles(new FileFilter() {
 
             @Override
@@ -647,7 +640,7 @@ public class LogUtils {
             }
         }
         List<File> allDirsList = Arrays.asList(allDirs);
-        Collections.sort(allDirsList, new Comparator<File>() {
+        allDirsList.sort(new Comparator<>() {
             public int compare(File o1, File o2) {
 
                 if (o1.lastModified() > o2.lastModified()) {

@@ -7,11 +7,10 @@
 */
 package com.occamlab.te.util;
 
-import java.io.File;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.XMLConstants; // Addition for Fortify modifications
 
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -136,7 +134,7 @@ public class DomUtils {
             if (childChildren.getLength() > 0) {
                 // Recurse for all children
                 boolean okDownThere = checkCommentNodes(child, str);
-                if (okDownThere == true) {
+                if (okDownThere) {
                     return true;
                 }
             }
@@ -176,11 +174,7 @@ public class DomUtils {
             System.out.println("Error serializing node.  " + e.getMessage());
         }
 
-        try {
-            return baos.toString("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return baos.toString();
-        }
+        return baos.toString(StandardCharsets.UTF_8);
     }
 
     /**
@@ -272,7 +266,7 @@ public class DomUtils {
     }
 
     static public Map<QName, String> getAttributes(Node node) {
-        Map<QName, String> atts = new HashMap<QName, String>();
+        Map<QName, String> atts = new HashMap<>();
         NamedNodeMap nnm = node.getAttributes();
         if (nnm != null) {
             for (int i = 0; i < nnm.getLength(); i++) {
@@ -326,7 +320,7 @@ public class DomUtils {
     }
 
     static public List<Element> getChildElements(Node node) {
-        ArrayList<Element> list = new ArrayList<Element>();
+        ArrayList<Element> list = new ArrayList<>();
         NodeList nl = node.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
@@ -373,7 +367,7 @@ public class DomUtils {
     }
 
     static public List<Element> getElementsByTagName(Node node, String tagname) {
-        ArrayList<Element> list = new ArrayList<Element>();
+        ArrayList<Element> list = new ArrayList<>();
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
             nl = ((Document) node).getElementsByTagName(tagname);
@@ -390,7 +384,7 @@ public class DomUtils {
 
     static public List<Element> getElementsByTagNameNS(Node node,
             String namespaceURI, String localName) {
-        ArrayList<Element> list = new ArrayList<Element>();
+        ArrayList<Element> list = new ArrayList<>();
         NodeList nl;
         if (node.getNodeType() == Node.DOCUMENT_NODE) {
             nl = ((Document) node).getElementsByTagNameNS(namespaceURI,

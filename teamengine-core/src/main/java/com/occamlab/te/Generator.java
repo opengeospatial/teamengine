@@ -112,7 +112,7 @@ public class Generator {
         XsltTransformer generatorTransformer = generatorXsltExecutable.load();
 
         // Create a list of CTL sources (may be files or dirs)
-        ArrayList<File> sources = new ArrayList<File>();
+        ArrayList<File> sources = new ArrayList<>();
         File f = Misc.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl");
         if (f.exists()) {
             sources.add(f.getParentFile());
@@ -121,8 +121,8 @@ public class Generator {
 
         // Create a list of source CTL files only (no dirs),
         // and a corresponding list containing a working dir for each file
-        ArrayList<File> sourceFiles = new ArrayList<File>();
-        ArrayList<File> workDirs = new ArrayList<File>();
+        ArrayList<File> sourceFiles = new ArrayList<>();
+        ArrayList<File> workDirs = new ArrayList<>();
         Iterator<File> it = sources.iterator();
         while (it.hasNext()) {
             File source = it.next();
@@ -269,8 +269,7 @@ public class Generator {
         String userDirURI = new File(System.getProperty("user.dir")).toURI()
                 .toString();
         fileURI = fileURI.replace(userDirURI, "");
-        String encodedName = fileURI.substring(fileURI.lastIndexOf(':') + 1)
+        return fileURI.substring(fileURI.lastIndexOf(':') + 1)
                 .replace("%20", "-").replace('/', '_');
-        return encodedName;
     }
 }

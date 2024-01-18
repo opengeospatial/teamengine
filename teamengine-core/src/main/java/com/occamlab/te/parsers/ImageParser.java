@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 // 2011-11-15 PwD uncomment for Java 1.7 import java.nio.charset.StandardCharsets;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -132,13 +133,7 @@ public class ImageParser {
         // String base64String = Base64.encodeBase64String(imageData); this is
         // unchunked (no line breaks) which is unwieldy
         byte[] base64Data = Base64.encodeBase64Chunked(imageData);
-        // 2011-11-15 PwD uncomment for Java 1.7 String base64String = new
-        // String(base64Data, StandardCharsets.UTF_8);
-        String base64String = new String(base64Data, "UTF-8"); // 2011-11-15 PwD
-                                                               // for Java 1.6;
-                                                               // remove for
-                                                               // Java 1.7
-        return base64String;
+        return new String(base64Data, StandardCharsets.UTF_8);
     }
 
     /*
@@ -195,7 +190,7 @@ public class ImageParser {
      */
     private static void processBufferedImage(BufferedImage buffimage,
             String formatName, NodeList nodes) throws Exception {
-        HashMap<Object, Object> bandMap = new HashMap<Object, Object>();
+        HashMap<Object, Object> bandMap = new HashMap<>();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
@@ -236,7 +231,7 @@ public class ImageParser {
                         HashMap<Object, Object> sampleMap = (HashMap<Object, Object>) bandMap
                                 .get(band);
                         if (sampleMap == null && !bandMap.containsKey(band)) {
-                            sampleMap = new HashMap<Object, Object>();
+                            sampleMap = new HashMap<>();
                             bandMap.put(band, sampleMap);
                         }
                         sampleMap.put(Integer.decode(sample), valueOf(0));
@@ -535,7 +530,7 @@ public class ImageParser {
      */
     public static String getSupportedImageTypes() {
         String[] readers = ImageIO.getReaderFormatNames();
-        ArrayList<String> imageArray = new ArrayList<String>();
+        ArrayList<String> imageArray = new ArrayList<>();
         String str = "";
         for (int i = 0; i < readers.length; i++) {
             String current = readers[i].toLowerCase();

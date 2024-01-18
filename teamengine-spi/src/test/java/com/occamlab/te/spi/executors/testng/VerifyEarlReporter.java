@@ -55,7 +55,7 @@ public class VerifyEarlReporter {
     @Test
     public void initializeModel() {
         String testSubject = "http://www.example.org/test/subject";
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("iut", testSubject);
         params.put("uuid", UUID.randomUUID().toString());
         when(xmlSuite.getAllParameters()).thenReturn(params);
@@ -69,7 +69,7 @@ public class VerifyEarlReporter {
     @Test
     public void writeModel() throws IOException {
         String testSubject = "http://www.example.org/test/subject-2";
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("iut", testSubject);
         params.put("uuid", UUID.randomUUID().toString());
         when(xmlSuite.getAllParameters()).thenReturn(params);

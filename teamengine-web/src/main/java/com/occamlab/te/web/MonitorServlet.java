@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -76,11 +77,11 @@ public class MonitorServlet extends HttpServlet {
     static String servletName;
     static int monitorCallSeq = 0;
     static int monitorUrlSeq = 0;
-    static Map<String, MonitorCall> monitors = new HashMap<String, MonitorCall>();
+    static Map<String, MonitorCall> monitors = new HashMap<>();
 
     static public String allocateMonitorUrl(String url) {
         String monitorUrl = baseServletURL + "/" + servletName + "/"
-                + Integer.toString(monitorUrlSeq);
+                + monitorUrlSeq;
         monitorUrlSeq++;
         MonitorCall mc = new MonitorCall(url);
         monitors.put(monitorUrl, mc);
@@ -146,7 +147,7 @@ public class MonitorServlet extends HttpServlet {
     }
 
     public static String destroyMonitors(TECore core) {
-        ArrayList<String> keysToDelete = new ArrayList<String>();
+        ArrayList<String> keysToDelete = new ArrayList<>();
         for (Entry<String, MonitorCall> entry : monitors.entrySet()) {
             MonitorCall mc = entry.getValue();
             if (mc.getCore() == core) {
@@ -174,7 +175,7 @@ public class MonitorServlet extends HttpServlet {
             if (null == request.getContentType()) {
                 // check GET requests only
                 String query = null;
-                query = URLDecoder.decode(request.getQueryString(), "UTF-8");
+                query = URLDecoder.decode(request.getQueryString(), StandardCharsets.UTF_8);
                 mc.checkCoverage(query);
             }
             TECore core = mc.getCore();
@@ -270,7 +271,7 @@ public class MonitorServlet extends HttpServlet {
                 XdmNode paramsNode = builder.build(new DOMSource(doc));
                 monitorCallSeq++;
                 String callId = mc.getCallId() + "_"
-                        + Integer.toString(monitorCallSeq);
+                        + monitorCallSeq;
                 core.callTest(mc.getContext(), mc.getLocalName(),
                         mc.getNamespaceURI(), paramsNode.getUnderlyingNode(),
                         callId);

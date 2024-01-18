@@ -54,7 +54,7 @@ public class Engine {
 
     // Map of loaded executables, ordered by access order
     public Map<String, XsltExecutable> loadedExecutables = Collections
-            .synchronizedMap(new LinkedHashMap<String, XsltExecutable>(256,
+            .synchronizedMap(new LinkedHashMap<>(256,
                     0.75f, true));
 
     public Map<String, TEClassLoader> classLoaders;
@@ -62,9 +62,9 @@ public class Engine {
     public Engine(Index index, String sourcesName, TEClassLoader cl)
             throws Exception {
         this();
-        ArrayList<Index> indexes = new ArrayList<Index>();
+        ArrayList<Index> indexes = new ArrayList<>();
         indexes.add(index);
-        classLoaders = new HashMap<String, TEClassLoader>();
+        classLoaders = new HashMap<>();
         classLoaders.put(sourcesName, cl);
         addFunctionLibrary(indexes);
     }
@@ -164,7 +164,7 @@ public class Engine {
             throws Exception {
         String key = sourcesName + "," + entry.getId();
         if (entry instanceof FunctionEntry) {
-            key += "_" + Integer.toString(((FunctionEntry) entry).getMinArgs());
+            key += "_" + ((FunctionEntry) entry).getMinArgs();
         }
         XsltExecutable executable = loadedExecutables.get(key);
         while (executable == null) {
@@ -228,7 +228,7 @@ public class Engine {
 
     public void setClassLoader(String sourcesName, TEClassLoader cl) {
         if (null == this.classLoaders) {
-            this.classLoaders = new HashMap<String, TEClassLoader>();
+            this.classLoaders = new HashMap<>();
         }
         this.classLoaders.put(sourcesName, cl);
     }

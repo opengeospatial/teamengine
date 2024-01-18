@@ -21,6 +21,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 import javax.xml.transform.Transformer;
@@ -101,7 +102,7 @@ public class IOUtils {
         StringBuffer buffer = new StringBuffer();
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(in,
-                    "UTF-8"), 1024);
+                    StandardCharsets.UTF_8), 1024);
             String line;
             while ((line = br.readLine()) != null) {
                 buffer.append(line);

@@ -16,7 +16,7 @@ public interface SchemaSupplier {
 	 * Constructs a new XML Source supplying the schema document.
 	 * @return never null
 	 */
-	public Source makeSource();
+    Source makeSource();
 
 	/**
 	 * Returns a {@link SchemaSupplier} that will use the given object.
@@ -27,7 +27,7 @@ public interface SchemaSupplier {
 	 * @throws IllegalArgumentException
 	 *             if schemaObject is not one of the specified types
 	 */
-	public static SchemaSupplier makeSupplier(Object schemaObject) {
+	static SchemaSupplier makeSupplier(Object schemaObject) {
 		if (schemaObject instanceof File) {
 			return new FileSchemaSupplier((File)schemaObject);
 		} else if (schemaObject instanceof URL) {

@@ -27,7 +27,7 @@ public interface TestRunFixture {
      * @param value
      *            The actual item to add.
      */
-    public void addItem(String name, Object value);
+    void addItem(String name, Object value);
 
     /**
      * Retrieves an item from the fixture by name.
@@ -36,14 +36,14 @@ public interface TestRunFixture {
      *            The name of the item to return.
      * @return The item, or <code>null</code> if no corresponding item exists.
      */
-    public Object getItem(String name);
+    Object getItem(String name);
 
     /**
      * Returns a set of all item names.
      *
      * @return A Set containing the names of all items in the fixture.
      */
-    public Set<String> listItemNames();
+    Set<String> listItemNames();
 
     /**
      * Removes an item specified by name.
@@ -51,10 +51,10 @@ public interface TestRunFixture {
      * @param name
      *            The name of the item to remove.
      */
-    public void removeItem(String name);
+    void removeItem(String name);
 
     /**
      * Removes all items in the fixture.
      */
-    public void removeAllItems();
+    void removeAllItems();
 }

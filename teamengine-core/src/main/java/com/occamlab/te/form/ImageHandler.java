@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -87,7 +88,7 @@ public class ImageHandler {
     private String parseImageFormat( String src )
                             throws MalformedURLException, UnsupportedEncodingException {
         if ( src.contains( "FORMAT" ) ) {
-            URL url = new URL( URLDecoder.decode( src, "UTF-8" ) );
+            URL url = new URL( URLDecoder.decode( src, StandardCharsets.UTF_8) );
             String params[] = url.getQuery().split( "&" );
             for ( String param : params ) {
                 if ( param.split( "=" )[0].equalsIgnoreCase( "FORMAT" ) ) {

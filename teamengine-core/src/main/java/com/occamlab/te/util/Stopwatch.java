@@ -12,7 +12,7 @@ import java.util.Date;
  * 
  */
 public class Stopwatch {
-    static Map<String, Date> watchesMap = new HashMap<String, Date>();
+    static Map<String, Date> watchesMap = new HashMap<>();
 
     /**
      * Start a named Stopwatch

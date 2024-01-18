@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -44,7 +45,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
     private static String popupName = Thread.currentThread().getName();
 
     private JEditorPane jedit;
-    private ArrayList<String> fileFields = new ArrayList<String>();
+    private ArrayList<String> fileFields = new ArrayList<>();
 
     private static class Invoker implements Runnable {
         String name;
@@ -113,7 +114,7 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                     valueElement.setAttribute("key", key);
                     // Special case for file inputs
                     if (fileFields.contains(key)) {
-                        File f = new File(URLDecoder.decode(value, "UTF-8"));
+                        File f = new File(URLDecoder.decode(value, StandardCharsets.UTF_8));
                         if (f != null) {
                             if (core.formParsers.containsKey(key)) {
                                 Element parser = core.formParsers.get(key);
@@ -136,14 +137,14 @@ public class SwingForm extends JFrame implements HyperlinkListener {
                                 Element fileEntry = doc.createElementNS(CTL_NS,
                                         "file-entry");
                                 fileEntry.setAttribute("full-path",
-                                        URLDecoder.decode(value, "UTF-8")
+                                        URLDecoder.decode(value, StandardCharsets.UTF_8)
                                                 .replace('\\', '/'));
                                 valueElement.appendChild(fileEntry);
                             }
                         }
                     } else {
                         valueElement.appendChild(doc.createTextNode(URLDecoder
-                                .decode(value, "UTF-8")));
+                                .decode(value, StandardCharsets.UTF_8)));
                     }
                     root.appendChild(valueElement);
                     start = amp + 1;

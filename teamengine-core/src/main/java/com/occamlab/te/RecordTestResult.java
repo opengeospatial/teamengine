@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Calendar;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -83,7 +84,7 @@ public class RecordTestResult {
    */
   public void recordingStartCheck(SuiteEntry suite) throws Exception {
     // Check suite variable is not empty and get suite local name.
-    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
       //Create a document builder for storing the data.
       TECore.icFactory = DocumentBuilderFactory.newInstance();
       // Fortify Mod: prevent external entity injection
@@ -102,7 +103,7 @@ public class RecordTestResult {
   }
 
   public void recordingStartClause(SuiteEntry suite) throws Exception{
-    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
       //Create a document builder for storing the data.
       TECore.icFactoryClause = DocumentBuilderFactory.newInstance();
       // Fortify Mod: prevent external entity injection
@@ -135,7 +136,7 @@ public class RecordTestResult {
         if( ! tpath.isValid() ) 
             throw new IllegalArgumentException("Invalid argument to saveRecordingData: dirPath = " + dirPath.getAbsolutePath());
         }
-    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
 
       try {
         //Create a Source for saving the data.
@@ -204,7 +205,7 @@ public class RecordTestResult {
         if( ! tpath.isValid() ) 
             throw new IllegalArgumentException("TEPath error on path " + dirPath.getAbsolutePath());
     }
-    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName()) == true) {
+    if (dirPath != null && null != suite && SetupOptions.recordingInfo(suite.getLocalName())) {
       try {
         //Create a Source for saving the data.
         DOMSource source = new DOMSource(TECore.docClause);
@@ -322,7 +323,7 @@ public class RecordTestResult {
         objBeforeTest.put(RESULT, "");
         // write the data into file in form of json
         OutputStreamWriter writerBefore = new OutputStreamWriter(
-                new FileOutputStream(dirPath.getAbsolutePath() + Constants.TEST_RESULTTXT, true), UT_F8);
+                new FileOutputStream(dirPath.getAbsolutePath() + Constants.TEST_RESULTTXT, true), StandardCharsets.UTF_8);
         try (BufferedWriter fbwBefore = new BufferedWriter(writerBefore)) {
           fbwBefore.write(objBeforeTest.toString());
           fbwBefore.newLine();
@@ -373,7 +374,7 @@ public class RecordTestResult {
         obj.put(TIME, dateFormat.format(cal.getTime()));
         // write the data into file in form of json
         OutputStreamWriter writer = new OutputStreamWriter(
-                new FileOutputStream(dirPath.getAbsolutePath() + Constants.TEST_RESULTTXT, true), UT_F8);
+                new FileOutputStream(dirPath.getAbsolutePath() + Constants.TEST_RESULTTXT, true), StandardCharsets.UTF_8);
         try (BufferedWriter fbw = new BufferedWriter(writer)) {
           fbw.write(obj.toString());
           fbw.newLine();

@@ -25,6 +25,7 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -147,9 +148,9 @@ public class TestServlet extends HttpServlet {
             identityTransformer = tf.newTransformer();
             // identityTransformer = TransformerFactory.newInstance().newTransformer();
 
-            indexes = new HashMap<String, Index>();
+            indexes = new HashMap<>();
 
-            HashMap<String, TEClassLoader> classLoaders = new HashMap<String, TEClassLoader>();
+            HashMap<String, TEClassLoader> classLoaders = new HashMap<>();
 
             Processor processor = new Processor(false);
             processor.setConfigurationProperty(FeatureKeys.XINCLUDE,
@@ -247,7 +248,7 @@ public class TestServlet extends HttpServlet {
             FileItemFactory ffactory;
             JakartaServletFileUpload upload;
             List<FileItem> items = null;
-            HashMap<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<>();
             boolean multipart = JakartaServletFileUpload.isMultipartContent(request);
             if (multipart) {
                 ffactory = new DiskFileItemFactory.Builder().get();
@@ -294,7 +295,7 @@ public class TestServlet extends HttpServlet {
                     } else {
                         opts.addTestPath(test);
                     }
-                    for (String key : new java.util.TreeSet<String>(
+                    for (String key : new java.util.TreeSet<>(
                             params.keySet())) {
                         if (key.startsWith("profile_")) {
                             String profileId = params.get(key);
@@ -317,8 +318,8 @@ public class TestServlet extends HttpServlet {
                     opts.setSessionId(sessionid);
                     s.load(logdir, sessionid);
                     opts.setSourcesName(s.getSourcesName());
-                    ArrayList<String> profiles = new ArrayList<String>();
-                    for (String key : new java.util.TreeSet<String>(
+                    ArrayList<String> profiles = new ArrayList<>();
+                    for (String key : new java.util.TreeSet<>(
                             params.keySet())) {
                         if (key.startsWith("profile_")) {
                             String profileId = params.get(key);
@@ -340,8 +341,8 @@ public class TestServlet extends HttpServlet {
                     opts.setSessionId(sessionid);
                     opts.setSourcesName(sources);
                     opts.setSuiteName(suite.getId());
-                    ArrayList<String> profiles = new ArrayList<String>();
-                    for (String key : new java.util.TreeSet<String>(
+                    ArrayList<String> profiles = new ArrayList<>();
+                    for (String key : new java.util.TreeSet<>(
                             params.keySet())) {
                         if (key.startsWith("profile_")) {
                             String profileId = params.get(key);
@@ -403,7 +404,7 @@ public class TestServlet extends HttpServlet {
                 }
                 out.println(">");
                 out.print("<![CDATA[");
-                out.print(URLEncoder.encode(core.getOutput(), "UTF-8").replace(
+                out.print(URLEncoder.encode(core.getOutput(), StandardCharsets.UTF_8).replace(
                         '+', ' '));
                 out.println("]]>");
                 out.println("</status>");
@@ -431,7 +432,7 @@ public class TestServlet extends HttpServlet {
                     Iterator iter = items.iterator();
                     while (iter.hasNext()) {
                         FileItem item = (FileItem) iter.next();
-                        if (!item.isFormField() && !item.getName().equals("")) {
+                        if (!item.isFormField() && !item.getName().isEmpty()) {
                             File tempDir = new File(URI.create(core
                                     .getTestRunDirectory()));
                             File uploadedFile = new File(tempDir,

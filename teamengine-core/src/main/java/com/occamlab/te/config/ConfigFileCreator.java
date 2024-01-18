@@ -238,8 +238,7 @@ public class ConfigFileCreator {
 
 	public Document getDocument(File xml) {
 		try {
-			Document doc = builder.parse(xml);
-			return doc;
+            return builder.parse(xml);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -254,7 +253,7 @@ public class ConfigFileCreator {
 	 */
 	private List<File> getConfigFiles(File dir) {
 		String[] extensions = { "xml" };
-		List<File> configFiles = new ArrayList<File>();
+		List<File> configFiles = new ArrayList<>();
 
 		Collection<File> files = FileUtils.listFiles(dir, extensions, true);
 		for (Iterator<File> iterator = files.iterator(); iterator.hasNext();) {

@@ -63,8 +63,7 @@ public class XMLUtils {
 				XPath xpath = xPathfactory.newXPath();
 				XPathExpression expr;
 				expr = xpath.compile(xPathExpression);
-				NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
-				return nl;
+                return (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
 
 			} catch (XPathExpressionException e) {
 				e.printStackTrace();

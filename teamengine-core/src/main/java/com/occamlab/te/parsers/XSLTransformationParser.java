@@ -49,8 +49,8 @@ public class XSLTransformationParser {
         dbf.setNamespaceAware(true);
         db = dbf.newDocumentBuilder();
         tf = TransformerFactory.newInstance();
-        defaultProperties = new HashMap<String, String>();
-        defaultParams = new HashMap<String, String>();
+        defaultProperties = new HashMap<>();
+        defaultParams = new HashMap<>();
         defaultIgnoreErrors = FALSE;
         defaultIgnoreWarnings = TRUE;
     }
@@ -125,10 +125,8 @@ public class XSLTransformationParser {
 
     public Document parse(URLConnection uc, Element instruction,
             PrintWriter logger) throws Exception {
-        HashMap<String, String> properties = new HashMap<String, String>();
-        properties.putAll(defaultProperties);
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.putAll(defaultParams);
+        HashMap<String, String> properties = new HashMap<>(defaultProperties);
+        HashMap<String, String> params = new HashMap<>(defaultParams);
         Boolean ignoreErrors = defaultIgnoreErrors;
         Boolean ignoreWarnings = defaultIgnoreWarnings;
         Templates templates = parseInstruction(instruction, properties, params,

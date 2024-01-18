@@ -34,7 +34,7 @@ public class TEClassLoader extends ClassLoader {
             .getLogger("com.occamlab.te.TEClassLoader");
     
     private static List<File> resourcesDirsList(File resourcesDir) {
-    	List<File> resourcesDirs = new ArrayList<File>();
+    	List<File> resourcesDirs = new ArrayList<>();
     	if (resourcesDir != null) {
     		resourcesDirs.add(resourcesDir);
     	}
@@ -52,7 +52,7 @@ public class TEClassLoader extends ClassLoader {
     public TEClassLoader(List<File> resourcesDirs) {
         this.resourcesDirs = resourcesDirs;
         cl = Thread.currentThread().getContextClassLoader();
-        registeredClasses = new HashSet<String>();
+        registeredClasses = new HashSet<>();
         registeredClasses.add("com.occamlab.te.parsers.HTTPParser");
         registeredClasses
                 .add("com.occamlab.te.parsers.SchematronValidatingParser");
@@ -90,7 +90,7 @@ public class TEClassLoader extends ClassLoader {
         Enumeration<URL> resources = cl.getResources(name);
         URL u = getResource(name);
         if (resourcesDirs.size() > 0 && u != null) {
-            Vector<URL> v = new Vector<URL>();
+            Vector<URL> v = new Vector<>();
             v.add(u);
             while (resources.hasMoreElements()) {
                 v.add(resources.nextElement());

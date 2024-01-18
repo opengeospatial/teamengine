@@ -67,7 +67,7 @@ public class ViewLogServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         try {
-            ArrayList<String> tests = new ArrayList<String>();
+            ArrayList<String> tests = new ArrayList<>();
             String user = request.getRemoteUser();
             File userlog = new File(conf.getUsersDir(), user);
             String session = request.getParameter("session");

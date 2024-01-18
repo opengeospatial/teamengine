@@ -1,6 +1,7 @@
 package com.occamlab.te.realm;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.StringTokenizer;
 
@@ -29,15 +30,11 @@ public class RestAuthenticationFilter implements Filter {
             if (null != authCredentials && authCredentials != "" && authCredentials.startsWith("Basic ")) {
                 final String encodedUserPassword = authCredentials.replaceFirst("Basic" + " ", "");
                 String usernameAndPassword = null;
-                
-                try {
-                    byte[] decodedBytes = Base64.getDecoder()
-                            .decode(encodedUserPassword);
-                    usernameAndPassword = new String(decodedBytes, "UTF-8");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                
+
+                byte[] decodedBytes = Base64.getDecoder()
+                        .decode(encodedUserPassword);
+                usernameAndPassword = new String(decodedBytes, StandardCharsets.UTF_8);
+
                 String username = "";
                 String password =  "";
                 

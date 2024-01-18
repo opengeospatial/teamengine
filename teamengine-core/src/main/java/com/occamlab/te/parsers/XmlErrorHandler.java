@@ -39,7 +39,7 @@ public class XmlErrorHandler implements ErrorHandler {
     private StringBuffer buf = new StringBuffer();
 
     /** Collection of reported validation errors. */
-    private List<ValidationError> errors = new ArrayList<ValidationError>();
+    private List<ValidationError> errors = new ArrayList<>();
     private static Logger jlogger = Logger
             .getLogger("com.occamlab.te.parsers.XmlErrorHandler");
 
@@ -159,7 +159,7 @@ public class XmlErrorHandler implements ErrorHandler {
      */
     public List<String> toList() {
 
-        List<String> errorStrings = new ArrayList<String>();
+        List<String> errorStrings = new ArrayList<>();
         ErrorIterator errIterator = iterator();
         while (errIterator.hasNext()) {
             ValidationError err = errIterator.next();

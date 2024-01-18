@@ -24,10 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.UUID;
+
 import com.occamlab.te.util.TEPath;  // Fortify addition
-import com.occamlab.te.util.LogUtils;
-import java.util.regex.Pattern;      // Supports UUID validation
 
 import net.sf.saxon.s9api.XdmNode;
 
@@ -105,9 +103,9 @@ public class RuntimeOptions {
     private String suiteName = "";
     private String sourcesName = "default";
     private String baseURI = "";
-    private ArrayList<String> profiles = new ArrayList<String>();
-    private ArrayList<String> testPaths = new ArrayList<String>();
-    private ArrayList<String> params = new ArrayList<String>();
+    private ArrayList<String> profiles = new ArrayList<>();
+    private ArrayList<String> testPaths = new ArrayList<>();
+    private ArrayList<String> params = new ArrayList<>();
     private List<File> recordedForms = new ArrayList<>();
 
     private static Logger jLogger = Logger.getLogger("com.occamlab.te.RuntimeOptions");

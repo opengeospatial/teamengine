@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,10 +52,10 @@ import com.occamlab.te.spi.stats.TEStatisticsErrorHandler;
 public class TEStatisticsUtil {
     static Logger logger = Logger.getLogger(TEStatisticsUtil.class.getName());
 
-    public static Map<String, Long> testSuiteFailedTestDrillDownMap = new HashMap<String, Long>();
+    public static Map<String, Long> testSuiteFailedTestDrillDownMap = new HashMap<>();
 
     public static Map<String, List<SessionDetails>> processUserDir(File usersDir) {
-        Map<String, List<SessionDetails>> userDetails = new HashMap<String, List<SessionDetails>>();
+        Map<String, List<SessionDetails>> userDetails = new HashMap<>();
         String[] userDirList = usersDir.list();
 
         if (null != userDirList && 0 < userDirList.length) {
@@ -65,7 +66,7 @@ public class TEStatisticsUtil {
 
                 if (null != sessionDirs && 0 < sessionDirs.length) {
                     Arrays.sort(sessionDirs);
-                    List<SessionDetails> sessions = new ArrayList<SessionDetails>();
+                    List<SessionDetails> sessions = new ArrayList<>();
 
                     for (Integer j = 0; j < sessionDirs.length; j++) {
                         File sessionDir = new File(new File(usersDir, userDirList[i]), sessionDirs[j]);
@@ -155,7 +156,7 @@ public class TEStatisticsUtil {
             } else {
                 Element resultStatus = (Element) testResult.item(0);
 
-                if (resultStatus.hasAttribute("result") && !resultStatus.getAttribute("result").equals("")) {
+                if (resultStatus.hasAttribute("result") && !resultStatus.getAttribute("result").isEmpty()) {
                     return Integer.parseInt(resultStatus.getAttribute("result"));
                 } else {
                     throw new RuntimeException("The 'result' attribute not found or having the NULL value in log file.");
@@ -167,7 +168,7 @@ public class TEStatisticsUtil {
 
     public static List<String> getListOfFailedTest(File sessionDir) {
         File testngDir = new File(sessionDir, "testng");
-        List<String> failedTestList = new ArrayList<String>();
+        List<String> failedTestList = new ArrayList<>();
         File testngResult = null;
 
         if (testngDir.exists()) {
@@ -220,7 +221,7 @@ public class TEStatisticsUtil {
         Document doc = null;
         try {
             InputStream inputStream = new FileInputStream(configFile);
-            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+            Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             InputSource is = new InputSource(reader);
             is.setEncoding("UTF-8");
 
@@ -258,8 +259,8 @@ public class TEStatisticsUtil {
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy/MM/dd  HH:mm:ss");
         DateTime currentTime = DateTime.now();
-        ArrayList<Integer> monthList = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
-        ArrayList<Long> testSuiteUsersPerMonth = new ArrayList<Long>();
+        ArrayList<Integer> monthList = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+        ArrayList<Long> testSuiteUsersPerMonth = new ArrayList<>();
 
         for (Integer month : monthList) {
             long count = 0;
@@ -353,7 +354,7 @@ public class TEStatisticsUtil {
                 }
             }
         }
-        ArrayList<Long> testSuiteRunsPerMonth = new ArrayList<Long>(
+        ArrayList<Long> testSuiteRunsPerMonth = new ArrayList<>(
                 Arrays.asList(jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec));
         return testSuiteRunsPerMonth;
     }
@@ -374,7 +375,7 @@ public class TEStatisticsUtil {
     public static Map<String, ArrayList<Long>> testSuiteStatusPerMonth(String testSuiteName, 
             Map<String, List<SessionDetails>> sessionDetailsList, Map<String, Integer> testStatus) {
 
-        Map<String, ArrayList<Long>> testSuiteStatusPerMonth = new HashMap<String, ArrayList<Long>>();
+        Map<String, ArrayList<Long>> testSuiteStatusPerMonth = new HashMap<>();
 
         for (Entry<String, Integer> status : testStatus.entrySet()) {
             long jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jun = 0, jul = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0;
@@ -454,7 +455,7 @@ public class TEStatisticsUtil {
                     }
                 }
             }
-            ArrayList<Long> statusPerMonth = new ArrayList<Long>(
+            ArrayList<Long> statusPerMonth = new ArrayList<>(
                     Arrays.asList(jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec));
             testSuiteStatusPerMonth.put(status.getKey(), statusPerMonth);
         }
@@ -464,8 +465,8 @@ public class TEStatisticsUtil {
     public static Map<String, Object> testSuiteStatusWithDrilldown(String testSuiteName, 
             Map<String, List<SessionDetails>> sessionDetailsList, Map<String, Integer> testStatus) {
 
-        Map<String, Object> testSuiteStatusDrillDownMap = new HashMap<String, Object>();
-        Map<String, Long> testSuiteFailedTestMap = new HashMap<String, Long>();
+        Map<String, Object> testSuiteStatusDrillDownMap = new HashMap<>();
+        Map<String, Long> testSuiteFailedTestMap = new HashMap<>();
 
         for (Entry<String, Integer> status : testStatus.entrySet()) {
             long testCount = 0;
@@ -584,7 +585,7 @@ public class TEStatisticsUtil {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             String xmlTemplate1 = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
-            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes("UTF-8"));
+            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes(StandardCharsets.UTF_8));
             String statXsl = cl.getResource("com/occamlab/te/stats/test_suite_stats.xsl").toString();
             Transformer transformer = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)
                     .newTransformer(new StreamSource(statXsl));
@@ -624,7 +625,7 @@ public class TEStatisticsUtil {
     public static Map<String, Object> testSuiteRunDetailsOfCurrentYear(String testSuiteName,
             Map<String, List<SessionDetails>> sessionDetailsList) {
 
-        Map<String, Object> testSuiteRunDetails = new HashMap<String, Object>();
+        Map<String, Object> testSuiteRunDetails = new HashMap<>();
         long count = 0;
         List<SessionDetails> foundSessions = null;
 
@@ -721,7 +722,7 @@ public class TEStatisticsUtil {
                 }
             }
         }
-        ArrayList<Long> testRunsPerMonth = new ArrayList<Long>(
+        ArrayList<Long> testRunsPerMonth = new ArrayList<>(
                 Arrays.asList(jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec));
         return testRunsPerMonth;
     }
@@ -737,8 +738,8 @@ public class TEStatisticsUtil {
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy/MM/dd  HH:mm:ss");
         DateTime currentTime = DateTime.now();
-        ArrayList<Integer> monthList = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
-        ArrayList<Long> userPerMonth = new ArrayList<Long>();
+        ArrayList<Integer> monthList = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+        ArrayList<Long> userPerMonth = new ArrayList<>();
 
         for (Integer month : monthList) {
             long count = 0;
@@ -771,7 +772,7 @@ public class TEStatisticsUtil {
     public static Map<String, Object> numberOfUsersPerTestSuite(String testSuiteName,
             Map<String, List<SessionDetails>> sessionDetailsList) {
 
-        Map<String, Object> numberOfUsersPerTestSuite = new HashMap<String, Object>();
+        Map<String, Object> numberOfUsersPerTestSuite = new HashMap<>();
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy/MM/dd  HH:mm:ss");
         DateTime currentTime = DateTime.now();
         long count = 0;
@@ -811,7 +812,7 @@ public class TEStatisticsUtil {
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             String xmlTemplate1 = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
-            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes("UTF-8"));
+            InputStream input = new ByteArrayInputStream(xmlTemplate1.getBytes(StandardCharsets.UTF_8));
             String statXsl = cl.getResource("com/occamlab/te/stats/overall_stats.xsl").toString();
             Transformer transformer = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null)
                     .newTransformer(new StreamSource(statXsl));

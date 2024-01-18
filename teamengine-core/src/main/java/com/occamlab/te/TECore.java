@@ -35,6 +35,7 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -162,11 +163,11 @@ public class TECore implements Runnable {
   volatile String formHtml; // HTML representation for an active form
   volatile Document formResults; // Holds form results until they are
   // retrieved
-  Map<String, Element> formParsers = new HashMap<String, Element>();
-  Map<Integer, Object> functionInstances = new HashMap<Integer, Object>();
-  Map<String, Object> parserInstances = new HashMap<String, Object>();
-  Map<String, Method> parserMethods = new HashMap<String, Method>();
-  LinkedList<TestEntry> testStack = new LinkedList<TestEntry>();
+  Map<String, Element> formParsers = new HashMap<>();
+  Map<Integer, Object> functionInstances = new HashMap<>();
+  Map<String, Object> parserInstances = new HashMap<>();
+  Map<String, Method> parserMethods = new HashMap<>();
+  LinkedList<TestEntry> testStack = new LinkedList<>();
   volatile boolean threadComplete = false;
   volatile boolean stop = false;
   volatile ByteArrayOutputStream threadOutput;
@@ -215,7 +216,7 @@ public class TECore implements Runnable {
   public static int rootNo = 0;
   public static String Clause = "";
   public static String Purpose = "";
-  public static ArrayList<String> rootTestName = new ArrayList<String>();
+  public static ArrayList<String> rootTestName = new ArrayList<>();
   public Document userInputs = null;
   public Boolean supportHtmlReport = false;
   
@@ -234,7 +235,7 @@ public class TECore implements Runnable {
     this.testPath = opts.getSessionId();
     this.out = System.out;
     this.imageHandler = new ImageHandler(opts.getLogDir(), opts.getSessionId());
-    this.fnCallStack = new Stack<String>();
+    this.fnCallStack = new Stack<>();
   }
 
   public TestEntry getParentTest() {
@@ -340,8 +341,8 @@ public class TECore implements Runnable {
                 + File.separator + opts.getSessionId());
         File resultsDir = new File(opts.getLogDir(),
 				opts.getSessionId());
-        if(supportHtmlReport == true){
-        Map<String, String> testInputMap = new HashMap<String, String>();
+        if(supportHtmlReport){
+        Map<String, String> testInputMap = new HashMap<>();
         testInputMap = extractTestInputs(userInputs, opts);
         
          if (! new File(resultsDir, "testng").exists() && null != testInputMap)
@@ -464,8 +465,7 @@ public class TECore implements Runnable {
     testStack.peek().setDefaultResult(defaultResult);
     testStack.peek().setResult(defaultResult);
 
-    ArrayList<String> kvps = new ArrayList<String>();
-    kvps.addAll(params);
+      ArrayList<String> kvps = new ArrayList<>(params);
     Document form = suite.getForm();
     if (form != null) {
       Document results = (Document) form(form, suite.getId());
@@ -529,7 +529,7 @@ public class TECore implements Runnable {
             engine.getBuilder(), log);
     TestEntry test = index.getTest(testId);
     if (suite.getStartingTest().equals(test.getQName())) {
-      ArrayList<String> kvps = new ArrayList<String>();
+      ArrayList<String> kvps = new ArrayList<>();
       kvps.addAll(baseParams);
       kvps.addAll(params);
       Document form = profile.getForm();
@@ -787,7 +787,7 @@ public class TECore implements Runnable {
             logger.print("namespace-uri=\"" + test.getNamespaceURI() + "\" ");
             logger.print("type=\"" + test.getType() + "\" ");
             logger.print("defaultResult=\""
-                    + Integer.toString(test.getDefaultResult()) + "\" ");
+                    + test.getDefaultResult() + "\" ");
             logger.print("path=\"" + testPath + "\" ");
             logger.println("file=\"" + test.getTemplateFile().getAbsolutePath()
                     + "\">");
@@ -839,7 +839,7 @@ public class TECore implements Runnable {
           }
         }
         OutputStreamWriter writer = new OutputStreamWriter(
-                new FileOutputStream(file, true), "UTF-8");
+                new FileOutputStream(file, true), StandardCharsets.UTF_8);
         BufferedWriter fbw = new BufferedWriter(writer);
         fbw.write(dateFormat.format(date) + " ERROR");
         fbw.newLine();
@@ -865,7 +865,7 @@ public class TECore implements Runnable {
 
             if(test.isConformanceClass()){
                 logger.println("<conformanceClass name=\"" + test.getLocalName() + "\"" + " isBasic=\""
-                                + Boolean.toString( test.isBasic() ) + "\"" + " result=\"" + test.getResult()
+                                + test.isBasic() + "\"" + " result=\"" + test.getResult()
                                 + "\" />");
             	supportHtmlReport = true;
             }
@@ -881,7 +881,7 @@ public class TECore implements Runnable {
     }
     //Create node which contain all test detail.
     if ("True".equals(System.getProperty("Record"))) {
-      mainRootElement.appendChild(recordTestResult.getMethod());
+      mainRootElement.appendChild(RecordTestResult.getMethod());
     }
     assertionMsz = "";
     pathURL = "";
@@ -1563,7 +1563,7 @@ public class TECore implements Runnable {
   static public URLConnection build_soap_request(Node xml) throws Exception {
     String sUrl = null;
     String method = "POST";
-    String charset = ((Element) xml).getAttribute("charset").equals("") ? ((Element) xml)
+    String charset = ((Element) xml).getAttribute("charset").isEmpty() ? ((Element) xml)
             .getAttribute("charset") : "UTF-8";
     String version = ((Element) xml).getAttribute("version");
     String action = "";
@@ -1619,7 +1619,7 @@ public class TECore implements Runnable {
       uc.setRequestProperty("Accept", "text/xml");
       uc.setRequestProperty("SOAPAction", action);
       contentType = "text/xml";
-      if (!charset.equals("")) {
+      if (!charset.isEmpty()) {
         contentType = contentType + "; charset=" + charset;
       }
       uc.setRequestProperty("Content-Type", contentType);
@@ -1627,10 +1627,10 @@ public class TECore implements Runnable {
       // Handle HTTP binding for SOAP 1.2
       uc.setRequestProperty("Accept", "application/soap+xml");
       contentType = "application/soap+xml";
-      if (!charset.equals("")) {
+      if (!charset.isEmpty()) {
         contentType = contentType + "; charset=" + charset;
       }
-      if (!action.equals("")) {
+      if (!action.isEmpty()) {
         contentType = contentType + "; action=" + action;
       }
       uc.setRequestProperty("Content-Type", contentType);
@@ -1752,8 +1752,8 @@ public class TECore implements Runnable {
    */
   public URLConnection build_request(Node xml) throws Exception {
     Node body = null;
-    ArrayList<String[]> headers = new ArrayList<String[]>();
-    ArrayList<Node> parts = new ArrayList<Node>();
+    ArrayList<String[]> headers = new ArrayList<>();
+    ArrayList<Node> parts = new ArrayList<>();
     String sUrl = null;
     String sParams = "";
     String method = "GET";
@@ -1911,7 +1911,7 @@ public class TECore implements Runnable {
             if (contentType.equals("application/xml")) {
               contentType = "application/xml; charset=" + charset;
             }
-            if (contentType == null || contentType.equals("")) {
+            if (contentType == null || contentType.isEmpty()) {
               contentType = "application/octet-stream";
             }
 
@@ -1980,7 +1980,7 @@ public class TECore implements Runnable {
       // Set headers
       if (body != null) {
         String mid = ((Element) body).getAttribute("mid");
-        if (mid != null && !mid.equals("")) {
+        if (mid != null && !mid.isEmpty()) {
           if (mid.indexOf("mid:") != -1) {
             mid = mid.substring(mid.indexOf("mid:")
                     + "mid:".length());
@@ -2261,13 +2261,12 @@ public class TECore implements Runnable {
           }
         }
       } else if (messageTrim.contains("Clause")) {
-        Clause = messageTrim.replace("Clause : ", "");;
+        Clause = messageTrim.replace("Clause : ", "");
       } else {
-        Purpose = messageTrim.replace("Purpose : ", "");;
+        Purpose = messageTrim.replace("Purpose : ", "");
       }
       if ((rootNo != 0) && (!"".equals(Clause)) && (!"".equals(Purpose))) {
-        RecordTestResult recordTestResult = new RecordTestResult();
-        mainRootElementClause.appendChild(recordTestResult.getClause());
+        mainRootElementClause.appendChild(RecordTestResult.getClause());
         Clause = "";
         Purpose = "";
         rootNo = 0;
@@ -2305,7 +2304,7 @@ public class TECore implements Runnable {
         }
       }
     }
-    return (child_e == null) ? null : child_e;
+    return child_e;
   }
 
   /**
@@ -2576,7 +2575,7 @@ public class TECore implements Runnable {
 	 */
 	private Map<String, String> extractTestInputs(Document userInput,
 			RuntimeOptions runOpts) {
-		Map<String, String> inputMap = new HashMap<String, String>();
+		Map<String, String> inputMap = new HashMap<>();
 		if (null != userInputs) {
 			NodeList values = userInputs.getDocumentElement()
 					.getElementsByTagName("value");

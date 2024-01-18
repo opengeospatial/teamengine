@@ -64,7 +64,7 @@ public class XMLValidatingParser {
 	static DocumentBuilderFactory schemaValidatingDBF = null;
 	static DocumentBuilderFactory dtdValidatingDBF = null;
 	ArrayList<SchemaSupplier> schemaList = new ArrayList<>();
-	ArrayList<Object> dtdList = new ArrayList<Object>();
+	ArrayList<Object> dtdList = new ArrayList<>();
 
 	/*
 	 * For now we create a new cache per instance of XMLValidatingParser, which
@@ -300,7 +300,7 @@ public class XMLValidatingParser {
 		if (error_count > 0) {
 			String s = (null != parserConfig) ? parserConfig
 					.getAttribute("ignoreErrors") : "false";
-			if (s.length() == 0 || Boolean.parseBoolean(s) == false) {
+			if (s.length() == 0 || !Boolean.parseBoolean(s)) {
 				resultDoc = null;
 			}
 		}
@@ -308,7 +308,7 @@ public class XMLValidatingParser {
 		if (warning_count > 0) {
 			String s = (null != parserConfig) ? parserConfig
 					.getAttribute("ignoreWarnings") : "true";
-			if (s.length() > 0 && Boolean.parseBoolean(s) == false) {
+			if (s.length() > 0 && !Boolean.parseBoolean(s)) {
 				resultDoc = null;
 			}
 		}
@@ -382,10 +382,8 @@ public class XMLValidatingParser {
 	private void validate(
 			final Document doc, final Node instruction, final ErrorHandler errHandler)
 			throws Exception {
-		ArrayList<SchemaSupplier> schemas = new ArrayList<>();
-		ArrayList<Object> dtds = new ArrayList<Object>();
-		schemas.addAll(schemaList);
-		dtds.addAll(dtdList);
+        ArrayList<SchemaSupplier> schemas = new ArrayList<>(schemaList);
+        ArrayList<Object> dtds = new ArrayList<>(dtdList);
 		loadSchemaLists(instruction, schemas, dtds);
 		if (null == doc.getDoctype() && dtds.isEmpty()) {
 			validateAgainstXMLSchemaList(doc, schemas, errHandler);

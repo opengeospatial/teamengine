@@ -25,7 +25,7 @@ public class UserFilesRealmTest {
     public void verifyCreateGenericPrincipal() {
         String username = "user-1";
         String password = "password-1";
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         roles.add(ROLE_1);
         UserFilesRealm iut = new UserFilesRealm();
         GenericPrincipal result = iut.createGenericPrincipal(username, roles);

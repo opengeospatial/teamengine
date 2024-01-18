@@ -14,7 +14,7 @@ import com.occamlab.te.util.DomUtils;
 public class ProfileEntry extends IndexEntry {
     String defaultResult = "Pass";
     QName baseSuite;
-    List<List<QName>> excludes = new ArrayList<List<QName>>();
+    List<List<QName>> excludes = new ArrayList<>();
     QName startingTest;
     Document form = null;
     String title = null;
@@ -33,7 +33,7 @@ public class ProfileEntry extends IndexEntry {
         baseSuite = getQName(base);
         for (Element exclude : DomUtils
                 .getElementsByTagName(profile, "exclude")) {
-            ArrayList<QName> list = new ArrayList<QName>();
+            ArrayList<QName> list = new ArrayList<>();
             for (Element test : DomUtils.getElementsByTagName(exclude, "test")) {
                 list.add(getQName(test));
             }

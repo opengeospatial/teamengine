@@ -59,7 +59,7 @@ public class UserFilesRealm extends RealmBase {
     private static final Logger LOGR = Logger.getLogger(UserFilesRealm.class.getName());
     private String rootPath = null;
     private DocumentBuilder DB = null;
-    private HashMap<String, Principal> principals = new HashMap<String, Principal>();
+    private HashMap<String, Principal> principals = new HashMap<>();
 
     private String password;
 
@@ -79,7 +79,7 @@ public class UserFilesRealm extends RealmBase {
     }
 
     private GenericPrincipal readPrincipal(String username) {
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         File usersdir = new File(rootPath);
         if (!usersdir.isDirectory()) {
             usersdir = new File(System.getProperty("TE_BASE"), "users");
@@ -112,8 +112,7 @@ public class UserFilesRealm extends RealmBase {
             String name = ((Element) roleElements.item(i)).getTextContent();
             roles.add(name);
         }
-        GenericPrincipal principal = createGenericPrincipal(username, roles);
-        return principal;
+        return createGenericPrincipal(username, roles);
     }
 
     /**

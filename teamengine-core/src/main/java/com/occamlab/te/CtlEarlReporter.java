@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -265,7 +266,7 @@ public class CtlEarlReporter {
                             throws UnsupportedEncodingException {
         for ( int j = 0; j < logList.getLength(); j++ ) {
             Element logElement = (Element) logList.item( j );
-            String decodedBaseURL = java.net.URLDecoder.decode( logElement.getAttribute( "xml:base" ), "UTF-8" );
+            String decodedBaseURL = java.net.URLDecoder.decode( logElement.getAttribute( "xml:base" ), StandardCharsets.UTF_8);
             String logtestcall = parseLogTestCall( "", decodedBaseURL );
             // Check sub-testcall is matching with the <log baseURL="">
             if ( testcallPath.equals( logtestcall ) ) {
@@ -286,7 +287,7 @@ public class CtlEarlReporter {
         String testName = starttestElements.getAttribute( "local-name" );
         int result = Integer.parseInt( endtestElements.getAttribute( "result" ) );
         Element ccElement = getElementByTagName( logElements, "conformanceClass" );
-        boolean isCC = ( ccElement != null ) ? true : false;
+        boolean isCC = ccElement != null;
         boolean isBasic = false;
         if ( ccElement != null && ccElement.hasAttribute( "isBasic" )
              && Boolean.valueOf( ccElement.getAttribute( "isBasic" ) ) ) {
@@ -610,26 +611,26 @@ public class CtlEarlReporter {
     private String parseLogTestCall( String logtestcall, String decodedBaseURL ) {
         if ( decodedBaseURL.contains( "users" ) && !decodedBaseURL.contains( "rest" )) {
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "users" ) );
-            int first = baseUrl.indexOf( System.getProperty( "file.separator" ) );
-            int second = baseUrl.indexOf( System.getProperty( "file.separator" ), first + 1 );
-            logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
+            int first = baseUrl.indexOf(FileSystems.getDefault().getSeparator());
+            int second = baseUrl.indexOf(FileSystems.getDefault().getSeparator(), first + 1 );
+            logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf(FileSystems.getDefault().getSeparator()) );
         } else if (decodedBaseURL.contains( "rest" )) {
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "users" ) );
-            baseUrl = baseUrl.replace("rest" + System.getProperty( "file.separator" ), "");
-            int first = baseUrl.indexOf( System.getProperty( "file.separator" ) );
-            int second = baseUrl.indexOf( System.getProperty( "file.separator" ), first + 1 );
-            logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
+            baseUrl = baseUrl.replace("rest" + FileSystems.getDefault().getSeparator(), "");
+            int first = baseUrl.indexOf(FileSystems.getDefault().getSeparator());
+            int second = baseUrl.indexOf(FileSystems.getDefault().getSeparator(), first + 1 );
+            logtestcall = baseUrl.substring( second + 1, baseUrl.lastIndexOf(FileSystems.getDefault().getSeparator()) );
         } else if ( decodedBaseURL.startsWith(tmpDir) ) {
             String baseUrl = decodedBaseURL.replace(tmpDir, "");
             logtestcall = baseUrl.substring( 0,
-                                             baseUrl.lastIndexOf( System.getProperty( "file.separator" ) ) );
+                                             baseUrl.lastIndexOf(FileSystems.getDefault().getSeparator()) );
         } else if ( decodedBaseURL.contains( "unittest" ) ) {
             // for Unit test only
             String baseUrl = decodedBaseURL.substring( decodedBaseURL.indexOf( "unittest" ) );
             logtestcall = baseUrl.substring( baseUrl.indexOf( "/" ) + 1,
                                              baseUrl.lastIndexOf( "/" ) );
         }
-        if ( logtestcall.startsWith(System.getProperty( "file.separator" ))) {
+        if ( logtestcall.startsWith(FileSystems.getDefault().getSeparator())) {
             logtestcall = logtestcall.substring(1);
         }
         if ( logtestcall.contains( "\\" ) ) {

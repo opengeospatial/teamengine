@@ -29,7 +29,7 @@ public class ParserEntry extends IndexEntry {
             NodeList nl = e.getElementsByTagName("with-param");
             if (nl.getLength() > 0) {
                 setInitialized(true);
-                classParams = new ArrayList<Node>();
+                classParams = new ArrayList<>();
                 for (int i = 0; i < nl.getLength(); i++) {
                     Element el = (Element) nl.item(i);
                     // System.out.println(DomUtils.serializeNode(el));

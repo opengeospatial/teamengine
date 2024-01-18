@@ -98,6 +98,6 @@ public class FixtureManager {
     }
 
     private FixtureManager() {
-        this.fixtures = new HashMap<String, TestRunFixture>();
+        this.fixtures = new HashMap<>();
     }
 }

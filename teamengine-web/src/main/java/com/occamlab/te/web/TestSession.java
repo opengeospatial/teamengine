@@ -26,11 +26,9 @@ import java.io.File;
 import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.Format;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -61,7 +59,7 @@ public class TestSession implements  Comparable<TestSession> {
      */
     public TestSession() throws Exception {
         suiteName = null;
-        profiles = new ArrayList<String>();
+        profiles = new ArrayList<>();
     }
 
     public void save(File logdir) throws Exception {
