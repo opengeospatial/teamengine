@@ -11,12 +11,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -53,7 +53,7 @@ public class TestSuiteOverviewResource {
      *      HTML-Compatible XHTML Documents</a>
      */
     @GET
-    @Produces("text/html; charset='utf-8'")
+    @Produces("text/html; charset=utf-8")
     public InputStream getTestSuiteDescriptionAsHTML(@PathParam("etsCode") String etsCode) {
         InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_TEXT_HTML);
 
@@ -75,7 +75,7 @@ public class TestSuiteOverviewResource {
      *         <code>/doc/{etsCode}/{etsVersion}/overview.xml</code>).
      */
     @GET
-    @Produces("application/xml; charset='utf-8'")
+    @Produces("application/xml; charset=utf-8")
     public InputStream getTestSuiteDescriptionAsXML(@PathParam("etsCode") String etsCode) {
         InputStream atsStream = getTestSuiteDescription(etsCode, APPLICATION_XML);
 

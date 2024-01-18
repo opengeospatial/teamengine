@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Bag;
@@ -59,6 +59,8 @@ import com.occamlab.te.vocabulary.CITE;
 import com.occamlab.te.vocabulary.CONTENT;
 import com.occamlab.te.vocabulary.EARL;
 import com.occamlab.te.vocabulary.HTTP;
+
+import static java.lang.Integer.valueOf;
 
 
 /**
@@ -106,9 +108,9 @@ public class EarlReporter implements IReporter {
             addTestRequirements(model, suite.getXmlSuite().getTests());
             addTestInputs(model, suite.getXmlSuite().getAllParameters());
             TestRunSummary summary = new TestRunSummary(suite);
-            this.testRun.addLiteral(CITE.testsPassed, new Integer(summary.getTotalPassed()));
-            this.testRun.addLiteral(CITE.testsFailed, new Integer(summary.getTotalFailed()));
-            this.testRun.addLiteral(CITE.testsSkipped, new Integer(summary.getTotalSkipped()));
+            this.testRun.addLiteral(CITE.testsPassed, valueOf(summary.getTotalPassed()));
+            this.testRun.addLiteral(CITE.testsFailed, valueOf(summary.getTotalFailed()));
+            this.testRun.addLiteral(CITE.testsSkipped, valueOf(summary.getTotalSkipped()));
             Literal duration = model.createTypedLiteral(summary.getTotalDuration(),
                     XSDDatatype.XSDduration);
             this.testRun.addLiteral(DCTerms.extent, duration);
@@ -151,9 +153,9 @@ public class EarlReporter implements IReporter {
             int nPassed = testContext.getPassedTests().size();
             int nSkipped = testContext.getSkippedTests().size();
             int nFailed = testContext.getFailedTests().size();
-            testReq.addLiteral(CITE.testsPassed, new Integer(nPassed));
-            testReq.addLiteral(CITE.testsFailed, new Integer(nFailed));
-            testReq.addLiteral(CITE.testsSkipped, new Integer(nSkipped));
+            testReq.addLiteral(CITE.testsPassed, valueOf(nPassed));
+            testReq.addLiteral(CITE.testsFailed, valueOf(nFailed));
+            testReq.addLiteral(CITE.testsSkipped, valueOf(nSkipped));
             if (nPassed + nFailed == 0) {
                 testReq.addProperty(DCTerms.description,
                         "A precondition was not met. All tests in this set were skipped.");

@@ -30,10 +30,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.occamlab.te.config.Config;
 import com.occamlab.te.util.ZipUtils;
@@ -42,8 +42,8 @@ import com.occamlab.te.util.ZipUtils;
  * Servlet implementation class for Servlet: EmailLogServlet
  *
  */
-public class EmailLogServlet extends javax.servlet.http.HttpServlet implements
-        javax.servlet.Servlet {
+public class EmailLogServlet extends jakarta.servlet.http.HttpServlet implements
+        jakarta.servlet.Servlet {
     Config Conf;
 
     public void init() throws ServletException {

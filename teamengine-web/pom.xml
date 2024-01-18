@@ -42,37 +42,41 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-servlet</artifactId>
-      <version>${jersey.version}</version>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.5</version>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-jaxb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-jakarta</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.4.7</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-      <version>1.2.3</version>
+      <artifactId>jakarta.servlet.jsp.jstl</artifactId>
       <exclusions>
         <!-- provided by Tomcat -->
         <exclusion>
-          <groupId>javax.servlet.jsp</groupId>
+          <groupId>jakarta.servlet.jsp</groupId>
           <artifactId>jsp-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -82,17 +86,14 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
-      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-servlet-api</artifactId>
-      <version>7.0.69</version>
     </dependency>
     <dependency>
       <groupId>org.opengis.cite.saxon</groupId>
       <artifactId>saxon9</artifactId>
-      <version>${saxon.version}</version>
     </dependency>
     <dependency>
       <groupId>xml-apis</groupId>
@@ -116,7 +117,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.5</version>
         <configuration>
           <resourceBundles>
             <resourceBundle>${project.groupId}:teamengine-resources:${project.version}</resourceBundle>
@@ -133,7 +133,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.5</version>
         <configuration>
           <escapeString>\</escapeString>
           <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -148,9 +147,8 @@
           <packagingExcludes>
             WEB-INF/lib/teamengine-resources*.jar,
             WEB-INF/lib/teamengine-realm*.jar,
-            WEB-INF/lib/jersey-core*.jar,
-            WEB-INF/lib/jersey-serv*.jar,
-            WEB-INF/lib/jsr311-api-*.jar,
+            WEB-INF/lib/jersey-*.jar,
+            WEB-INF/lib/jakarta.ws.rs-api-*.jar,
             WEB-INF/lib/asm-*.jar,
             WEB-INF/lib/derby-*.jar,
             WEB-INF/lib/xercesImpl-*.jar,
@@ -172,7 +170,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
         <configuration>
           <descriptors>
             <descriptor>${basedir}/src/assembly/common-libs.xml</descriptor>

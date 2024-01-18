@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,7 +78,7 @@ public class TestSuiteSetResource {
      *         syntax).
      */
     @GET
-    @Produces("application/xhtml+xml; charset='utf-8'")
+    @Produces("application/xhtml+xml; charset=utf-8")
     public Source listTestSuites() {
         Document xhtmlDoc = readTemplate();
         if (null == xhtmlDoc) {
@@ -118,7 +118,7 @@ public class TestSuiteSetResource {
      *         collection (an XML document).
      */
     @GET
-    @Produces("application/xml; charset='utf-8'")
+    @Produces("application/xml; charset=utf-8")
     public Source listTestSuitesAsXML() {
         Document xmlDoc = this.docBuilder.newDocument();
 

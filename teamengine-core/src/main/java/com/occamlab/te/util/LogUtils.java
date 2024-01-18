@@ -70,6 +70,8 @@ import com.occamlab.te.util.TEPath;    // Fortify Mod
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.XdmNode;
 
+import static java.lang.Long.valueOf;
+
 public class LogUtils {
 
     private static final Logger LOGR = Logger.getLogger(LogUtils.class
@@ -97,7 +99,7 @@ public class LogUtils {
                 } 
             String path=logDir.toString() + "/" + callpath.split("/")[0];
             System.setProperty("PATH", path);
-            dir.mkdir();
+            dir.mkdirs();
             File f = new File(dir, "log.xml");
             f.delete();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
@@ -135,7 +137,7 @@ public class LogUtils {
                 // The log may not have been closed properly.
                 // Try again with a closing </log> tag
                 RandomAccessFile raf = new RandomAccessFile(f, "r");
-                int l = new Long(raf.length()).intValue();
+                int l = valueOf(raf.length()).intValue();
                 byte[] buf = new byte[l + 8];
                 raf.read(buf);
                 raf.close();
@@ -529,11 +531,11 @@ public class LogUtils {
      * Generate a file in logDir refererring all logfiles. Create a file called
      * "report_logs.xml" in the log folder that includes all logs listed inside
      * the directory.
+     * author F.Vitale vitale@imaa.cnr.it
      * 
      * @param sessionLogDir
      *            considered log directory
      * @throws Exception
-     * @author F.Vitale vitale@imaa.cnr.it
      */
     public static void createFullReportLog(String sessionLogDir)
             throws Exception {
@@ -547,7 +549,9 @@ public class LogUtils {
         File dir = new File(sessionLogDir);
         if( ! dir.exists() ) {
             if( ! dir.mkdir() ) {
-                throw new RuntimeException("Unable to create report log directory " + sessionLogDir);
+                if(! dir.mkdirs()) {
+                    throw new RuntimeException("Unable to create report log directory " + sessionLogDir);
+                }
             }
         }
         File xml_logs_report_file = new File(sessionLogDir + File.separator

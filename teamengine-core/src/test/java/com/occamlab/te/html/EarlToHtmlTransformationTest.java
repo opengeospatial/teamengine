@@ -2,8 +2,8 @@ package com.occamlab.te.html;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.xmlmatchers.XmlMatchers.hasXPath;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,15 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.transform.Source;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.xmlmatchers.namespace.SimpleNamespaceContext;
-import org.xmlmatchers.transform.XmlConverters;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz </a>
@@ -61,19 +58,19 @@ public class EarlToHtmlTransformationTest {
         File indexHtmlFile = new File( outputDirectory, "result/index.html" );
         assertThat( indexHtmlFile.exists(), is( true ) );
 
-        Source indexHtml = the( indexHtmlFile );
+        String indexHtml = retreiveString(indexHtmlFile);
         // 7 rows plus the header row
-        assertThat( indexHtml,
-                    hasXPath( "count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo( "8" ), nsContext() ) );
+        assertThat(indexHtml,
+                hasXPath("count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo("8")).withNamespaceContext(nsContext()));
 
-        assertThat( indexHtml,
-                    hasXPath( "//html:span[@id='testsInTotal_data-independent']", equalTo( "207" ), nsContext() ) );
-        assertThat( indexHtml,
-                    hasXPath( "//html:span[@id='testsFailed_data-independent']", equalTo( "1" ), nsContext() ) );
-        assertThat( indexHtml,
-                    hasXPath( "//html:span[@id='testsInTotal_data-preconditions']", equalTo( "0" ), nsContext() ) );
-        assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_basic']", equalTo( "11" ), nsContext() ) );
-        assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_queryable']", equalTo( "7" ), nsContext() ) );
+        assertThat(indexHtml,
+                hasXPath("//html:span[@id='testsInTotal_data-independent']", equalTo("207")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml,
+                hasXPath("//html:span[@id='testsFailed_data-independent']", equalTo("1")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml,
+                hasXPath("//html:span[@id='testsInTotal_data-preconditions']", equalTo("0")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml, hasXPath("//html:span[@id='testsInTotal_basic']", equalTo("11")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml, hasXPath("//html:span[@id='testsInTotal_queryable']", equalTo("7")).withNamespaceContext(nsContext()));
     }
 
     @Test
@@ -87,23 +84,23 @@ public class EarlToHtmlTransformationTest {
         File indexHtmlFile = new File( outputDirectory, "result/index.html" );
         assertThat( indexHtmlFile.exists(), is( true ) );
 
-        Source indexHtml = the( indexHtmlFile );
+        String indexHtml = retreiveString(indexHtmlFile);
         // 7 rows plus the header row
-        assertThat( indexHtml,
-                    hasXPath( "count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo( "8" ), nsContext() ) );
+        assertThat(indexHtml,
+                hasXPath("count(//html:table[@id='queryable']/html:tbody/html:tr)", equalTo("8")).withNamespaceContext(nsContext()));
 
-        assertThat( indexHtml, hasXPath( "//html:span[@id='testsPassed_queryable']", equalTo( "7" ), nsContext() ) );
-        assertThat( indexHtml, hasXPath( "//html:span[@id='testsFailed_queryable']", equalTo( "0" ), nsContext() ) );
-        assertThat( indexHtml, hasXPath( "//html:span[@id='testsSkipped_queryable']", equalTo( "0" ), nsContext() ) );
-        assertThat( indexHtml, hasXPath( "//html:span[@id='testsInTotal_queryable']", equalTo( "7" ), nsContext() ) );
+        assertThat(indexHtml, hasXPath("//html:span[@id='testsPassed_queryable']", equalTo("7")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml, hasXPath("//html:span[@id='testsFailed_queryable']", equalTo("0")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml, hasXPath("//html:span[@id='testsSkipped_queryable']", equalTo("0")).withNamespaceContext(nsContext()));
+        assertThat(indexHtml, hasXPath("//html:span[@id='testsInTotal_queryable']", equalTo("7")).withNamespaceContext(nsContext()));
     }
 
-    private Source the( File indexHtmlFile )
-                            throws Exception {
+    private String retreiveString(File indexHtmlFile)
+            throws Exception {
         OutputStream indexHtml = new ByteArrayOutputStream();
-        IOUtils.copy( new FileInputStream( indexHtmlFile ), indexHtml );
+        IOUtils.copy(new FileInputStream(indexHtmlFile), indexHtml);
         indexHtml.close();
-        return XmlConverters.the( indexHtml.toString() );
+        return indexHtml.toString();
     }
 
     private String createTempDirectoryAndCopyResources( String earlReport )
@@ -121,9 +118,9 @@ public class EarlToHtmlTransformationTest {
         return outputDirectory.getAbsolutePath();
     }
 
-    private NamespaceContext nsContext() {
-        SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-        nsContext = nsContext.withBinding( "html", "http://www.w3.org/1999/xhtml" );
+    private Map<String, String> nsContext() {
+        Map<String, String> nsContext = new HashMap<>();
+        nsContext.put( "html", "http://www.w3.org/1999/xhtml" );
         return nsContext;
     }
 }

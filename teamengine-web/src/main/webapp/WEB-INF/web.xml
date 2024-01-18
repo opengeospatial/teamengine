@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd" version="6.0">
   <display-name>TEAM Engine Test Harness</display-name>
   <description>Provides a web interface for executing test suites and viewing test results.</description>
   <context-param>
@@ -67,22 +67,16 @@
   </servlet>
   <servlet>
     <servlet-name>TestSuiteController</servlet-name>
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
-      <description>http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/spi/container/servlet/ServletContainer.html</description>
-      <param-name>javax.ws.rs.Application</param-name>
+      <param-name>jakarta.ws.rs.Application</param-name>
       <param-value>com.occamlab.te.spi.jaxrs.ApplicationComponents</param-value>
-    </init-param>
-    <init-param>
-      <description>http://jersey.java.net/nonav/apidocs/latest/jersey/com/sun/jersey/api/core/ResourceConfig.html#FEATURE_REDIRECT</description>
-      <param-name>com.sun.jersey.config.feature.Redirect</param-name>
-      <param-value>false</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <listener id="FileCleanup">
     <description xml:lang="en">Ensures that the file reaper thread (which deletes temp files) is terminated when the web application is shut down.</description>
-    <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
+    <listener-class>org.apache.commons.fileupload2.jakarta.JakartaFileCleaner</listener-class>
   </listener>
   <servlet-mapping>
     <servlet-name>TestSuiteController</servlet-name>
@@ -128,7 +122,7 @@
     <filter-name>ReportFilter</filter-name>
     <url-pattern>/reports/*</url-pattern>
   </filter-mapping>
-    <filter>
+  <filter>
     <filter-name>AuthenticationFilter</filter-name>
     <filter-class>com.occamlab.te.realm.RestAuthenticationFilter</filter-class>
   </filter>

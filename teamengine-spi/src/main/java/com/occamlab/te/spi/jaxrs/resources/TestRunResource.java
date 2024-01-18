@@ -17,19 +17,20 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +45,9 @@ import com.occamlab.te.spi.jaxrs.TestSuiteController;
 import com.occamlab.te.spi.jaxrs.TestSuiteRegistry;
 import com.occamlab.te.spi.util.TestRunUtils;
 import com.occamlab.te.util.LogUtils;
-import com.sun.jersey.multipart.FormDataParam;
+
+import org.glassfish.jersey.internal.util.collection.ImmutableMultivaluedMap;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * A controller resource that provides the results of a test run. An XML representation of the results is obtained using
@@ -86,7 +89,7 @@ public class TestRunResource {
      * @return An RDF (EARL) representation of the test results.
      */
     @GET
-    @Produces("application/rdf+xml;qs=0.75;charset='utf-8'")
+    @Produces("application/rdf+xml;qs=0.75;charset=utf-8")
     public Source handleGetRdf( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) {
         return handleGet( etsCode, etsVersion, APPLICATION_RDF_XML );
     }
@@ -102,7 +105,7 @@ public class TestRunResource {
      * @return An XML representation of the test results.
      */
     @GET
-    @Produces("application/xml;qs=0.5;charset='utf-8'")
+    @Produces("application/xml;qs=0.5;charset=utf-8")
     public Source handleGetXml( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion ) {
         return handleGet( etsCode, etsVersion, APPLICATION_XML );
     }
@@ -118,10 +121,11 @@ public class TestRunResource {
      * @return An zip archive containing the HTML representation of the test results.
      */
     @GET
-    @Produces("application/zip;qs=0.25;charset='utf-8'")
+    @Produces("application/zip;qs=0.25;charset=utf-8")
     public Response handleGetZip( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion )
                             throws IOException {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
+        params = toMutableMultivaluedMap(params);
         Source results = executeTestRun( etsCode, params, APPLICATION_ZIP );
 
         String htmlOutput = results.getSystemId().toString();
@@ -151,7 +155,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces("application/rdf+xml;qs=0.75;charset='utf-8'")
+    @Produces("application/rdf+xml;qs=0.75;charset=utf-8")
     public Source handlePostRdf( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion,
                                  File entityBody ) {
         return handlePost( etsCode, etsVersion, entityBody, APPLICATION_RDF_XML );
@@ -172,7 +176,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces("application/xml;qs=0.5;charset='utf-8'")
+    @Produces("application/xml;qs=0.5;charset=utf-8")
     public Source handlePostXml( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion,
                                  File entityBody ) {
         return handlePost( etsCode, etsVersion, entityBody, APPLICATION_XML );
@@ -193,7 +197,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.TEXT_XML })
-    @Produces("application/zip;qs=0.25;charset='utf-8'")
+    @Produces("application/zip;qs=0.25;charset=utf-8")
     public Source handlePostZip( @PathParam("etsCode") String etsCode, @PathParam("etsVersion") String etsVersion,
                                  File entityBody ) {
         return handlePost( etsCode, etsVersion, entityBody, APPLICATION_ZIP );
@@ -226,7 +230,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
-    @Produces("application/rdf+xml;qs=0.75;charset='utf-8'")
+    @Produces("application/rdf+xml;qs=0.75;charset=utf-8")
     public Source handleMultipartFormDataRdf( @PathParam("etsCode") String etsCode,
                                               @PathParam("etsVersion") String etsVersion,
                                               @FormDataParam("iut") File entityBody, @FormDataParam("sch") File schBody ) {
@@ -260,7 +264,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
-    @Produces("application/xml;qs=0.5;charset='utf-8'")
+    @Produces("application/xml;qs=0.5;charset=utf-8")
     public Source handleMultipartFormDataXml( @PathParam("etsCode") String etsCode,
                                               @PathParam("etsVersion") String etsVersion,
                                               @FormDataParam("iut") File entityBody, @FormDataParam("sch") File schBody ) {
@@ -294,7 +298,7 @@ public class TestRunResource {
      */
     @POST
     @Consumes({ MediaType.MULTIPART_FORM_DATA })
-    @Produces("application/zip;qs=0.25;charset='utf-8'")
+    @Produces("application/zip;qs=0.25;charset=utf-8")
     public Source handleMultipartFormDataZip( @PathParam("etsCode") String etsCode,
                                               @PathParam("etsVersion") String etsVersion,
                                               @FormDataParam("iut") File entityBody, @FormDataParam("sch") File schBody ) {
@@ -303,6 +307,7 @@ public class TestRunResource {
 
     private Source handleGet( String etsCode, String etsVersion, String preferredMediaType ) {
         MultivaluedMap<String, String> params = this.reqUriInfo.getQueryParameters();
+        params = toMutableMultivaluedMap(params);
         if ( LOGR.isLoggable( Level.FINE ) ) {
             StringBuilder msg = new StringBuilder( TEST_RUN_ARGUMENTS );
             msg.append( etsCode ).append( "/" ).append( etsVersion ).append( "\n" );
@@ -471,5 +476,23 @@ public class TestRunResource {
         propsDoc.appendChild( docElem );
         return propsDoc;
     }
+
+    /**
+     * Checks if the input MulivalueMap is immutable. If this is the case, 
+     * a new mutable MultivaluedHashMap is created containing the values of the input map.
+     * 
+     * @param multivaluedMap A MultivalueMap
+     * @return A mutable MultivalueMap
+     */
+    private MultivaluedMap<String, String> toMutableMultivaluedMap(MultivaluedMap<String, String> multivaluedMap) {
+        if(multivaluedMap instanceof ImmutableMultivaluedMap<?, ?>) {
+            MultivaluedMap<String, String> newMultivaluedMap = new MultivaluedHashMap<String, String>();
+            for (String key : multivaluedMap.keySet()) {
+                newMultivaluedMap.put(key, multivaluedMap.get(key));
+            }
+            multivaluedMap = newMultivaluedMap;
+        }
+        return multivaluedMap;
+	}
 
 }

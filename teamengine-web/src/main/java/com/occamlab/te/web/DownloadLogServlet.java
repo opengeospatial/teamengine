@@ -22,9 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.occamlab.te.config.Config;
 import com.occamlab.te.util.ZipUtils;
@@ -33,8 +33,8 @@ import com.occamlab.te.util.ZipUtils;
  * Servlet implementation class for Servlet: DownloadLogServlet
  *
  */
-public class DownloadLogServlet extends javax.servlet.http.HttpServlet
-        implements javax.servlet.Servlet {
+public class DownloadLogServlet extends jakarta.servlet.http.HttpServlet
+        implements jakarta.servlet.Servlet {
     Config Conf;
 
     public void init() throws ServletException {

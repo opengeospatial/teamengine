@@ -7,8 +7,8 @@
  */
 package com.occamlab.te.spi.jaxrs;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * Creates an error response that includes an entity body describing the error

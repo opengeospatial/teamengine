@@ -14,12 +14,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 
@@ -42,7 +42,7 @@ public class TEStatistics {
     static Logger logger = Logger.getLogger(TEStatistics.class.getName());
 
     @GET
-    @Produces("application/zip;qs=0.25;charset='utf-8'")
+    @Produces("application/zip;qs=0.25;charset=utf-8")
     public Response generateStatisticsReport() throws IOException {
         Source results = generateStatisticsReports();
         String htmlOutput = results.getSystemId().toString();

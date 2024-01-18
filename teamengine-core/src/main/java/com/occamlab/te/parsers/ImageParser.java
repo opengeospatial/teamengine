@@ -62,6 +62,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import static java.lang.Integer.valueOf;
+
 /**
  * Extracts the body of a response message and treats it as an image resource.
  * If the entity does not correspond to a supported image format, an exception
@@ -237,7 +239,7 @@ public class ImageParser {
                             sampleMap = new HashMap<Object, Object>();
                             bandMap.put(band, sampleMap);
                         }
-                        sampleMap.put(Integer.decode(sample), new Integer(0));
+                        sampleMap.put(Integer.decode(sample), valueOf(0));
                     }
                 } else if (node.getLocalName().equals("transparentNodata")) { // 2011-08-24
                                                                               // PwD
@@ -296,7 +298,7 @@ public class ImageParser {
                         sample |= bands[i][x] << ((band_indexes.length - i - 1) * 8);
                     }
 
-                    Integer sampleObj = new Integer(sample);
+                    Integer sampleObj = valueOf(sample);
 
                     boolean add = addall;
                     if (!addall) {
@@ -305,9 +307,9 @@ public class ImageParser {
                     if (add) {
                         Integer count = (Integer) sampleMap.get(sampleObj);
                         if (count == null) {
-                            count = new Integer(0);
+                            count = valueOf(0);
                         }
-                        count = new Integer(count.intValue() + 1);
+                        count = valueOf(count.intValue() + 1);
                         sampleMap.put(sampleObj, count);
                     }
                 }
@@ -373,7 +375,7 @@ public class ImageParser {
                     Integer count = (Integer) sampleMap.get(Integer
                             .decode(sample));
                     if (count == null)
-                        count = new Integer(0);
+                        count = valueOf(0);
                     Node textnode = doc.createTextNode(count.toString());
                     node.appendChild(textnode);
                 }
@@ -384,11 +386,11 @@ public class ImageParser {
 
     /**
      * Determines the width of the first image in an image file in pixels.
+     * author Paul Daisey added 2011-05-13 to support WMTS ETS
      * 
      * @param imageLoc
      *            the string location of the image (uri syntax expected)
      * @return int the image width in pixels, or -1 if unable.
-     * @author Paul Daisey added 2011-05-13 to support WMTS ETS
      */
     public static int getImageWidth(String imageLoc) {
 
@@ -432,11 +434,11 @@ public class ImageParser {
 
     /**
      * Determines the height of the first image in an image file in pixels.
+     * author Paul Daisey added 2011-05-13 to support WMTS ETS
      * 
      * @param imageLoc
      *            the string location of the image (uri syntax expected)
      * @return int the image width in pixels, or -1 if unable.
-     * @author Paul Daisey added 2011-05-13 to support WMTS ETS
      */
     public static int getImageHeight(String imageLoc) {
 

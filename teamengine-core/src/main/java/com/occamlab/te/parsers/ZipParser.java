@@ -30,11 +30,11 @@ import com.occamlab.te.util.Utils;
 
 /**
  * Parses a zip file input by extracting the contents into the directory
- * specified by the value of the <code>java.io.tmpdir</code> system property.
+ * specified by the value of the &lt;code&gt;java.io.tmpdir&lt;/code&gt; system property.
  * The resulting manifest is structured as follows:
  * 
- * <ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl"> <ctl:file-entry
- * full-path="${java.io.tmpdir}/dir/doc.kml" size="2048" /> </ctl:manifest>
+ * &lt;ctl:manifest xmlns:ctl="http://www.occamlab.com/ctl"&gt; &lt;ctl:file-entry
+ * full-path="${java.io.tmpdir}/dir/doc.kml" size="2048" /&gt; &lt;/ctl:manifest&gt;
  * 
  * @author jparrpearson
  */
@@ -83,7 +83,7 @@ public class ZipParser {
     /**
      * Parses the entity (a ZIP archive) obtained in response to submitting a
      * request to some URL. The resulting manifest is an XML document with
-     * <ctl:manifest> as the document element.
+     * &lt;ctl:manifest&gt; as the document element.
      * 
      * @param resp
      *            the response to parse
@@ -178,7 +178,7 @@ public class ZipParser {
 
     /**
      * Extracts the local Zip file and saves to the working directory. The
-     * resulting manifest is an XML document with <ctl:manifest> as the document
+     * resulting manifest is an XML document with &lt;ctl:manifest&gt; as the document
      * element.
      * 
      * @param path

@@ -48,7 +48,7 @@ public class ImageParserTest {
 
     @Test
     public void parsePNG_noAlphaChannel() throws SAXException, IOException {
-        URL url = getClass().getResource("/img/square-white.png");
+        URL url = getClass().getResource("/img/square-white-no-transparency.png");
         Document instruct = docBuilder.parse(getClass().getResourceAsStream(
                 "/img/model-argb-transparent.xml"));
         StringWriter strWriter = new StringWriter();
@@ -59,7 +59,7 @@ public class ImageParserTest {
         Element countElem = (Element) result.getElementsByTagNameNS(PARSERS_NS,
                 "count").item(0);
         int pixelCount = Integer.parseInt(countElem.getTextContent().trim());
-        assertEquals("Unexpected number of transparent pixels.", pixelCount, 0);
+        assertEquals("Unexpected number of transparent pixels.", 0, pixelCount);
     }
 
     @Test
