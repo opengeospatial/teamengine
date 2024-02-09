@@ -41,42 +41,44 @@ import com.occamlab.te.SetupOptions;
 import com.occamlab.te.util.XMLUtils;
 
 /**
- * Creates the main Config File reading the tests under TE_BASE/scripts config
- * files It Aggregates by organization and by standard. The name of the
- * organization and standards needs to match to be able to aggregate the tests.
- * For example, two tests using Organization/name = 'OGC', will appear both
- * under the 'OGC' organization. IF no tests exist under TE_BASE/scripts , still
- * creates a config file with two elements config/scripts.
+ * Creates the main Config File reading the tests under TE_BASE/scripts config files It
+ * Aggregates by organization and by standard. The name of the organization and standards
+ * needs to match to be able to aggregate the tests. For example, two tests using
+ * Organization/name = 'OGC', will appear both under the 'OGC' organization. IF no tests
+ * exist under TE_BASE/scripts , still creates a config file with two elements
+ * config/scripts.
  *
  * If a previous config file exists, it will get deleted.
  *
  */
 public class ConfigFileCreator {
 
-	private static Logger LOGR = Logger
-			.getLogger("com.occamlab.te.web.ConfigFileCreator");
+	private static Logger LOGR = Logger.getLogger("com.occamlab.te.web.ConfigFileCreator");
+
 	private DocumentBuilder builder;
+
 	private Document docMain;
+
 	private Element config;
+
 	private Element scripts;
 
 	public ConfigFileCreator() {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-				.newInstance();
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		try {
-                // Fortify Mod: prevent external entity injection
-                documentBuilderFactory.setExpandEntityReferences(false);
+			// Fortify Mod: prevent external entity injection
+			documentBuilderFactory.setExpandEntityReferences(false);
 			builder = documentBuilderFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
+		}
+		catch (ParserConfigurationException e) {
 
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Creates the main config file. IF <code>tebase</code> is not found it will
-	 * throw a <code>TEBaseNotFoundException</code>.
-	 *
+	 * Creates the main config file. IF <code>tebase</code> is not found it will throw a
+	 * <code>TEBaseNotFoundException</code>.
 	 * @param tebase
 	 */
 	public void create(String tebase) throws TEConfigException {
@@ -84,23 +86,25 @@ public class ConfigFileCreator {
 		if (f.exists()) {
 			try {
 				process(tebase);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else {
+		}
+		else {
 			throw new TEBaseNotFoundException(tebase);
 		}
 	}
 
 	/**
 	 * Creates the main config file.
-	 *
 	 * @param tebase
 	 */
 	public void create(File tebase) throws TEConfigException {
 		try {
 			create(tebase.toString() + File.separator);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw e;
 		}
 	}
@@ -110,18 +114,17 @@ public class ConfigFileCreator {
 		if (f.exists()) {
 			f.delete();
 			LOGR.info("Old config file removed " + f);
-		} else {
+		}
+		else {
 			LOGR.info("Config file not removed, since there was no file at " + f);
 		}
 	}
 
 	/**
 	 * Process the the tests under the TEBASE folder, and creates an integrated
-	 * config.xml. If no tests are found, it stills create a basic config file
-	 * with two elements configs/scripts.
-	 *
-	 * @param tebase
-	 *            - path to TEBASE. Expected to have under TEBASE/scripts
+	 * config.xml. If no tests are found, it stills create a basic config file with two
+	 * elements configs/scripts.
+	 * @param tebase - path to TEBASE. Expected to have under TEBASE/scripts
 	 */
 	private void process(String tebase) {
 		deleteConfigFile(tebase);
@@ -165,81 +168,73 @@ public class ConfigFileCreator {
 			docTest = getDocument(configFile);
 		}
 		if (docTest != null) {
-			Node orgInTest = XMLUtils.getFirstNode(docTest,
-					"/organization/name[1]");
+			Node orgInTest = XMLUtils.getFirstNode(docTest, "/organization/name[1]");
 			String org = orgInTest.getTextContent();
-			String xpath = "/config/scripts/organization/name[text()='" + org
-					+ "']";
+			String xpath = "/config/scripts/organization/name[text()='" + org + "']";
 			Node orgInMainConfig = XMLUtils.getFirstNode(docMain, xpath);
 			// org doesn't exist
 			if (orgInMainConfig == null) {
 				// append to scripts
-				Node orgInTestImported = docMain.importNode(
-						orgInTest.getParentNode(), true);
+				Node orgInTestImported = docMain.importNode(orgInTest.getParentNode(), true);
 				scripts.appendChild(orgInTestImported);
-			} else {
-				Node standardInTest = XMLUtils.getFirstNode(docTest,
-						"/organization/standard[1]");
-				String standardInTestName = XMLUtils.getFirstNode(docTest,
-						"/organization/standard[1]/name").getTextContent();
+			}
+			else {
+				Node standardInTest = XMLUtils.getFirstNode(docTest, "/organization/standard[1]");
+				String standardInTestName = XMLUtils.getFirstNode(docTest, "/organization/standard[1]/name")
+					.getTextContent();
 				// check if a standard with this name already exists in main
-				xpath = "/config/scripts/organization/standard/name[text()='"
-						+ standardInTestName + "']";
+				xpath = "/config/scripts/organization/standard/name[text()='" + standardInTestName + "']";
 
 				Node standardInMain = XMLUtils.getFirstNode(docMain, xpath);
 				if (standardInMain == null) {
 					// append to an existing organization
 					Node orgInMain = orgInMainConfig.getParentNode();
-					orgInMain.appendChild(docMain.importNode(standardInTest,
-							true));
+					orgInMain.appendChild(docMain.importNode(standardInTest, true));
 
-				} else {
+				}
+				else {
 					// standard already exists in main config, so append to
 					// standard
 
-					Node versionInTest = XMLUtils.getFirstNode(docTest,
-							"/organization/standard/version[1]");
+					Node versionInTest = XMLUtils.getFirstNode(docTest, "/organization/standard/version[1]");
 
-					standardInMain.getParentNode().appendChild(
-							docMain.importNode(versionInTest, true));
+					standardInMain.getParentNode().appendChild(docMain.importNode(versionInTest, true));
 				}
 			}
-			LOGR.config("Added " + configFile.getAbsolutePath()
-					+ " to config file");
-		} else {
-			LOGR.config("No config file was found in dir "
-					+ configFilePath
+			LOGR.config("Added " + configFile.getAbsolutePath() + " to config file");
+		}
+		else {
+			LOGR.config("No config file was found in dir " + configFilePath
 					+ ". It was not registered in the main config file.");
 		}
 	}
 
 	public void saveConfigFile(Document docMain, String mainconfig) {
 		try {
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-                    // Fortify Mod: prevent external entity injection
-                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			// Fortify Mod: prevent external entity injection
+			transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			Transformer transformer = transformerFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			DOMSource source = new DOMSource(docMain);
 
-			StreamResult result = new StreamResult(new FileOutputStream(
-					mainconfig));
+			StreamResult result = new StreamResult(new FileOutputStream(mainconfig));
 			LOGR.info("SUCCESSFULLY created config.xml at " + mainconfig);
 			transformer.transform(source, result);
-                        // Fortify Mod: Close the OutputStream associated with the StreamResult
-                        result.getOutputStream().close();
-		} catch (Exception e) {
-			LOGR.warning("The main config file was not created at "
-					+ mainconfig);
+			// Fortify Mod: Close the OutputStream associated with the StreamResult
+			result.getOutputStream().close();
+		}
+		catch (Exception e) {
+			LOGR.warning("The main config file was not created at " + mainconfig);
 			e.printStackTrace();
 		}
 	}
 
 	public Document getDocument(File xml) {
 		try {
-            return builder.parse(xml);
-		} catch (Exception e) {
+			return builder.parse(xml);
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -247,7 +242,6 @@ public class ConfigFileCreator {
 
 	/**
 	 * Returns the all config file found under a directory
-	 *
 	 * @param dir
 	 * @return A list of files found. Length = 0 if not found files.
 	 */
@@ -266,8 +260,9 @@ public class ConfigFileCreator {
 		return configFiles;
 	}
 
-    public static void main(String[] args) throws Exception {
-    	new SetupOptions();
-        (new ConfigFileCreator()).create(SetupOptions.getBaseConfigDirectory());
-    }
+	public static void main(String[] args) throws Exception {
+		new SetupOptions();
+		(new ConfigFileCreator()).create(SetupOptions.getBaseConfigDirectory());
+	}
+
 }

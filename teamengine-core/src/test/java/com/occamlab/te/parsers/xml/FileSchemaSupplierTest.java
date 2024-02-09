@@ -23,9 +23,7 @@ public class FileSchemaSupplierTest {
 
 	@Test
 	public void testEquals() {
-		EqualsVerifier.forClass(FileSchemaSupplier.class)
-            .withNonnullFields("file")
-            .verify();
+		EqualsVerifier.forClass(FileSchemaSupplier.class).withNonnullFields("file").verify();
 	}
 
 }

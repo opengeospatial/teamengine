@@ -3,17 +3,19 @@ package com.occamlab.te.index;
 import javax.xml.namespace.QName;
 
 public interface NamedEntry {
-    String getName();
 
-    String getLocalName();
+	String getName();
 
-    String getNamespaceURI();
+	String getLocalName();
 
-    String getPrefix();
+	String getNamespaceURI();
 
-    QName getQName();
+	String getPrefix();
 
-    void setQName(QName qname);
+	QName getQName();
 
-    String getId();
+	void setQName(QName qname);
+
+	String getId();
+
 }

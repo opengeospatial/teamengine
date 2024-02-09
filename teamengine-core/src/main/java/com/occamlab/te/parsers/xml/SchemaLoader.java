@@ -13,24 +13,19 @@ public interface SchemaLoader {
 
 	/**
 	 * Creates a {@link Schema} object for the specified schema documents.
-	 * 
-	 * @param suppliers
-	 *            a list of {@link SchemaSupplier}s supplying the schemas. Must not
-	 *            be null or contain any nulls.
+	 * @param suppliers a list of {@link SchemaSupplier}s supplying the schemas. Must not
+	 * be null or contain any nulls.
 	 * @return the created {@link Schema} object. Never null.
-	 * @throws SAXException
-	 *             if the Schema cannot be created
+	 * @throws SAXException if the Schema cannot be created
 	 */
 	Schema loadSchema(ImmutableList<SchemaSupplier> suppliers) throws SAXException;
 
 	/**
-	 * Returns a {@link Schema} object that performs validation by using location
-	 * hints specified in documents, as in
+	 * Returns a {@link Schema} object that performs validation by using location hints
+	 * specified in documents, as in
 	 * {@link javax.xml.validation.SchemaFactory#newSchema()}.
-	 * 
 	 * @return never null, and a new object each time
-	 * @throws SAXException
-	 *             if the Schema object cannot be created
+	 * @throws SAXException if the Schema object cannot be created
 	 */
 	Schema defaultSchema() throws SAXException;
 

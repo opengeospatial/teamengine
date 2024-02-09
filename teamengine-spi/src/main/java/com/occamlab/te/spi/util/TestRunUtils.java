@@ -16,44 +16,45 @@ import com.occamlab.te.spi.jaxrs.TestSuiteController;
 
 public class TestRunUtils {
 
-    public static String getUserName(List<String> authCredentials) {
-        String authCredential = authCredentials.get(0);
-        final String encodedUserPassword = authCredential.replaceFirst("Basic" + " ", "");
-        String usernameAndPassword = null;
+	public static String getUserName(List<String> authCredentials) {
+		String authCredential = authCredentials.get(0);
+		final String encodedUserPassword = authCredential.replaceFirst("Basic" + " ", "");
+		String usernameAndPassword = null;
 
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedUserPassword);
-        usernameAndPassword = new String(decodedBytes, StandardCharsets.UTF_8);
+		byte[] decodedBytes = Base64.getDecoder().decode(encodedUserPassword);
+		usernameAndPassword = new String(decodedBytes, StandardCharsets.UTF_8);
 
-        final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
-        final String username = tokenizer.nextToken();
-        return username;
-    }
-    
-    public static void save(File outputDir, String sessionId, String sourcesId) {
-        if (!outputDir.exists()) {
-            outputDir.mkdir();
-        }
-        File sessionDir = new File(outputDir, sessionId);
-        sessionDir.mkdir();
-        
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
-        Date date = new Date();
-        String currentDate = dateFormat.format(date);
-        
-        PrintStream out = null;
-        try {
-            out = new PrintStream(new File(sessionDir, "session.xml"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        out.println("<session id=\"" + sessionId + "\" sourcesId=\""
-                + sourcesId +"\" date=\""+currentDate+"\"  >");
-        out.println("</session>");
-        out.close();
-    }
-    
-    public static String getSourcesId(TestSuiteController controller) {
-        return "OGC_" + controller.getTitle() + "_" + controller.getVersion();
-    }
+		final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
+		final String username = tokenizer.nextToken();
+		return username;
+	}
+
+	public static void save(File outputDir, String sessionId, String sourcesId) {
+		if (!outputDir.exists()) {
+			outputDir.mkdir();
+		}
+		File sessionDir = new File(outputDir, sessionId);
+		sessionDir.mkdir();
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
+		Date date = new Date();
+		String currentDate = dateFormat.format(date);
+
+		PrintStream out = null;
+		try {
+			out = new PrintStream(new File(sessionDir, "session.xml"));
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		out.println(
+				"<session id=\"" + sessionId + "\" sourcesId=\"" + sourcesId + "\" date=\"" + currentDate + "\"  >");
+		out.println("</session>");
+		out.close();
+	}
+
+	public static String getSourcesId(TestSuiteController controller) {
+		return "OGC_" + controller.getTitle() + "_" + controller.getVersion();
+	}
 
 }

@@ -16,42 +16,43 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
 /**
- * Validation error handler that accumulates the total number of error and
- * warning notifications received.
- * 
+ * Validation error handler that accumulates the total number of error and warning
+ * notifications received.
+ *
  */
 public class CtlErrorHandler implements ErrorHandler {
-    int ErrorCount = 0;
 
-    int WarningCount = 0;
+	int ErrorCount = 0;
 
-    void error(String type, SAXParseException e) {
-        System.err.println(type + " at line " + e.getLineNumber()
-                + ", column " + e.getColumnNumber() + " of " + e.getSystemId()
-                + ":");
-        System.err.println("  " + e.getMessage());
-    }
+	int WarningCount = 0;
 
-    public int getErrorCount() {
-        return ErrorCount;
-    }
+	void error(String type, SAXParseException e) {
+		System.err.println(type + " at line " + e.getLineNumber() + ", column " + e.getColumnNumber() + " of "
+				+ e.getSystemId() + ":");
+		System.err.println("  " + e.getMessage());
+	}
 
-    public int getWarningCount() {
-        return WarningCount;
-    }
+	public int getErrorCount() {
+		return ErrorCount;
+	}
 
-    public void error(SAXParseException exception) {
-        error("Validation error", exception);
-        ErrorCount++;
-    }
+	public int getWarningCount() {
+		return WarningCount;
+	}
 
-    public void fatalError(SAXParseException exception) {
-        error("Fatal validation error", exception);
-        ErrorCount++;
-    }
+	public void error(SAXParseException exception) {
+		error("Validation error", exception);
+		ErrorCount++;
+	}
 
-    public void warning(SAXParseException exception) {
-        error("Validation warning", exception);
-        WarningCount++;
-    }
+	public void fatalError(SAXParseException exception) {
+		error("Fatal validation error", exception);
+		ErrorCount++;
+	}
+
+	public void warning(SAXParseException exception) {
+		error("Validation warning", exception);
+		WarningCount++;
+	}
+
 }

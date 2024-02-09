@@ -8,17 +8,19 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 public class TEStatisticsErrorHandler implements ErrorHandler {
-    static Logger logger = Logger.getLogger(TEStatisticsErrorHandler.class.getName());
 
-    public void warning(SAXParseException e) throws SAXException {
-        logger.log(Level.SEVERE, e.getMessage());
-    }
+	static Logger logger = Logger.getLogger(TEStatisticsErrorHandler.class.getName());
 
-    public void error(SAXParseException e) throws SAXException {
-        logger.log(Level.SEVERE, e.getMessage());
-    }
+	public void warning(SAXParseException e) throws SAXException {
+		logger.log(Level.SEVERE, e.getMessage());
+	}
 
-    public void fatalError(SAXParseException e) throws SAXException {
-        logger.log(Level.SEVERE, e.getMessage());
-    }
+	public void error(SAXParseException e) throws SAXException {
+		logger.log(Level.SEVERE, e.getMessage());
+	}
+
+	public void fatalError(SAXParseException e) throws SAXException {
+		logger.log(Level.SEVERE, e.getMessage());
+	}
+
 }

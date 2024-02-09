@@ -36,46 +36,46 @@ import javax.xml.XMLConstants; // Addition for Fortify modifications
 import com.occamlab.te.util.Misc;
 
 /**
- * Handles (GET) requests to view a test case specification (from the test
- * summary report).
+ * Handles (GET) requests to view a test case specification (from the test summary
+ * report).
  *
  */
 public class ViewTestServlet extends HttpServlet {
 
-    private static final long serialVersionUID = -1396673675342836097L;
+	private static final long serialVersionUID = -1396673675342836097L;
 
-    Templates viewTestTemplates;
+	Templates viewTestTemplates;
 
-    public void init() throws ServletException {
-        try {
-            File stylesheet = Misc
-                    .getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
-                // Fortify Mod: prevent external entity injection
-            TransformerFactory tf = TransformerFactory.newInstance();
-            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            viewTestTemplates = tf.newTemplates(new StreamSource(stylesheet));
-                //  viewTestTemplates = TransformerFactory.newInstance().newTemplates(
-                //  new StreamSource(stylesheet));
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-    }
+	public void init() throws ServletException {
+		try {
+			File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewtest.xsl");
+			// Fortify Mod: prevent external entity injection
+			TransformerFactory tf = TransformerFactory.newInstance();
+			tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			viewTestTemplates = tf.newTemplates(new StreamSource(stylesheet));
+			// viewTestTemplates = TransformerFactory.newInstance().newTemplates(
+			// new StreamSource(stylesheet));
+		}
+		catch (Exception e) {
+			throw new ServletException(e);
+		}
+	}
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-        try {
-            File file = new File(request.getParameter("file"));
-            Transformer t = viewTestTemplates.newTransformer();
-            t.setParameter("namespace-uri", request.getParameter("namespace"));
-            t.setParameter("local-name", request.getParameter("name"));
-            URL url = new URL(request.getScheme(), request.getServerName(),
-                    request.getServerPort(), request.getContextPath());
-            t.setParameter("baseURL", url.toString());
-            t.setParameter("user", request.getRemoteUser());
-            t.transform(new StreamSource(file),
-                    new StreamResult(response.getOutputStream()));
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-    }
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		try {
+			File file = new File(request.getParameter("file"));
+			Transformer t = viewTestTemplates.newTransformer();
+			t.setParameter("namespace-uri", request.getParameter("namespace"));
+			t.setParameter("local-name", request.getParameter("name"));
+			URL url = new URL(request.getScheme(), request.getServerName(), request.getServerPort(),
+					request.getContextPath());
+			t.setParameter("baseURL", url.toString());
+			t.setParameter("user", request.getRemoteUser());
+			t.transform(new StreamSource(file), new StreamResult(response.getOutputStream()));
+		}
+		catch (Exception e) {
+			throw new ServletException(e);
+		}
+	}
+
 }

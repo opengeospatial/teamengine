@@ -6,100 +6,103 @@ import org.xml.sax.SAXParseException;
 import java.io.PrintWriter;
 
 /**
- * Handles errors arising while processing XML resources and records the numbers
- * of error and warning notifications received.
- * 
+ * Handles errors arising while processing XML resources and records the numbers of error
+ * and warning notifications received.
+ *
  */
 public class ErrorHandlerImpl implements ErrorHandler {
-    private int ErrorCount = 0;
 
-    private int WarningCount = 0;
+	private int ErrorCount = 0;
 
-    private PrintWriter Logger;
+	private int WarningCount = 0;
 
-    private String Prefix = "";
+	private PrintWriter Logger;
 
-    public ErrorHandlerImpl() {
-        this(null, new PrintWriter(System.out));
-    }
+	private String Prefix = "";
 
-    public ErrorHandlerImpl(String role, PrintWriter logger) {
-        setRole(role);
-        setLogger(logger);
-    }
+	public ErrorHandlerImpl() {
+		this(null, new PrintWriter(System.out));
+	}
 
-    public void setRole(String role) {
-        if (role != null) {
-            Prefix = role + " ";
-        }
-    }
+	public ErrorHandlerImpl(String role, PrintWriter logger) {
+		setRole(role);
+		setLogger(logger);
+	}
 
-    public void setLogger(PrintWriter logger) {
-        Logger = logger;
-    }
+	public void setRole(String role) {
+		if (role != null) {
+			Prefix = role + " ";
+		}
+	}
 
-    public String getErrorCounts() {
-        String msg = "";
-        if (ErrorCount > 0 || WarningCount > 0) {
-            if (ErrorCount > 0) {
-                msg += ErrorCount + " error" + (ErrorCount == 1 ? "" : "s");
-                if (WarningCount > 0)
-                    msg += " and ";
-            }
-            if (WarningCount > 0) {
-                msg += WarningCount + " warning"
-                        + (WarningCount == 1 ? "" : "s");
-            }
-        } else {
-            msg = "No errors or warnings";
-        }
-        msg += " detected.";
-        return msg;
-    }
+	public void setLogger(PrintWriter logger) {
+		Logger = logger;
+	}
 
-    private void error(String type, SAXParseException e) {
-        Logger.print(type);
-        if (e.getLineNumber() >= 0) {
-            Logger.print(" at line " + e.getLineNumber());
-            if (e.getColumnNumber() >= 0) {
-                Logger.print(", column " + e.getColumnNumber());
-            }
-            if (e.getSystemId() != null) {
-                Logger.print(" of " + e.getSystemId());
-            }
-        } else {
-            if (e.getSystemId() != null) {
-                Logger.print(" in " + e.getSystemId());
-            }
-        }
-        Logger.println(":");
-        Logger.println("  " + e.getMessage());
-        Logger.flush();
-        // System.err.println(type + " at line " + + e.getLineNumber() + ",
-        // column " + e.getColumnNumber() + " of " + e.getSystemId() + ":");
-        // System.err.println(" " + e.getMessage());
-    }
+	public String getErrorCounts() {
+		String msg = "";
+		if (ErrorCount > 0 || WarningCount > 0) {
+			if (ErrorCount > 0) {
+				msg += ErrorCount + " error" + (ErrorCount == 1 ? "" : "s");
+				if (WarningCount > 0)
+					msg += " and ";
+			}
+			if (WarningCount > 0) {
+				msg += WarningCount + " warning" + (WarningCount == 1 ? "" : "s");
+			}
+		}
+		else {
+			msg = "No errors or warnings";
+		}
+		msg += " detected.";
+		return msg;
+	}
 
-    public int getErrorCount() {
-        return ErrorCount;
-    }
+	private void error(String type, SAXParseException e) {
+		Logger.print(type);
+		if (e.getLineNumber() >= 0) {
+			Logger.print(" at line " + e.getLineNumber());
+			if (e.getColumnNumber() >= 0) {
+				Logger.print(", column " + e.getColumnNumber());
+			}
+			if (e.getSystemId() != null) {
+				Logger.print(" of " + e.getSystemId());
+			}
+		}
+		else {
+			if (e.getSystemId() != null) {
+				Logger.print(" in " + e.getSystemId());
+			}
+		}
+		Logger.println(":");
+		Logger.println("  " + e.getMessage());
+		Logger.flush();
+		// System.err.println(type + " at line " + + e.getLineNumber() + ",
+		// column " + e.getColumnNumber() + " of " + e.getSystemId() + ":");
+		// System.err.println(" " + e.getMessage());
+	}
 
-    public int getWarningCount() {
-        return WarningCount;
-    }
+	public int getErrorCount() {
+		return ErrorCount;
+	}
 
-    public void error(SAXParseException exception) {
-        error(Prefix + "error", exception);
-        ErrorCount++;
-    }
+	public int getWarningCount() {
+		return WarningCount;
+	}
 
-    public void fatalError(SAXParseException exception) {
-        error("Fatal " + Prefix + "error", exception);
-        ErrorCount++;
-    }
+	public void error(SAXParseException exception) {
+		error(Prefix + "error", exception);
+		ErrorCount++;
+	}
 
-    public void warning(SAXParseException exception) {
-        error(Prefix + "warning", exception);
-        WarningCount++;
-    }
+	public void fatalError(SAXParseException exception) {
+		error("Fatal " + Prefix + "error", exception);
+		ErrorCount++;
+	}
+
+	public void warning(SAXParseException exception) {
+		error(Prefix + "warning", exception);
+		WarningCount++;
+	}
+
 }

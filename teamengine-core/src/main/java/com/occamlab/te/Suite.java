@@ -5,119 +5,118 @@ import org.w3c.dom.NodeList;
 
 /**
  * Provides metadata about a test suite.
- * 
+ *
  */
 public class Suite {
-    private String prefix;
 
-    private String namespaceUri;
+	private String prefix;
 
-    private String localName;
+	private String namespaceUri;
 
-    private String title;
+	private String localName;
 
-    private String description;
+	private String title;
 
-    private String startingTestPrefix;
+	private String description;
 
-    private String startingTestNamespaceUri;
+	private String startingTestPrefix;
 
-    private String startingTestLocalName;
+	private String startingTestNamespaceUri;
 
-    private String link;
+	private String startingTestLocalName;
 
-    private String dataLink;
+	private String link;
 
-    private String version;
+	private String dataLink;
 
-    public Suite(Element suiteElement) {
-        String name = suiteElement.getAttribute("name");
-        this.version = suiteElement.getAttribute("version");
+	private String version;
 
-        int colon = name.indexOf(":");
-        prefix = name.substring(0, colon);
-        localName = name.substring(colon + 1);
-        namespaceUri = suiteElement.lookupNamespaceURI(prefix);
+	public Suite(Element suiteElement) {
+		String name = suiteElement.getAttribute("name");
+		this.version = suiteElement.getAttribute("version");
 
-        NodeList titleElements = suiteElement.getElementsByTagNameNS(
-                Test.CTL_NS, "title");
-        title = ((Element) titleElements.item(0)).getTextContent();
+		int colon = name.indexOf(":");
+		prefix = name.substring(0, colon);
+		localName = name.substring(colon + 1);
+		namespaceUri = suiteElement.lookupNamespaceURI(prefix);
 
-        NodeList descElements = suiteElement.getElementsByTagNameNS(
-                Test.CTL_NS, "description");
-        if (descElements.getLength() > 0) {
-            description = ((Element) descElements.item(0)).getTextContent();
-        } else {
-            description = null;
-        }
+		NodeList titleElements = suiteElement.getElementsByTagNameNS(Test.CTL_NS, "title");
+		title = ((Element) titleElements.item(0)).getTextContent();
 
-        NodeList linkElements = suiteElement.getElementsByTagNameNS(
-                Test.CTL_NS, "link");
-        for (int i = 0; i < linkElements.getLength(); i++) {
-            Element linkElem = (Element) linkElements.item(i);
-            String linkText = linkElem.getTextContent();
-            if (linkText.startsWith("data")) {
-                this.dataLink = linkText;
-            } else {
-                this.link = linkText;
-            }
-        }
+		NodeList descElements = suiteElement.getElementsByTagNameNS(Test.CTL_NS, "description");
+		if (descElements.getLength() > 0) {
+			description = ((Element) descElements.item(0)).getTextContent();
+		}
+		else {
+			description = null;
+		}
 
-        NodeList startingTestElements = suiteElement.getElementsByTagNameNS(
-                Test.CTL_NS, "starting-test");
-        name = ((Element) startingTestElements.item(0)).getTextContent();
-        colon = name.indexOf(":");
-        startingTestPrefix = name.substring(0, colon);
-        startingTestLocalName = name.substring(colon + 1);
-        startingTestNamespaceUri = suiteElement
-                .lookupNamespaceURI(startingTestPrefix);
-    }
+		NodeList linkElements = suiteElement.getElementsByTagNameNS(Test.CTL_NS, "link");
+		for (int i = 0; i < linkElements.getLength(); i++) {
+			Element linkElem = (Element) linkElements.item(i);
+			String linkText = linkElem.getTextContent();
+			if (linkText.startsWith("data")) {
+				this.dataLink = linkText;
+			}
+			else {
+				this.link = linkText;
+			}
+		}
 
-    public String getKey() {
-        return namespaceUri + "," + localName;
-    }
+		NodeList startingTestElements = suiteElement.getElementsByTagNameNS(Test.CTL_NS, "starting-test");
+		name = ((Element) startingTestElements.item(0)).getTextContent();
+		colon = name.indexOf(":");
+		startingTestPrefix = name.substring(0, colon);
+		startingTestLocalName = name.substring(colon + 1);
+		startingTestNamespaceUri = suiteElement.lookupNamespaceURI(startingTestPrefix);
+	}
 
-    public String getPrefix() {
-        return prefix;
-    }
+	public String getKey() {
+		return namespaceUri + "," + localName;
+	}
 
-    public String getNamespaceUri() {
-        return namespaceUri;
-    }
+	public String getPrefix() {
+		return prefix;
+	}
 
-    public String getLocalName() {
-        return localName;
-    }
+	public String getNamespaceUri() {
+		return namespaceUri;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public String getLocalName() {
+		return localName;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public String getLink() {
-        return this.link;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getDataLink() {
-        return this.dataLink;
-    }
+	public String getLink() {
+		return this.link;
+	}
 
-    public String getStartingTestPrefix() {
-        return startingTestPrefix;
-    }
+	public String getDataLink() {
+		return this.dataLink;
+	}
 
-    public String getStartingTestNamespaceUri() {
-        return startingTestNamespaceUri;
-    }
+	public String getStartingTestPrefix() {
+		return startingTestPrefix;
+	}
 
-    public String getStartingTestLocalName() {
-        return startingTestLocalName;
-    }
+	public String getStartingTestNamespaceUri() {
+		return startingTestNamespaceUri;
+	}
 
-    public String getVersion() {
-        return this.version;
-    }
+	public String getStartingTestLocalName() {
+		return startingTestLocalName;
+	}
+
+	public String getVersion() {
+		return this.version;
+	}
+
 }

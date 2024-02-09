@@ -15,40 +15,38 @@ import org.testng.reporters.XMLReporterConfig;
 import org.testng.xml.XmlSuite;
 
 /**
- * A basic XML reporter that suppresses stack traces and writes the test results
- * to a single file (testng-results.xml) in the specified output directory.
+ * A basic XML reporter that suppresses stack traces and writes the test results to a
+ * single file (testng-results.xml) in the specified output directory.
  *
- * @see <a
- *      href="http://testng.org/doc/documentation-main.html#logging-xml-reports">
- *      TestNG documentation, 6.2.5</a>
+ * @see <a href="http://testng.org/doc/documentation-main.html#logging-xml-reports">
+ * TestNG documentation, 6.2.5</a>
  */
 public final class BasicXMLReporter implements IReporter {
 
-    private final XMLReporter reporter;
+	private final XMLReporter reporter;
 
-    public BasicXMLReporter() {
-        this.reporter = createCustomXMLReporter();
-    }
+	public BasicXMLReporter() {
+		this.reporter = createCustomXMLReporter();
+	}
 
-    @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-            String outputDirectory) {
-        this.reporter.generateReport(xmlSuites, suites, outputDirectory);
-    }
+	@Override
+	public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+		this.reporter.generateReport(xmlSuites, suites, outputDirectory);
+	}
 
-    /**
-     * Creates an XML reporter that suppresses stack traces and includes test
-     * result attributes (if set).
-     *
-     * @return A customized reporter that generates an XML representation of the
-     *         test results. The document element is &lt;testng-results&gt;.
-     */
-    XMLReporter createCustomXMLReporter() {
-        XMLReporter customReporter = new XMLReporter();
-        XMLReporterConfig config = customReporter.getConfig();
-        config.setStackTraceOutput(XMLReporterConfig.StackTraceLevels.NONE);
-        config.setGenerateTestResultAttributes(true);
-        config.setGenerateGroupsAttribute(true);
-        return customReporter;
-    }
+	/**
+	 * Creates an XML reporter that suppresses stack traces and includes test result
+	 * attributes (if set).
+	 * @return A customized reporter that generates an XML representation of the test
+	 * results. The document element is &lt;testng-results&gt;.
+	 */
+	XMLReporter createCustomXMLReporter() {
+		XMLReporter customReporter = new XMLReporter();
+		XMLReporterConfig config = customReporter.getConfig();
+		config.setStackTraceOutput(XMLReporterConfig.StackTraceLevels.NONE);
+		config.setGenerateTestResultAttributes(true);
+		config.setGenerateGroupsAttribute(true);
+		return customReporter;
+	}
+
 }

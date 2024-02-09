@@ -13,29 +13,30 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class AuthorizeTestngReportFilter implements Filter {
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
 
-    }
+	}
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-        // Check user name is present in URI
-        if (httpServletRequest.getRequestURI().contains(httpServletRequest.getRemoteUser())) {
-            chain.doFilter(request, response);
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }
-    }
+		// Check user name is present in URI
+		if (httpServletRequest.getRequestURI().contains(httpServletRequest.getRemoteUser())) {
+			chain.doFilter(request, response);
+		}
+		else {
+			httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		}
+	}
 
-    @Override
-    public void destroy() {
+	@Override
+	public void destroy() {
 
-    }
+	}
 
 }

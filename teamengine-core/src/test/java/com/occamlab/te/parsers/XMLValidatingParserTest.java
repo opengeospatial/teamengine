@@ -29,6 +29,7 @@ public class XMLValidatingParserTest {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
 	private static DocumentBuilder docBuilder;
 
 	@BeforeClass
@@ -55,13 +56,11 @@ public class XMLValidatingParserTest {
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
-		Document result = iut.parse(url.openConnection(),
-				schemaRefs.getDocumentElement(), logger);
+		Document result = iut.parse(url.openConnection(), schemaRefs.getDocumentElement(), logger);
 		assertNotNull(result);
-		assertTrue("Unexpected validation error(s) reported.", strWriter
-				.toString().isEmpty());
-		assertEquals("Document element has unexpected local name", result
-				.getDocumentElement().getLocalName(), "purchaseOrder");
+		assertTrue("Unexpected validation error(s) reported.", strWriter.toString().isEmpty());
+		assertEquals("Document element has unexpected local name", result.getDocumentElement().getLocalName(),
+				"purchaseOrder");
 	}
 
 	@Test
@@ -73,14 +72,12 @@ public class XMLValidatingParserTest {
 		XMLValidatingParser iut = new XMLValidatingParser();
 		Document result = iut.parse(doc, schemaRefs.getDocumentElement(), logger);
 		assertNotNull(result);
-		assertEquals("Unexpected validation error(s) were reported.",
-				"", strWriter.toString());
+		assertEquals("Unexpected validation error(s) were reported.", "", strWriter.toString());
 	}
 
 	/**
-	 * Tests that an XML document with a schema location is still declared invalid
-	 * if {@link XMLValidatingParser} is configured with a different, non-matching
-	 * schema.
+	 * Tests that an XML document with a schema location is still declared invalid if
+	 * {@link XMLValidatingParser} is configured with a different, non-matching schema.
 	 */
 	@Test
 	public void parseWithSchemaListAndDifferentLocation() throws Exception {
@@ -93,8 +90,7 @@ public class XMLValidatingParserTest {
 		XMLValidatingParser iut = new XMLValidatingParser();
 		Document result = iut.parse(doc, schemaRefs.getDocumentElement(), logger);
 		assertNull(result);
-		assertNotEquals("Validation error(s) should be reported.",
-				"", strWriter.toString());
+		assertNotEquals("Validation error(s) should be reported.", "", strWriter.toString());
 	}
 
 	@Test
@@ -104,11 +100,9 @@ public class XMLValidatingParserTest {
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
-		Document result = iut.parse(url.openConnection(),
-				schemaRefs.getDocumentElement(), logger);
+		Document result = iut.parse(url.openConnection(), schemaRefs.getDocumentElement(), logger);
 		assertNull(result);
-		assertFalse("Expected validation error(s) but none reported.",
-				strWriter.toString().isEmpty());
+		assertFalse("Expected validation error(s) but none reported.", strWriter.toString().isEmpty());
 	}
 
 	@Test
@@ -118,62 +112,51 @@ public class XMLValidatingParserTest {
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
-		Document result = iut.parse(url.openConnection(),
-				schemaRefs.getDocumentElement(), logger);
-		assertEquals("Unexpected validation error(s) were reported.",
-				"", strWriter.toString());
+		Document result = iut.parse(url.openConnection(), schemaRefs.getDocumentElement(), logger);
+		assertEquals("Unexpected validation error(s) were reported.", "", strWriter.toString());
 		assertNotNull(result);
 	}
 
 	@Test
-	public void validateWithNullSchemaListAndNoSchemaLocation()
-			throws SAXException, IOException {
+	public void validateWithNullSchemaListAndNoSchemaLocation() throws SAXException, IOException {
 		Document doc = parseResourceDocument("/ipo.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
 		iut.validateAgainstXMLSchemaList(doc, Collections.emptyList(), errHandler);
-		assertFalse("Expected one or more validation errors.",
-				errHandler.isEmpty());
+		assertFalse("Expected one or more validation errors.", errHandler.isEmpty());
 	}
 
 	@Test
-	public void validateWithNullSchemaListAndSchemaLocation()
-			throws SAXException, IOException, URISyntaxException {
+	public void validateWithNullSchemaListAndSchemaLocation() throws SAXException, IOException, URISyntaxException {
 		final Document doc = parseResourceDocument("/ipo-schemaLoc.xml");
 		XmlErrorHandler errHandler = new XmlErrorHandler();
 		XMLValidatingParser iut = new XMLValidatingParser();
 		iut.validateAgainstXMLSchemaList(doc, Collections.emptyList(), errHandler);
 		List<String> errList = errHandler.toList();
-		assertEquals("Unexpected number of validation errors reported.", 0,
-				errList.size());
+		assertEquals("Unexpected number of validation errors reported.", 0, errList.size());
 	}
 
 	@Test
-	public void parseWithNullInstructionAndMultipleSchemaLocations()
-			throws Exception {
+	public void parseWithNullInstructionAndMultipleSchemaLocations() throws Exception {
 		final Document doc = parseResourceDocument("/ipo-multipleSchemaRefs.xml");
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
 		Document result = iut.parse(doc, null, logger);
 		assertNotNull(result);
-		assertTrue("Unexpected validation error(s) were reported.", strWriter
-				.toString().isEmpty());
+		assertTrue("Unexpected validation error(s) were reported.", strWriter.toString().isEmpty());
 	}
 
 	@Test
-	public void parseWithEmptySchemaListAndMultipleSchemaLocations()
-			throws Exception {
+	public void parseWithEmptySchemaListAndMultipleSchemaLocations() throws Exception {
 		final Document schemaRefs = parseResourceDocument("/conf/no-schema-refs.xml");
 		final Document doc = parseResourceDocument("/ipo-multipleSchemaRefs.xml");
 		StringWriter strWriter = new StringWriter();
 		PrintWriter logger = new PrintWriter(strWriter);
 		XMLValidatingParser iut = new XMLValidatingParser();
-		Document result = iut.parse(doc, schemaRefs.getDocumentElement(),
-				logger);
+		Document result = iut.parse(doc, schemaRefs.getDocumentElement(), logger);
 		assertNotNull(result);
-		assertTrue("Unexpected validation error(s) were reported.", strWriter
-				.toString().isEmpty());
+		assertTrue("Unexpected validation error(s) were reported.", strWriter.toString().isEmpty());
 	}
 
 	@Test
@@ -181,13 +164,12 @@ public class XMLValidatingParserTest {
 		final Document doc = parseResourceDocument("/testng.xml");
 		XMLValidatingParser iut = new XMLValidatingParser();
 		NodeList errList = iut.validate(doc, null);
-		assertEquals("Unexpected number of validation errors reported.", 0,
-				errList.getLength());
+		assertEquals("Unexpected number of validation errors reported.", 0, errList.getLength());
 	}
 
 	/**
-	 * Tests validating a DTD-specified document against a different DTD. Should
-	 * fail validation.
+	 * Tests validating a DTD-specified document against a different DTD. Should fail
+	 * validation.
 	 */
 	@Test
 	public void validateWithMismatchedDTDList() throws Exception {
@@ -203,8 +185,7 @@ public class XMLValidatingParserTest {
 		final Document doc = parseResourceDocument("/testng-invalid.xml");
 		XMLValidatingParser iut = new XMLValidatingParser();
 		NodeList errList = iut.validate(doc, null);
-		assertEquals("Unexpected number of validation errors reported.", 2,
-				errList.getLength());
+		assertEquals("Unexpected number of validation errors reported.", 2, errList.getLength());
 	}
 
 	@Test
@@ -221,15 +202,14 @@ public class XMLValidatingParserTest {
 
 	/**
 	 * Parses an XML Document from a classpath resource.
-	 * 
 	 * @param resourcePath relative to the current class
 	 * @return never null
 	 */
-	private Document parseResourceDocument(final String resourcePath)
-			throws SAXException, IOException {
+	private Document parseResourceDocument(final String resourcePath) throws SAXException, IOException {
 		final URL url = getClass().getResource(resourcePath);
 		final Document doc = docBuilder.parse(url.toString());
 		doc.setDocumentURI(url.toString());
 		return doc;
 	}
+
 }

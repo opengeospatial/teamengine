@@ -5,68 +5,72 @@ import java.util.List;
 /**
  * This POJO class is used to hold the user details which is retrieved from the
  * session.xml file and used for further operations.
- * 
+ *
  * @author Keshav
  *
  */
 public class SessionDetails {
 
-    String id;
-    String etsName;
-    String date;
-    int status;
-    List<String> failedTestList;
+	String id;
 
-    public SessionDetails(String id, String etsName, String date, int status, List<String> failedTestList) {
-        this.id = id;
-        this.etsName = etsName;
-        this.date = date;
-        this.status = status;
-        this.failedTestList = failedTestList;
-    }
+	String etsName;
 
-    public SessionDetails() {
+	String date;
 
-    }
+	int status;
 
-    public String getId() {
-        return id;
-    }
+	List<String> failedTestList;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public SessionDetails(String id, String etsName, String date, int status, List<String> failedTestList) {
+		this.id = id;
+		this.etsName = etsName;
+		this.date = date;
+		this.status = status;
+		this.failedTestList = failedTestList;
+	}
 
-    public String getEtsName() {
-        return etsName;
-    }
+	public SessionDetails() {
 
-    public void setEtsName(String etsName) {
-        this.etsName = etsName;
-    }
+	}
 
-    public String getDate() {
-        return date;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setDate(String date) {
-        this.date = date;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public String getEtsName() {
+		return etsName;
+	}
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+	public void setEtsName(String etsName) {
+		this.etsName = etsName;
+	}
 
-    public List<String> getFailedTestList() {
-        return failedTestList;
-    }
+	public String getDate() {
+		return date;
+	}
 
-    public void setFailedTestList(List<String> failedTestList) {
-        this.failedTestList = failedTestList;
-    }
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public List<String> getFailedTestList() {
+		return failedTestList;
+	}
+
+	public void setFailedTestList(List<String> failedTestList) {
+		this.failedTestList = failedTestList;
+	}
 
 }

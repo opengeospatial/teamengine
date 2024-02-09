@@ -15,39 +15,36 @@ import com.google.common.collect.ImmutableList;
  * <p>
  * Loads W3C XML {@link Schema} objects from sources.
  * </p>
- * 
+ *
  * <p>
- * Immutable and thread-safe: instances of this class can be used by multiple
- * threads concurrently.
+ * Immutable and thread-safe: instances of this class can be used by multiple threads
+ * concurrently.
  * </p>
  */
 public class XsdSchemaLoader implements SchemaLoader {
 
-	private static final Logger LOGGER =
-			Logger.getLogger(XsdSchemaLoader.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(XsdSchemaLoader.class.getName());
 
 	// Guarded by "this"
 	private final SchemaFactory schemaFactory;
 
 	public XsdSchemaLoader() {
-        String property_name = "javax.xml.validation.SchemaFactory:"
-                + XMLConstants.W3C_XML_SCHEMA_NS_URI;
-        String oldprop = System.getProperty(property_name);
-        System.setProperty(property_name,
-                "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
-        schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        try {
-            schemaFactory.setFeature(
-                    "http://apache.org/xml/features/validation/schema-full-checking",
-                    false);
-        } catch (Exception e) {
-            LOGGER.warning("Unable to set feature '*/schema-full-checking'");
-        }
-        if (oldprop == null) {
-            System.clearProperty(property_name);
-        } else {
-            System.setProperty(property_name, oldprop);
-        }
+		String property_name = "javax.xml.validation.SchemaFactory:" + XMLConstants.W3C_XML_SCHEMA_NS_URI;
+		String oldprop = System.getProperty(property_name);
+		System.setProperty(property_name, "org.apache.xerces.jaxp.validation.XMLSchemaFactory");
+		schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		try {
+			schemaFactory.setFeature("http://apache.org/xml/features/validation/schema-full-checking", false);
+		}
+		catch (Exception e) {
+			LOGGER.warning("Unable to set feature '*/schema-full-checking'");
+		}
+		if (oldprop == null) {
+			System.clearProperty(property_name);
+		}
+		else {
+			System.setProperty(property_name, oldprop);
+		}
 	}
 
 	@Override
@@ -58,14 +55,15 @@ public class XsdSchemaLoader implements SchemaLoader {
 			schemaSources[i] = suppliers.get(i).makeSource();
 		}
 		synchronized (this) {
-            return schemaFactory.newSchema(schemaSources);
+			return schemaFactory.newSchema(schemaSources);
 		}
 	}
 
 	@Override
 	public Schema defaultSchema() throws SAXException {
 		synchronized (this) {
-            return schemaFactory.newSchema();
+			return schemaFactory.newSchema();
 		}
 	}
+
 }

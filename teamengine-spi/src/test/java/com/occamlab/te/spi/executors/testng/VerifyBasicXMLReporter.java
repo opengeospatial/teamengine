@@ -17,25 +17,28 @@ import org.testng.reporters.XMLReporterConfig;
 
 public class VerifyBasicXMLReporter {
 
-    public VerifyBasicXMLReporter() {
-    }
+	public VerifyBasicXMLReporter() {
+	}
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+	}
 
-    @Before
-    public void setUp() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @Test
-    public void createCustomXMLReporter() {
-        BasicXMLReporter iut = new BasicXMLReporter();
-        XMLReporter result = iut.createCustomXMLReporter();
-        Assert.assertEquals("Unexpected configuration of stackTraceOutput", XMLReporterConfig.StackTraceLevels.NONE,
-                result.getConfig().getStackTraceOutput());
-        Assert.assertTrue("Unexpected configuration of generateTestResultAttributes", result.getConfig().isGenerateTestResultAttributes());
-        Assert.assertTrue("Unexpected configuration of generateGroupsAttribute", result.getConfig().isGenerateGroupsAttribute());
-        Assert.assertNull("Expected null outputDirectory", result.getConfig().getOutputDirectory());
-    }
+	@Test
+	public void createCustomXMLReporter() {
+		BasicXMLReporter iut = new BasicXMLReporter();
+		XMLReporter result = iut.createCustomXMLReporter();
+		Assert.assertEquals("Unexpected configuration of stackTraceOutput", XMLReporterConfig.StackTraceLevels.NONE,
+				result.getConfig().getStackTraceOutput());
+		Assert.assertTrue("Unexpected configuration of generateTestResultAttributes",
+				result.getConfig().isGenerateTestResultAttributes());
+		Assert.assertTrue("Unexpected configuration of generateGroupsAttribute",
+				result.getConfig().isGenerateGroupsAttribute());
+		Assert.assertNull("Expected null outputDirectory", result.getConfig().getOutputDirectory());
+	}
+
 }

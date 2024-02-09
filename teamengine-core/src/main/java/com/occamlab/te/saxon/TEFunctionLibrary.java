@@ -14,62 +14,62 @@ import com.occamlab.te.index.FunctionEntry;
 import com.occamlab.te.index.Index;
 
 public class TEFunctionLibrary implements FunctionLibrary {
-    Configuration config = null;
-    Index index = null;
 
-    public TEFunctionLibrary(Configuration config, Index index) {
-        this.config = config;
-        this.index = index;
-    }
+	Configuration config = null;
 
-    public Expression bind(StructuredQName functionName,
-            Expression[] staticArgs, StaticContext env) throws XPathException {
-        if (functionName.getNamespaceURI().equals(Test.TE_NS)
-                && functionName.getLocalName().equals("get-type")) {
-            return new GetTypeFunctionCall(functionName, staticArgs, env);
-        }
+	Index index = null;
 
-        String key = functionName.getClarkName();
-        List<FunctionEntry> functions = index.getFunctions(key);
-        int argCount = staticArgs.length;
+	public TEFunctionLibrary(Configuration config, Index index) {
+		this.config = config;
+		this.index = index;
+	}
 
-        if (functions != null) {
-            for (FunctionEntry fe : functions) {
-                if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
-                    if (fe.isJava()) {
-                        return new TEJavaFunctionCall(fe,
-                                functionName, staticArgs, env);
-                    } else {
-                        return new TEXSLFunctionCall(fe,
-                                functionName, staticArgs, env);
-                    }
-                }
-            }
-        }
+	public Expression bind(StructuredQName functionName, Expression[] staticArgs, StaticContext env)
+			throws XPathException {
+		if (functionName.getNamespaceURI().equals(Test.TE_NS) && functionName.getLocalName().equals("get-type")) {
+			return new GetTypeFunctionCall(functionName, staticArgs, env);
+		}
 
-        // Just return null rather than throw an exception, because there may be
-        // another function library that supports this function
-        return null;
-    }
+		String key = functionName.getClarkName();
+		List<FunctionEntry> functions = index.getFunctions(key);
+		int argCount = staticArgs.length;
 
-    public FunctionLibrary copy() {
-        return new TEFunctionLibrary(config, index);
-    }
+		if (functions != null) {
+			for (FunctionEntry fe : functions) {
+				if (argCount >= fe.getMinArgs() && argCount <= fe.getMaxArgs()) {
+					if (fe.isJava()) {
+						return new TEJavaFunctionCall(fe, functionName, staticArgs, env);
+					}
+					else {
+						return new TEXSLFunctionCall(fe, functionName, staticArgs, env);
+					}
+				}
+			}
+		}
 
-    public boolean isAvailable(StructuredQName functionName, int arity) {
-        String key = functionName.getClarkName();
-        List<FunctionEntry> functions = index.getFunctions(key);
-        if (functions != null) {
-            for (FunctionEntry fe : functions) {
-                if (arity == -1) {
-                    return true;
-                }
-                if (arity >= fe.getMinArgs() && arity <= fe.getMaxArgs()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+		// Just return null rather than throw an exception, because there may be
+		// another function library that supports this function
+		return null;
+	}
+
+	public FunctionLibrary copy() {
+		return new TEFunctionLibrary(config, index);
+	}
+
+	public boolean isAvailable(StructuredQName functionName, int arity) {
+		String key = functionName.getClarkName();
+		List<FunctionEntry> functions = index.getFunctions(key);
+		if (functions != null) {
+			for (FunctionEntry fe : functions) {
+				if (arity == -1) {
+					return true;
+				}
+				if (arity >= fe.getMinArgs() && arity <= fe.getMaxArgs()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }

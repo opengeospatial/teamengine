@@ -41,167 +41,167 @@ import org.w3c.dom.Element;
 /**
  * Encapsulates all information pertaining to a test session.
  */
-public class TestSession implements  Comparable<TestSession> {
+public class TestSession implements Comparable<TestSession> {
 
+	private static Logger LOGR = Logger.getLogger(TestSession.class.getName());
 
-    private static Logger LOGR = Logger.getLogger( TestSession.class.getName() );
+	String sessionId;
 
-    String sessionId;
-    String sourcesName;
-    String description;
-    String suiteName;
-    String currentDate;
-    ArrayList<String> profiles;
+	String sourcesName;
 
+	String description;
 
-    /**
-     * Creates a new test session.
-     */
-    public TestSession() throws Exception {
-        suiteName = null;
-        profiles = new ArrayList<>();
-    }
+	String suiteName;
 
-    public void save(File logdir) throws Exception {
-        File sessionDir = new File(logdir, sessionId);
-        sessionDir.mkdir();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
-        Date date = new Date();
-        currentDate=dateFormat.format(date);
-        PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
-        out.println("<session id=\"" + sessionId + "\" sourcesId=\""
-                + sourcesName +"\" date=\""+currentDate+"\"  >");
-        out.println("<suite>" + suiteName + "</suite>");
-        for (String profile : profiles) {
-            out.println("<profile>" + profile + "</profile>");
-        }
+	String currentDate;
 
-        String description_data;
-        description_data = StringUtils.escapeXML(description);
+	ArrayList<String> profiles;
 
-        out.println("<description>" + description_data + "</description>");
-        out.println("</session>");
-        // Fortify Mod: flush and close the PrintStream
-        out.close();
-    }
+	/**
+	 * Creates a new test session.
+	 */
+	public TestSession() throws Exception {
+		suiteName = null;
+		profiles = new ArrayList<>();
+	}
 
-    /**
-     * Creates a test session from a previous run.
-     */
-    public void load(File logdir, String sessionId) throws Exception {
-        this.sessionId = sessionId;
-        File sessionDir = new File(logdir, sessionId);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-            // Fortify Mod: prevent external entity injection
-        dbf.setExpandEntityReferences(false);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new File(sessionDir, "session.xml"));
-        Element session = (Element) (doc.getElementsByTagName("session")
-                .item(0));
-        setSourcesName(session.getAttribute("sourcesId"));
-        if(session.hasAttribute("date")){
-        setCurrentDate(session.getAttribute("date"));
-        }else{
-          setCurrentDate("");
-        }
-        Element suite = DomUtils.getElementByTagName(session, "suite");
-        setSuiteName(suite.getTextContent());
-        for (Element profile : DomUtils
-                .getElementsByTagName(session, "profile")) {
-            profiles.add(profile.getTextContent());
-        }
-        Element description = (Element) (session
-                .getElementsByTagName("description").item(0));
-        this.description = description.getTextContent();
-    }
+	public void save(File logdir) throws Exception {
+		File sessionDir = new File(logdir, sessionId);
+		sessionDir.mkdir();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
+		Date date = new Date();
+		currentDate = dateFormat.format(date);
+		PrintStream out = new PrintStream(new File(sessionDir, "session.xml"));
+		out.println(
+				"<session id=\"" + sessionId + "\" sourcesId=\"" + sourcesName + "\" date=\"" + currentDate + "\"  >");
+		out.println("<suite>" + suiteName + "</suite>");
+		for (String profile : profiles) {
+			out.println("<profile>" + profile + "</profile>");
+		}
 
-    /**
-     * This will return the sorted list of TestSession data according to date.
-     *
-     * @param testData
-     *            List of all TestSessions.
-     * @return Return the sorted list of testData.
-     */
-    public List<TestSession> getSortedMap( List<TestSession> testData ) {
-        Collections.sort( testData );
-        Collections.reverse( testData );
-        return testData;
-    }
+		String description_data;
+		description_data = StringUtils.escapeXML(description);
 
-    @Override
-    public int compareTo( TestSession other ) {
-        if ( other == null ) {
-            return -1;
-        }
-        Date otherDate = convertStringToDate( other.getCurrentDate(), other.getSessionId() );
-        if ( otherDate == null ) {
-            return -1;
-        }
-        Date thisDate = convertStringToDate( this.getCurrentDate(), this.getSessionId() );
-        if ( thisDate == null )
-            return 1;
-        return thisDate.compareTo( otherDate );
-    }
+		out.println("<description>" + description_data + "</description>");
+		out.println("</session>");
+		// Fortify Mod: flush and close the PrintStream
+		out.close();
+	}
 
-    private Date convertStringToDate( String dateString, String sessionId ) {
-        try {
-            if ( dateString != null ) {
-                Format formatter = new SimpleDateFormat( "yyyy/MM/dd  HH:mm:ss" );
-                return ( (DateFormat) formatter ).parse( dateString );
-            }
-        } catch ( Exception e ) {
-            LOGR.warning( "Could not parse date '" + dateString + "' of session with id " + sessionId );
-        }
-        return null;
-    }
+	/**
+	 * Creates a test session from a previous run.
+	 */
+	public void load(File logdir, String sessionId) throws Exception {
+		this.sessionId = sessionId;
+		File sessionDir = new File(logdir, sessionId);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		// Fortify Mod: prevent external entity injection
+		dbf.setExpandEntityReferences(false);
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(new File(sessionDir, "session.xml"));
+		Element session = (Element) (doc.getElementsByTagName("session").item(0));
+		setSourcesName(session.getAttribute("sourcesId"));
+		if (session.hasAttribute("date")) {
+			setCurrentDate(session.getAttribute("date"));
+		}
+		else {
+			setCurrentDate("");
+		}
+		Element suite = DomUtils.getElementByTagName(session, "suite");
+		setSuiteName(suite.getTextContent());
+		for (Element profile : DomUtils.getElementsByTagName(session, "profile")) {
+			profiles.add(profile.getTextContent());
+		}
+		Element description = (Element) (session.getElementsByTagName("description").item(0));
+		this.description = description.getTextContent();
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	/**
+	 * This will return the sorted list of TestSession data according to date.
+	 * @param testData List of all TestSessions.
+	 * @return Return the sorted list of testData.
+	 */
+	public List<TestSession> getSortedMap(List<TestSession> testData) {
+		Collections.sort(testData);
+		Collections.reverse(testData);
+		return testData;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	@Override
+	public int compareTo(TestSession other) {
+		if (other == null) {
+			return -1;
+		}
+		Date otherDate = convertStringToDate(other.getCurrentDate(), other.getSessionId());
+		if (otherDate == null) {
+			return -1;
+		}
+		Date thisDate = convertStringToDate(this.getCurrentDate(), this.getSessionId());
+		if (thisDate == null)
+			return 1;
+		return thisDate.compareTo(otherDate);
+	}
 
-    public ArrayList<String> getProfiles() {
-        return profiles;
-    }
+	private Date convertStringToDate(String dateString, String sessionId) {
+		try {
+			if (dateString != null) {
+				Format formatter = new SimpleDateFormat("yyyy/MM/dd  HH:mm:ss");
+				return ((DateFormat) formatter).parse(dateString);
+			}
+		}
+		catch (Exception e) {
+			LOGR.warning("Could not parse date '" + dateString + "' of session with id " + sessionId);
+		}
+		return null;
+	}
 
-    public void setProfiles(ArrayList<String> profiles) {
-        this.profiles = profiles;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getSessionId() {
-        return sessionId;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
+	public ArrayList<String> getProfiles() {
+		return profiles;
+	}
 
-    public String getSourcesName() {
-        return sourcesName;
-    }
+	public void setProfiles(ArrayList<String> profiles) {
+		this.profiles = profiles;
+	}
 
-    public void setSourcesName(String sourcesName) {
-        this.sourcesName = sourcesName;
-    }
+	public String getSessionId() {
+		return sessionId;
+	}
 
-    public String getCurrentDate() {
-        return currentDate;
-    }
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
 
-    public void setCurrentDate(String currentDate) {
-        this.currentDate = currentDate;
-    }
+	public String getSourcesName() {
+		return sourcesName;
+	}
 
-    public String getSuiteName() {
-        return suiteName;
-    }
+	public void setSourcesName(String sourcesName) {
+		this.sourcesName = sourcesName;
+	}
 
-    public void setSuiteName(String suiteName) {
-        this.suiteName = suiteName;
-    }
+	public String getCurrentDate() {
+		return currentDate;
+	}
+
+	public void setCurrentDate(String currentDate) {
+		this.currentDate = currentDate;
+	}
+
+	public String getSuiteName() {
+		return suiteName;
+	}
+
+	public void setSuiteName(String suiteName) {
+		this.suiteName = suiteName;
+	}
 
 }

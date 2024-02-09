@@ -15,9 +15,7 @@ public class UrlSchemaSupplier implements SchemaSupplier {
 
 	/**
 	 * Constructs an instance.
-	 * 
-	 * @param pUrl
-	 *            the {@link URL} of the schema. Must not be null.
+	 * @param pUrl the {@link URL} of the schema. Must not be null.
 	 */
 	public UrlSchemaSupplier(final URL pUrl) {
 		url = Objects.requireNonNull(pUrl);
@@ -33,8 +31,8 @@ public class UrlSchemaSupplier implements SchemaSupplier {
 	}
 
 	/**
-	 * Returns a string representation of this instance. The format is unspecified,
-	 * but it will contain the URL.
+	 * Returns a string representation of this instance. The format is unspecified, but it
+	 * will contain the URL.
 	 */
 	@Override
 	public String toString() {
@@ -47,7 +45,7 @@ public class UrlSchemaSupplier implements SchemaSupplier {
 	@Override
 	public final boolean equals(final Object obj) {
 		if (obj instanceof UrlSchemaSupplier) {
-			final UrlSchemaSupplier other = (UrlSchemaSupplier)obj;
+			final UrlSchemaSupplier other = (UrlSchemaSupplier) obj;
 			return this.getUrl().equals(other.getUrl());
 		}
 		return false;
@@ -57,4 +55,5 @@ public class UrlSchemaSupplier implements SchemaSupplier {
 	public final int hashCode() {
 		return getUrl().hashCode();
 	}
+
 }

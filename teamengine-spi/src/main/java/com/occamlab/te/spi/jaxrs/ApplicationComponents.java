@@ -10,22 +10,21 @@ package com.occamlab.te.spi.jaxrs;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /**
- * Dynamically searches for root resource and provider classes. An instance of
- * this class defines the components of a JAX-RS application and is used to
- * configure a runtime environment such as a web container.
+ * Dynamically searches for root resource and provider classes. An instance of this class
+ * defines the components of a JAX-RS application and is used to configure a runtime
+ * environment such as a web container.
  *
  * @see org.glassfish.jersey.server.ResourceConfig
  */
 public class ApplicationComponents extends ResourceConfig {
 
-    /**
-     * Scans for root resource classes in the
-     * <code>com.occamlab.te.spi.jaxrs.resources</code> package (or a
-     * sub-package).
-     */
-    public ApplicationComponents() {
-        packages("com.occamlab.te.spi.jaxrs.resources");
-        property("jersey.config.server.redirect.servlet.extension", "false");
-    }
+	/**
+	 * Scans for root resource classes in the
+	 * <code>com.occamlab.te.spi.jaxrs.resources</code> package (or a sub-package).
+	 */
+	public ApplicationComponents() {
+		packages("com.occamlab.te.spi.jaxrs.resources");
+		property("jersey.config.server.redirect.servlet.extension", "false");
+	}
 
 }

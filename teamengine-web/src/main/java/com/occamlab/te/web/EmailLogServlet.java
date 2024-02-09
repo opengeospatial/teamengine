@@ -42,134 +42,130 @@ import com.occamlab.te.util.ZipUtils;
  * Servlet implementation class for Servlet: EmailLogServlet
  *
  */
-public class EmailLogServlet extends jakarta.servlet.http.HttpServlet implements
-        jakarta.servlet.Servlet {
-    Config Conf;
+public class EmailLogServlet extends jakarta.servlet.http.HttpServlet implements jakarta.servlet.Servlet {
 
-    public void init() throws ServletException {
-        Conf = new Config();
-    }
+	Config Conf;
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-        try {
-            File userdir = new File(Conf.getUsersDir(),
-                    request.getParameter("userId"));
-            File zipFile = new File(userdir,
-                    request.getParameter("zipFileName"));
+	public void init() throws ServletException {
+		Conf = new Config();
+	}
 
-            if (sendLog(getServletConfig().getInitParameter("mail.smtp.host"),
-                    getServletConfig().getInitParameter("mail.smtp.userid"),
-                    getServletConfig().getInitParameter("mail.smtp.passwd"),
-                    request.getParameter("to"), request.getParameter("from"),
-                    request.getParameter("subject"),
-                    request.getParameter("message"), zipFile)) {
-                request.setAttribute("emailStatus", "Email sent Succesfully");
-            } else {
-                request.setAttribute("emailStatus", "Email failed");
-            }
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		try {
+			File userdir = new File(Conf.getUsersDir(), request.getParameter("userId"));
+			File zipFile = new File(userdir, request.getParameter("zipFileName"));
 
-            RequestDispatcher rd = request
-                    .getRequestDispatcher("emailSent.jsp");
-            rd.forward(request, response);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+			if (sendLog(getServletConfig().getInitParameter("mail.smtp.host"),
+					getServletConfig().getInitParameter("mail.smtp.userid"),
+					getServletConfig().getInitParameter("mail.smtp.passwd"), request.getParameter("to"),
+					request.getParameter("from"), request.getParameter("subject"), request.getParameter("message"),
+					zipFile)) {
+				request.setAttribute("emailStatus", "Email sent Succesfully");
+			}
+			else {
+				request.setAttribute("emailStatus", "Email failed");
+			}
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-        try {
-            String sessionId = request.getParameter("session");
-            String zipFileName = sessionId + ".zip";
-            File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
-            File sessiondir = new File(userdir, sessionId);
-            File zipFile = new File(userdir, zipFileName);
-            ZipUtils.zipDir(zipFile, sessiondir);
-            request.setAttribute("zipFileName", zipFileName);
-            request.setAttribute("to",
-                    getServletConfig().getInitParameter("mail.to"));
-            RequestDispatcher rd = request.getRequestDispatcher("emailLog.jsp");
-            rd.forward(request, response);
+			RequestDispatcher rd = request.getRequestDispatcher("emailSent.jsp");
+			rd.forward(request, response);
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		try {
+			String sessionId = request.getParameter("session");
+			String zipFileName = sessionId + ".zip";
+			File userdir = new File(Conf.getUsersDir(), request.getRemoteUser());
+			File sessiondir = new File(userdir, sessionId);
+			File zipFile = new File(userdir, zipFileName);
+			ZipUtils.zipDir(zipFile, sessiondir);
+			request.setAttribute("zipFileName", zipFileName);
+			request.setAttribute("to", getServletConfig().getInitParameter("mail.to"));
+			RequestDispatcher rd = request.getRequestDispatcher("emailLog.jsp");
+			rd.forward(request, response);
 
-    public boolean sendLog(String host, String userId, String password,
-            String to, String from, String subject, String message,
-            File filename) {
-        boolean success = true;
-        System.out.println("host: " + host);
-        System.out.println("userId: " + userId);
-        // Fortify Mod: commented out clear text password.
-        // System.out.println("password: " + password);
-        System.out.println("to: " + to);
-        System.out.println("from: " + from);
-        System.out.println("subject: " + subject);
-        System.out.println("message: " + message);
-        System.out.println("filename: " + filename.getName());
-        System.out.println("filename: " + filename.getAbsolutePath());
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 
-        // create some properties and get the default Session
-        Properties props = System.getProperties();
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.auth", "true");
+	public boolean sendLog(String host, String userId, String password, String to, String from, String subject,
+			String message, File filename) {
+		boolean success = true;
+		System.out.println("host: " + host);
+		System.out.println("userId: " + userId);
+		// Fortify Mod: commented out clear text password.
+		// System.out.println("password: " + password);
+		System.out.println("to: " + to);
+		System.out.println("from: " + from);
+		System.out.println("subject: " + subject);
+		System.out.println("message: " + message);
+		System.out.println("filename: " + filename.getName());
+		System.out.println("filename: " + filename.getAbsolutePath());
 
-        Session session = Session.getInstance(props, null);
-        session.setDebug(true);
+		// create some properties and get the default Session
+		Properties props = System.getProperties();
+		props.put("mail.smtp.host", host);
+		props.put("mail.smtp.auth", "true");
 
-        try {
-            // create a message
-            MimeMessage msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress(from));
-            InternetAddress[] address = { new InternetAddress(to) };
-            msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject(subject);
+		Session session = Session.getInstance(props, null);
+		session.setDebug(true);
 
-            // create and fill the first message part
-            MimeBodyPart mbp1 = new MimeBodyPart();
-            mbp1.setText(message);
+		try {
+			// create a message
+			MimeMessage msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress(from));
+			InternetAddress[] address = { new InternetAddress(to) };
+			msg.setRecipients(Message.RecipientType.TO, address);
+			msg.setSubject(subject);
 
-            // create the second message part
-            MimeBodyPart mbp2 = new MimeBodyPart();
+			// create and fill the first message part
+			MimeBodyPart mbp1 = new MimeBodyPart();
+			mbp1.setText(message);
 
-            // attach the file to the message
-            FileDataSource fds = new FileDataSource(filename);
-            mbp2.setDataHandler(new DataHandler(fds));
-            mbp2.setFileName(fds.getName());
+			// create the second message part
+			MimeBodyPart mbp2 = new MimeBodyPart();
 
-            // create the Multipart and add its parts to it
-            Multipart mp = new MimeMultipart();
-            mp.addBodyPart(mbp1);
-            mp.addBodyPart(mbp2);
+			// attach the file to the message
+			FileDataSource fds = new FileDataSource(filename);
+			mbp2.setDataHandler(new DataHandler(fds));
+			mbp2.setFileName(fds.getName());
 
-            // add the Multipart to the message
-            msg.setContent(mp);
+			// create the Multipart and add its parts to it
+			Multipart mp = new MimeMultipart();
+			mp.addBodyPart(mbp1);
+			mp.addBodyPart(mbp2);
 
-            // set the Date: header
-            msg.setSentDate(new Date());
+			// add the Multipart to the message
+			msg.setContent(mp);
 
-            // connect to the transport
-            Transport trans = session.getTransport("smtp");
-            trans.connect(host, userId, password);
+			// set the Date: header
+			msg.setSentDate(new Date());
 
-            // send the message
-            trans.sendMessage(msg, msg.getAllRecipients());
+			// connect to the transport
+			Transport trans = session.getTransport("smtp");
+			trans.connect(host, userId, password);
 
-            // smtphost
-            trans.close();
+			// send the message
+			trans.sendMessage(msg, msg.getAllRecipients());
 
-        } catch (MessagingException mex) {
-            success = false;
-            mex.printStackTrace();
-            Exception ex = null;
-            if ((ex = mex.getNextException()) != null) {
-                ex.printStackTrace();
-            }
-        }
-        return success;
-    }
+			// smtphost
+			trans.close();
+
+		}
+		catch (MessagingException mex) {
+			success = false;
+			mex.printStackTrace();
+			Exception ex = null;
+			if ((ex = mex.getNextException()) != null) {
+				ex.printStackTrace();
+			}
+		}
+		return success;
+	}
 
 }

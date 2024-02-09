@@ -15,41 +15,43 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 public class CachedHttpURLConnection extends HttpURLConnectionCopy {
-    byte[] content = null;
 
-    public CachedHttpURLConnection(HttpURLConnectionCopy uc) {
-        super(uc);
-    }
+	byte[] content = null;
 
-    public CachedHttpURLConnection(HttpURLConnection uc) {
-        this(new HttpURLConnectionCopy(uc));
-    }
+	public CachedHttpURLConnection(HttpURLConnectionCopy uc) {
+		super(uc);
+	}
 
-    public void connect() throws IOException {
-        super.connect();
-        BufferedInputStream bis = new BufferedInputStream(uc.getInputStream());
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int i = bis.read();
-        while (i >= 0) {
-            baos.write(i);
-            i = bis.read();
-        }
-        bis.close();
-        baos.close();
-        content = baos.toByteArray();
-    }
+	public CachedHttpURLConnection(HttpURLConnection uc) {
+		this(new HttpURLConnectionCopy(uc));
+	}
 
-    public InputStream getInputStream() throws IOException {
-        if (content == null) {
-            connect();
-        }
-        return new ByteArrayInputStream(content);
-    }
+	public void connect() throws IOException {
+		super.connect();
+		BufferedInputStream bis = new BufferedInputStream(uc.getInputStream());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int i = bis.read();
+		while (i >= 0) {
+			baos.write(i);
+			i = bis.read();
+		}
+		bis.close();
+		baos.close();
+		content = baos.toByteArray();
+	}
 
-    public int getLength() throws IOException {
-        if (content == null) {
-            connect();
-        }
-        return content.length;
-    }
+	public InputStream getInputStream() throws IOException {
+		if (content == null) {
+			connect();
+		}
+		return new ByteArrayInputStream(content);
+	}
+
+	public int getLength() throws IOException {
+		if (content == null) {
+			connect();
+		}
+		return content.length;
+	}
+
 }
