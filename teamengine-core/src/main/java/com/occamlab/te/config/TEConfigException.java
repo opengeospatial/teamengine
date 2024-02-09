@@ -7,13 +7,25 @@
  */
 package com.occamlab.te.config;
 
-public class TEConfigException extends RuntimeException
-{
-    /**
-     * Super class of all configuration exceptions
-     */
-    public TEConfigException()                                  { super(); }
-	public TEConfigException(String message)                    { super(message); }
-	public TEConfigException(Throwable cause)                   { super(cause) ; }
-    public TEConfigException(String message, Throwable cause)   { super(message, cause) ; }
+public class TEConfigException extends RuntimeException {
+
+	/**
+	 * Super class of all configuration exceptions
+	 */
+	public TEConfigException() {
+		super();
+	}
+
+	public TEConfigException(String message) {
+		super(message);
+	}
+
+	public TEConfigException(Throwable cause) {
+		super(cause);
+	}
+
+	public TEConfigException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

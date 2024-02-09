@@ -17,9 +17,7 @@ public class InMemorySchemaSupplier implements SchemaSupplier {
 
 	/**
 	 * Constructs an instance.
-	 * 
-	 * @param pChars
-	 *            the characters making up the schema document. Must not be null.
+	 * @param pChars the characters making up the schema document. Must not be null.
 	 */
 	public InMemorySchemaSupplier(final char[] pChars) {
 		chars = Objects.requireNonNull(pChars);
@@ -31,8 +29,8 @@ public class InMemorySchemaSupplier implements SchemaSupplier {
 	}
 
 	/**
-	 * Returns a string representation of this instance. The format is unspecified,
-	 * but it will contain the number of stored characters.
+	 * Returns a string representation of this instance. The format is unspecified, but it
+	 * will contain the number of stored characters.
 	 */
 	@Override
 	public String toString() {
@@ -45,7 +43,7 @@ public class InMemorySchemaSupplier implements SchemaSupplier {
 	@Override
 	public final boolean equals(Object obj) {
 		if (obj instanceof InMemorySchemaSupplier) {
-			final InMemorySchemaSupplier other = (InMemorySchemaSupplier)obj;
+			final InMemorySchemaSupplier other = (InMemorySchemaSupplier) obj;
 			return Arrays.equals(this.chars, other.chars);
 		}
 		return false;
@@ -55,4 +53,5 @@ public class InMemorySchemaSupplier implements SchemaSupplier {
 	public final int hashCode() {
 		return Arrays.hashCode(chars);
 	}
+
 }

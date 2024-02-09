@@ -12,104 +12,108 @@ import com.occamlab.te.Test;
 import com.occamlab.te.util.DomUtils;
 
 public class ProfileEntry extends IndexEntry {
-    String defaultResult = "Pass";
-    QName baseSuite;
-    List<List<QName>> excludes = new ArrayList<>();
-    QName startingTest;
-    Document form = null;
-    String title = null;
-    String description = null;
 
-    public ProfileEntry() {
-        super();
-    }
+	String defaultResult = "Pass";
 
-    public ProfileEntry(Element profile) throws Exception {
-        super(profile);
-        title = DomUtils.getElementByTagName(profile, "title").getTextContent();
-        description = DomUtils.getElementByTagName(profile, "description")
-                .getTextContent();
-        Element base = DomUtils.getElementByTagName(profile, "base");
-        baseSuite = getQName(base);
-        for (Element exclude : DomUtils
-                .getElementsByTagName(profile, "exclude")) {
-            ArrayList<QName> list = new ArrayList<>();
-            for (Element test : DomUtils.getElementsByTagName(exclude, "test")) {
-                list.add(getQName(test));
-            }
-            excludes.add(list);
-        }
-        setDefaultResult(DomUtils.getElementByTagName(profile, "defaultResult")
-                .getTextContent());
-        Element e = DomUtils.getElementByTagName(profile, "starting-test");
-        startingTest = getQName(e);
-        Element form_e = DomUtils.getElementByTagNameNS(profile, Test.CTL_NS,
-                "form");
-        if (form_e != null) {
-            form = DomUtils.createDocument(form_e);
-        }
-    }
+	QName baseSuite;
 
-    public QName getStartingTest() {
-        return startingTest;
-    }
+	List<List<QName>> excludes = new ArrayList<>();
 
-    public void setStartingTest(QName startingTest) {
-        this.startingTest = startingTest;
-    }
+	QName startingTest;
 
-    public Document getForm() {
-        return form;
-    }
+	Document form = null;
 
-    public void setForm(Document form) {
-        this.form = form;
-    }
+	String title = null;
 
-    public QName getBaseSuite() {
-        return baseSuite;
-    }
+	String description = null;
 
-    public void setBaseSuite(QName baseSuite) {
-        this.baseSuite = baseSuite;
-    }
+	public ProfileEntry() {
+		super();
+	}
 
-    public List<List<QName>> getExcludes() {
-        return excludes;
-    }
+	public ProfileEntry(Element profile) throws Exception {
+		super(profile);
+		title = DomUtils.getElementByTagName(profile, "title").getTextContent();
+		description = DomUtils.getElementByTagName(profile, "description").getTextContent();
+		Element base = DomUtils.getElementByTagName(profile, "base");
+		baseSuite = getQName(base);
+		for (Element exclude : DomUtils.getElementsByTagName(profile, "exclude")) {
+			ArrayList<QName> list = new ArrayList<>();
+			for (Element test : DomUtils.getElementsByTagName(exclude, "test")) {
+				list.add(getQName(test));
+			}
+			excludes.add(list);
+		}
+		setDefaultResult(DomUtils.getElementByTagName(profile, "defaultResult").getTextContent());
+		Element e = DomUtils.getElementByTagName(profile, "starting-test");
+		startingTest = getQName(e);
+		Element form_e = DomUtils.getElementByTagNameNS(profile, Test.CTL_NS, "form");
+		if (form_e != null) {
+			form = DomUtils.createDocument(form_e);
+		}
+	}
 
-    public void setExcludes(List<List<QName>> excludes) {
-        this.excludes = excludes;
-    }
+	public QName getStartingTest() {
+		return startingTest;
+	}
 
-    QName getQName(Element e) {
-        String prefix = e.getAttribute("prefix");
-        String namespaceUri = e.getAttribute("namespace-uri");
-        String localName = e.getAttribute("local-name");
-        return new QName(namespaceUri, localName, prefix);
-    }
+	public void setStartingTest(QName startingTest) {
+		this.startingTest = startingTest;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public Document getForm() {
+		return form;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public void setForm(Document form) {
+		this.form = form;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public QName getBaseSuite() {
+		return baseSuite;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setBaseSuite(QName baseSuite) {
+		this.baseSuite = baseSuite;
+	}
 
-    public String getDefaultResult() {
-        return defaultResult;
-    }
+	public List<List<QName>> getExcludes() {
+		return excludes;
+	}
 
-    public void setDefaultResult(String defaultResult) {
-        this.defaultResult = defaultResult;
-    }
+	public void setExcludes(List<List<QName>> excludes) {
+		this.excludes = excludes;
+	}
+
+	QName getQName(Element e) {
+		String prefix = e.getAttribute("prefix");
+		String namespaceUri = e.getAttribute("namespace-uri");
+		String localName = e.getAttribute("local-name");
+		return new QName(namespaceUri, localName, prefix);
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDefaultResult() {
+		return defaultResult;
+	}
+
+	public void setDefaultResult(String defaultResult) {
+		this.defaultResult = defaultResult;
+	}
+
 }

@@ -18,32 +18,33 @@ import org.junit.Test;
  */
 public class VerifyTestSuiteRegistry {
 
-    public VerifyTestSuiteRegistry() {
-    }
+	public VerifyTestSuiteRegistry() {
+	}
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+	}
 
-    @Before
-    public void setUp() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @Test
-    public void getInstance() {
-        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Assert.assertNotNull(registry);
-    }
+	@Test
+	public void getInstance() {
+		TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+		Assert.assertNotNull(registry);
+	}
 
-    @Test
-    public void getControllersAsEmptyList() {
-        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Assert.assertTrue(registry.getControllers().isEmpty());
-    }
+	@Test
+	public void getControllersAsEmptyList() {
+		TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+		Assert.assertTrue(registry.getControllers().isEmpty());
+	}
 
-    @Test
-    public void getUnregisteredController() {
-        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Assert.assertNull(registry.getController("foo"));
-    }
+	@Test
+	public void getUnregisteredController() {
+		TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+		Assert.assertNull(registry.getController("foo"));
+	}
+
 }

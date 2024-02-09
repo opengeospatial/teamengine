@@ -42,44 +42,43 @@ import com.occamlab.te.util.Misc;
  */
 public class ViewLogServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 2891486945236875019L;
+	private static final long serialVersionUID = 2891486945236875019L;
 
-    Config conf;
+	Config conf;
 
-    Templates viewLogTemplates;
+	Templates viewLogTemplates;
 
-    public void init() throws ServletException {
-        try {
-            conf = new Config();
-            File stylesheet = Misc
-                    .getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
-            TransformerFactory transformerFactory = TransformerFactory
-                    .newInstance();
-                // Fortify Mod: prevent external entity injection
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            viewLogTemplates = transformerFactory
-                    .newTemplates(new StreamSource(stylesheet));
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-    }
+	public void init() throws ServletException {
+		try {
+			conf = new Config();
+			File stylesheet = Misc.getResourceAsFile("com/occamlab/te/web/viewlog.xsl");
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			// Fortify Mod: prevent external entity injection
+			transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			viewLogTemplates = transformerFactory.newTemplates(new StreamSource(stylesheet));
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+	}
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-        try {
-            ArrayList<String> tests = new ArrayList<>();
-            String user = request.getRemoteUser();
-            File userlog = new File(conf.getUsersDir(), user);
-            String session = request.getParameter("session");
-            String test = request.getParameter("test");
-            if (test != null) {
-                tests.add(test);
-            }
-            String suiteName=null;
-            ViewLog.view_log(suiteName,userlog, session, tests, viewLogTemplates,
-                    new OutputStreamWriter(response.getOutputStream()));
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-    }
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		try {
+			ArrayList<String> tests = new ArrayList<>();
+			String user = request.getRemoteUser();
+			File userlog = new File(conf.getUsersDir(), user);
+			String session = request.getParameter("session");
+			String test = request.getParameter("test");
+			if (test != null) {
+				tests.add(test);
+			}
+			String suiteName = null;
+			ViewLog.view_log(suiteName, userlog, session, tests, viewLogTemplates,
+					new OutputStreamWriter(response.getOutputStream()));
+		}
+		catch (Exception e) {
+			throw new ServletException(e);
+		}
+	}
+
 }

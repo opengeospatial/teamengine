@@ -15,8 +15,7 @@ public class InMemorySchemaSupplierTest {
 	public void testToString() {
 		final char[] array = new char[] { '1', '2', '3', '4', '5' };
 		final InMemorySchemaSupplier iut = new InMemorySchemaSupplier(array);
-		assertTrue("string should contain number of chars",
-				iut.toString().contains(String.valueOf(array.length)));
+		assertTrue("string should contain number of chars", iut.toString().contains(String.valueOf(array.length)));
 	}
 
 	@Test

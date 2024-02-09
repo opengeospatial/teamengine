@@ -13,27 +13,25 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Wraps a {@link SchemaLoader}, caching loaded {@link Schema}s to avoid repeat
- * downloads. Each instance maintains its own independent cache.
+ * Wraps a {@link SchemaLoader}, caching loaded {@link Schema}s to avoid repeat downloads.
+ * Each instance maintains its own independent cache.
  */
 public class CachingSchemaLoader implements SchemaLoader {
 
 	private final SchemaLoader wrappedLoader;
 
-	private final LoadingCache<ImmutableList<SchemaSupplier>, Schema> cache =
-			CacheBuilder.newBuilder().build(new CacheLoader<>() {
-                @Override
-                public Schema load(ImmutableList<SchemaSupplier> suppliers) throws SAXException {
-                    return wrappedLoader.loadSchema(suppliers);
-                }
-            });
+	private final LoadingCache<ImmutableList<SchemaSupplier>, Schema> cache = CacheBuilder.newBuilder()
+		.build(new CacheLoader<>() {
+			@Override
+			public Schema load(ImmutableList<SchemaSupplier> suppliers) throws SAXException {
+				return wrappedLoader.loadSchema(suppliers);
+			}
+		});
 
 	/**
 	 * Constructs an instance.
-	 * 
-	 * @param pWrappedLoader
-	 *            the {@link SchemaLoader} whose results will be cached. Must not be
-	 *            null.
+	 * @param pWrappedLoader the {@link SchemaLoader} whose results will be cached. Must
+	 * not be null.
 	 */
 	public CachingSchemaLoader(final SchemaLoader pWrappedLoader) {
 		wrappedLoader = Objects.requireNonNull(pWrappedLoader);
@@ -41,29 +39,29 @@ public class CachingSchemaLoader implements SchemaLoader {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <p>
-	 * Returns the cached Schema for the given references, first loading the schema
-	 * if not yet cached.
+	 * Returns the cached Schema for the given references, first loading the schema if not
+	 * yet cached.
 	 * </p>
 	 */
 	@Override
-	public Schema loadSchema(final ImmutableList<SchemaSupplier> suppliers)
-			throws SAXException {
+	public Schema loadSchema(final ImmutableList<SchemaSupplier> suppliers) throws SAXException {
 		try {
 			return cache.get(suppliers);
-		} catch (final ExecutionException ex) {
+		}
+		catch (final ExecutionException ex) {
 			// The loader can only throw a SAXException. (See above.)
-			throw (SAXException)ex.getCause();
+			throw (SAXException) ex.getCause();
 		}
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <p>
-	 * This implementation does not cache results. The wrapped loader will be called
-	 * every time.
+	 * This implementation does not cache results. The wrapped loader will be called every
+	 * time.
 	 * </p>
 	 */
 	@Override

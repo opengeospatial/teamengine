@@ -19,8 +19,8 @@ public class TEBaseNotFoundException extends TEConfigException {
 	 * The <code>path</code> does not exist.
 	 * @param path
 	 */
-	public TEBaseNotFoundException (String path){
-		super (path);
+	public TEBaseNotFoundException(String path) {
+		super(path);
 	}
 
 }

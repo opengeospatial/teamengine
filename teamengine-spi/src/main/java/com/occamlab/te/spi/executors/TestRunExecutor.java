@@ -15,15 +15,14 @@ import org.w3c.dom.Document;
  */
 public interface TestRunExecutor {
 
-    /**
-     * Executes a test suite using the supplied test run arguments.
-     *
-     * @param testRunArgs
-     *            A DOM Document node that contains the test run arguments. The
-     *            content of the document is implementation-specific.
-     * @return A Source object that provides the (XML) results of the test run.
-     *
-     * @see Source
-     */
-    Source execute(Document testRunArgs);
+	/**
+	 * Executes a test suite using the supplied test run arguments.
+	 * @param testRunArgs A DOM Document node that contains the test run arguments. The
+	 * content of the document is implementation-specific.
+	 * @return A Source object that provides the (XML) results of the test run.
+	 *
+	 * @see Source
+	 */
+	Source execute(Document testRunArgs);
+
 }

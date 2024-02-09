@@ -15,9 +15,7 @@ public class FileSchemaSupplier implements SchemaSupplier {
 
 	/**
 	 * Constructs an instance.
-	 * 
-	 * @param pFile
-	 *            the {@link File} containing the schema. Must not be null.
+	 * @param pFile the {@link File} containing the schema. Must not be null.
 	 */
 	public FileSchemaSupplier(final File pFile) {
 		file = Objects.requireNonNull(pFile);
@@ -33,8 +31,8 @@ public class FileSchemaSupplier implements SchemaSupplier {
 	}
 
 	/**
-	 * Returns a string representation of this instance. The format is unspecified,
-	 * but it will contain the file path.
+	 * Returns a string representation of this instance. The format is unspecified, but it
+	 * will contain the file path.
 	 */
 	@Override
 	public String toString() {
@@ -47,7 +45,7 @@ public class FileSchemaSupplier implements SchemaSupplier {
 	@Override
 	public final boolean equals(final Object obj) {
 		if (obj instanceof FileSchemaSupplier) {
-			final FileSchemaSupplier other = (FileSchemaSupplier)obj;
+			final FileSchemaSupplier other = (FileSchemaSupplier) obj;
 			return this.getFile().equals(other.getFile());
 		}
 
@@ -58,4 +56,5 @@ public class FileSchemaSupplier implements SchemaSupplier {
 	public final int hashCode() {
 		return getFile().hashCode();
 	}
+
 }

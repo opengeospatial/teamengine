@@ -24,9 +24,7 @@ public class UrlSchemaSupplierTest {
 
 	@Test
 	public void testEquals() {
-		EqualsVerifier.forClass(UrlSchemaSupplier.class)
-			.withNonnullFields("url")
-			.verify();
+		EqualsVerifier.forClass(UrlSchemaSupplier.class).withNonnullFields("url").verify();
 	}
 
 }

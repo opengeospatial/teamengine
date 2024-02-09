@@ -53,164 +53,161 @@ import org.w3c.dom.Text;
 @Path("suites")
 public class TestSuiteSetResource {
 
-    @Context
-    private UriInfo reqUriInfo;
-    private static final String HTML_NS = "http://www.w3.org/1999/xhtml";
-    private DocumentBuilder docBuilder;
+	@Context
+	private UriInfo reqUriInfo;
 
-    public TestSuiteSetResource() {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        try {
-            this.docBuilder = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(TestSuiteSetResource.class.getName()).log(
-                    Level.WARNING, null, ex);
-        }
-    }
+	private static final String HTML_NS = "http://www.w3.org/1999/xhtml";
 
-    /**
-     * Presents an XHTML representation containing a listing of registered test
-     * suites with links to each.
-     *
-     * @return A Source object containing the information needed to read the
-     *         collection (an HTML5 document represented using the XHTML
-     *         syntax).
-     */
-    @GET
-    @Produces("application/xhtml+xml; charset=utf-8")
-    public Source listTestSuites() {
-        Document xhtmlDoc = readTemplate();
-        if (null == xhtmlDoc) {
-            throw new WebApplicationException(Response.serverError()
-                    .entity("Failed to parse test-suites.html")
-                    .type(MediaType.TEXT_PLAIN).build());
-        }
-        Element listElem = (Element) xhtmlDoc.getElementsByTagNameNS(HTML_NS,
-                "ul").item(0);
-        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Set<TestSuiteController> etsControllers = registry.getControllers();
-        StringBuilder etsURI = new StringBuilder();
-        for (TestSuiteController etsController : etsControllers) {
-            Element li = xhtmlDoc.createElementNS(HTML_NS, "li");
-            listElem.appendChild(li);
-            Element link = xhtmlDoc.createElementNS(HTML_NS, "a");
-            li.appendChild(link);
-            Text title = xhtmlDoc.createTextNode(etsController.getTitle());
-            link.appendChild(title);
-            link.setAttribute("type", "text/html");
-            if (!reqUriInfo.getPath().endsWith("/")) {
-                etsURI.append(this.reqUriInfo.getPath()).append("/");
-            }
-            etsURI.append(etsController.getCode()).append("/");
-            link.setAttribute("href", etsURI.toString());
-            link.setAttribute("id", etsController.getCode());
-            etsURI.setLength(0);
-        }
-        return new DOMSource(xhtmlDoc);
-    }
+	private DocumentBuilder docBuilder;
 
-    /**
-     * Presents an XML representation containing a listing of registered test
-     * suites with links to each.
-     * 
-     * @return A Source object containing the information needed to read the
-     *         collection (an XML document).
-     */
-    @GET
-    @Produces("application/xml; charset=utf-8")
-    public Source listTestSuitesAsXML() {
-        Document xmlDoc = this.docBuilder.newDocument();
+	public TestSuiteSetResource() {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		try {
+			this.docBuilder = factory.newDocumentBuilder();
+		}
+		catch (ParserConfigurationException ex) {
+			Logger.getLogger(TestSuiteSetResource.class.getName()).log(Level.WARNING, null, ex);
+		}
+	}
 
-        Element testSuites = xmlDoc.createElement("testSuites");
-        xmlDoc.appendChild(testSuites);
+	/**
+	 * Presents an XHTML representation containing a listing of registered test suites
+	 * with links to each.
+	 * @return A Source object containing the information needed to read the collection
+	 * (an HTML5 document represented using the XHTML syntax).
+	 */
+	@GET
+	@Produces("application/xhtml+xml; charset=utf-8")
+	public Source listTestSuites() {
+		Document xhtmlDoc = readTemplate();
+		if (null == xhtmlDoc) {
+			throw new WebApplicationException(Response.serverError()
+				.entity("Failed to parse test-suites.html")
+				.type(MediaType.TEXT_PLAIN)
+				.build());
+		}
+		Element listElem = (Element) xhtmlDoc.getElementsByTagNameNS(HTML_NS, "ul").item(0);
+		TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+		Set<TestSuiteController> etsControllers = registry.getControllers();
+		StringBuilder etsURI = new StringBuilder();
+		for (TestSuiteController etsController : etsControllers) {
+			Element li = xhtmlDoc.createElementNS(HTML_NS, "li");
+			listElem.appendChild(li);
+			Element link = xhtmlDoc.createElementNS(HTML_NS, "a");
+			li.appendChild(link);
+			Text title = xhtmlDoc.createTextNode(etsController.getTitle());
+			link.appendChild(title);
+			link.setAttribute("type", "text/html");
+			if (!reqUriInfo.getPath().endsWith("/")) {
+				etsURI.append(this.reqUriInfo.getPath()).append("/");
+			}
+			etsURI.append(etsController.getCode()).append("/");
+			link.setAttribute("href", etsURI.toString());
+			link.setAttribute("id", etsController.getCode());
+			etsURI.setLength(0);
+		}
+		return new DOMSource(xhtmlDoc);
+	}
 
-        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Set<TestSuiteController> etsControllers = registry.getControllers();
+	/**
+	 * Presents an XML representation containing a listing of registered test suites with
+	 * links to each.
+	 * @return A Source object containing the information needed to read the collection
+	 * (an XML document).
+	 */
+	@GET
+	@Produces("application/xml; charset=utf-8")
+	public Source listTestSuitesAsXML() {
+		Document xmlDoc = this.docBuilder.newDocument();
 
-        for (TestSuiteController etsController : etsControllers) {
+		Element testSuites = xmlDoc.createElement("testSuites");
+		xmlDoc.appendChild(testSuites);
 
-            Element testSuite = xmlDoc.createElement("testSuite");
-            testSuites.appendChild(testSuite);
+		TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+		Set<TestSuiteController> etsControllers = registry.getControllers();
 
-            Element testSuiteTitle = xmlDoc.createElement("title");
-            testSuiteTitle.setTextContent(etsController.getTitle());
-            testSuite.appendChild(testSuiteTitle);
-            
-            Element testSuiteVersion = xmlDoc.createElement("version");
-            testSuiteVersion.setTextContent(etsController.getVersion());
-            testSuite.appendChild(testSuiteVersion);
+		for (TestSuiteController etsController : etsControllers) {
 
-            Element testSuiteRestUri = xmlDoc.createElement("endpoint");
+			Element testSuite = xmlDoc.createElement("testSuite");
+			testSuites.appendChild(testSuite);
 
-            UriBuilder etsURI = reqUriInfo.getRequestUriBuilder();
-            etsURI.path(etsController.getCode());
-            testSuiteRestUri.setTextContent(etsURI.build().toString());
-            testSuite.appendChild(testSuiteRestUri);
-            
-            Element testSuiteEtsCode = xmlDoc.createElement("etscode");
-            testSuiteEtsCode.setTextContent(etsController.getCode());
-            testSuite.appendChild(testSuiteEtsCode);
-        }
-        return new DOMSource(xmlDoc);
-    }
+			Element testSuiteTitle = xmlDoc.createElement("title");
+			testSuiteTitle.setTextContent(etsController.getTitle());
+			testSuite.appendChild(testSuiteTitle);
 
-    /**
-     * Presents an JSON representation containing a listing of registered test
-     * suites with links to each.
-     * 
-     * @return A Response with object containing the information.
-     */
-    @GET
-    @Produces("application/json")
-    public Response listTestSuitesAsJSON() {
-        List<JSONObject> testSuiteList = new ArrayList<>();
-        
-        TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
-        Set<TestSuiteController> etsControllers = registry.getControllers();
-        
-        for (TestSuiteController etsController : etsControllers) {
-            StringBuilder etsURI = new StringBuilder();
-            etsURI.append(reqUriInfo.getBaseUri());
-            etsURI.append(this.reqUriInfo.getPath());
-            etsURI.append(etsController.getCode()).append("/");
-            
-            Map<String, String> testSuiteInfoMap = new HashMap<>();
-            testSuiteInfoMap.put("title", etsController.getTitle());
-            testSuiteInfoMap.put("version", etsController.getVersion());
-            testSuiteInfoMap.put("etsCode", etsController.getCode());
-            testSuiteInfoMap.put("endpoint", etsURI.toString());
-            
-            JSONObject testSuiteInfo = new JSONObject(testSuiteInfoMap);
-            
-            testSuiteList.add(testSuiteInfo);
-        }
-        Map<String, List<JSONObject>> testSuitesMap = new HashMap<>();
-        testSuitesMap.put("testSuites", testSuiteList);
+			Element testSuiteVersion = xmlDoc.createElement("version");
+			testSuiteVersion.setTextContent(etsController.getVersion());
+			testSuite.appendChild(testSuiteVersion);
 
-        JSONObject testSuites = new JSONObject(testSuitesMap);
-        
-        return Response.status(200).entity(testSuites.toString()).build();
-    }
+			Element testSuiteRestUri = xmlDoc.createElement("endpoint");
 
-    /**
-     * Reads the template document from the classpath. It contains an empty
-     * list.
-     *
-     * @return A DOM Document node.
-     */
-    Document readTemplate() {
-        InputStream inStream = this.getClass().getResourceAsStream(
-                "test-suites.html");
-        Document doc = null;
-        try {
-            doc = this.docBuilder.parse(inStream);
-            // Fortify Mod: Close the InputStream and release its resources
-            inStream.close();
-        } catch (Exception ex) {
-            Logger.getLogger(TestSuiteSetResource.class.getName()).log(
-                    Level.WARNING, "Failed to parse test-suites.html", ex);
-        }
-        return doc;
-    }
+			UriBuilder etsURI = reqUriInfo.getRequestUriBuilder();
+			etsURI.path(etsController.getCode());
+			testSuiteRestUri.setTextContent(etsURI.build().toString());
+			testSuite.appendChild(testSuiteRestUri);
+
+			Element testSuiteEtsCode = xmlDoc.createElement("etscode");
+			testSuiteEtsCode.setTextContent(etsController.getCode());
+			testSuite.appendChild(testSuiteEtsCode);
+		}
+		return new DOMSource(xmlDoc);
+	}
+
+	/**
+	 * Presents an JSON representation containing a listing of registered test suites with
+	 * links to each.
+	 * @return A Response with object containing the information.
+	 */
+	@GET
+	@Produces("application/json")
+	public Response listTestSuitesAsJSON() {
+		List<JSONObject> testSuiteList = new ArrayList<>();
+
+		TestSuiteRegistry registry = TestSuiteRegistry.getInstance();
+		Set<TestSuiteController> etsControllers = registry.getControllers();
+
+		for (TestSuiteController etsController : etsControllers) {
+			StringBuilder etsURI = new StringBuilder();
+			etsURI.append(reqUriInfo.getBaseUri());
+			etsURI.append(this.reqUriInfo.getPath());
+			etsURI.append(etsController.getCode()).append("/");
+
+			Map<String, String> testSuiteInfoMap = new HashMap<>();
+			testSuiteInfoMap.put("title", etsController.getTitle());
+			testSuiteInfoMap.put("version", etsController.getVersion());
+			testSuiteInfoMap.put("etsCode", etsController.getCode());
+			testSuiteInfoMap.put("endpoint", etsURI.toString());
+
+			JSONObject testSuiteInfo = new JSONObject(testSuiteInfoMap);
+
+			testSuiteList.add(testSuiteInfo);
+		}
+		Map<String, List<JSONObject>> testSuitesMap = new HashMap<>();
+		testSuitesMap.put("testSuites", testSuiteList);
+
+		JSONObject testSuites = new JSONObject(testSuitesMap);
+
+		return Response.status(200).entity(testSuites.toString()).build();
+	}
+
+	/**
+	 * Reads the template document from the classpath. It contains an empty list.
+	 * @return A DOM Document node.
+	 */
+	Document readTemplate() {
+		InputStream inStream = this.getClass().getResourceAsStream("test-suites.html");
+		Document doc = null;
+		try {
+			doc = this.docBuilder.parse(inStream);
+			// Fortify Mod: Close the InputStream and release its resources
+			inStream.close();
+		}
+		catch (Exception ex) {
+			Logger.getLogger(TestSuiteSetResource.class.getName())
+				.log(Level.WARNING, "Failed to parse test-suites.html", ex);
+		}
+		return doc;
+	}
+
 }

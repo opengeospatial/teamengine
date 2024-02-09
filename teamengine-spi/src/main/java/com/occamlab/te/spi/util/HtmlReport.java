@@ -40,145 +40,135 @@ import com.occamlab.te.util.Utils;
 
 /**
  *
- * This class is used to process HTML result.
- * It will transform EARL result into HTML report
- * and return the HTML result with zip file.
+ * This class is used to process HTML result. It will transform EARL result into HTML
+ * report and return the HTML result with zip file.
  *
- * Contributor(s):
- *     C. Heazel (WiSC) Modifications to address Fortify issues
+ * Contributor(s): C. Heazel (WiSC) Modifications to address Fortify issues
  *
  */
 public class HtmlReport {
 
-	private static final Logger LOGR = Logger.getLogger( HtmlReport.class.getPackage().getName());
+	private static final Logger LOGR = Logger.getLogger(HtmlReport.class.getPackage().getName());
 
 	/**
 	 * This method will return the HTML result with zip file.
 	 * @param outputDirectory
-	 *
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public static File getHtmlResultZip (String outputDirectory) throws FileNotFoundException{
+	public static File getHtmlResultZip(String outputDirectory) throws FileNotFoundException {
 		File htmlResult = earlHtmlReport(outputDirectory);
 		File htmlResultFile = new File(outputDirectory, "result.zip");
-        try {
+		try {
 			zipDir(htmlResultFile, htmlResult);
-		} catch (Exception e) {
-            LOGR.log( Level.SEVERE, "Could not create zip file with html results.", e );
+		}
+		catch (Exception e) {
+			LOGR.log(Level.SEVERE, "Could not create zip file with html results.", e);
 		}
 		return htmlResultFile;
 
 	}
 
 	/**
-     * Convert EARL result into HTML report.
-     *
-     * @param outputDir
-     * 		Location of the test result.
-     * @return
-     * 		Return the output file.
-     * @throws FileNotFoundException
-     * 		Throws exception if file is not available.
-     */
-    public static File earlHtmlReport( String outputDir )
-                    throws FileNotFoundException {
+	 * Convert EARL result into HTML report.
+	 * @param outputDir Location of the test result.
+	 * @return Return the output file.
+	 * @throws FileNotFoundException Throws exception if file is not available.
+	 */
+	public static File earlHtmlReport(String outputDir) throws FileNotFoundException {
 
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		URL resourceDirUrl = cl.getResource("com/occamlab/te/earl/lib");
-        String earlXsl = cl.getResource( "com/occamlab/te/earl_html_report.xsl" ).toString();
+		String earlXsl = cl.getResource("com/occamlab/te/earl_html_report.xsl").toString();
 
-        File htmlOutput = new File( outputDir, "result" );
-        htmlOutput.mkdir();
-        LOGR.fine( "HTML output is written to directory " + htmlOutput );
-        File earlResult = new File( outputDir, "earl-results.rdf" );
+		File htmlOutput = new File(outputDir, "result");
+		htmlOutput.mkdir();
+		LOGR.fine("HTML output is written to directory " + htmlOutput);
+		File earlResult = new File(outputDir, "earl-results.rdf");
 
-        try {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer( new StreamSource( earlXsl ) );
-            transformer.setParameter( "outputDir", htmlOutput );
-            File indexHtml = new File( htmlOutput, "index.html" );
-            indexHtml.createNewFile();
-            FileOutputStream outputStream = new FileOutputStream( indexHtml );
-            transformer.transform( new StreamSource( earlResult ), new StreamResult( outputStream ) );
-            // Foritfy Mod: Close the outputStream releasing its resources
-            outputStream.close();
-            Utils.copyResourceDir(resourceDirUrl, htmlOutput);
-        } catch ( Exception e ) {
-            LOGR.log( Level.SEVERE, "Transformation of EARL to HTML failed.", e );
-            throw new RuntimeException( e );
-        }
-        if ( !htmlOutput.exists() ) {
-            throw new FileNotFoundException( "HTML results not found at " + htmlOutput.getAbsolutePath() );
-        }
-        return htmlOutput;
-    }
+		try {
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer(new StreamSource(earlXsl));
+			transformer.setParameter("outputDir", htmlOutput);
+			File indexHtml = new File(htmlOutput, "index.html");
+			indexHtml.createNewFile();
+			FileOutputStream outputStream = new FileOutputStream(indexHtml);
+			transformer.transform(new StreamSource(earlResult), new StreamResult(outputStream));
+			// Foritfy Mod: Close the outputStream releasing its resources
+			outputStream.close();
+			Utils.copyResourceDir(resourceDirUrl, htmlOutput);
+		}
+		catch (Exception e) {
+			LOGR.log(Level.SEVERE, "Transformation of EARL to HTML failed.", e);
+			throw new RuntimeException(e);
+		}
+		if (!htmlOutput.exists()) {
+			throw new FileNotFoundException("HTML results not found at " + htmlOutput.getAbsolutePath());
+		}
+		return htmlOutput;
+	}
 
-    /**
-     *  Zips the directory and all of it's sub directories
-     * @param zipFile
-     * 			Path of zip file.
-     * @param dirObj
-     * 			Location of test result
-     * @throws Exception
-     *  		It will throw this exception if file not found.
-     */
-    public static void zipDir(File zipFile, File dirObj) throws Exception {
-        // File dirObj = new File(dir);
-        if (!dirObj.isDirectory()) {
-        	LOGR.severe(dirObj.getName() + " is not a directory");
-            System.exit(1);
-        }
+	/**
+	 * Zips the directory and all of it's sub directories
+	 * @param zipFile Path of zip file.
+	 * @param dirObj Location of test result
+	 * @throws Exception It will throw this exception if file not found.
+	 */
+	public static void zipDir(File zipFile, File dirObj) throws Exception {
+		// File dirObj = new File(dir);
+		if (!dirObj.isDirectory()) {
+			LOGR.severe(dirObj.getName() + " is not a directory");
+			System.exit(1);
+		}
 
-        try {
+		try {
 
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-                    zipFile));
+			ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
 
-            LOGR.fine("Creating : " + zipFile);
+			LOGR.fine("Creating : " + zipFile);
 
-            addDir(dirObj, out);
-            // Complete the ZIP file
-            out.close();
+			addDir(dirObj, out);
+			// Complete the ZIP file
+			out.close();
 
-        } catch (IOException e) {
-            throw new Exception(e.getMessage());
-        }
+		}
+		catch (IOException e) {
+			throw new Exception(e.getMessage());
+		}
 
-    }
+	}
 
-    /**
-     *  Add directory to zip file
-     * @param dirObj
-     * @param out
-     * @throws IOException
-     */
-    private static void addDir(File dirObj, ZipOutputStream out)
-            throws IOException {
-        File[] dirList = dirObj.listFiles();
-        byte[] tmpBuf = new byte[1024];
+	/**
+	 * Add directory to zip file
+	 * @param dirObj
+	 * @param out
+	 * @throws IOException
+	 */
+	private static void addDir(File dirObj, ZipOutputStream out) throws IOException {
+		File[] dirList = dirObj.listFiles();
+		byte[] tmpBuf = new byte[1024];
 
-        for (int i = 0; i < dirList.length; i++) {
-            if (dirList[i].isDirectory()) {
-                addDir(dirList[i], out);
-                continue;
-            }
+		for (int i = 0; i < dirList.length; i++) {
+			if (dirList[i].isDirectory()) {
+				addDir(dirList[i], out);
+				continue;
+			}
 
-            FileInputStream in = new FileInputStream(
-                    dirList[i].getAbsolutePath());
-            LOGR.fine(" Adding: " + dirList[i].getAbsolutePath());
+			FileInputStream in = new FileInputStream(dirList[i].getAbsolutePath());
+			LOGR.fine(" Adding: " + dirList[i].getAbsolutePath());
 
-            out.putNextEntry(new ZipEntry(dirList[i].getName()));
+			out.putNextEntry(new ZipEntry(dirList[i].getName()));
 
-            // Transfer from the file to the ZIP file
-            int len;
-            while ((len = in.read(tmpBuf)) > 0) {
-                out.write(tmpBuf, 0, len);
-            }
+			// Transfer from the file to the ZIP file
+			int len;
+			while ((len = in.read(tmpBuf)) > 0) {
+				out.write(tmpBuf, 0, len);
+			}
 
-            // Complete the entry
-            out.closeEntry();
-            in.close();
-        }
-    }
+			// Complete the entry
+			out.closeEntry();
+			in.close();
+		}
+	}
+
 }

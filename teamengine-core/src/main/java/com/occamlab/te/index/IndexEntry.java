@@ -5,58 +5,61 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Element;
 
 public class IndexEntry implements NamedEntry {
-    QName qname = null;
 
-    IndexEntry() {
-    }
+	QName qname = null;
 
-    IndexEntry(Element el) {
-        String prefix = el.getAttribute("prefix");
-        String namespaceUri = el.getAttribute("namespace-uri");
-        String localName = el.getAttribute("local-name");
-        setQName(new QName(namespaceUri, localName, prefix));
-    }
+	IndexEntry() {
+	}
 
-    public String getName() {
-    	if (qname == null) {
-    		return null;
-    	}
-        String prefix = qname.getPrefix();
-        if (prefix == null) {
-            return qname.getLocalPart();
-        } else {
-            return prefix + ":" + qname.getLocalPart();
-        }
-    }
+	IndexEntry(Element el) {
+		String prefix = el.getAttribute("prefix");
+		String namespaceUri = el.getAttribute("namespace-uri");
+		String localName = el.getAttribute("local-name");
+		setQName(new QName(namespaceUri, localName, prefix));
+	}
 
-    public String getLocalName() {
-        return qname.getLocalPart();
-    }
+	public String getName() {
+		if (qname == null) {
+			return null;
+		}
+		String prefix = qname.getPrefix();
+		if (prefix == null) {
+			return qname.getLocalPart();
+		}
+		else {
+			return prefix + ":" + qname.getLocalPart();
+		}
+	}
 
-    public String getNamespaceURI() {
-        return qname.getNamespaceURI();
-    }
+	public String getLocalName() {
+		return qname.getLocalPart();
+	}
 
-    public String getPrefix() {
-        return qname.getPrefix();
-    }
+	public String getNamespaceURI() {
+		return qname.getNamespaceURI();
+	}
 
-    public QName getQName() {
-        return qname;
-    }
+	public String getPrefix() {
+		return qname.getPrefix();
+	}
 
-    public void setQName(QName qname) {
-        this.qname = qname;
-    }
+	public QName getQName() {
+		return qname;
+	}
 
-    public String getId() {
-        return "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart();
-    }
+	public void setQName(QName qname) {
+		this.qname = qname;
+	}
 
-    public String toString() {
-        if (qname == null) {
-            return super.toString();
-        }
-        return qname.toString();
-    }
+	public String getId() {
+		return "{" + qname.getNamespaceURI() + "}" + qname.getLocalPart();
+	}
+
+	public String toString() {
+		if (qname == null) {
+			return super.toString();
+		}
+		return qname.toString();
+	}
+
 }

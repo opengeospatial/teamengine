@@ -18,19 +18,20 @@ import org.junit.Test;
  */
 public class UserFilesRealmTest {
 
-    private static final String ROLE_1 = "role-1";
+	private static final String ROLE_1 = "role-1";
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void verifyCreateGenericPrincipal() {
-        String username = "user-1";
-        String password = "password-1";
-        List<String> roles = new ArrayList<>();
-        roles.add(ROLE_1);
-        UserFilesRealm iut = new UserFilesRealm();
-        GenericPrincipal result = iut.createGenericPrincipal(username, roles);
-        Assert.assertNotNull(result);
-        Assert.assertEquals("Unexpected username", username, result.getName());
-        Assert.assertTrue("Expected principal to have role " + ROLE_1, result.hasRole(ROLE_1));
-    }
+	@SuppressWarnings("deprecation")
+	@Test
+	public void verifyCreateGenericPrincipal() {
+		String username = "user-1";
+		String password = "password-1";
+		List<String> roles = new ArrayList<>();
+		roles.add(ROLE_1);
+		UserFilesRealm iut = new UserFilesRealm();
+		GenericPrincipal result = iut.createGenericPrincipal(username, roles);
+		Assert.assertNotNull(result);
+		Assert.assertEquals("Unexpected username", username, result.getName());
+		Assert.assertTrue("Expected principal to have role " + ROLE_1, result.hasRole(ROLE_1));
+	}
+
 }

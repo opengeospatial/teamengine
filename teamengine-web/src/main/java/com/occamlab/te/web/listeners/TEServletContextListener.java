@@ -24,14 +24,17 @@ import java.io.File;
  */
 @WebListener
 public class TEServletContextListener implements ServletContextListener {
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        event.getServletContext().setAttribute("teConfigFile",
-                SetupOptions.getBaseConfigDirectory().getAbsolutePath() + File.separator + "config.xml");
-    }
 
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
+	@Override
+	public void contextInitialized(ServletContextEvent event) {
+		event.getServletContext()
+			.setAttribute("teConfigFile",
+					SetupOptions.getBaseConfigDirectory().getAbsolutePath() + File.separator + "config.xml");
+	}
 
-    }
+	@Override
+	public void contextDestroyed(ServletContextEvent event) {
+
+	}
+
 }

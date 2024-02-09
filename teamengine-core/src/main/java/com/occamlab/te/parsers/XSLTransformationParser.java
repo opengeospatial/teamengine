@@ -34,145 +34,147 @@ import static java.lang.Boolean.TRUE;
 
 public class XSLTransformationParser {
 
-    private static final Logger LOGR = Logger
-            .getLogger(XSLTransformationParser.class.getName());
-    DocumentBuilder db = null;
-    TransformerFactory tf = null;
-    Templates defaultTemplates = null;
-    HashMap<String, String> defaultProperties = null;
-    HashMap<String, String> defaultParams = null;
-    Boolean defaultIgnoreErrors;
-    Boolean defaultIgnoreWarnings;
+	private static final Logger LOGR = Logger.getLogger(XSLTransformationParser.class.getName());
 
-    public XSLTransformationParser() throws Exception {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        db = dbf.newDocumentBuilder();
-        tf = TransformerFactory.newInstance();
-        defaultProperties = new HashMap<>();
-        defaultParams = new HashMap<>();
-        defaultIgnoreErrors = FALSE;
-        defaultIgnoreWarnings = TRUE;
-    }
+	DocumentBuilder db = null;
 
-    public XSLTransformationParser(Node node) throws Exception {
-        super();
-        defaultTemplates = parseInstruction(DomUtils.getElement(node),
-                defaultProperties, defaultParams, defaultIgnoreErrors,
-                defaultIgnoreWarnings);
-    }
+	TransformerFactory tf = null;
 
-    public XSLTransformationParser(String reftype, String ref) throws Exception {
-        super();
-        defaultTemplates = tf.newTemplates(getSource(reftype, ref));
-    }
+	Templates defaultTemplates = null;
 
-    private Source getSource(String reftype, String ref) throws Exception {
-        if (reftype.equals("url")) {
-            URL url = new URL(ref);
-            return new StreamSource(url.openStream());
-        } else if (reftype.equals("file")) {
-            return new StreamSource(ref);
-        } else if (reftype.equals("resource")) {
-            ClassLoader cl = getClass().getClassLoader();
-            return new StreamSource(cl.getResourceAsStream(ref));
-        }
-        return null;
-    }
+	HashMap<String, String> defaultProperties = null;
 
-    private Templates parseInstruction(Element instruction,
-            HashMap<String, String> properties, HashMap<String, String> params,
-            Boolean ignoreErrors, Boolean ignoreWarnings) throws Exception {
-        Templates templates = null;
-        final String[] atts = { "url", "file", "resource" };
-        for (String att : atts) {
-            String val = instruction.getAttribute(att);
-            if (val.length() > 0) {
-                templates = tf.newTemplates(getSource(att, val));
-                break;
-            }
-        }
-        Element stylesheet = DomUtils.getElementByTagNameNS(instruction,
-                Test.XSL_NS, "stylesheet");
-        if (stylesheet == null) {
-            stylesheet = DomUtils.getElementByTagNameNS(instruction,
-                    Test.XSL_NS, "transform");
-        }
-        if (stylesheet != null) {
-            templates = tf.newTemplates(new DOMSource(stylesheet));
-        }
-        List<Element> children = DomUtils.getChildElements(instruction);
-        for (Element e : children) {
-            if (e.getLocalName().equals("property")
-                    && e.getNamespaceURI().equals(Test.CTLP_NS)) {
-                properties.put(e.getAttribute("name"), e.getTextContent());
-            }
-            if (e.getLocalName().equals("with-param")
-                    && e.getNamespaceURI().equals(Test.CTLP_NS)) {
-                params.put(e.getAttribute("name"), e.getTextContent());
-            }
-        }
-        String ignoreErrorsAtt = instruction.getAttribute("ignoreErrors");
-        if (ignoreErrorsAtt != null) {
-            ignoreErrors = Boolean.parseBoolean(ignoreErrorsAtt);
-        }
-        String ignoreWarningsAtt = instruction.getAttribute("ignoreWarnings");
-        if (ignoreWarningsAtt != null) {
-            ignoreWarnings = Boolean.parseBoolean(ignoreWarningsAtt);
-        }
-        return templates;
-    }
+	HashMap<String, String> defaultParams = null;
 
-    public Document parse(URLConnection uc, Element instruction,
-            PrintWriter logger) throws Exception {
-        HashMap<String, String> properties = new HashMap<>(defaultProperties);
-        HashMap<String, String> params = new HashMap<>(defaultParams);
-        Boolean ignoreErrors = defaultIgnoreErrors;
-        Boolean ignoreWarnings = defaultIgnoreWarnings;
-        Templates templates = parseInstruction(instruction, properties, params,
-                ignoreErrors, ignoreWarnings);
-        Transformer t = null;
-        if (templates != null) {
-            t = templates.newTransformer();
-        } else if (defaultTemplates != null) {
-            t = defaultTemplates.newTransformer();
-        } else {
-            t = tf.newTransformer();
-        }
-        for (Entry<String, String> prop : properties.entrySet()) {
-            t.setOutputProperty(prop.getKey(), prop.getValue());
-        }
-        for (Entry<String, String> param : params.entrySet()) {
-            t.setParameter(param.getKey(), param.getValue());
-        }
-        XSLTransformationErrorHandler el = new XSLTransformationErrorHandler(
-                logger, ignoreErrors, ignoreWarnings);
-        t.setErrorListener(el);
-        Document doc = db.newDocument();
-        InputStream is = null;
-        try {
-            if (LOGR.isLoggable(Level.FINER)) {
-                String msg = String
-                        .format("Attempting to transform source from %s using instruction set:%n %s",
-                                uc.getURL(),
-                                DomUtils.serializeNode(instruction));
-                LOGR.finer(msg);
-            }
-            // may return error stream
-            is = URLConnectionUtils.getInputStream(uc);
-            t.transform(new StreamSource(is), new DOMResult(doc));
-        } catch (TransformerException e) {
-            el.error(e);
-        } finally {
-            if (null != is)
-                is.close();
-        }
-        if (el.getErrorCount() > 0 && !ignoreErrors) {
-            return null;
-        }
-        if (el.getWarningCount() > 0 && !ignoreWarnings) {
-            return null;
-        }
-        return doc;
-    }
+	Boolean defaultIgnoreErrors;
+
+	Boolean defaultIgnoreWarnings;
+
+	public XSLTransformationParser() throws Exception {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		db = dbf.newDocumentBuilder();
+		tf = TransformerFactory.newInstance();
+		defaultProperties = new HashMap<>();
+		defaultParams = new HashMap<>();
+		defaultIgnoreErrors = FALSE;
+		defaultIgnoreWarnings = TRUE;
+	}
+
+	public XSLTransformationParser(Node node) throws Exception {
+		super();
+		defaultTemplates = parseInstruction(DomUtils.getElement(node), defaultProperties, defaultParams,
+				defaultIgnoreErrors, defaultIgnoreWarnings);
+	}
+
+	public XSLTransformationParser(String reftype, String ref) throws Exception {
+		super();
+		defaultTemplates = tf.newTemplates(getSource(reftype, ref));
+	}
+
+	private Source getSource(String reftype, String ref) throws Exception {
+		if (reftype.equals("url")) {
+			URL url = new URL(ref);
+			return new StreamSource(url.openStream());
+		}
+		else if (reftype.equals("file")) {
+			return new StreamSource(ref);
+		}
+		else if (reftype.equals("resource")) {
+			ClassLoader cl = getClass().getClassLoader();
+			return new StreamSource(cl.getResourceAsStream(ref));
+		}
+		return null;
+	}
+
+	private Templates parseInstruction(Element instruction, HashMap<String, String> properties,
+			HashMap<String, String> params, Boolean ignoreErrors, Boolean ignoreWarnings) throws Exception {
+		Templates templates = null;
+		final String[] atts = { "url", "file", "resource" };
+		for (String att : atts) {
+			String val = instruction.getAttribute(att);
+			if (val.length() > 0) {
+				templates = tf.newTemplates(getSource(att, val));
+				break;
+			}
+		}
+		Element stylesheet = DomUtils.getElementByTagNameNS(instruction, Test.XSL_NS, "stylesheet");
+		if (stylesheet == null) {
+			stylesheet = DomUtils.getElementByTagNameNS(instruction, Test.XSL_NS, "transform");
+		}
+		if (stylesheet != null) {
+			templates = tf.newTemplates(new DOMSource(stylesheet));
+		}
+		List<Element> children = DomUtils.getChildElements(instruction);
+		for (Element e : children) {
+			if (e.getLocalName().equals("property") && e.getNamespaceURI().equals(Test.CTLP_NS)) {
+				properties.put(e.getAttribute("name"), e.getTextContent());
+			}
+			if (e.getLocalName().equals("with-param") && e.getNamespaceURI().equals(Test.CTLP_NS)) {
+				params.put(e.getAttribute("name"), e.getTextContent());
+			}
+		}
+		String ignoreErrorsAtt = instruction.getAttribute("ignoreErrors");
+		if (ignoreErrorsAtt != null) {
+			ignoreErrors = Boolean.parseBoolean(ignoreErrorsAtt);
+		}
+		String ignoreWarningsAtt = instruction.getAttribute("ignoreWarnings");
+		if (ignoreWarningsAtt != null) {
+			ignoreWarnings = Boolean.parseBoolean(ignoreWarningsAtt);
+		}
+		return templates;
+	}
+
+	public Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
+		HashMap<String, String> properties = new HashMap<>(defaultProperties);
+		HashMap<String, String> params = new HashMap<>(defaultParams);
+		Boolean ignoreErrors = defaultIgnoreErrors;
+		Boolean ignoreWarnings = defaultIgnoreWarnings;
+		Templates templates = parseInstruction(instruction, properties, params, ignoreErrors, ignoreWarnings);
+		Transformer t = null;
+		if (templates != null) {
+			t = templates.newTransformer();
+		}
+		else if (defaultTemplates != null) {
+			t = defaultTemplates.newTransformer();
+		}
+		else {
+			t = tf.newTransformer();
+		}
+		for (Entry<String, String> prop : properties.entrySet()) {
+			t.setOutputProperty(prop.getKey(), prop.getValue());
+		}
+		for (Entry<String, String> param : params.entrySet()) {
+			t.setParameter(param.getKey(), param.getValue());
+		}
+		XSLTransformationErrorHandler el = new XSLTransformationErrorHandler(logger, ignoreErrors, ignoreWarnings);
+		t.setErrorListener(el);
+		Document doc = db.newDocument();
+		InputStream is = null;
+		try {
+			if (LOGR.isLoggable(Level.FINER)) {
+				String msg = String.format("Attempting to transform source from %s using instruction set:%n %s",
+						uc.getURL(), DomUtils.serializeNode(instruction));
+				LOGR.finer(msg);
+			}
+			// may return error stream
+			is = URLConnectionUtils.getInputStream(uc);
+			t.transform(new StreamSource(is), new DOMResult(doc));
+		}
+		catch (TransformerException e) {
+			el.error(e);
+		}
+		finally {
+			if (null != is)
+				is.close();
+		}
+		if (el.getErrorCount() > 0 && !ignoreErrors) {
+			return null;
+		}
+		if (el.getWarningCount() > 0 && !ignoreWarnings) {
+			return null;
+		}
+		return doc;
+	}
+
 }

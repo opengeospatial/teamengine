@@ -6,15 +6,17 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 public interface TemplateEntryInterface extends NamedEntry {
-    File getTemplateFile();
 
-    void setTemplateFile(File templateFile);
+	File getTemplateFile();
 
-    List<QName> getParams();
+	void setTemplateFile(File templateFile);
 
-    void setParams(List<QName> params);
+	List<QName> getParams();
 
-    boolean usesContext();
+	void setParams(List<QName> params);
 
-    void setUsesContext(boolean usesContext);
+	boolean usesContext();
+
+	void setUsesContext(boolean usesContext);
+
 }

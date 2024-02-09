@@ -29,317 +29,268 @@ import java.net.HttpURLConnection;
 import javax.xml.transform.dom.DOMSource;
 
 /**
- * Parses a SOAP message entity and returns the SOAP message itself or the
- * content of the SOAP Body element.
- * 
+ * Parses a SOAP message entity and returns the SOAP message itself or the content of the
+ * SOAP Body element.
+ *
  */
 public class SoapParser {
 
-    public static final String SOAP_11_NAMESPACE = "http://schemas.xmlsoap.org/soap/envelope/";
-    public static final String SOAP_12_NAMESPACE = "http://www.w3.org/2003/05/soap-envelope";
+	public static final String SOAP_11_NAMESPACE = "http://schemas.xmlsoap.org/soap/envelope/";
 
-    /**
-     * A method to parse and valdate the response of a SOAP server.
-     * author Simone Gianfranceschi
-     * 
-     * @param uc
-     *            the URL Connection to be used to retrieve the SOAP message.
-     * @param instruction
-     *            the SOAP Parser CTL excerpt
-     * @param logger
-     *            the PrintWriter to log all results to
-     * 
-     * @return null if there were errors, the parsed document otherwise: it can
-     *         be the SOAP message, the SOAP message body content or a SOAP fult
-     * 
-     */
-    public Document parse(URLConnection uc, Element instruction,
-            PrintWriter logger) throws Exception {
+	public static final String SOAP_12_NAMESPACE = "http://www.w3.org/2003/05/soap-envelope";
 
-        HttpURLConnection huc = (HttpURLConnection) uc;
-        int responsecode = huc.getResponseCode();
-        InputStream soapMessage = null;
+	/**
+	 * A method to parse and valdate the response of a SOAP server. author Simone
+	 * Gianfranceschi
+	 * @param uc the URL Connection to be used to retrieve the SOAP message.
+	 * @param instruction the SOAP Parser CTL excerpt
+	 * @param logger the PrintWriter to log all results to
+	 * @return null if there were errors, the parsed document otherwise: it can be the
+	 * SOAP message, the SOAP message body content or a SOAP fult
+	 *
+	 */
+	public Document parse(URLConnection uc, Element instruction, PrintWriter logger) throws Exception {
 
-        if (responsecode == 200) {
-            // The response message follows in the HTTP response entity body.
-            soapMessage = huc.getInputStream();
-        } else if (responsecode == 202) {
-            /*
-             * The request has been accepted, but either (a) no response
-             * envelope is provided or (b) an envelope representing information
-             * related to the request is provided
-             */
-            soapMessage = huc.getInputStream();
-        } else if (responsecode == 301 || responsecode == 302
-                || responsecode == 307) {
-            /*
-             * The requested resource has moved. In the case of unsafe HTTP
-             * method, like POST or PUT, explicit confirmation is required
-             * before proceeding as follow. In the case of a safe method, like
-             * GET, or if the redirection has been approved, the HTTP request
-             * SHOULD be retried using the URI carried in the associated
-             * Location header field as the new value for the
-             * http://www.w3.org/2003/05/soap/mep/ImmediateDestination property.
-             */
-            soapMessage = huc.getErrorStream();
-        } else if (responsecode == 303) {
-            /*
-             * The requested resource has moved and the HTTP request SHOULD be
-             * retried using the URI carried in the associated Location header
-             * field as the new value for the
-             * http://www.w3.org/2003/05/soap/mep/ImmediateDestination property.
-             * The value of
-             * http://www.w3.org/2003/05/soap/features/web-method/Method is
-             * changed to ""GET"", the value of
-             * http://www.w3.org/2003/05/soap/mep /OutboundMessage is set to
-             * "null". [Note: Status code 303 MUST NOT be sent unless the
-             * request SOAP envelope has been processed according to the SOAP
-             * processing model and the SOAP response is to be made available by
-             * retrieval from the URI provided with the 303.]
-             */
-            soapMessage = huc.getErrorStream();
-        } else if (responsecode >= 400) {
-            /*
-             * Client or Server errors. The SOAP Fault has to be handled.
-             */
-            soapMessage = huc.getErrorStream();
-        }
-        return this.parse(soapMessage, instruction, logger);
-    }
+		HttpURLConnection huc = (HttpURLConnection) uc;
+		int responsecode = huc.getResponseCode();
+		InputStream soapMessage = null;
 
-    /**
-     * A method to parse and valdate the response of a SOAP server.
-     * author Simone Gianfranceschi
-     * 
-     * @param xml
-     *            the SOAP message to retrieve and validate. May be an
-     *            InputStream object or a Document object.
-     * @param instruction
-     *            the SOAP Parser CTL excerpt
-     * @param logger
-     *            the PrintWriter to log all results to
-     * 
-     * @return null if there were errors, the parsed document otherwise: it can
-     *         be the SOAP message, the SOAP message body content or a SOAP fult
-     * 
-     */
-    private Document parse(Object xml, Element instruction, PrintWriter logger)
-            throws Exception {
-        Document soapMessage = null;
-        String returnType = instruction.getAttribute("return");// envelope or
-                                                               // content
+		if (responsecode == 200) {
+			// The response message follows in the HTTP response entity body.
+			soapMessage = huc.getInputStream();
+		}
+		else if (responsecode == 202) {
+			/*
+			 * The request has been accepted, but either (a) no response envelope is
+			 * provided or (b) an envelope representing information related to the request
+			 * is provided
+			 */
+			soapMessage = huc.getInputStream();
+		}
+		else if (responsecode == 301 || responsecode == 302 || responsecode == 307) {
+			/*
+			 * The requested resource has moved. In the case of unsafe HTTP method, like
+			 * POST or PUT, explicit confirmation is required before proceeding as follow.
+			 * In the case of a safe method, like GET, or if the redirection has been
+			 * approved, the HTTP request SHOULD be retried using the URI carried in the
+			 * associated Location header field as the new value for the
+			 * http://www.w3.org/2003/05/soap/mep/ImmediateDestination property.
+			 */
+			soapMessage = huc.getErrorStream();
+		}
+		else if (responsecode == 303) {
+			/*
+			 * The requested resource has moved and the HTTP request SHOULD be retried
+			 * using the URI carried in the associated Location header field as the new
+			 * value for the http://www.w3.org/2003/05/soap/mep/ImmediateDestination
+			 * property. The value of
+			 * http://www.w3.org/2003/05/soap/features/web-method/Method is changed to
+			 * ""GET"", the value of http://www.w3.org/2003/05/soap/mep /OutboundMessage
+			 * is set to "null". [Note: Status code 303 MUST NOT be sent unless the
+			 * request SOAP envelope has been processed according to the SOAP processing
+			 * model and the SOAP response is to be made available by retrieval from the
+			 * URI provided with the 303.]
+			 */
+			soapMessage = huc.getErrorStream();
+		}
+		else if (responsecode >= 400) {
+			/*
+			 * Client or Server errors. The SOAP Fault has to be handled.
+			 */
+			soapMessage = huc.getErrorStream();
+		}
+		return this.parse(soapMessage, instruction, logger);
+	}
 
-        ErrorHandlerImpl eh = new ErrorHandlerImpl("Parsing", logger);
+	/**
+	 * A method to parse and valdate the response of a SOAP server. author Simone
+	 * Gianfranceschi
+	 * @param xml the SOAP message to retrieve and validate. May be an InputStream object
+	 * or a Document object.
+	 * @param instruction the SOAP Parser CTL excerpt
+	 * @param logger the PrintWriter to log all results to
+	 * @return null if there were errors, the parsed document otherwise: it can be the
+	 * SOAP message, the SOAP message body content or a SOAP fult
+	 *
+	 */
+	private Document parse(Object xml, Element instruction, PrintWriter logger) throws Exception {
+		Document soapMessage = null;
+		String returnType = instruction.getAttribute("return");// envelope or
+																// content
 
-        if (xml instanceof InputStream) {
-            soapMessage = SoapUtils.getSOAPMessage((InputStream) xml);
-        } else if (xml instanceof Document) {
-            soapMessage = (Document) xml;
-        } else {
-            throw new Exception("Error: Invalid xml object");
-        }
+		ErrorHandlerImpl eh = new ErrorHandlerImpl("Parsing", logger);
 
-        if (soapMessage != null && isSoapFault(soapMessage)) {
-            return parseSoapFault(soapMessage, logger);
-        }
+		if (xml instanceof InputStream) {
+			soapMessage = SoapUtils.getSOAPMessage((InputStream) xml);
+		}
+		else if (xml instanceof Document) {
+			soapMessage = (Document) xml;
+		}
+		else {
+			throw new Exception("Error: Invalid xml object");
+		}
 
-        eh.setRole("Validation");
-        this.validateSoapMessage(soapMessage, eh);
+		if (soapMessage != null && isSoapFault(soapMessage)) {
+			return parseSoapFault(soapMessage, logger);
+		}
 
-        // Print errors
-        int error_count = eh.getErrorCount();
-        int warning_count = eh.getWarningCount();
-        if (error_count > 0 || warning_count > 0) {
-            String msg = "";
-            if (error_count > 0) {
-                msg += error_count + " validation error"
-                        + (error_count == 1 ? "" : "s");
-                if (warning_count > 0) {
-                    msg += " and ";
-                }
-            }
-            if (warning_count > 0) {
-                msg += warning_count + " warning"
-                        + (warning_count == 1 ? "" : "s");
-            }
-            msg += " detected.";
-            logger.println(msg);
-        }
+		eh.setRole("Validation");
+		this.validateSoapMessage(soapMessage, eh);
 
-        if (error_count > 0) {
-            soapMessage = null;
-        }
+		// Print errors
+		int error_count = eh.getErrorCount();
+		int warning_count = eh.getWarningCount();
+		if (error_count > 0 || warning_count > 0) {
+			String msg = "";
+			if (error_count > 0) {
+				msg += error_count + " validation error" + (error_count == 1 ? "" : "s");
+				if (warning_count > 0) {
+					msg += " and ";
+				}
+			}
+			if (warning_count > 0) {
+				msg += warning_count + " warning" + (warning_count == 1 ? "" : "s");
+			}
+			msg += " detected.";
+			logger.println(msg);
+		}
 
-        if (soapMessage != null && returnType.equals("content")) {
-            return SoapUtils.getSoapBody(soapMessage);
-        }
+		if (error_count > 0) {
+			soapMessage = null;
+		}
 
-        return soapMessage;
-    }
+		if (soapMessage != null && returnType.equals("content")) {
+			return SoapUtils.getSoapBody(soapMessage);
+		}
 
-    /**
-     * A method to validate the SOAP message received. The message is validated
-     * against the propoer SOAP Schema (1.1 or 1.2 depending on the namespace of
-     * the incoming message)
-     * author Simone Gianfranceschi
-     * 
-     * @param soapMessage
-     *            the SOAP message to validate.
-     * @param eh
-     *            the error handler.
-     * 
-     */
-    private void validateSoapMessage(Document soapMessage, ErrorHandler eh)
-            throws Exception {
-        String namespace = soapMessage.getDocumentElement().getNamespaceURI();
+		return soapMessage;
+	}
 
-        if (namespace == null) {
-            throw new Exception(
-                    "Error: SOAP message cannot be validated. The returned response may be an HTML response: "
-                            + DomUtils.serializeNode(soapMessage));
-        }
+	/**
+	 * A method to validate the SOAP message received. The message is validated against
+	 * the propoer SOAP Schema (1.1 or 1.2 depending on the namespace of the incoming
+	 * message) author Simone Gianfranceschi
+	 * @param soapMessage the SOAP message to validate.
+	 * @param eh the error handler.
+	 *
+	 */
+	private void validateSoapMessage(Document soapMessage, ErrorHandler eh) throws Exception {
+		String namespace = soapMessage.getDocumentElement().getNamespaceURI();
 
-        // Create SOAP validator
-        SchemaFactory sf = SchemaFactory
-                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema soap_schema = null;
-        if (namespace.equals(SOAP_12_NAMESPACE)) {
-            soap_schema = sf.newSchema(Misc
-                    .getResourceAsFile("com/occamlab/te/schemas/soap12.xsd"));
-        } else /* if (namespace.equals(SOAP_11_NAMESPACE)) */{
-            soap_schema = sf.newSchema(Misc
-                    .getResourceAsFile("com/occamlab/te/schemas/soap11.xsd"));
-        }
+		if (namespace == null) {
+			throw new Exception(
+					"Error: SOAP message cannot be validated. The returned response may be an HTML response: "
+							+ DomUtils.serializeNode(soapMessage));
+		}
 
-        Validator soap_validator = soap_schema.newValidator();
-        soap_validator.setErrorHandler(eh);
-        soap_validator.validate(new DOMSource(soapMessage));
-    }
+		// Create SOAP validator
+		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		Schema soap_schema = null;
+		if (namespace.equals(SOAP_12_NAMESPACE)) {
+			soap_schema = sf.newSchema(Misc.getResourceAsFile("com/occamlab/te/schemas/soap12.xsd"));
+		}
+		else /* if (namespace.equals(SOAP_11_NAMESPACE)) */ {
+			soap_schema = sf.newSchema(Misc.getResourceAsFile("com/occamlab/te/schemas/soap11.xsd"));
+		}
 
-    /**
-     * A method to check if the message received is a SOAP fault.
-     * 
-     * author Simone Gianfranceschi
-     * 
-     * @param soapMessage
-     *            the SOAP message to check.
-     * 
-     */
-    private boolean isSoapFault(Document soapMessage) throws Exception {
-        Element faultElement = DomUtils.getElementByTagNameNS(soapMessage,
-                SOAP_12_NAMESPACE, "Fault");
+		Validator soap_validator = soap_schema.newValidator();
+		soap_validator.setErrorHandler(eh);
+		soap_validator.validate(new DOMSource(soapMessage));
+	}
 
-        if (faultElement != null) {
-            return true;
-        } else {
-            faultElement = DomUtils.getElementByTagNameNS(soapMessage,
-                    SOAP_11_NAMESPACE, "Fault");
-            if (faultElement != null) {
-                return true;
-            }
-        }
-        return false;
-    }
+	/**
+	 * A method to check if the message received is a SOAP fault.
+	 *
+	 * author Simone Gianfranceschi
+	 * @param soapMessage the SOAP message to check.
+	 *
+	 */
+	private boolean isSoapFault(Document soapMessage) throws Exception {
+		Element faultElement = DomUtils.getElementByTagNameNS(soapMessage, SOAP_12_NAMESPACE, "Fault");
 
-    /**
-     * A method to parse a SOAP fault. It checks the namespace and invoke the
-     * correct SOAP 1.1 or 1.2 Fault parser.
-     * author Simone Gianfranceschi
-     * 
-     * @param soapMessage
-     *            the SOAP fault message to parse
-     * 
-     * @param logger
-     *            the PrintWriter to log all results to
-     * 
-     * @return the parsed document otherwise
-     * 
-     */
-    private Document parseSoapFault(Document soapMessage, PrintWriter logger)
-            throws Exception {
-        String namespace = soapMessage.getDocumentElement().getNamespaceURI();
+		if (faultElement != null) {
+			return true;
+		}
+		else {
+			faultElement = DomUtils.getElementByTagNameNS(soapMessage, SOAP_11_NAMESPACE, "Fault");
+			if (faultElement != null) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-        if (namespace.equals(SOAP_12_NAMESPACE)) {
-            parseSoap12Fault(soapMessage, logger);
-        } else /* if (namespace.equals(SOAP_11_NAMESPACE)) */{
-            parseSoap11Fault(soapMessage, logger);
-        }
-        return soapMessage;
-    }
+	/**
+	 * A method to parse a SOAP fault. It checks the namespace and invoke the correct SOAP
+	 * 1.1 or 1.2 Fault parser. author Simone Gianfranceschi
+	 * @param soapMessage the SOAP fault message to parse
+	 * @param logger the PrintWriter to log all results to
+	 * @return the parsed document otherwise
+	 *
+	 */
+	private Document parseSoapFault(Document soapMessage, PrintWriter logger) throws Exception {
+		String namespace = soapMessage.getDocumentElement().getNamespaceURI();
 
-    /**
-     * A method to parse a SOAP 1.1 fault message.
-     * author Simone Gianfranceschi
-     * 
-     * @param soapMessage
-     *            the SOAP 1.1 fault message to parse
-     * 
-     * @param logger
-     *            the PrintWriter to log all results to
-     * 
-     * @return void
-     * 
-     */
-    private void parseSoap11Fault(Document soapMessage, PrintWriter logger)
-            throws Exception {
-        Element envelope = soapMessage.getDocumentElement();
-        Element element = DomUtils.getElementByTagName(envelope, "faultcode");
-        if (element == null) {
-            element = DomUtils.getElementByTagNameNS(envelope,
-                    SOAP_11_NAMESPACE, "faultcode");
-        }
-        String faultcode = element.getTextContent();
+		if (namespace.equals(SOAP_12_NAMESPACE)) {
+			parseSoap12Fault(soapMessage, logger);
+		}
+		else /* if (namespace.equals(SOAP_11_NAMESPACE)) */ {
+			parseSoap11Fault(soapMessage, logger);
+		}
+		return soapMessage;
+	}
 
-        element = DomUtils.getElementByTagName(envelope, "faultstring");
-        if (element == null) {
-            element = DomUtils.getElementByTagNameNS(envelope,
-                    SOAP_11_NAMESPACE, "faultstring");
-        }
+	/**
+	 * A method to parse a SOAP 1.1 fault message. author Simone Gianfranceschi
+	 * @param soapMessage the SOAP 1.1 fault message to parse
+	 * @param logger the PrintWriter to log all results to
+	 * @return void
+	 *
+	 */
+	private void parseSoap11Fault(Document soapMessage, PrintWriter logger) throws Exception {
+		Element envelope = soapMessage.getDocumentElement();
+		Element element = DomUtils.getElementByTagName(envelope, "faultcode");
+		if (element == null) {
+			element = DomUtils.getElementByTagNameNS(envelope, SOAP_11_NAMESPACE, "faultcode");
+		}
+		String faultcode = element.getTextContent();
 
-        String faultstring = element.getTextContent();
+		element = DomUtils.getElementByTagName(envelope, "faultstring");
+		if (element == null) {
+			element = DomUtils.getElementByTagNameNS(envelope, SOAP_11_NAMESPACE, "faultstring");
+		}
 
-        String msg = "SOAP Fault received - [code:" + faultcode
-                + "][fault string:" + faultstring + "]";
-        logger.println(msg);
-    }
+		String faultstring = element.getTextContent();
 
-    /**
-     * A method to parse a SOAP 1.2 fault message.
-     * author Simone Gianfranceschi
-     *
-     * @param soapMessage
-     *            the SOAP 1.2 fault message to parse
-     * 
-     * @param logger
-     *            the PrintWriter to log all results to
-     * 
-     * @return void
-     * 
-     */
-    private void parseSoap12Fault(Document soapMessage, PrintWriter logger)
-            throws Exception {
-        Element envelope = soapMessage.getDocumentElement();
-        Element code = DomUtils.getElementByTagNameNS(envelope,
-                SOAP_12_NAMESPACE, "Code");
-        String value = DomUtils.getElementByTagNameNS(code, SOAP_12_NAMESPACE,
-                "Value").getTextContent();
-        String msg = "SOAP Fault received - [code:" + value + "]";
-        Element subCode = DomUtils.getElementByTagNameNS(code,
-                SOAP_12_NAMESPACE, "Subcode");
-        if (subCode != null) {
-            value = DomUtils.getElementByTagNameNS(subCode, SOAP_12_NAMESPACE,
-                    "Value").getTextContent();
-            msg += "[subcode:" + value + "]";
-        }
-        Element reason = DomUtils.getElementByTagNameNS(envelope,
-                SOAP_12_NAMESPACE, "Reason");
-        Element text = DomUtils.getElementByTagNameNS(reason,
-                SOAP_12_NAMESPACE, "Text");
-        if (text != null) {
-            value = text.getTextContent();
-            msg += "[reason:" + value + "]";
-        }
+		String msg = "SOAP Fault received - [code:" + faultcode + "][fault string:" + faultstring + "]";
+		logger.println(msg);
+	}
 
-        logger.println(msg);
-    }
+	/**
+	 * A method to parse a SOAP 1.2 fault message. author Simone Gianfranceschi
+	 * @param soapMessage the SOAP 1.2 fault message to parse
+	 * @param logger the PrintWriter to log all results to
+	 * @return void
+	 *
+	 */
+	private void parseSoap12Fault(Document soapMessage, PrintWriter logger) throws Exception {
+		Element envelope = soapMessage.getDocumentElement();
+		Element code = DomUtils.getElementByTagNameNS(envelope, SOAP_12_NAMESPACE, "Code");
+		String value = DomUtils.getElementByTagNameNS(code, SOAP_12_NAMESPACE, "Value").getTextContent();
+		String msg = "SOAP Fault received - [code:" + value + "]";
+		Element subCode = DomUtils.getElementByTagNameNS(code, SOAP_12_NAMESPACE, "Subcode");
+		if (subCode != null) {
+			value = DomUtils.getElementByTagNameNS(subCode, SOAP_12_NAMESPACE, "Value").getTextContent();
+			msg += "[subcode:" + value + "]";
+		}
+		Element reason = DomUtils.getElementByTagNameNS(envelope, SOAP_12_NAMESPACE, "Reason");
+		Element text = DomUtils.getElementByTagNameNS(reason, SOAP_12_NAMESPACE, "Text");
+		if (text != null) {
+			value = text.getTextContent();
+			msg += "[reason:" + value + "]";
+		}
+
+		logger.println(msg);
+	}
+
 }
