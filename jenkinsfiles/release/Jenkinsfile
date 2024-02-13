@@ -1,8 +1,8 @@
 pipeline {
   agent any
   tools {
-    maven 'mvn'
-    jdk 'JDK 8'
+    maven 'mvn396'
+    jdk 'temurin-jdk17'
   }
   stages {
     stage('Initialize') {
