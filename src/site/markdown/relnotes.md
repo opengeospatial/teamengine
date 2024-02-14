@@ -1,6 +1,25 @@
 Release Notes
 =============
 
+## 6.0.0-RC1 (2024-02-14)
+- [#511](https://github.com/opengeospatial/teamengine/issues/511): Update to Java 17
+- [#556](https://github.com/opengeospatial/teamengine/issues/556): TEAM Engine Tomcat 10.1 update
+- [#579](https://github.com/opengeospatial/teamengine/issues/579): Update Maven dependencies to latest versions
+- [#574](https://github.com/opengeospatial/teamengine/issues/574): Update Maven plugins to latest versions
+- [#598](https://github.com/opengeospatial/teamengine/issues/598): Modernize unit tests
+- [#599](https://github.com/opengeospatial/teamengine/issues/599): Upgrade TestNG to latest version
+- [#587](https://github.com/opengeospatial/teamengine/issues/587): Update documentation for version 6.0
+- [#591](https://github.com/opengeospatial/teamengine/issues/591): Clean up code
+- [#608](https://github.com/opengeospatial/teamengine/issues/608): aio JAR CLI does not work with acceptMediaType application/zip
+- [#614](https://github.com/opengeospatial/teamengine/pull/614): Bump org.apache.tomcat:tomcat-catalina from 10.1.11 to 10.1.16
+- [#602](https://github.com/opengeospatial/teamengine/issues/602): Introduce spring-javaformat-maven-plugin and execute formatting
+- [#576](https://github.com/opengeospatial/teamengine/issues/576): Resolve errors and warnings of maven-javadoc-plugin when using Java 17
+- [#590](https://github.com/opengeospatial/teamengine/issues/590): Report details link points to broken locations
+- [#589](https://github.com/opengeospatial/teamengine/issues/589): Fix REST interface for version 6.0
+- [#601](https://github.com/opengeospatial/teamengine/issues/601): Introduce Maven Enforcer Plugin
+- [#575](https://github.com/opengeospatial/teamengine/issues/575): Unit test ImageParserTest.parsePNG_noAlphaChannel fails with Java 17
+- [#578](https://github.com/opengeospatial/teamengine/issues/578): Analyse warnings logged by maven-pdf-plugin when using Java 17
+
 ## 5.7 (2023-12-18)
 - [#603](https://github.com/opengeospatial/teamengine/pull/603): Add CORS header in process method of MonitorServlet
 - [#593](https://github.com/opengeospatial/teamengine/pull/593): Fix test result logic for results other than PASS/FAIL.
