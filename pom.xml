@@ -14,6 +14,7 @@
   Program (CITE).
   </description>
   <url>http://opengeospatial.github.io/teamengine/</url>
+  <inceptionYear>2006</inceptionYear>
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -568,6 +569,34 @@
                 <goals>
                   <goal>jar-no-fork</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>license</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>2.4.0</version>
+            <executions>
+              <execution>
+                <id>first</id>
+                <goals>
+                  <goal>update-file-header</goal>
+                </goals>
+                <phase>process-sources</phase>
+                <configuration>
+                  <licenseName>apache_v2</licenseName>
+                  <roots>
+                    <root>src/main/java</root>
+                    <root>src/main/resources</root>
+                  </roots>
+                </configuration>
               </execution>
             </executions>
           </plugin>
