@@ -95,7 +95,7 @@
                         var jsonData = JSON.parse(data);
                         var text = "";
                         if (jsonData.Result !== undefined) {
-                            for (var index = 0; index < 17; index++) {
+                            for (var index = 0; index < 15; index++) {
                                 var reqno=jsonData.Result[index].Name.split(" ")[1];
                                 var id=jsonData.Result[index].id+"_result";
                                 var img=jsonData.Result[index].id+"_img";
@@ -109,7 +109,7 @@
                             }
                         }
                         if (jsonData.Result !== undefined) {
-                            for (var index = 17; index < jsonData.Result.length; index++) {
+                            for (var index = 15; index < jsonData.Result.length; index++) {
                                 var reqno=jsonData.Result[index].Name.split(" ")[1];
                                 var id=jsonData.Result[index].ParentID+"_result";
                                 var leftmarginafter=((+jsonData.Result[index].indent)+1)*20;
@@ -126,6 +126,7 @@
                         } else {
                             $('#2_img').attr("src", success);
                         }
+                        /*
                         if ($('#4_result').text().indexOf('Request') == -1) {
                             $('#4_img').attr("src", error);
                             $('#3_img').attr("src", error);
@@ -133,6 +134,7 @@
                         } else {
                             $('#4_img').attr("src", success);
                         }
+                        */
                         if ($('#5_result').text().indexOf('Request') == -1) {
                             $('#5_img').attr("src", error);
                             $('#3_img').attr("src", error);
@@ -147,6 +149,7 @@
                         } else {
                             $('#6_img').attr("src", success);
                         }
+                        /*
                         if ($('#7_result').text().indexOf('Request') == -1) {
                             $('#7_img').attr("src", error);
                             $('#3_img').attr("src", error);
@@ -154,6 +157,7 @@
                         } else {
                             $('#7_img').attr("src", success);
                         }
+                        */
                         if ($('#8_result').text().indexOf('Request') == -1) {
                             $('#8_img').attr("src", error);
                             $('#3_img').attr("src", error);

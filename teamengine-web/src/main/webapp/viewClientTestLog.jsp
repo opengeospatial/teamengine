@@ -58,11 +58,11 @@
           int countTestCheck = 0;
           int counter = 1;
           //mainLoop traverse the json array till all main test name.
-          for (mainLoop = 1; mainLoop <= 17; mainLoop++) {
+          for (mainLoop = 1; mainLoop <= 15; mainLoop++) {
             JSONObject object = (JSONObject) responseJson.get(mainLoop);
             //subLoop traverse the json array for all the result which comes during test run.
             if (!responseJson.isEmpty()) {
-              for (subLoop = 18; subLoop < responseJson.size(); subLoop++) {
+              for (subLoop = 16; subLoop < responseJson.size(); subLoop++) {
                 JSONObject child = (JSONObject) responseJson.get(subLoop);
                 //check the mainLoop for it is gapMap layer or not.
                 if (mainLoop != 2) {
@@ -136,10 +136,10 @@
          */
         public String mapLayerManager(JSONArray responseJson) {
           int count = 0;
-          for (mainLoop = 3; mainLoop <= 16; mainLoop++) {
+          for (mainLoop = 3; mainLoop <= 14; mainLoop++) {
             JSONObject object = (JSONObject) responseJson.get(mainLoop);
             if (!responseJson.isEmpty()) {
-              for (subLoop = 18; subLoop < responseJson.size(); subLoop++) {
+              for (subLoop = 16; subLoop < responseJson.size(); subLoop++) {
                 JSONObject child = (JSONObject) responseJson.get(subLoop);
                 if (object.get("id") == child.get("ParentID")) {
                   count = 1;
@@ -179,7 +179,7 @@
           int testNumber = Integer.parseInt(testNo);
           JSONObject object = (JSONObject) responseJson.get(testNumber);
           if (!responseJson.isEmpty()) {
-            for (subLoop = 18; subLoop < responseJson.size(); subLoop++) {
+            for (subLoop = 16; subLoop < responseJson.size(); subLoop++) {
               JSONObject child = (JSONObject) responseJson.get(subLoop);
               if (object.get("id") == child.get("ParentID")) {
                 countTestCheck = 1;
