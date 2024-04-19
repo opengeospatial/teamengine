@@ -75,6 +75,10 @@
       }
     </script>   
     <!-- Displayed the result on viewSessionLog screen dynamically -->
+    <!-- Reduce number of test checks for WMS Client test results, remove result_4 and -7 (autos and building_centers)
+    see https://github.com/opengeospatial/ets-wms-client13/commit/fde3a02fba86df6c8e9dca3c0323a47d681d891c,
+    https://github.com/opengeospatial/ets-wms-client13/issues/68
+    and https://github.com/opengeospatial/teamengine/commit/d9291d45ea65d4934350e8b585495c2ed562e628 -->
     <script type="text/javascript">   
       <xsl:comment><![CDATA[ 
             $(document).ready(function() {

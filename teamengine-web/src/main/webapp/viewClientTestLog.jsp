@@ -58,6 +58,10 @@
           int countTestCheck = 0;
           int counter = 1;
           //mainLoop traverse the json array till all main test name.
+          //Reduce number of test checks for WMS Client test results, 
+          //see https://github.com/opengeospatial/ets-wms-client13/commit/fde3a02fba86df6c8e9dca3c0323a47d681d891c,
+          //https://github.com/opengeospatial/ets-wms-client13/issues/68
+          //and https://github.com/opengeospatial/teamengine/commit/d9291d45ea65d4934350e8b585495c2ed562e628
           for (mainLoop = 1; mainLoop <= 15; mainLoop++) {
             JSONObject object = (JSONObject) responseJson.get(mainLoop);
             //subLoop traverse the json array for all the result which comes during test run.
@@ -136,6 +140,10 @@
          */
         public String mapLayerManager(JSONArray responseJson) {
           int count = 0;
+          //Reduce number of test checks for WMS Client test results, 
+          //see https://github.com/opengeospatial/ets-wms-client13/commit/fde3a02fba86df6c8e9dca3c0323a47d681d891c,
+          //https://github.com/opengeospatial/ets-wms-client13/issues/68
+          //and https://github.com/opengeospatial/teamengine/commit/d9291d45ea65d4934350e8b585495c2ed562e628
           for (mainLoop = 3; mainLoop <= 14; mainLoop++) {
             JSONObject object = (JSONObject) responseJson.get(mainLoop);
             if (!responseJson.isEmpty()) {
@@ -179,6 +187,10 @@
           int testNumber = Integer.parseInt(testNo);
           JSONObject object = (JSONObject) responseJson.get(testNumber);
           if (!responseJson.isEmpty()) {
+            //Reduce number of test checks for WMS Client test results, 
+            //see https://github.com/opengeospatial/ets-wms-client13/commit/fde3a02fba86df6c8e9dca3c0323a47d681d891c,
+            //https://github.com/opengeospatial/ets-wms-client13/issues/68
+            //and https://github.com/opengeospatial/teamengine/commit/d9291d45ea65d4934350e8b585495c2ed562e628
             for (subLoop = 16; subLoop < responseJson.size(); subLoop++) {
               JSONObject child = (JSONObject) responseJson.get(subLoop);
               if (object.get("id") == child.get("ParentID")) {
