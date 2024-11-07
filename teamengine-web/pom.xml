@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opengis.cite</groupId>
@@ -11,14 +12,14 @@
 
   <name>TEAM Engine - Web Application</name>
   <description>
-  This module provides a web-based application for executing test suites and 
-  managing test reports.
+    This module provides a web-based application for executing test suites and
+    managing test reports.
   </description>
-  
+
   <properties>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildDate>${maven.build.timestamp}</buildDate>
-   </properties>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -140,10 +141,10 @@
           <!-- Common libraries (e.g. JAX-RS) are bundled separately -->
           <webResources>
             <resource>
-                <filtering>true</filtering>
-                <directory>src/main/webapp</directory>
+              <filtering>true</filtering>
+              <directory>src/main/webapp</directory>
             </resource>
-         </webResources>
+          </webResources>
           <packagingExcludes>
             WEB-INF/lib/teamengine-resources*.jar,
             WEB-INF/lib/teamengine-realm*.jar,
