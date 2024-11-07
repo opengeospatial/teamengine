@@ -3,6 +3,7 @@ Release Notes
 
 ## 6.0.0-RC2 (2024-11-07)
 - [#624](https://github.com/opengeospatial/teamengine/pull/624): Update versions of dependencies and plugins
+- [#625](https://github.com/opengeospatial/teamengine/pull/625): Add and configure nexus-staging-maven-plugin and execute formatting of pom files
 
 ## 6.0.0-RC1 (2024-02-14)
 
