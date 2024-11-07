@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -12,8 +13,8 @@
 
   <name>TEAM Engine - CTL Test Suite Providers</name>
   <description>
-  Enables the execution of legacy CTL (OGC Compliance Test language) test suites 
-  using a RESTful API.
+    Enables the execution of legacy CTL (OGC Compliance Test language) test suites
+    using a RESTful API.
   </description>
 
   <developers>
@@ -26,7 +27,7 @@
       <name>Keshav Nangare</name>
       <url>https://github.com/keshav-nangare</url>
       <timezone>Asia/Kolkata</timezone>
-    </developer> 
+    </developer>
   </developers>
 
   <dependencies>

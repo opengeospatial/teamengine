@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
@@ -8,10 +9,10 @@
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
-  A test harness that executes test suites written using the OGC CTL test 
-  grammar or the TestNG framework. It is typically used to verify specification 
-  compliance and is the official test harness of the OGC Compliance Testing 
-  Program (CITE).
+    A test harness that executes test suites written using the OGC CTL test
+    grammar or the TestNG framework. It is typically used to verify specification
+    compliance and is the official test harness of the OGC Compliance Testing
+    Program (CITE).
   </description>
   <url>http://opengeospatial.github.io/teamengine/</url>
   <licenses>
@@ -74,7 +75,7 @@
       <name>Upendra Sachan</name>
       <url>https://github.com/upendra-sachan</url>
       <timezone>Asia/Kolkata</timezone>
-    </developer>  
+    </developer>
     <developer>
       <name>Andrea Aime</name>
       <url>https://github.com/aaime</url>
@@ -299,7 +300,7 @@
   </dependencyManagement>
 
   <build>
-    <plugins> 
+    <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
@@ -389,6 +390,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.7.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>sonatype-nexus</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
       </plugin>
     </plugins>
 
@@ -512,7 +524,9 @@
     <profile>
       <id>windows</id>
       <activation>
-        <os><family>windows</family></os>
+        <os>
+          <family>windows</family>
+        </os>
       </activation>
       <properties>
         <hostname>${env.COMPUTERNAME}</hostname>
@@ -521,7 +535,9 @@
     <profile>
       <id>unix</id>
       <activation>
-        <os><family>unix</family></os>
+        <os>
+          <family>unix</family>
+        </os>
       </activation>
       <properties>
         <hostname>${env.HOSTNAME}</hostname>
@@ -568,10 +584,6 @@
   </profiles>
 
   <distributionManagement>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
     <site>
       <id>site</id>
       <url>scm:git:git@github.com:opengeospatial/teamengine.git</url>
