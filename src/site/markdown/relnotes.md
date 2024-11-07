@@ -1,6 +1,9 @@
 Release Notes
 =============
 
+## 6.0.0-RC2 (2024-11-07)
+- [#624](https://github.com/opengeospatial/teamengine/pull/624): Update versions of dependencies and plugins
+
 ## 6.0.0-RC1 (2024-02-14)
 - [#511](https://github.com/opengeospatial/teamengine/issues/511): Update to Java 17
 - [#556](https://github.com/opengeospatial/teamengine/issues/556): TEAM Engine Tomcat 10.1 update
