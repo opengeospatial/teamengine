@@ -5,6 +5,9 @@ Release Notes
 - [#624](https://github.com/opengeospatial/teamengine/pull/624): Update versions of dependencies and plugins
 
 ## 6.0.0-RC1 (2024-02-14)
+
+Attention: Java 17 and Tomcat 10.1 are required.
+
 - [#511](https://github.com/opengeospatial/teamengine/issues/511): Update to Java 17
 - [#556](https://github.com/opengeospatial/teamengine/issues/556): TEAM Engine Tomcat 10.1 update
 - [#579](https://github.com/opengeospatial/teamengine/issues/579): Update Maven dependencies to latest versions
