@@ -88,13 +88,13 @@ public class CtlExecutor implements TestRunExecutor {
 
 			if (param.contains("sessionId")) {
 				runOpts.setSessionId(paramValue);
-				TestRunUtils.save(runOpts.getLogDir(), runOpts.getSessionId(), sourcesId);
 			}
 		}
 
 		if (null == runOpts.getSessionId()) {
 			runOpts.setSessionId(UUID.randomUUID().toString());
 		}
+		TestRunUtils.save(runOpts.getLogDir(), runOpts.getSessionId(), sourcesId);
 		String suiteName = null;
 		try {
 			Index masterIndex = Generator.generateXsl(this.setupOpts);
