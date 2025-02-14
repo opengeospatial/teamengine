@@ -70,3 +70,28 @@ Contributors are expected to observe the project's [code of conduct](https://git
 
 Visit the [CITE wiki](https://github.com/opengeospatial/cite/wiki) for more information about the 
 CITE program and tools.
+
+### TEAM Engine - High Level Architecture
+
+```mermaid
+    C4Dynamic
+    title TEAM Engine
+
+
+    Container(c1, "Web Browser")
+    Container_Boundary(b, "TEAM Engine") {
+      Component(c10, "Web", "Java library", "Provides the web-based application.")
+      Component(c2, "Core", "Java library", "Provides the core functionality.")
+      Component(c3, "Console", "Java library", "Supports execution of tests from a console.")
+      Component(c4, "Realm", "Java library", "Provides the access control.")
+      Component(c5, "Resources", "Java library", "Provides access to various resources.")
+      Component(c6, "SPI-CTL", "Java library", "Provides support for the Compliance Test Language (CTL).")
+      Component(c7, "SPI", "Java library", "Supports various functions.")
+      Component(c8, "Tests", "Java library", "Implements unit tests for developing the test harness.")
+      Component(c9, "Virtualization", "Java library", "Provides the virtualization capability.")
+      
+    }
+  
+Rel(c10, c1, "requests and responses", "HTTP/HTTPS")
+
+```
