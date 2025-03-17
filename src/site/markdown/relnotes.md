@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+## 6.0.0 (2025-03-17)
+- [#628](https://github.com/opengeospatial/teamengine/pull/628): Fix workflow of creating the session log dir
+- [#630](https://github.com/opengeospatial/teamengine/pull/630): Remove csw related schemas files
+- [#631](https://github.com/opengeospatial/teamengine/pull/631): Bump org.apache.tomcat:tomcat-catalina from 10.1.34 to 10.1.35
+- [#627](https://github.com/opengeospatial/teamengine/pull/627): Bump org.apache.tomcat:tomcat-catalina from 10.1.31 to 10.1.34
+
 ## 6.0.0-RC2 (2024-11-07)
 - [#624](https://github.com/opengeospatial/teamengine/pull/624): Update versions of dependencies and plugins
 - [#625](https://github.com/opengeospatial/teamengine/pull/625): Add and configure nexus-staging-maven-plugin and execute formatting of pom files
