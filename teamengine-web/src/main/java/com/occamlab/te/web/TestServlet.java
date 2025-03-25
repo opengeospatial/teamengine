@@ -185,7 +185,7 @@ public class TestServlet extends HttpServlet {
 				indexes.put(sourcesName, index);
 
 				for (File ctlFile : index.getDependencies()) {
-					String encodedName = Generator.createEncodedName(ctlFile);
+					String encodedName = Generator.createEncodedName(ctlFile.toURI().toString());
 					String basename = encodedName;
 					int i = basename.lastIndexOf('.');
 					if (i > 0) {

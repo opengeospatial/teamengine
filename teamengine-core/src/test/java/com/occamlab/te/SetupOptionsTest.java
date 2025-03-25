@@ -65,7 +65,7 @@ public class SetupOptionsTest {
 	@Test
 	public void getScriptSources() {
 		SetupOptions iut = new SetupOptions();
-		List<File> sources = iut.getSources();
+		List<Object> sources = iut.getSources();
 		Assert.assertEquals("Unexpected size", 0, sources.size());
 	}
 

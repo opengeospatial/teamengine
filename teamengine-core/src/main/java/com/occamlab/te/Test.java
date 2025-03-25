@@ -362,8 +362,12 @@ public class Test {
 			masterIndex = new Index();
 		}
 		List<File> resourcesDirs = new ArrayList<>();
-		for (File sourceFile : setupOpts.getSources()) {
-			File resourcesDir = findResourcesDirectory(sourceFile);
+		for (Object sourceObject : setupOpts.getSources()) {
+			if (!(sourceObject instanceof File)) {
+				LOGR.info("Skipping adding sourceObject to resourceDirs: " + sourceObject);
+				continue;
+			}
+			File resourcesDir = findResourcesDirectory((File) sourceObject);
 			if (!resourcesDirs.contains(resourcesDir)) {
 				resourcesDirs.add(resourcesDir);
 			}
@@ -487,8 +491,12 @@ public class Test {
 			File sourcesFile = new File(sessionDir, "sources.xml");
 			try (PrintWriter writer = new PrintWriter(sourcesFile)) {
 				writer.println("<sources>");
-				for (File file : setupOpts.getSources()) {
-					writer.println("<source>" + file.getPath() + "</source>");
+				for (Object object : setupOpts.getSources()) {
+					if (!(object instanceof File)) {
+						LOGR.info("Skipping adding source to sources.xml: " + object);
+						continue;
+					}
+					writer.println("<source>" + ((File) object).getPath() + "</source>");
 				}
 				writer.println("</sources>");
 			}
