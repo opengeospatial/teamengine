@@ -1,5 +1,11 @@
 # Contributing
 
+Rules for submitting a pull request:
+
+* **Small Contribution / Single Source Code File:** A committer of TEAM Engine can review and apply the change on your behalf if it affects a single source code file. This allows us to adopt a small fix, correct spelling mistakes or clarify a javadoc.
+
+* **Large Contribution / Multiple Files / New Files:** To contribute new files or change several existing files, you have to be in a business relationship with OGC, part of an OGC Testbed or OGC member (see https://www.ogc.org/about-ogc/ogc-member-list/).
+
 ## How to contribute
 
 - Have a look at the Issues board and identify an issue you would like to address.
