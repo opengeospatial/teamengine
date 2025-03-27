@@ -61,7 +61,7 @@ public class SetupOptions {
 
 	String sourcesName = "default";
 
-	ArrayList<File> sources = new ArrayList<>();
+	ArrayList<Object> sources = new ArrayList<>();
 
 	private static Logger jLogger = Logger.getLogger("com.occamlab.te.SetupOptions");
 
@@ -170,22 +170,21 @@ public class SetupOptions {
 	}
 
 	/**
-	 * Returns a list of file system resources (directories and files) containing CTL test
-	 * scripts.
-	 * @return A List containing one or more File references (TE_BASE/scripts is the
-	 * default location).
+	 * Returns a list of file references (Files or URLs) containing CTL test scripts.
+	 * @return A List containing one or more references (Files or URLs) (TE_BASE/scripts
+	 * is the default location).
 	 */
-	public List<File> getSources() {
+	public List<Object> getSources() {
 		return sources;
 	}
 
 	/**
 	 * Adds a file system resource to the collection of known scripts.
-	 * @param source A File object representing a file or directory.
+	 * @param source An Object representing a file or directory or a URL.
 	 * @deprecated Use {@link SetupOptions#addSourceWithValidation(File source)} instead
 	 */
 	@Deprecated
-	public void addSource(File source) {
+	public void addSource(Object source) {
 		this.sources.add(source);
 	}
 

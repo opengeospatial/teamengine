@@ -195,7 +195,14 @@ public class DocumentationHelper {
 			throw new Exception("Error: Documentation file already exists, check the file "
 					+ html_output_documentation_file.getAbsolutePath() + " ");
 		FileOutputStream fos = new FileOutputStream(html_output_documentation_file);
-		docCode.generateDocumentation(setupOpts.getSources().get(0).getAbsolutePath(), fos);
+		Object source = setupOpts.getSources().get(0);
+		if (source instanceof File) {
+			docCode.generateDocumentation(((File) source).getAbsolutePath(), fos);
+		}
+		else if (source instanceof URL) {
+			docCode.generateDocumentation(((URL) source).toString(), fos);
+		}
+
 		fos.close();
 		System.out
 			.println("Test documentation file \"" + html_output_documentation_file.getAbsolutePath() + "\" created!");

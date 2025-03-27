@@ -14,6 +14,8 @@ package com.occamlab.te;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -103,22 +105,42 @@ public class Generator {
 		XsltTransformer generatorTransformer = generatorXsltExecutable.load();
 
 		// Create a list of CTL sources (may be files or dirs)
-		ArrayList<File> sources = new ArrayList<>();
+		ArrayList<Object> sources = new ArrayList<>();
 		File f = Misc.getResourceAsFile("com/occamlab/te/scripts/parsers.ctl");
 		if (f.exists()) {
 			sources.add(f.getParentFile());
+		}
+		else {
+			sources.add(new URL(Misc.getResourceURL("com/occamlab/te/scripts/parsers.ctl")));
+			sources.add(new URL(Misc.getResourceURL("com/occamlab/te/scripts/functions.ctl")));
 		}
 		sources.addAll(opts.getSources());
 
 		// Create a list of source CTL files only (no dirs),
 		// and a corresponding list containing a working dir for each file
-		ArrayList<File> sourceFiles = new ArrayList<>();
+		ArrayList<Object> sourceObjects = new ArrayList<>();
 		ArrayList<File> workDirs = new ArrayList<>();
-		Iterator<File> it = sources.iterator();
+		Iterator<Object> it = sources.iterator();
 		while (it.hasNext()) {
-			File source = it.next();
-			LOGR.log(Level.FINE, "Processing CTL source files in {0}", source.getAbsolutePath());
-			String encodedName = createEncodedName(source);
+			Object source = it.next();
+			File sourceFile = null;
+			URL sourceURL = null;
+			if (source instanceof File) {
+				sourceFile = (File) source;
+			}
+			else if (source instanceof URL) {
+				sourceURL = (URL) source;
+			}
+
+			String encodedName = "";
+			if (sourceFile != null) {
+				LOGR.log(Level.FINE, "Processing CTL source files in {0}", sourceFile.getAbsolutePath());
+				encodedName = createEncodedName(sourceFile.toURI().toString());
+			}
+			if (sourceURL != null) {
+				LOGR.log(Level.FINE, "Processing CTL source url {0}", sourceURL.toString());
+				encodedName = createEncodedName(sourceURL.toString());
+			}
 			if (docMode) {
 				encodedName += "d";
 			}
@@ -126,15 +148,20 @@ public class Generator {
 			if (!workingDir.exists() && !workingDir.mkdir()) {
 				LOGR.log(Level.WARNING, "Unable to create working directory at {0}", workingDir.getAbsolutePath());
 			}
-			if (source.isDirectory()) {
-				String[] children = source.list();
+			if (sourceURL != null) {
+				sourceObjects.add(sourceURL);
+				workDirs.add(workingDir);
+				continue;
+			}
+			if (sourceFile.isDirectory()) {
+				String[] children = sourceFile.list();
 				for (int i = 0; i < children.length; i++) {
 					// Finds all .ctl and .xml files in the directory to use
 					String lowerName = children[i].toLowerCase();
 					if (lowerName.endsWith(".ctl") || lowerName.endsWith(".xml")) {
-						File file = new File(source, children[i]);
+						File file = new File(sourceFile, children[i]);
 						if (file.isFile()) {
-							sourceFiles.add(file);
+							sourceObjects.add(file);
 							String basename = children[i].substring(0, children[i].length() - 4);
 							File subdir = new File(workingDir, basename);
 							subdir.mkdir();
@@ -144,7 +171,7 @@ public class Generator {
 				}
 			}
 			else {
-				sourceFiles.add(source);
+				sourceObjects.add(sourceFile);
 				workDirs.add(workingDir);
 			}
 		}
@@ -155,8 +182,16 @@ public class Generator {
 		File generatorStylesheet = Misc.getResourceAsFile(generatorStylesheetResource);
 
 		// Process each CTL source file
-		for (int i = 0; i < sourceFiles.size(); i++) {
-			File sourceFile = sourceFiles.get(i);
+		for (int i = 0; i < sourceObjects.size(); i++) {
+			Object sourceObject = sourceObjects.get(i);
+			File sourceFile = null;
+			URL sourceURL = null;
+			if (sourceObject instanceof File) {
+				sourceFile = (File) sourceObject;
+			}
+			else if (sourceObject instanceof URL) {
+				sourceURL = (URL) sourceObject;
+			}
 			File workingDir = workDirs.get(i);
 
 			// Read previous index for this file (if any), and determine whether
@@ -189,8 +224,14 @@ public class Generator {
 				boolean validationErrors = false;
 				if (opts.isValidate()) {
 					int old_count = validation_eh.getErrorCount();
-					LOGR.log(Level.CONFIG, "Validating " + sourceFile);
-					ctl_validator.validate(new StreamSource(sourceFile));
+					if (sourceFile != null) {
+						LOGR.log(Level.CONFIG, "Validating " + sourceFile);
+						ctl_validator.validate(new StreamSource(sourceFile));
+					}
+					if (sourceURL != null) {
+						LOGR.log(Level.CONFIG, "Validating " + sourceURL);
+						ctl_validator.validate(new StreamSource((InputStream) sourceURL.getContent()));
+					}
 					validationErrors = (validation_eh.getErrorCount() > old_count);
 				}
 
@@ -198,8 +239,15 @@ public class Generator {
 					// Clean up the working directory
 					Misc.deleteDirContents(workingDir);
 
-					InputSource input = new InputSource(new FileInputStream(sourceFile));
-					input.setSystemId(sourceFile.toURI().toString());
+					InputSource input = null;
+					if (sourceFile != null) {
+						input = new InputSource(new FileInputStream(sourceFile));
+						input.setSystemId(sourceFile.toURI().toString());
+					}
+					if (sourceURL != null) {
+						input = new InputSource((InputStream) sourceURL.getContent());
+						input.setSystemId(sourceURL.toString());
+					}
 					// Fortify Mods to prevent External Entity Injection
 					XMLReader reader = parser.getXMLReader();
 					reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
@@ -244,14 +292,13 @@ public class Generator {
 
 	/**
 	 * Creates a directory name from a file path.
-	 * @param source A File reference.
+	 * @param reference A reference (File or URL).
 	 * @return A String representing a legal directory name.
 	 */
-	public static String createEncodedName(File source) {
-		String fileURI = source.toURI().toString();
+	public static String createEncodedName(String reference) {
 		String userDirURI = new File(System.getProperty("user.dir")).toURI().toString();
-		fileURI = fileURI.replace(userDirURI, "");
-		return fileURI.substring(fileURI.lastIndexOf(':') + 1).replace("%20", "-").replace('/', '_');
+		reference = reference.replace(userDirURI, "");
+		return reference.substring(reference.lastIndexOf(':') + 1).replace("%20", "-").replace('/', '_');
 	}
 
 }
