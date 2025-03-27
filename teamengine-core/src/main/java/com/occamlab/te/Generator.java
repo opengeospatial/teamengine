@@ -92,7 +92,6 @@ public class Generator {
 		// Create CTL validator
 		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		Schema ctl_schema = sf.newSchema(new StreamSource(Misc.getResourceURL("com/occamlab/te/schemas/ctl.xsd")));
-		System.out.println("ctl.xsd: " + Misc.getResourceURL("com/occamlab/te/schemas/ctl.xsd"));
 		Validator ctl_validator = ctl_schema.newValidator();
 		CtlErrorHandler validation_eh = new CtlErrorHandler();
 		ctl_validator.setErrorHandler(validation_eh);
