@@ -170,6 +170,11 @@ public class EarlReporter implements IReporter {
 				if (nFailed > 0) {
 					areCoreConformanceClassesPassed = false;
 				}
+				// prevent passing of basic conformance class with all tests skipped
+				// see https://github.com/opengeospatial/teamengine/issues/636
+				else if (nFailed == 0 && nPassed == 0 && nSkipped > 0) {
+					areCoreConformanceClassesPassed = false;
+				}
 			}
 			processTestResults(model, testContext.getFailedTests());
 			processTestResults(model, testContext.getSkippedTests());

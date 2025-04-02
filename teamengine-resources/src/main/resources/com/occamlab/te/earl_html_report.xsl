@@ -219,6 +219,9 @@
                                 <xsl:when test="cite:testsFailed[text() !='0']">
                                   <xsl:value-of select="'No'"/>
                                 </xsl:when>
+                                <xsl:when test="cite:testsFailed[text() ='0'] and cite:testsPassed[text() ='0'] and cite:testsSkipped[text() !='0']">
+                                  <xsl:value-of select="'No'"/>
+                                </xsl:when>
                                 <xsl:otherwise>
                                   <xsl:value-of select="'Yes'"/>
                                 </xsl:otherwise>
