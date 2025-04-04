@@ -252,6 +252,11 @@ public class CtlEarlReporter {
 					if (cFailCount > 0 || cInheritedFailureCount > 0) {
 						areCoreConformanceClassesPassed = false;
 					}
+					// prevent passing of basic conformance class with all tests skipped
+					// see https://github.com/opengeospatial/teamengine/issues/636
+					else if (cFailCount == 0 && cInheritedFailureCount == 0 && cPassCount == 0 && cSkipCount > 0) {
+						areCoreConformanceClassesPassed = false;
+					}
 				}
 				this.totalPassCount += cPassCount;
 				this.totalFailCount += cFailCount;
