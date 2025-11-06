@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opengis.cite</groupId>
   <artifactId>teamengine</artifactId>
-  <version>5.4-SNAPSHOT</version>
+  <version>6.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>TEAM Engine</name>
   <description>
-  A test harness that executes test suites written using the OGC CTL test 
-  grammar or the TestNG framework. It is typically used to verify specification 
-  compliance and is the official test harness of the OGC Compliance Testing 
-  Program (CITE).
+    A test harness that executes test suites written using the OGC CTL test
+    grammar or the TestNG framework. It is typically used to verify specification
+    compliance and is the official test harness of the OGC Compliance Testing
+    Program (CITE).
   </description>
   <url>http://opengeospatial.github.io/teamengine/</url>
   <licenses>
@@ -74,26 +74,29 @@
       <name>Upendra Sachan</name>
       <url>https://github.com/upendra-sachan</url>
       <timezone>Asia/Kolkata</timezone>
-    </developer>  
+    </developer>
     <developer>
       <name>Andrea Aime</name>
       <url>https://github.com/aaime</url>
       <timezone>Europe/Italy</timezone>
     </developer>
+    <developer>
+      <name>Chuck Heazel</name>
+      <email>cheazel {AT} wiscenterprises {DOT} com</email>
+      <timezone>US/Eastern</timezone>
+    </developer>
+    <developer>
+      <name>Dirk Stenger</name>
+      <email>stenger {AT} lat-lon {DOT} de</email>
+      <timezone>Europe/Berlin</timezone>
+    </developer>
   </developers>
-
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
-    <saxon.version>9.0.0.8</saxon.version>
-    <soapui.teamengine.endpoint>http://cite.opengeospatial.org/te2</soapui.teamengine.endpoint>
-    <soapui.testng.ets.code>wfs20</soapui.testng.ets.code>
-    <soapui.testng.ets.version>1.29</soapui.testng.ets.version>
-    <soapui.testng.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wfs200?service=WFS&amp;request=GetCapabilities</soapui.testng.iut>
-    <soapui.ctl.ets.code>wms</soapui.ctl.ets.code>
-    <soapui.ctl.ets.version>1.24</soapui.ctl.ets.version>
-    <soapui.ctl.iut>http://cite.deegree.org/deegree-webservices-3.4.0/services/wms130?request=GetCapabilities&amp;service=WMS</soapui.ctl.iut>
+    <jersey.version>3.1.8</jersey.version>
+    <tomcat.version>10.1.35</tomcat.version>
   </properties>
 
   <modules>
@@ -105,39 +108,209 @@
     <module>teamengine-web</module>
     <module>teamengine-console</module>
     <module>teamengine-virtualization</module>
+    <module>teamengine-tests</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.17.0</version>
+      </dependency>
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>1.4.01</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jena</groupId>
+        <artifactId>jena-core</artifactId>
+        <version>4.10.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.opengis.cite</groupId>
+        <artifactId>schema-utils</artifactId>
+        <version>1.8</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opengis.cite.saxon</groupId>
+        <artifactId>saxon9</artifactId>
+        <version>9.0.0.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-server</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-multipart</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.containers</groupId>
+        <artifactId>jersey-container-servlet</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.inject</groupId>
+        <artifactId>jersey-hk2</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-jaxb</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.13.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.17.1</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>2.12.2</version>
+      </dependency>
+      <dependency>
+        <groupId>xml-resolver</groupId>
+        <artifactId>xml-resolver</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.thaiopensource</groupId>
+        <artifactId>jing</artifactId>
+        <version>20091111</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>33.3.1-jre</version>
+      </dependency>
+      <dependency>
+        <groupId>com.googlecode.json-simple</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>4.0.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-catalina</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-servlet-api</artifactId>
+        <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>7.9.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-fileupload2-jakarta</artifactId>
+        <version>2.0.0-M1</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>1.4.7</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        <version>3.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>4.13.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.xmlmatchers</groupId>
-        <artifactId>xml-matchers</artifactId>
-        <version>1.0-RC1</version>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>2.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.14.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.xmlunit</groupId>
+        <artifactId>xmlunit-matchers</artifactId>
+        <version>2.10.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>7.0.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>nl.jqno.equalsverifier</groupId>
+        <artifactId>equalsverifier</artifactId>
+        <version>3.17.2</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
-    <plugins> 
+    <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.13.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>17</source>
+          <target>17</target>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.6</version>
+        <version>3.12.1</version>
         <executions>
           <execution>
             <id>site-package</id>
@@ -151,12 +324,12 @@
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
-            <version>1.7</version>
+            <version>1.12.0</version>
           </dependency>
           <dependency>
             <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctor-maven-plugin</artifactId>
-            <version>1.5.3</version>
+            <artifactId>asciidoctor-converter-doxia-module</artifactId>
+            <version>3.0.0</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -166,39 +339,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pdf-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <id>pdf</id>
-            <phase>site</phase>
-            <goals>
-              <goal>pdf</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/pdf</outputDirectory>
-              <includeReports>false</includeReports>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.doxia</groupId>
-            <artifactId>doxia-module-markdown</artifactId>
-            <version>1.6</version>
-          </dependency>
-          <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctor-maven-plugin</artifactId>
-            <version>1.5.3</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>3.1.1</version>
         <configuration>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <tagNameFormat>@{project.version}</tagNameFormat>
@@ -206,39 +348,57 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-publish-plugin</artifactId>
-        <version>1.1</version>
+        <version>3.3.0</version>
         <configuration>
           <scmBranch>gh-pages</scmBranch>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>com.smartbear.soapui</groupId>
-        <artifactId>soapui-maven-plugin</artifactId>
-        <version>5.4.0</version>
-        <inherited>false</inherited>
-        <dependencies>
-          <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>forms</artifactId>
-            <version>1.0.7</version>
-          </dependency>
-        </dependencies>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.9</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>17</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.spring.javaformat</groupId>
+        <artifactId>spring-javaformat-maven-plugin</artifactId>
+        <version>0.0.43</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <inherited>true</inherited>
+            <goals>
+              <goal>validate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.7.0</version>
+        <extensions>true</extensions>
         <configuration>
-          <projectFile>src/test/resources/soapui/TEAM-Engine-soapui-project.xml</projectFile>
-          <junitReport>true</junitReport>
-          <testFailIgnore>true</testFailIgnore>
-          <settingsFile>src/test/resources/soapui/TEAM-Engine-soapui-settings.xml</settingsFile>
-          <projectProperties>
-            <value>teamengine.endpoint=${soapui.teamengine.endpoint}</value>
-            <value>testng.ets.code=${soapui.testng.ets.code}</value>
-            <value>testng.ets.version=${soapui.testng.ets.version}</value>
-            <value>testng.iut=${soapui.testng.iut}</value>
-            <value>ctl.ets.code=${soapui.ctl.ets.code}</value>
-            <value>ctl.ets.version=${soapui.ctl.ets.version}</value>
-            <value>ctl.iut=${soapui.ctl.iut}</value>
-          </projectProperties>
+          <serverId>sonatype-nexus</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
     </plugins>
@@ -246,9 +406,8 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
+          <version>3.5.1</version>
           <configuration>
             <!-- Disable TestNG runner (enabled due to compile dependency) -->
             <testNGArtifactName>null:null</testNGArtifactName>
@@ -262,7 +421,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
+          <version>3.4.2</version>
           <configuration>
             <archive>
               <manifest>
@@ -280,39 +439,10 @@
           <artifactId>maven-repository-plugin</artifactId>
           <version>2.4</version>
         </plugin>
-        <!--
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-remote-resources-plugin</artifactId>
-                    <versionRange>[1.5,)</versionRange>
-                    <goals>
-                      <goal>bundle</goal>
-                      <goal>process</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <execute>
-                      <runOnIncremental>false</runOnIncremental>
-                    </execute>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-        -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>1.4</version>
+          <version>3.2.1</version>
           <executions>
             <execution>
               <phase>validate</phase>
@@ -330,11 +460,12 @@
         </plugin>
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.4</version>
+          <version>3.10.1</version>
           <configuration>
             <docfilessubdirs>true</docfilessubdirs>
             <show>package</show>
-            <additionalparam>-Xdoclint:none</additionalparam>
+            <additionalJOption>-Xdoclint:none</additionalJOption>
+            <detectOfflineLinks>false</detectOfflineLinks>
           </configuration>
           <executions>
             <execution>
@@ -345,6 +476,28 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <groupId>com.smartbear.soapui</groupId>
+          <artifactId>soapui-maven-plugin</artifactId>
+          <version>5.7.2</version>
+        </plugin>
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>1.2.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.4.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -353,7 +506,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.9</version>
+        <version>3.7.0</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -370,7 +523,9 @@
     <profile>
       <id>windows</id>
       <activation>
-        <os><family>windows</family></os>
+        <os>
+          <family>windows</family>
+        </os>
       </activation>
       <properties>
         <hostname>${env.COMPUTERNAME}</hostname>
@@ -379,7 +534,9 @@
     <profile>
       <id>unix</id>
       <activation>
-        <os><family>unix</family></os>
+        <os>
+          <family>unix</family>
+        </os>
       </activation>
       <properties>
         <hostname>${env.HOSTNAME}</hostname>
@@ -390,9 +547,8 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.2.7</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -401,19 +557,17 @@
                   <goal>sign</goal>
                 </goals>
                 <configuration>
-                  <!-- Enable if GPG 2.1+ is used -->
-                  <!--<gpgArguments>
-                    <arg>&#45;&#45;pinentry-mode</arg>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
                     <arg>loopback</arg>
-                  </gpgArguments>-->
+                  </gpgArguments>
                 </configuration>
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.0.1</version>
+            <version>3.3.1</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -428,18 +582,7 @@
     </profile>
   </profiles>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>smartbear-sweden-plugin-repository</id>
-      <url>http://www.soapui.org/repository/maven2/</url>
-    </pluginRepository>
-  </pluginRepositories>
-
   <distributionManagement>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
     <site>
       <id>site</id>
       <url>scm:git:git@github.com:opengeospatial/teamengine.git</url>

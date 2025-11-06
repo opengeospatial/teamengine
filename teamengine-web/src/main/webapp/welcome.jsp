@@ -9,8 +9,14 @@
 <div>
   <%@include file="site/welcome.html" %>
  
- 
-  <section id="noColumn">
+  <section id="noColumn"> 
+  
+		<%
+		    if (user != null && user.length() > 0) {
+		    	out.println("<a href=\"viewSessions.jsp\">View sessions</a>");
+		    	out.println("<br />");
+		    }
+		%>
 	       <h1>Available Test Suites</h1>
 	       <c:import var="xslt" url="/styles/config2table.xsl" />
 	       <c:import var="configFile" url="file:///${configFilePath}" />

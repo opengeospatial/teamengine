@@ -4,7 +4,7 @@
   xmlns:txsl="http://www.w3.org/1999/XSL/Transform/target"
   xmlns:ctl="http://www.occamlab.com/ctl"
   xmlns:te="java:com.occamlab.te.TECore"
-  xmlns:conf="java:com.occamlab.te.web.Config"
+  xmlns:conf="java:com.occamlab.te.config.Config"
   xmlns:saxon="http://saxon.sf.net/"
   version="2.0">
 

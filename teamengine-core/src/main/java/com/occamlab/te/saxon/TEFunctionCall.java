@@ -12,35 +12,35 @@ import net.sf.saxon.type.ItemType;
 import net.sf.saxon.type.TypeHierarchy;
 
 public class TEFunctionCall extends FunctionCall {
-    public TEFunctionCall(StructuredQName functionName,
-            Expression[] staticArgs, StaticContext env) {
-        super();
-        this.setFunctionName(functionName);
-        this.setArguments(staticArgs);
-    }
 
-    public Expression preEvaluate(ExpressionVisitor visitor) {
-        return this;
-    }
+	public TEFunctionCall(StructuredQName functionName, Expression[] staticArgs, StaticContext env) {
+		super();
+		this.setFunctionName(functionName);
+		this.setArguments(staticArgs);
+	}
 
-    public int getImplementationMethod() {
-        return ITERATE_METHOD;
-    }
+	public Expression preEvaluate(ExpressionVisitor visitor) {
+		return this;
+	}
 
-    protected void checkArguments(ExpressionVisitor visitor)
-            throws XPathException {
-        // Assume arguments are OK
-    }
+	public int getImplementationMethod() {
+		return ITERATE_METHOD;
+	}
 
-    protected int computeCardinality() {
-        return StaticProperty.ALLOWS_ZERO_OR_MORE;
-    }
+	protected void checkArguments(ExpressionVisitor visitor) throws XPathException {
+		// Assume arguments are OK
+	}
 
-    public Expression copy() {
-        throw new UnsupportedOperationException();
-    }
+	protected int computeCardinality() {
+		return StaticProperty.ALLOWS_ZERO_OR_MORE;
+	}
 
-    public ItemType getItemType(TypeHierarchy th) {
-        return AnyItemType.getInstance();
-    }
+	public Expression copy() {
+		throw new UnsupportedOperationException();
+	}
+
+	public ItemType getItemType(TypeHierarchy th) {
+		return AnyItemType.getInstance();
+	}
+
 }

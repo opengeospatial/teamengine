@@ -17,16 +17,17 @@ import javax.xml.transform.TransformerException;
 
 /**
  * Ignores all errors arising during a transformation process.
- * 
+ *
  */
 public class NullErrorListener implements ErrorListener {
 
-    public void error(TransformerException exception) {
-    }
+	public void error(TransformerException exception) {
+	}
 
-    public void fatalError(TransformerException exception) {
-    }
+	public void fatalError(TransformerException exception) {
+	}
 
-    public void warning(TransformerException exception) {
-    }
+	public void warning(TransformerException exception) {
+	}
+
 }

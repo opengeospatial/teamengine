@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opengis.cite</groupId>
     <artifactId>teamengine</artifactId>
-    <version>5.4-SNAPSHOT</version>
+    <version>6.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opengis.cite.teamengine</groupId>
   <artifactId>teamengine-virtualization</artifactId>
@@ -12,17 +12,16 @@
 
   <name>TEAM Engine - Virtualization</name>
   <description>
-  This module enables the automatic creation of virtualization images 
-  for running TEAM engine on various dynamic infrastructure platforms 
-  such as VirtualBox, Amazon EC2, VMware vSphere, and Docker. Packer 
-  is required (https://www.packer.io/).
+    This module enables the automatic creation of virtualization images
+    for running TEAM engine on various dynamic infrastructure platforms
+    such as VirtualBox, Amazon EC2, VMware vSphere, and Docker. Packer
+    is required (https://www.packer.io/).
   </description>
 
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
         <configuration>
           <descriptors>
             <descriptor>${basedir}/src/assembly/packer.xml</descriptor>
@@ -46,7 +45,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.10</version>
         <executions>
           <execution>
             <id>copy-dependencies</id>
@@ -66,7 +64,6 @@
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.4.10</version>
         <configuration>
           <imageName>${docker.image.prefix}/${docker.image.name}</imageName>
           <dockerDirectory>${project.basedir}/src/main/config/docker</dockerDirectory>

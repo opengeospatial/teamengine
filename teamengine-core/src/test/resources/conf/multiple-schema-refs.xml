@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers"
+	ignoreErrors="false" ignoreWarnings="true">
+	<ctlp:schemas>
+		<ctlp:schema type="resource">xsd/ipo.xsd</ctlp:schema>
+		<ctlp:schema type="resource">xsd/details.xsd</ctlp:schema>
+	</ctlp:schemas>
+</ctlp:XMLValidatingParser>

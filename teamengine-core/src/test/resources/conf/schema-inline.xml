@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ctlp:XMLValidatingParser xmlns:ctlp="http://www.occamlab.com/te/parsers"
+    ignoreErrors="false" ignoreWarnings="true">
+    <ctlp:schemas>
+        <!--
+        Just use a simple inline schema and trust that JAXP can handle more.
+        This way we don't have to copy+paste a big schema here.
+        -->
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:element name="comment" type="xsd:string" />
+        </xsd:schema>
+    </ctlp:schemas>
+</ctlp:XMLValidatingParser>

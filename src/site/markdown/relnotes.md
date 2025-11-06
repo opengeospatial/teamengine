@@ -1,6 +1,146 @@
 Release Notes
 =============
 
+## 6.0.0 (2025-03-17)
+- [#628](https://github.com/opengeospatial/teamengine/pull/628): Fix workflow of creating the session log dir
+- [#630](https://github.com/opengeospatial/teamengine/pull/630): Remove csw related schemas files
+- [#631](https://github.com/opengeospatial/teamengine/pull/631): Bump org.apache.tomcat:tomcat-catalina from 10.1.34 to 10.1.35
+- [#627](https://github.com/opengeospatial/teamengine/pull/627): Bump org.apache.tomcat:tomcat-catalina from 10.1.31 to 10.1.34
+
+## 6.0.0-RC2 (2024-11-07)
+- [#624](https://github.com/opengeospatial/teamengine/pull/624): Update versions of dependencies and plugins
+- [#625](https://github.com/opengeospatial/teamengine/pull/625): Add and configure nexus-staging-maven-plugin and execute formatting of pom files
+
+## 6.0.0-RC1 (2024-02-14)
+
+Attention: Java 17 and Tomcat 10.1 are required.
+
+- [#511](https://github.com/opengeospatial/teamengine/issues/511): Update to Java 17
+- [#556](https://github.com/opengeospatial/teamengine/issues/556): TEAM Engine Tomcat 10.1 update
+- [#579](https://github.com/opengeospatial/teamengine/issues/579): Update Maven dependencies to latest versions
+- [#574](https://github.com/opengeospatial/teamengine/issues/574): Update Maven plugins to latest versions
+- [#598](https://github.com/opengeospatial/teamengine/issues/598): Modernize unit tests
+- [#599](https://github.com/opengeospatial/teamengine/issues/599): Upgrade TestNG to latest version
+- [#587](https://github.com/opengeospatial/teamengine/issues/587): Update documentation for version 6.0
+- [#591](https://github.com/opengeospatial/teamengine/issues/591): Clean up code
+- [#608](https://github.com/opengeospatial/teamengine/issues/608): aio JAR CLI does not work with acceptMediaType application/zip
+- [#614](https://github.com/opengeospatial/teamengine/pull/614): Bump org.apache.tomcat:tomcat-catalina from 10.1.11 to 10.1.16
+- [#602](https://github.com/opengeospatial/teamengine/issues/602): Introduce spring-javaformat-maven-plugin and execute formatting
+- [#576](https://github.com/opengeospatial/teamengine/issues/576): Resolve errors and warnings of maven-javadoc-plugin when using Java 17
+- [#590](https://github.com/opengeospatial/teamengine/issues/590): Report details link points to broken locations
+- [#589](https://github.com/opengeospatial/teamengine/issues/589): Fix REST interface for version 6.0
+- [#601](https://github.com/opengeospatial/teamengine/issues/601): Introduce Maven Enforcer Plugin
+- [#575](https://github.com/opengeospatial/teamengine/issues/575): Unit test ImageParserTest.parsePNG_noAlphaChannel fails with Java 17
+- [#578](https://github.com/opengeospatial/teamengine/issues/578): Analyse warnings logged by maven-pdf-plugin when using Java 17
+
+## 5.7 (2023-12-18)
+- [#603](https://github.com/opengeospatial/teamengine/pull/603): Add CORS header in process method of MonitorServlet
+- [#593](https://github.com/opengeospatial/teamengine/pull/593): Fix test result logic for results other than PASS/FAIL.
+
+## 5.6.1 (2023-04-14)
+- [#572](https://github.com/opengeospatial/teamengine/pull/572): Fix a bug resulting from loading order of xml-resolver and schema-utils
+
+## 5.6 (2023-03-31)
+- [#552](https://github.com/opengeospatial/teamengine/pull/552): Console application updates
+- [#558](https://github.com/opengeospatial/teamengine/issues/558): Some test suites display java.lang.AssertionError in HTML report
+- [#559](https://github.com/opengeospatial/teamengine/issues/559): Enhance EARL/HTML report to be generated when iut is not reachable
+- [#560](https://github.com/opengeospatial/teamengine/issues/560): Create best practice documentation for failures caused by nested CTL tests
+- [#561](https://github.com/opengeospatial/teamengine/issues/561): Implement consideration of config.xml on classpath
+- [#555](https://github.com/opengeospatial/teamengine/issues/555): Wrong URL in HTML reports for test using POST requests
+- [#569](https://github.com/opengeospatial/teamengine/pull/569): Bump commons-fileupload from 1.3.3 to 1.5 in /teamengine-web
+- [#557](https://github.com/opengeospatial/teamengine/pull/557): [SECURITY] Fix Zip Slip Vulnerability
+
+## 5.5.2 (2022-08-26)
+- [#553](https://github.com/opengeospatial/teamengine/issues/553): WFS 1.0 and WCS 2.0 test suites fail with IllegalStateException: Already connected
+
+## 5.5.1 (2022-08-12)
+- [#548](https://github.com/opengeospatial/teamengine/issues/548): REST API: Test run against CTL based test suite does not return test result
+- [#544](https://github.com/opengeospatial/teamengine/issues/544): TEAM Engine cannot be started without setting java property javax.xml.parsers.DocumentBuilderFactory
+- [#545](https://github.com/opengeospatial/teamengine/issues/545): View Sessions button appears at unexpected position
+- [#551](https://github.com/opengeospatial/teamengine/pull/551): Set commons-codec to v1.11
+- [#546](https://github.com/opengeospatial/teamengine/pull/546): Add credentials to SoapUI project
+
+## 5.5 (2022-07-07)
+- [#541](https://github.com/opengeospatial/teamengine/issues/541): REST API: Test run with Accept application/zip returns 404
+- [#542](https://github.com/opengeospatial/teamengine/issues/542): REST API: Test runs with CTL based test suites return 500
+- [#488](https://github.com/opengeospatial/teamengine/issues/488): Replace old with new logo
+- [#498](https://github.com/opengeospatial/teamengine/issues/498): Delete Session leads to DocumentBuilderFactoryImpl not found
+- [#538](https://github.com/opengeospatial/teamengine/pull/538): Bump tomcat-catalina from 7.0.69 to 7.0.81 in /teamengine-realm
+- [#483](https://github.com/opengeospatial/teamengine/issues/483): Replace previous OGC logo with the new OGC logo
+- [#533](https://github.com/opengeospatial/teamengine/issues/533): REST interface cannot be used with CTL test suites
+- [#530](https://github.com/opengeospatial/teamengine/issues/530): When user is logged in to TEAM Engine and returns to langing page, there is no button to start further test runs
+- [#532](https://github.com/opengeospatial/teamengine/issues/532): Executing ets-wms-client13 test suite with master branch leads to unexpected password request
+- [#528](https://github.com/opengeospatial/teamengine/issues/528): Unit tests TECoreTest.testNestedFailure and TECoreTest.testNestedWarning fail
+- [#522](https://github.com/opengeospatial/teamengine/issues/522): Unit test TEPathTest fails
+- [#523](https://github.com/opengeospatial/teamengine/issues/523): Session id is not displayed correctly
+- [#476](https://github.com/opengeospatial/teamengine/issues/476): HTTPParser doesn't follow 302 redirect
+- [#493](https://github.com/opengeospatial/teamengine/issues/493): HTML report contains obsolete \<br\>
+- [#310](https://github.com/opengeospatial/teamengine/issues/310): Validate Run-time options
+- [#294](https://github.com/opengeospatial/teamengine/issues/294): Fortify Issue: Path Manipulation
+- [#518](https://github.com/opengeospatial/teamengine/pull/518): Fix inheritance
+- [#346](https://github.com/opengeospatial/teamengine/issues/346): Refactor folder structure of Maven project
+- [#502](https://github.com/opengeospatial/teamengine/issues/502): StackTrace is displayed in web browser when session is broken
+- [#500](https://github.com/opengeospatial/teamengine/issues/500): viewOldSessionLog page returns 500 NullPointerException when not logged in
+- [#480](https://github.com/opengeospatial/teamengine/issues/480): Empty Earl-report
+- [#66](https://github.com/opengeospatial/teamengine/issues/66): Prohibit anonymous test execution using the REST API
+- [#439](https://github.com/opengeospatial/teamengine/pull/439): Added API to generate statistics regularly.
+- [#420](https://github.com/opengeospatial/teamengine/issues/420): Add hint to legal terms when registering to TEAM Engine
+- [#354](https://github.com/opengeospatial/teamengine/issues/354): Add ETS form validation
+- [#487](https://github.com/opengeospatial/teamengine/issues/487): NullPointerException when running from command line
+- [#414](https://github.com/opengeospatial/teamengine/issues/414): Remove Java code failure semantics
+- [#428](https://github.com/opengeospatial/teamengine/pull/428): Add support for headers when using GET requests
+- [#495](https://github.com/opengeospatial/teamengine/pull/495): Bump commons-io and xercesImpl versions
+- [#494](https://github.com/opengeospatial/teamengine/pull/494): Move depencency versions
+- [#449](https://github.com/opengeospatial/teamengine/issues/449): Re-executing session test sometimes does not update results
+- [#448](https://github.com/opengeospatial/teamengine/issues/448): Null Pointer Exceptions 500 Server Errors
+- [#465](https://github.com/opengeospatial/teamengine/issues/465): Fail to generate report because of invalid character
+- [#422](https://github.com/opengeospatial/teamengine/pull/422): [SECURITY] Use HTTPS to resolve dependencies in Maven Build
+- [#423](https://github.com/opengeospatial/teamengine/issues/423): Official Website of Teamengine error!
+- [#457](https://github.com/opengeospatial/teamengine/issues/457): Restrict access to TestNG reports
+- [#450](https://github.com/opengeospatial/teamengine/issues/450): The test Entry Point / Sign In page is very confusing
+- [#460](https://github.com/opengeospatial/teamengine/issues/460): Teamengine new HTML report is generating the details html pages multiple time
+- [#469](https://github.com/opengeospatial/teamengine/issues/469): Incorrect response on beta instance TestSuites list
+- [#464](https://github.com/opengeospatial/teamengine/pull/464): Bump guava from 26.0-jre to 29.0-jre in /teamengine-core
+- [#426](https://github.com/opengeospatial/teamengine/issues/426): Documentation refers to Oracle 8 JDK that is not available
+- [#394](https://github.com/opengeospatial/teamengine/issues/394): Replace OSGEO logo
+- [#440](https://github.com/opengeospatial/teamengine/issues/440): Cleanup dependencies
+- [#463](https://github.com/opengeospatial/teamengine/pull/463): Added header for soapui test.
+
+## 5.4.1 (2021-02-19)
+- [#447](https://github.com/opengeospatial/teamengine/issues/447): TestSuite version on API
+- [#397](https://github.com/opengeospatial/teamengine/issues/397): Enhance REST API by a technical response with information about the ets
+- [#435](https://github.com/opengeospatial/teamengine/issues/435): Test INPUT in HTML report displays wrong information
+- [#451](https://github.com/opengeospatial/teamengine/issues/451): Report visibility issue
+- [#416](https://github.com/opengeospatial/teamengine/issues/416): Unable to build behind corporate proxy
+- [#431](https://github.com/opengeospatial/teamengine/pull/431): Bump xercesImpl from 2.11.0 to 2.12.0 in /teamengine-core
+- [#437](https://github.com/opengeospatial/teamengine/pull/437): Bump junit from 4.12 to 4.13.1
+- [#456](https://github.com/opengeospatial/teamengine/pull/456): Fix mailing list links
+- [#400](https://github.com/opengeospatial/teamengine/issues/400): Update tests to use TEAM Engine 5.4
+
+## 5.4 (2019-05-23)
+- [#395](https://github.com/opengeospatial/teamengine/issues/395): Move SoapUI tests to sub module
+- [#385](https://github.com/opengeospatial/teamengine/issues/385): Failed to load ets-wms-client13 ctl form
+- [#357](https://github.com/opengeospatial/teamengine/issues/357): WCS test is slow due to repeated schema loading
+- [#261](https://github.com/opengeospatial/teamengine/issues/261): REST API: Create path for latest version of each test suite
+- [#370](https://github.com/opengeospatial/teamengine/issues/370): Enhance mandatory informations when registering to TEAM Engine
+- [#398](https://github.com/opengeospatial/teamengine/issues/398): Fix fallback of writting the end of the log by writting the conformanceClass element
+- [#331](https://github.com/opengeospatial/teamengine/issues/331): New HTML report of CTL test suites: Inherited failures are not marked but counted as usual failures
+- [#364](https://github.com/opengeospatial/teamengine/issues/364): Change login time interval
+- [#323](https://github.com/opengeospatial/teamengine/issues/323): Provide documentation how to get information about if the test can get certified
+- [#358](https://github.com/opengeospatial/teamengine/issues/358): TEAM Engine source code has mixed line endings
+- [#359](https://github.com/opengeospatial/teamengine/issues/359): Root cause exception is not logged when XMLValidatingParser fails
+- [#365](https://github.com/opengeospatial/teamengine/issues/365): Save images of interactive tests to session folder of user
+- [#367](https://github.com/opengeospatial/teamengine/issues/367): Link to JavaDoc is broken in HTML report in a SNAPSHOT version
+- [#348](https://github.com/opengeospatial/teamengine/issues/348): Teamengine failed to generate new HTML report if the testInputs are empty.
+- [#362](https://github.com/opengeospatial/teamengine/issues/362): Update resource accessing method of XMLValidationParser as URL instead of File
+- [#356](https://github.com/opengeospatial/teamengine/pull/356): Clarify that the "deps" zip may not exist
+- [#352](https://github.com/opengeospatial/teamengine/pull/352): fix: teamengine-web/pom.xml to reduce potential vulnerabilities (#1)
+- [#344](https://github.com/opengeospatial/teamengine/issues/344): The wms-client13 test shows the one test failure in table even all the tests are passed.
+- [#350](https://github.com/opengeospatial/teamengine/issues/350): New HTML report: Homogenize layout
+
+## 5.3.1 (2019-01-14)
+- Fix [#381](https://github.com/opengeospatial/teamengine/issues/381): Ensure correct comparison of session dates
+
 ## 5.3 (2018-05-15)
 - Fix [#336](https://github.com/opengeospatial/teamengine/issues/336): Improve header of new HTML report: Test INPUT contains confusing informations
 - Fix [#315](https://github.com/opengeospatial/teamengine/issues/315): Circular dependencies

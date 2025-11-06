@@ -17,15 +17,15 @@ else
   ln -s /usr/lib/jvm/java-1.8.0-openjdk /opt/jdk8
 fi
 
-# Apache Tomcat 7.0
+# Apache Tomcat 10.1
 cd /tmp
-curl --retry 1 -O http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.72/bin/apache-tomcat-7.0.72.tar.gz
+curl --retry 1 -O http://archive.apache.org/dist/tomcat/tomcat-10/v10.1/bin/apache-tomcat-10.1.tar.gz
 useradd tomcat
 echo "tomcat:t0mc4t" | chpasswd
 mkdir /opt/apache.org
 cd /opt/apache.org
 tar xzf /tmp/apache-tomcat-*.tar.gz
-ln -s apache-tomcat-7.0.72/ tomcat7
+ln -s apache-tomcat-10.1/ tomcat7
 # Create Tomcat instance
 mkdir -p /srv/tomcat7/base-1
 cd /srv/tomcat7/base-1

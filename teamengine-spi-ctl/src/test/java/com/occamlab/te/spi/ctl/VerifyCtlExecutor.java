@@ -1,3 +1,11 @@
+/*
+ * The Open Geospatial Consortium licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package com.occamlab.te.spi.ctl;
 
 import static org.junit.Assert.*;
@@ -18,35 +26,36 @@ import com.occamlab.te.SetupOptions;
 
 public class VerifyCtlExecutor {
 
-    private static DocumentBuilder docBuilder;
+	private static DocumentBuilder docBuilder;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        docBuilder = dbf.newDocumentBuilder();
-    }
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		docBuilder = dbf.newDocumentBuilder();
+	}
 
-    @Test
-    public void extractTwoArguments() throws SAXException, IOException {
-        SetupOptions opts = new SetupOptions();
-        CtlExecutor iut = new CtlExecutor(opts);
-        Document args = docBuilder.parse(getClass().getResourceAsStream("/test-run-props.xml"));
-        RuntimeOptions runOpts = iut.extractTestRunArguments(args);
-        List<String> params = runOpts.getParams();
-        assertEquals("Unexpected number of parameters.", 2, params.size());
-        String nvp = params.get(0);
-        assertEquals("Expected parameter format: {name}={value}.", 2, nvp.split("=").length);
-    }
+	@Test
+	public void extractTwoArguments() throws SAXException, IOException {
+		SetupOptions opts = new SetupOptions();
+		CtlExecutor iut = new CtlExecutor(opts);
+		Document args = docBuilder.parse(getClass().getResourceAsStream("/test-run-props.xml"));
+		RuntimeOptions runOpts = iut.extractTestRunArguments(args);
+		List<String> params = runOpts.getParams();
+		assertEquals("Unexpected number of parameters.", 2, params.size());
+		String nvp = params.get(0);
+		assertEquals("Expected parameter format: {name}={value}.", 2, nvp.split("=").length);
+	}
 
-    @Test
-    public void extractNoArguments() throws SAXException, IOException {
-        SetupOptions opts = new SetupOptions();
-        CtlExecutor iut = new CtlExecutor(opts);
-        Document args = docBuilder.parse(getClass().getResourceAsStream("/test-run-props-empty.xml"));
-        RuntimeOptions runOpts = iut.extractTestRunArguments(args);
-        List<String> params = runOpts.getParams();
-        assertEquals("Unexpected number of parameters.", 0, params.size());
-    }
+	@Test
+	public void extractNoArguments() throws SAXException, IOException {
+		SetupOptions opts = new SetupOptions();
+		CtlExecutor iut = new CtlExecutor(opts);
+		Document args = docBuilder.parse(getClass().getResourceAsStream("/test-run-props-empty.xml"));
+		RuntimeOptions runOpts = iut.extractTestRunArguments(args);
+		List<String> params = runOpts.getParams();
+		assertEquals("Unexpected number of parameters.", 0, params.size());
+	}
+
 }

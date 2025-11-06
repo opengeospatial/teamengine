@@ -25,107 +25,111 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
 /**
- * Handles errors arising in the course of generating an executable test suite
- * from CTL source files.
- * 
+ * Handles errors arising in the course of generating an executable test suite from CTL
+ * source files.
+ *
  */
 public class TeErrorListener implements ErrorListener {
-    private char[] scriptChars = null;
-    private int ErrorCount = 0;
-    private int WarningCount = 0;
-    private boolean active = true;
-    private static Logger logger = Logger
-            .getLogger("com.occamlab.te.TeErrorListener");
 
-    public TeErrorListener() {
-    }
+	private char[] scriptChars = null;
 
-    public TeErrorListener(char[] script_chars) {
-        scriptChars = script_chars;
-    }
+	private int ErrorCount = 0;
 
-    public int getErrorCount() {
-        return ErrorCount;
-    }
+	private int WarningCount = 0;
 
-    public int getWarningCount() {
-        return WarningCount;
-    }
+	private boolean active = true;
 
-    private void error(String type, TransformerException exception) {
-        if (scriptChars == null) {
-            if (active) {
-                System.err.println(type + ": "
-                        + exception.getMessageAndLocation());
-            }
-            return;
-        }
+	private static Logger logger = Logger.getLogger("com.occamlab.te.TeErrorListener");
 
-        try {
-            String systemId = exception.getLocator().getSystemId();
-            BufferedReader in;
-            if (systemId.length() == 0) {
-                in = new BufferedReader(new CharArrayReader(scriptChars));
-            } else {
-                File txsl_file = new File(new URI(systemId));
-                in = new BufferedReader(new FileReader(txsl_file));
-            }
-            int txsl_linenum = exception.getLocator().getLineNumber();
-            String line;
-            String location = "unknown location";
-            int current_line = 1;
-            boolean closed = true;
-            while (current_line <= txsl_linenum || !closed) {
-                line = in.readLine();
-                if (line == null) {
-                    location = "unknown location";
-                    break;
-                }
-                int pos = line.indexOf("te:loc=\"");
-                if (pos >= 0) {
-                    int comma = line.indexOf(",", pos);
-                    int end_quote = line.indexOf("\"", comma);
-                    location = "line " + line.substring(pos + 8, comma)
-                            + " of " + line.substring(comma + 1, end_quote);
-                }
-                if (current_line >= txsl_linenum) {
-                    closed = (line.indexOf(">") > 0);
-                }
-                current_line++;
-            }
-            // Fortify Mod: Close the BufferedReader and free its resources
-            in.close();
-            System.err.println(type + " at " + location + ":");
-            System.err.println("  " + exception.getMessage()
-                    + " in intermediate stylesheet"
-                    + exception.getLocationAsString());
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+	public TeErrorListener() {
+	}
 
-            System.err.println(type + ": " + exception.getMessageAndLocation());
-        }
-    }
+	public TeErrorListener(char[] script_chars) {
+		scriptChars = script_chars;
+	}
 
-    public void error(TransformerException exception) {
-        error("Error", exception);
-        ErrorCount++;
-    }
+	public int getErrorCount() {
+		return ErrorCount;
+	}
 
-    public void fatalError(TransformerException exception) {
-        error("Fatal Error", exception);
-        ErrorCount++;
-    }
+	public int getWarningCount() {
+		return WarningCount;
+	}
 
-    public void warning(TransformerException exception) {
-        error("Warning Error", exception);
-        WarningCount++;
-    }
+	private void error(String type, TransformerException exception) {
+		if (scriptChars == null) {
+			if (active) {
+				System.err.println(type + ": " + exception.getMessageAndLocation());
+			}
+			return;
+		}
 
-    public boolean isActive() {
-        return active;
-    }
+		try {
+			String systemId = exception.getLocator().getSystemId();
+			BufferedReader in;
+			if (systemId.length() == 0) {
+				in = new BufferedReader(new CharArrayReader(scriptChars));
+			}
+			else {
+				File txsl_file = new File(new URI(systemId));
+				in = new BufferedReader(new FileReader(txsl_file));
+			}
+			int txsl_linenum = exception.getLocator().getLineNumber();
+			String line;
+			String location = "unknown location";
+			int current_line = 1;
+			boolean closed = true;
+			while (current_line <= txsl_linenum || !closed) {
+				line = in.readLine();
+				if (line == null) {
+					location = "unknown location";
+					break;
+				}
+				int pos = line.indexOf("te:loc=\"");
+				if (pos >= 0) {
+					int comma = line.indexOf(",", pos);
+					int end_quote = line.indexOf("\"", comma);
+					location = "line " + line.substring(pos + 8, comma) + " of " + line.substring(comma + 1, end_quote);
+				}
+				if (current_line >= txsl_linenum) {
+					closed = (line.indexOf(">") > 0);
+				}
+				current_line++;
+			}
+			// Fortify Mod: Close the BufferedReader and free its resources
+			in.close();
+			System.err.println(type + " at " + location + ":");
+			System.err.println(
+					"  " + exception.getMessage() + " in intermediate stylesheet" + exception.getLocationAsString());
+		}
+		catch (Exception e) {
+			logger.log(Level.SEVERE, "", e);
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+			System.err.println(type + ": " + exception.getMessageAndLocation());
+		}
+	}
+
+	public void error(TransformerException exception) {
+		error("Error", exception);
+		ErrorCount++;
+	}
+
+	public void fatalError(TransformerException exception) {
+		error("Fatal Error", exception);
+		ErrorCount++;
+	}
+
+	public void warning(TransformerException exception) {
+		error("Warning Error", exception);
+		WarningCount++;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 }

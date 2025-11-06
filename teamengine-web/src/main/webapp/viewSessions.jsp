@@ -2,7 +2,7 @@
 <%@ page
   language="java"
   session="false"
-  import="java.io.File, javax.xml.parsers.*, java.util.Arrays, com.occamlab.te.web.*, java.util.List, java.util.ArrayList"
+  import="java.io.File, javax.xml.parsers.*, java.util.Arrays, com.occamlab.te.config.*, com.occamlab.te.web.*, java.util.List, java.util.ArrayList"
 %><%!
   Config Conf;
   DocumentBuilder DB;
@@ -88,7 +88,8 @@
                   out.println("</tr>");
                   
                   for (int i = 0; i < dirs.length; i++) {
-                    if (new File(new File(userdir, dirs[i]), "session.xml").exists()) {
+                	  File sessionFile = new File(new File(userdir, dirs[i]), "session.xml");
+                    if (sessionFile.exists() && sessionFile.length() != 0) {
                       TestSession s = new TestSession();
                       s.load(userdir, dirs[i]);
                       testData.add(s);
