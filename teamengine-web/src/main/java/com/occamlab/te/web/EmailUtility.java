@@ -24,6 +24,8 @@ public class EmailUtility {
 		properties.put("mail.smtp.port", portNo);
 		properties.put("mail.smtp.auth", "true");
 		properties.put("mail.smtp.starttls.enable", "true");
+		//see https://bugs.openjdk.org/browse/JDK-8202343
+		properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
 		Authenticator auth = new Authenticator() {
 			public PasswordAuthentication getPasswordAuthentication() {
