@@ -1,5 +1,5 @@
 <%@ page language="java" session="false"
-	import="java.util.*,com.occamlab.te.index.*,com.occamlab.te.config.*,com.occamlab.te.web.*"%><%!
+	import="java.util.*,java.io.*,com.occamlab.te.index.*,com.occamlab.te.config.*,com.occamlab.te.web.*,com.occamlab.te.util.*"%><%!
 	Config Conf = null;
 	List<String> organizationList = null;
 	Map<String, List<String>> standardMap = null;
@@ -196,7 +196,6 @@
 		}
 	}
 
-
 	function removeAllOptions(selectbox)
 	{
 		var i;
@@ -274,7 +273,13 @@
 <body onload="fillOrganization()" >
 <%@ include file="header.jsp"%>
 <form name="standardsForm" action="test.jsp" method="post" >
-
+<div><% String sessionId = LogUtils.generateSessionId(new File(Conf.getUsersDir(), request.getRemoteUser())); %> 
+Preparing session: <% out.println(sessionId); %><br/>
+<% if(sessionId.equals("s0000")) { 
+	out.println("Warning: You seem to have reached the maximum number of sessions. Starting the test might overwrite session s0000. Consider deleting sessions. <a href=\"viewSessions.jsp\">View sessions</a>");
+}
+%>
+</div>
 <h4> Select a test suite: </h4>
 
 <table  width="60%" >

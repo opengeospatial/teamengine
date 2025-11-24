@@ -356,13 +356,10 @@ public class TestRunResource {
 	private Source executeTestRun(String etsCode, Map<String, List<String>> testRunArgs, String preferredMediaType) {
 
 		List<String> authCredentials = this.headers.getRequestHeader("Authorization");
-		String logDir = System.getProperty("TE_BASE") + FileSystems.getDefault().getSeparator() + "users"
-				+ FileSystems.getDefault().getSeparator() + TestRunUtils.getUserName(authCredentials)
-				+ FileSystems.getDefault().getSeparator() + "rest";
+		String logDir = System.getProperty("java.io.tmpdir");
 
 		if (null != logDir) {
-			String sessionId = LogUtils.generateSessionId(new File(logDir));
-
+			String sessionId = LogUtils.generateRestSessionId();
 			testRunArgs.put("logDir", List.of(logDir));
 			testRunArgs.put("sessionId", Collections.singletonList(sessionId));
 		}

@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -498,6 +499,15 @@ public class LogUtils {
 			session = "s" + Integer.toString(10000 + i).substring(1);
 		}
 		return session;
+	}
+
+	/**
+	 * Generates a session identifier for REST sessions. This will be a random UUID as
+	 * String.
+	 * @return a session id string
+	 */
+	public static String generateRestSessionId() {
+		return UUID.randomUUID().toString();
 	}
 
 	/**
