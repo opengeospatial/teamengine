@@ -75,7 +75,7 @@ public class PBKDF2Realm extends RealmBase {
 
 	private DocumentBuilder DB = null;
 
-	private final HashMap<String, Principal> principals = new HashMap<>();
+	private HashMap<String, Principal> principals = UserGenericPrincipal.getInstance().getPrincipals();
 
 	private String password;
 
